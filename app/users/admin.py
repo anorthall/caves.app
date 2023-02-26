@@ -57,9 +57,12 @@ class CavingUserAdmin(BaseUserAdmin):
     list_display = ("email", "username", "first_name", "last_name", "location")
     list_filter = ()
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "location", "bio")}),
-        ("Permissions", {"fields": ("groups",)}),
+        (
+            "Personal info",
+            {"fields": ("first_name", "last_name", "email", "location", "bio")},
+        ),
+        ("Settings", {"fields": ("units", "timezone")}),
+        ("Authentication", {"fields": ("user_permissions", "password")}),
     )
 
     add_fieldsets = (
