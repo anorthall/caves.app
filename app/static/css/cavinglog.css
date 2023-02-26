@@ -5,7 +5,3 @@
 body {
   overflow-y:scroll;
 }
-
-tr.table-title {
-  background-color: rgba(0, 0, 0, 0.075);
-}

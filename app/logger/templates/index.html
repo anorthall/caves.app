@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-{% block title %}CavingLog{% endblock %}
+{% block title %}Caving Log{% endblock %}
 {% block description %}An online tool to log caving trips and activity.{% endblock %}
 {% block content %}
 
-<!-- Header start -->
-<h1 class="mb-0 display-4 text-center">Caving Log</h1>
-<br /><br />
-<!-- Header end -->
+<div class="container">
+  <h1 class="display-1">Hello {{ request.user.first_name }}!</h1>
+</div>
 
 {% endblock %}

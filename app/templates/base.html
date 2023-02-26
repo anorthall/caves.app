@@ -9,16 +9,12 @@
     {% include "navbar.html" %}
 
     <main class="flex-shrink-0 mb-4 mt-3">
-      <div class="container">
-
-        <!-- Content start -->
-        {% block content %}
-        <h1>There is no content!</h1>
-        <p>Very sorry about that...</p>
-        {% endblock %}
-        <!-- Content end -->
-
-      </div>
+      <!-- Content start -->
+      {% block content %}
+      <h1>There is no content!</h1>
+      <p>Very sorry about that...</p>
+      {% endblock %}
+      <!-- Content end -->
     </main>
 
     {% include "footer.html" %}
