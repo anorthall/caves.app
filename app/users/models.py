@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
+from timezone_field import TimeZoneField
 
 
 class CavingUserManager(BaseUserManager):
@@ -52,6 +53,18 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30)
     location = models.CharField(max_length=50, blank=True)
     bio = models.TextField("about me", blank=True)
+
+    timezone = TimeZoneField(default="Europe/London", choices_display="WITH_GMT_OFFSET")
+
+    METRIC = "Metric"
+    IMPERIAL = "Imperial"
+    UNIT_CHOICES = [
+        (METRIC, METRIC),
+        (IMPERIAL, IMPERIAL),
+    ]
+    units = models.CharField(
+        "Distance units", max_length=10, default=METRIC, choices=UNIT_CHOICES
+    )
 
     is_active = models.BooleanField(default=True)
 
