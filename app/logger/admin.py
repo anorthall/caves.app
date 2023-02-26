@@ -63,9 +63,9 @@ class TripAdmin(admin.ModelAdmin):
             "Trip details",
             {
                 "fields": (
+                    "trip_type",
                     "trip_start",
                     "trip_end",
-                    "trip_type",
                 ),
             },
         ),
@@ -83,11 +83,11 @@ class TripAdmin(admin.ModelAdmin):
             "Distances",
             {
                 "fields": (
-                    "horizontal_distance",
-                    "vertical_distance_down",
-                    "vertical_distance_up",
-                    "surveyed_distance",
-                    "aid_climbing_distance",
+                    "horizontal_dist",
+                    "vert_dist_down",
+                    "vert_dist_up",
+                    "surveyed_dist",
+                    "aid_dist",
                 ),
             },
         ),

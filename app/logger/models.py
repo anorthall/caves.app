@@ -34,8 +34,8 @@ class Trip(models.Model):
     cave_country = models.CharField(max_length=100)
 
     # Trip timing and type
-    trip_start = models.DateTimeField()
-    trip_end = models.DateTimeField(blank=True, null=True)
+    trip_start = models.DateTimeField("start time")
+    trip_end = models.DateTimeField("end time", blank=True, null=True)
     trip_type = models.CharField(
         max_length=15,
         choices=TRIP_TYPES,
@@ -43,8 +43,8 @@ class Trip(models.Model):
     )
 
     # Internal metadata
-    trip_added = models.DateTimeField(auto_now_add=True)
-    trip_updated = models.DateTimeField(auto_now=True)
+    trip_added = models.DateTimeField("trip added on", auto_now_add=True)
+    trip_updated = models.DateTimeField("trip last updated", auto_now=True)
 
     # Attendees and organisations
     cavers = models.CharField(max_length=200, blank=True)
@@ -52,11 +52,11 @@ class Trip(models.Model):
     expedition = models.CharField(max_length=100, blank=True)
 
     # Distances
-    horizontal_distance = models.IntegerField(blank=True, null=True)
-    vertical_distance_down = models.IntegerField(blank=True, null=True)
-    vertical_distance_up = models.IntegerField(blank=True, null=True)
-    surveyed_distance = models.IntegerField(blank=True, null=True)
-    aid_climbing_distance = models.IntegerField(blank=True, null=True)
+    horizontal_dist = models.IntegerField("horizontal distance", blank=True, null=True)
+    vert_dist_down = models.IntegerField("rope descent distance", blank=True, null=True)
+    vert_dist_up = models.IntegerField("rope ascent distance", blank=True, null=True)
+    surveyed_dist = models.IntegerField("surveyed distance", blank=True, null=True)
+    aid_dist = models.IntegerField("aid climbing distance", blank=True, null=True)
 
     # Notes
     notes = models.TextField(blank=True)
