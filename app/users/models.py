@@ -86,6 +86,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.first_name
 
+    def clean(self):
+        self.username = self.username.lower()
+
     @property
     def is_staff(self):
         return self.is_superuser

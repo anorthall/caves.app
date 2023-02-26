@@ -59,7 +59,16 @@ class CavingUserAdmin(BaseUserAdmin):
     fieldsets = (
         (
             "Personal info",
-            {"fields": ("first_name", "last_name", "email", "location", "bio")},
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "username",
+                    "email",
+                    "location",
+                    "bio",
+                )
+            },
         ),
         ("Settings", {"fields": ("units", "timezone")}),
         ("Authentication", {"fields": ("user_permissions", "password")}),
