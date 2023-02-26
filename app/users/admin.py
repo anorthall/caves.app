@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
@@ -48,7 +47,6 @@ class UserChangeForm(forms.ModelForm):
             "location",
             "bio",
             "is_active",
-            "is_admin",
         )
 
 
@@ -61,7 +59,7 @@ class CavingUserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Personal info", {"fields": ("first_name", "last_name", "location", "bio")}),
-        ("Permissions", {"fields": ("is_admin",)}),
+        ("Permissions", {"fields": ("groups",)}),
     )
 
     add_fieldsets = (
@@ -87,4 +85,3 @@ class CavingUserAdmin(BaseUserAdmin):
 
 
 admin.site.register(CavingUser, CavingUserAdmin)
-admin.site.unregister(Group)

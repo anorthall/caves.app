@@ -1,4 +1,8 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 
 
@@ -36,12 +40,12 @@ class CavingUserManager(BaseUserManager):
             password,
         )
 
-        user.is_admin = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
 
-class CavingUser(AbstractBaseUser):
+class CavingUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField("email address", max_length=255, unique=True)
     username = models.SlugField(max_length=30, unique=True)
     first_name = models.CharField(max_length=30)
@@ -50,7 +54,6 @@ class CavingUser(AbstractBaseUser):
     bio = models.TextField("about me", blank=True)
 
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField("administrator", default=False)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
@@ -64,12 +67,5 @@ class CavingUser(AbstractBaseUser):
     def __str__(self):
         return self.email
 
-    def has_perm(self, perm, obj=None):
-        return self.is_admin
-
-    def has_module_perms(self, app_label):
-        return self.is_admin
-
-    @property
     def is_staff(self):
-        return self.is_admin
+        return self.is_superuser
