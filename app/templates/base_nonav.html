@@ -6,17 +6,13 @@
 
   <body class="d-flex flex-column h-100">
 
-    <main class="flex-shrink-0 mb-4 mt-3">
-      <div class="container">
-
-        <!-- Content start -->
-        {% block content %}
-        <h1>There is no content!</h1>
-        <p>Very sorry about that...</p>
-        {% endblock %}
-        <!-- Content end -->
-
-      </div>
+    <main class="flex-shrink-0 mb-4 mt-5">
+      <!-- Content start -->
+      {% block content %}
+      <h1>There is no content!</h1>
+      <p>Very sorry about that...</p>
+      {% endblock %}
+      <!-- Content end -->
     </main>
 
     {% include "footer.html" %}

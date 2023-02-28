@@ -7,15 +7,30 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbar">
+        {% comment %}
         <ul class="navbar-nav me-auto">
+        </ul>
+        {% endcomment %}
+        <ul class="navbar-nav ms-auto">
+          {% if request.user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
 
-          {% comment %}
-          {% url 'db:index' as current_page %}
-          <li class="nav-item">
-            <a class="nav-link{% if request.get_full_path == current_page %} active{% endif %}" aria-current="page" href="{% url 'db:index' %}">Region List</a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+              <li><span class="dropdown-item">Logged in as: {{ request.user.username|title }}</span></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'users:profile' %}">Profile</a></li>
+              {% if request.user.is_staff %}
+              <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{% url 'users:logout' %}">Logout</a></li>
+            </ul>
           </li>
-          {% endcomment %}
-
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'users:login' %}">Login</a>
+          </li>
+          {% endif %}
         </ul>
       </div>
     </div>

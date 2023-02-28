@@ -13,7 +13,7 @@
     </span>
 
     <span class="float-end text-muted">
-      {% if user.is_superuser %}<a href="{% url 'admin:index' %}" class="text-muted">Admin</a>{% endif %}
+      {% comment %}{% if user.is_superuser %}<a href="{% url 'admin:index' %}" class="text-muted">Admin</a>{% endif %}{% endcomment %}
     </span>
   </div>
 </footer>
