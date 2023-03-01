@@ -3,6 +3,7 @@
 ## Users
 - [ ] Create change password form
 - [ ] Email verification
+- [ ] Remove green ticks from update profile form
 
 ## Logger
 ### Views
