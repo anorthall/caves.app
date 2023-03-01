@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.contrib import messages
+from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from .models import CavingUser
 
@@ -34,7 +34,16 @@ class UserCreationForm(forms.ModelForm):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
-            raise ValidationError("Passwords do not match.")
+            error = "Passwords do not match."
+            self.add_error("password1", error)
+            self.add_error("password2", error)
+
+        try:
+            validate_password(password2)
+        except ValidationError as error:
+            self.add_error("password1", error)
+            self.add_error("password2", error)
+
         return password2
 
     def save(self, commit=True):
