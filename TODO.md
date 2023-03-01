@@ -1,7 +1,6 @@
 # To-do List
 
 ## Users
-- [ ] Make login form work as per normal Django form methods
 - [ ] Create change password form
 - [ ] Email verification
 
