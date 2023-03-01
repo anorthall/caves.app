@@ -9,6 +9,14 @@
     {% include "navbar.html" %}
 
     <main class="flex-shrink-0 mb-4 mt-3">
+      {% if error %}
+      <!-- Error start -->
+      <div class="col-lg-8 mx-auto">
+        <div class="alert alert-danger">{{ error }}</div>
+      </div>
+      <!-- Error end -->
+      {% endif %}
+
       <!-- Content start -->
       {% block content %}
       <h1>There is no content!</h1>

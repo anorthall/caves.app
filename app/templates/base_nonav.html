@@ -7,6 +7,12 @@
   <body class="d-flex flex-column h-100">
 
     <main class="flex-shrink-0 mb-4 mt-5">
+      {% if error %}
+      <div class="col-lg-8 mx-auto">
+        <div class="alert alert-danger">{{ error }}</div>
+      </div>
+      {% endif %}
+
       <!-- Content start -->
       {% block content %}
       <h1>There is no content!</h1>
