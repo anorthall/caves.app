@@ -57,5 +57,7 @@ class UserChangeForm(forms.ModelForm):
             "last_name",
             "location",
             "bio",
+            "timezone",
+            "units",
             "is_active",
         )
