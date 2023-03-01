@@ -15,7 +15,7 @@ def login(request):
             auth_login(request, user)
             return redirect("index")
         else:
-            error = "The username and password provided did not match any account"
+            error = "The username and password provided did not match any account."
             form = LoginForm(request.POST)
             return render(request, "login.html", {"error": error, "form": form})
     else:

@@ -47,10 +47,22 @@ class CavingUserManager(BaseUserManager):
 
 
 class CavingUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField("email address", max_length=255, unique=True)
-    username = models.SlugField(max_length=30, unique=True)
+    email = models.EmailField(
+        "email address",
+        max_length=255,
+        unique=True,
+        help_text="Your email address will be used to log in.",
+    )
+    username = models.SlugField(
+        max_length=30,
+        unique=True,
+        help_text="A unique identifier that will be part of the web address for your logbook.",
+    )
     first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    last_name = models.CharField(
+        max_length=30,
+        help_text="Your first and last name will be displayed alongside your logbook.",
+    )
     location = models.CharField(max_length=50, blank=True)
     bio = models.TextField("about me", blank=True)
 

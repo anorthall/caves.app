@@ -8,14 +8,20 @@ from .models import CavingUser
 
 
 class UserCreationForm(forms.ModelForm):
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password1 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput,
+        help_text="Your password can't be too similar to your other personal information, must contain at least 8 characters, cannot be entirely numeric and must not be a commonly used password.",
+    )
     password2 = forms.CharField(
-        label="Password confirmation", widget=forms.PasswordInput
+        label="Confirm password",
+        widget=forms.PasswordInput,
+        help_text="Enter the same password as before, for verification.",
     )
 
     class Meta:
         model = CavingUser
-        fields = ("email", "username", "first_name", "last_name")
+        fields = ("first_name", "last_name", "email", "username")
 
     def clean_password2(self):
         # Check that the two password entries match
