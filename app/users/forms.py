@@ -65,4 +65,15 @@ class UserAdminChangeForm(forms.ModelForm):
 
 
 class UserChangeForm(forms.ModelForm):
-    pass
+    class Meta:
+        model = CavingUser
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "username",
+            "location",
+            "bio",
+            "timezone",
+            "units",
+        )
