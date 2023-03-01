@@ -17,7 +17,7 @@
             <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
 
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-              <li><span class="dropdown-item">Logged in as: {{ request.user.username|title }}</span></li>
+              <li><span class="dropdown-item">{{ request.user.email }}</span></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'users:profile' %}">Profile</a></li>
               {% if request.user.is_staff %}
