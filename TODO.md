@@ -20,5 +20,6 @@
 - [ ] Contact page
 
 ## Systems
+- [ ] Site wide 'site name' option
 - [ ] Docker (cookiecutter?)
 - [ ] Test data
