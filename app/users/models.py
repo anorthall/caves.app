@@ -41,6 +41,7 @@ class CavingUserManager(BaseUserManager):
             password,
         )
 
+        user.email_verified = True
         user.is_superuser = True
         user.save(using=self._db)
         return user
@@ -70,7 +71,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "Distance units", max_length=10, default=METRIC, choices=UNIT_CHOICES
     )
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField("enabled user?", default=True)
+
+    email_verified = models.BooleanField("email verified?", default=False)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"

@@ -60,6 +60,7 @@ class UserAdminChangeForm(forms.ModelForm):
             "timezone",
             "units",
             "is_active",
+            "email_verified",
             "password",
         )
 
