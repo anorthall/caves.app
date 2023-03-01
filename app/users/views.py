@@ -39,13 +39,23 @@ def profile(request):
 
 
 def register(request):
+    form_template = "bs5_form.html"
+
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            auth_login(request, user)
+            success_msg = f"Your account has been registered, {user.first_name}. You are now signed in."
+            messages.success(request, success_msg)
             return redirect("index")
+        else:
+            messages.error(
+                request, "Registration not successful. Please fix the error(s) below."
+            )
+            rendered_form = form.render(form_template)
+    else:
+        form = UserCreationForm()
+        rendered_form = form.render(form_template)
 
-    form = UserCreationForm()
-    rendered_form = form.render("bs5_form.html")
     return render(request, "register.html", {"form": rendered_form})
