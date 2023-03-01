@@ -3,8 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib import messages
-from .admin import UserCreationForm
-from .forms import LoginForm
+from .forms import LoginForm, UserCreationForm, UserChangeForm
 
 
 def login(request):
@@ -23,6 +22,11 @@ def login(request):
             )
             return render(request, "login.html", {"form": form})
     else:
+        if request.user.is_authenticated:
+            msg = f"You are logged in as {request.user.email}."
+            messages.info(request, msg)
+            return redirect("index")
+
         form = LoginForm()
         return render(request, "login.html", {"form": form})
 
@@ -34,8 +38,29 @@ def logout(request):
 
 
 def profile(request):
-    messages.info(request, "This page is not yet implemented.")
-    return redirect("index")
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to access this page.")
+        return redirect("users:login")
+
+    form_template = "bs5_form.html"
+    user = request.user
+
+    if request.method == "POST":
+        form = UserChangeForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, f"Your details have been updated, {user.first_name}."
+            )
+        else:
+            messages.error(
+                request, "Details not updated. Please correct the error(s) below."
+            )
+    else:
+        form = UserChangeForm(instance=user)
+
+    rendered_form = form.render(form_template)
+    return render(request, "profile.html", {"form": rendered_form})
 
 
 def register(request):
@@ -53,9 +78,8 @@ def register(request):
             messages.error(
                 request, "Registration not successful. Please fix the error(s) below."
             )
-            rendered_form = form.render(form_template)
     else:
         form = UserCreationForm()
-        rendered_form = form.render(form_template)
 
+    rendered_form = form.render(form_template)
     return render(request, "register.html", {"form": rendered_form})

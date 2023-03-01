@@ -2,11 +2,11 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import CavingUser
-from .forms import UserCreationForm, UserChangeForm
+from .forms import UserCreationForm, UserAdminChangeForm
 
 
 class CavingUserAdmin(BaseUserAdmin):
-    form = UserChangeForm
+    form = UserAdminChangeForm
     add_form = UserCreationForm
 
     list_display = ("email", "username", "first_name", "last_name", "location")

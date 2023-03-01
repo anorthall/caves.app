@@ -35,8 +35,6 @@ class UserCreationForm(forms.ModelForm):
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
             raise ValidationError("Passwords do not match.")
-        elif len(password1) < 8:
-            raise ValidationError("Password must contain at least eight characters.")
         return password2
 
     def save(self, commit=True):
@@ -48,14 +46,13 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
-class UserChangeForm(forms.ModelForm):
+class UserAdminChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
 
     class Meta:
         model = CavingUser
         fields = (
             "email",
-            "password",
             "first_name",
             "last_name",
             "location",
@@ -63,4 +60,9 @@ class UserChangeForm(forms.ModelForm):
             "timezone",
             "units",
             "is_active",
+            "password",
         )
+
+
+class UserChangeForm(forms.ModelForm):
+    pass
