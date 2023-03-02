@@ -72,6 +72,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     )
 
     is_active = models.BooleanField("enabled user?", default=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
 
     email_verified = models.BooleanField("email verified?", default=False)
 

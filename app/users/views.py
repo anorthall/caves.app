@@ -52,6 +52,7 @@ def update(request):
             messages.success(
                 request, f"Your details have been updated, {user.first_name}."
             )
+            return redirect("users:profile")
         else:
             messages.error(
                 request, "Details not updated. Please correct the error(s) below."
@@ -75,6 +76,11 @@ def profile(request):
         "user": request.user,
     }
     return render(request, "profile.html", context)
+
+
+def password(request):
+    messages.info(request, "This page is not yet implemented.")
+    return redirect("index")
 
 
 def register(request):
