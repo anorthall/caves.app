@@ -4,6 +4,7 @@
 - [ ] Create change password form
 - [ ] Email verification
 - [ ] Remove green ticks from update profile form
+- [ ] Implement timezone handling
 
 ## Logger
 ### Views
