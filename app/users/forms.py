@@ -1,8 +1,20 @@
 from django import forms
+from django.contrib import auth
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from .models import CavingUser
+
+
+class PasswordChangeForm(auth.forms.PasswordChangeForm):
+    template_name = "bs5_form.html"
+
+    def __init__(self, *args, **kwargs):
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        self.fields["new_password1"].help_text = ""
+        self.fields[
+            "new_password2"
+        ].help_text = "Your password can't be too similar to your other personal information, must contain at least 8 characters, cannot be entirely numeric and must not be a commonly used password."
 
 
 class LoginForm(forms.Form):
@@ -14,6 +26,7 @@ class LoginForm(forms.Form):
 
 
 class UserCreationForm(forms.ModelForm):
+    template_name = "bs5_form.html"
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,
@@ -75,6 +88,8 @@ class UserAdminChangeForm(forms.ModelForm):
 
 
 class UserChangeForm(forms.ModelForm):
+    template_name = "bs5_form.html"
+
     class Meta:
         model = CavingUser
         fields = (

@@ -5,7 +5,7 @@
 
 ## Users
 - [ ] Use stock login form
-- [ ] Create change password form
+- [X] Create change password form
 - [ ] Email verification
 - [ ] Remove green ticks from update profile form
 - [ ] Implement timezone handling
