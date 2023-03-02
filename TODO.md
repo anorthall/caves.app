@@ -1,5 +1,8 @@
 # To-do List
 
+## UI
+- [ ] Create consistent site-wide titles and templates for such
+
 ## Users
 - [ ] Create change password form
 - [ ] Email verification
