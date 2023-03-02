@@ -4,6 +4,7 @@
 - [ ] Create consistent site-wide titles and templates for such
 
 ## Users
+- [ ] Use stock login form
 - [ ] Create change password form
 - [ ] Email verification
 - [ ] Remove green ticks from update profile form
