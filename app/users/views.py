@@ -37,7 +37,7 @@ def logout(request):
     return redirect("index")
 
 
-def profile(request):
+def update(request):
     if not request.user.is_authenticated:
         messages.error(request, "You must be logged in to access this page.")
         return redirect("users:login")
@@ -60,7 +60,21 @@ def profile(request):
         form = UserChangeForm(instance=user)
 
     rendered_form = form.render(form_template)
-    return render(request, "profile.html", {"form": rendered_form})
+    context = {
+        "form": rendered_form,
+    }
+    return render(request, "update_profile.html", context)
+
+
+def profile(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to access this page.")
+        return redirect("users:login")
+
+    context = {
+        "user": request.user,
+    }
+    return render(request, "profile.html", context)
 
 
 def register(request):
