@@ -5,10 +5,7 @@
 
 ## Users
 - [ ] Use stock login form
-- [X] Create change password form
 - [ ] Email verification
-- [ ] Remove green ticks from update profile form
-- [ ] Implement timezone handling
 
 ## Logger
 ### Views
@@ -28,3 +25,4 @@
 - [ ] Site wide 'site name' option
 - [ ] Docker (cookiecutter?)
 - [ ] Test data
+- [ ] Implement timezone handling
