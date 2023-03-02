@@ -112,7 +112,7 @@ LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
 
-USE_I18N = True
+USE_I18N = False
 
 USE_TZ = True
 
@@ -142,3 +142,7 @@ MESSAGE_TAGS = {
     messages.WARNING: "alert-warning",
     messages.ERROR: "alert-danger",
 }
+
+DATETIME_FORMAT = "H:i Y-m-d"
+DATE_FORMAT = "Y-m-d"
+TIME_FORMAT = "H:i"
