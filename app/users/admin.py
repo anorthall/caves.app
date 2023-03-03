@@ -21,6 +21,7 @@ class CavingUserAdmin(BaseUserAdmin):
                     "username",
                     "email",
                     "location",
+                    "club",
                     "bio",
                 )
             },

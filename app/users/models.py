@@ -58,6 +58,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30)
     location = models.CharField(max_length=50, blank=True)
     bio = models.TextField("about me", blank=True)
+    club = models.CharField(max_length=50, blank=True)
 
     timezone = TimeZoneField(default="Europe/London", choices_display="WITH_GMT_OFFSET")
 

@@ -42,6 +42,13 @@
         </tr>
 
         <tr>
+          <th scope="row">Club(s)</th>
+          <td>
+            {% if user.club %}{{ user.club }}{% else %}Not recorded{% endif %}
+          </td>
+        </tr>
+
+        <tr>
           <th scope="row">Biography</th>
           <td>
             {% if user.bio %}{{ user.bio }}{% else %}Not recorded{% endif %}
