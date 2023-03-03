@@ -129,11 +129,14 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Custom user model
 AUTH_USER_MODEL = "users.CavingUser"
 
+# Login redirects
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+# Bootstrap 5 message CSS classes
 MESSAGE_TAGS = {
     messages.DEBUG: "alert-secondary",
     messages.INFO: "alert-info",
@@ -142,8 +145,10 @@ MESSAGE_TAGS = {
     messages.ERROR: "alert-danger",
 }
 
+# Date formats
 DATETIME_FORMAT = "H:i Y-m-d"
 DATE_FORMAT = "Y-m-d"
 TIME_FORMAT = "H:i"
 
+# Login view
 LOGIN_URL = "users:login"
