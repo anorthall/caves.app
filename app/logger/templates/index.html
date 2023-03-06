@@ -5,9 +5,9 @@
 
 <div class="container">
   {% if request.user.is_authenticated %}
-  <h1 class="display-4 text-center">Welcome {{ request.user.first_name }}!</h1>
+  <h1 class="display-4">Welcome {{ request.user.first_name }}!</h1>
   {% else %}
-  <h1 class="display-4 text-center">Welcome!</h1>
+  <h1 class="display-4">Welcome!</h1>
   {% endif %}
 </div>
 
