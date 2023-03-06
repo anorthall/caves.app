@@ -11,6 +11,7 @@ from .forms import (
     UserChangeForm,
     PasswordChangeForm,
     VerifyEmailForm,
+    UserChangeEmailForm,
 )
 from .verify import generate_token
 from .emails import send_verify_email
@@ -115,18 +116,39 @@ def verify_email(request):
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
             verified_user = form.user
-            verified_user.email = (
-                form.email
-            )  # Reset the user's email to the hashed email
+            verified_user.email = form.email  # Set the user's email
             verified_user.is_active = True  # Set the user to be active
             verified_user.save()  # Save the user
             auth.login(request, verified_user)  # Log the user in
             messages.success(
                 request,
-                f"Welcome, {verified_user.first_name}. Your email has been verified and you are now logged in.",
+                f"Hi, {verified_user.first_name}. Your email address, {form.email}, has been verified.",
             )
             return redirect("users:profile")
     else:
         form = VerifyEmailForm()
 
     return render(request, "verify_email.html", {"form": form})
+
+
+@login_required
+def update_email(request):
+    if request.method == "POST":
+        form = UserChangeEmailForm(request.user, request.POST)
+        if form.is_valid():
+            # Generate verification token and send email
+            user = form.user
+            new_email = form.cleaned_data["email"]
+            verify_code = generate_token(user.pk, new_email)
+            verify_url = request.build_absolute_uri(reverse("users:verify"))
+            send_verify_email(new_email, user.first_name, verify_url, verify_code)
+
+            messages.info(
+                request,
+                "Please follow the instructions sent to your new email address in order to complete the change.",
+            )
+            return redirect("users:profile")
+    else:
+        form = UserChangeEmailForm(request.user)
+
+    return render(request, "update_email.html", {"form": form})

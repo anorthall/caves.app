@@ -134,3 +134,37 @@ class UserChangeForm(forms.ModelForm):
             "timezone",
             "units",
         )
+
+
+class UserChangeEmailForm(forms.Form):
+    template_name = "bs5_form.html"
+    email = forms.EmailField(
+        label="New email address",
+        max_length=255,
+        required=True,
+        help_text="This email address will be verified before any change is stored on the system.",
+    )
+    password = forms.CharField(
+        label="Current password",
+        required=True,
+        widget=forms.PasswordInput(),
+        help_text="For security reasons, please enter your existing password.",
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        """Check the user entered their password correctly"""
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise ValidationError("The password you have entered is not correct.")
+        return password
+
+    def clean_email(self):
+        """Check if the email is already in use"""
+        email = self.cleaned_data["email"]
+        if auth.get_user_model().objects.filter(email=email).exists():
+            raise ValidationError("That email is already in use.")
+        return email
