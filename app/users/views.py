@@ -14,7 +14,11 @@ from .forms import (
     UserChangeEmailForm,
 )
 from .verify import generate_token
-from .emails import send_verify_email
+from .emails import (
+    send_verify_email,
+    send_email_change_verification,
+    send_email_change_notification,
+)
 
 
 class PasswordChangeView(LoginRequiredMixin, PasswordChangeView):
@@ -141,7 +145,12 @@ def update_email(request):
             new_email = form.cleaned_data["email"]
             verify_code = generate_token(user.pk, new_email)
             verify_url = request.build_absolute_uri(reverse("users:verify"))
-            send_verify_email(new_email, user.first_name, verify_url, verify_code)
+            send_email_change_verification(
+                new_email, user.first_name, verify_url, verify_code
+            )
+
+            # Send the security notification email
+            send_email_change_notification(user.email, user.first_name, new_email)
 
             messages.info(
                 request,
