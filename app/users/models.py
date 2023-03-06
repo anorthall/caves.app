@@ -77,7 +77,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "Distance units", max_length=10, default=METRIC, choices=UNIT_CHOICES
     )
 
-    is_active = models.BooleanField("enabled user?", default=False)
+    is_active = models.BooleanField(
+        "Enabled user",
+        default=False,
+        help_text="Only enabled users are able to sign in. Users are disabled until their email is verified.",
+    )
     date_joined = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = "email"
