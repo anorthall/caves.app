@@ -5,8 +5,8 @@
 
 ## Users
 - [ ] Use stock login form
-- [ ] Allow re-sending of email verification code
-- [ ] Set up forgotten password form
+- [ ] Allow re-sending of email verification code for new accounts
+- [ ] Set up password reset form
 - [ ] Allow pruning of non-verified accounts
 
 ## Logger
