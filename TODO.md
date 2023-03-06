@@ -5,7 +5,8 @@
 
 ## Users
 - [ ] Use stock login form
-- [ ] Email verification
+- [ ] Allow re-sending of email verification code
+- [ ] Allow pruning of non-verified accounts
 
 ## Logger
 ### Views
