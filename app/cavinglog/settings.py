@@ -152,3 +152,7 @@ TIME_FORMAT = "H:i"
 
 # Login view
 LOGIN_URL = "users:login"
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_FROM = "no-reply@caving-log-dev.com"

@@ -48,7 +48,12 @@ class CavingUserManager(BaseUserManager):
 
 
 class CavingUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField("email address", max_length=255, unique=True)
+    email = models.EmailField(
+        "email address",
+        max_length=255,
+        unique=True,
+        help_text="This will be verified before you can log in.",
+    )
     username = models.SlugField(
         max_length=30,
         unique=True,
@@ -72,10 +77,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "Distance units", max_length=10, default=METRIC, choices=UNIT_CHOICES
     )
 
-    is_active = models.BooleanField("enabled user?", default=True)
+    is_active = models.BooleanField("enabled user?", default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-
-    email_verified = models.BooleanField("email verified?", default=False)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"

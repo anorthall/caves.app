@@ -2,8 +2,9 @@ from django import forms
 from django.contrib import auth
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from .models import CavingUser
+from .verify import verify_token
 
 
 class PasswordChangeForm(auth.forms.PasswordChangeForm):
@@ -15,6 +16,30 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
         self.fields[
             "new_password2"
         ].help_text = "Your password can't be too similar to your other personal information, must contain at least 8 characters, cannot be entirely numeric and must not be a commonly used password."
+
+
+class VerifyEmailForm(forms.Form):
+    template_name = "bs5_form.html"
+    verify_code = forms.CharField(
+        label="Verification code", max_length=100, required=True
+    )
+
+    def clean_verify_code(self):
+        verify_code = self.cleaned_data["verify_code"]
+        # Decode the user ID and email from the hash
+        user_pk, email = verify_token(verify_code)
+        # Check we have a user with the decoded email
+        try:
+            user = auth.get_user_model().objects.get(pk=user_pk)
+        except ObjectDoesNotExist:
+            raise ValidationError(
+                "Email verification code is not valid or has expired."
+            )
+
+        # Save the user and email
+        self.cleaned_data["user"] = user
+        self.cleaned_data["email"] = email
+        return verify_code
 
 
 class LoginForm(forms.Form):
@@ -83,13 +108,13 @@ class UserAdminChangeForm(forms.ModelForm):
             "timezone",
             "units",
             "is_active",
-            "email_verified",
             "password",
         )
 
 
 class UserChangeForm(forms.ModelForm):
     template_name = "bs5_form.html"
+    email = forms.EmailField(disabled=True)  # Use specific form
 
     class Meta:
         model = CavingUser

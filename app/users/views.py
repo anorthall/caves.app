@@ -1,11 +1,19 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
-from .forms import LoginForm, UserCreationForm, UserChangeForm, PasswordChangeForm
+from .forms import (
+    LoginForm,
+    UserCreationForm,
+    UserChangeForm,
+    PasswordChangeForm,
+    VerifyEmailForm,
+)
+from .verify import generate_token
+from .emails import send_verify_email
 
 
 class PasswordChangeView(LoginRequiredMixin, PasswordChangeView):
@@ -78,16 +86,20 @@ def profile(request):
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect("users:profile")
+        return redirect("users:profile")  # Already registered
 
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            auth.login(request, user)
-            success_msg = f"Your account has been registered, {user.first_name}. You are now signed in."
-            messages.success(request, success_msg)
-            return redirect("index")
+
+            # Generate verification token and send email
+            verify_code = generate_token(user.pk, user.email)
+            verify_url = request.build_absolute_uri(reverse("users:verify"))
+            send_verify_email(user.email, user.first_name, verify_url, verify_code)
+
+            # Redirect to Verify Email page.
+            return redirect("users:verify")
         else:
             messages.error(
                 request, "Registration not successful. Please fix the error(s) below."
@@ -96,3 +108,25 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, "register.html", {"form": form})
+
+
+def verify_email(request):
+    if "verify_code" in request.GET:
+        form = VerifyEmailForm(request.GET)
+        if form.is_valid():
+            verified_user = form.cleaned_data["user"]
+            verified_user.email = form.cleaned_data[
+                "email"
+            ]  # Reset the user's email to the hashed email
+            verified_user.is_active = True  # Set the user to be active
+            verified_user.save()  # Save the user
+            auth.login(request, verified_user)  # Log the user in
+            messages.success(
+                request,
+                f"Welcome, {verified_user.first_name}. Your email has been verified and you are now logged in.",
+            )
+            return redirect("users:profile")
+    else:
+        form = VerifyEmailForm()
+
+    return render(request, "verify_email.html", {"form": form})
