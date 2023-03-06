@@ -114,10 +114,10 @@ def verify_email(request):
     if "verify_code" in request.GET:
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
-            verified_user = form.cleaned_data["user"]
-            verified_user.email = form.cleaned_data[
-                "email"
-            ]  # Reset the user's email to the hashed email
+            verified_user = form.user
+            verified_user.email = (
+                form.email
+            )  # Reset the user's email to the hashed email
             verified_user.is_active = True  # Set the user to be active
             verified_user.save()  # Save the user
             auth.login(request, verified_user)  # Log the user in

@@ -24,6 +24,11 @@ class VerifyEmailForm(forms.Form):
         label="Verification code", max_length=100, required=True
     )
 
+    def __init__(self, *args, **kwargs):
+        self.user = None
+        self.email = None
+        super().__init__(*args, **kwargs)
+
     def clean_verify_code(self):
         verify_code = self.cleaned_data["verify_code"]
         # Decode the user ID and email from the hash
@@ -37,8 +42,8 @@ class VerifyEmailForm(forms.Form):
             )
 
         # Save the user and email
-        self.cleaned_data["user"] = user
-        self.cleaned_data["email"] = email
+        self.user = user
+        self.email = email
         return verify_code
 
 
