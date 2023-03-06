@@ -27,9 +27,10 @@ class CavingUserAdmin(BaseUserAdmin):
             },
         ),
         ("Settings", {"fields": ("units", "timezone")}),
+        ("Permissions", {"fields": ("user_permissions",)}),
         (
             "Authentication",
-            {"fields": ("user_permissions", "password", "is_active")},
+            {"fields": ("is_active", "is_superuser", "password")},
         ),
     )
 
