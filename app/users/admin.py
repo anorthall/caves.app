@@ -13,14 +13,22 @@ class CavingUserAdmin(BaseUserAdmin):
     list_filter = ()
     fieldsets = (
         (
-            "Personal info",
+            "Contact details",
             {
                 "fields": (
                     "first_name",
                     "last_name",
                     "username",
                     "email",
+                )
+            },
+        ),
+        (
+            "Personal details",
+            {
+                "fields": (
                     "location",
+                    "country",
                     "club",
                     "bio",
                 )

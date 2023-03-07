@@ -3,6 +3,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django_countries.fields import CountryField
 from django.db import models
 from timezone_field import TimeZoneField
 
@@ -62,6 +63,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     location = models.CharField(max_length=50, blank=True)
+    country = CountryField(blank=True)
     bio = models.TextField("about me", blank=True)
     club = models.CharField(max_length=50, blank=True)
 
