@@ -3,7 +3,6 @@
 <html lang="en" class="h-100">
 
   <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% block description %}Caving Log: An online caving trip logger{% endblock %}">
@@ -38,7 +37,32 @@
       <!-- Content end -->
     </main>
 
-    {% include "footer.html" %}
+    <!-- Footer start-->
+    <footer class="footer mt-auto py-3 border-top bg-light">
+      <div class="container">
+        <span class="float-start text-muted">
+          {% block footer_left %}
+          Copyright &copy; 2023 <a class="link-secondary" href="https://northall.me.uk/">Andrew Northall</a>
+          {% endblock %}
+        </span>
+        <span class="float-end text-muted">
+          {% block footer_right %}
+          {% endblock %}
+        </span>
+
+        <span class="float-end text-muted">
+          {% comment %}{% if user.is_superuser %}<a href="{% url 'admin:index' %}" class="text-muted">Admin</a>{% endif %}{% endcomment %}
+        </span>
+      </div>
+    </footer>
+    <!-- Footer end -->
+
+    <!-- Footer scripts start -->
+    <!-- Bootstrap v5.1.3 JS -->
+    <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
+
+    {% block footer_scripts %}{% endblock %}
+    <!-- Footer scripts end -->
 
   </body>
 </html>
