@@ -9,9 +9,8 @@ A list of items to complete to create a basic, functional service.
 ## Users
 ### Login and Registration
 - [X] Allow re-sending of email verification code for new accounts (in-case email is lost)
-- [ ] Allow manual/automatic pruning of non-verified accounts
 - [X] Create password reset form
-- [ ] Change itsdangerous email validation to use Django built in tokens
+- [ ] Allow manual/automatic pruning of non-verified accounts
 - [ ] Create dedicated 'welcome' page for new accounts
 
 ### User Experience
