@@ -95,11 +95,11 @@ def register(request):
 
             # Generate verification token and send email
             verify_code = generate_token(user.pk, user.email)
-            verify_url = request.build_absolute_uri(reverse("users:verify"))
+            verify_url = request.build_absolute_uri(reverse("users:verify-new-account"))
             send_verify_email(user.email, user.first_name, verify_url, verify_code)
 
             # Redirect to Verify Email page.
-            return redirect("users:verify")
+            return redirect("users:verify-new-account")
         else:
             messages.error(
                 request, "Registration not successful. Please fix the error(s) below."
@@ -110,7 +110,7 @@ def register(request):
     return render(request, "register.html", {"form": form})
 
 
-def verify_email(request):
+def verify_new_account(request):
     if "verify_code" in request.GET:
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
@@ -121,13 +121,32 @@ def verify_email(request):
             auth.login(request, verified_user)  # Log the user in
             messages.success(
                 request,
-                f"Hi, {verified_user.first_name}. Your email address, {form.email}, has been verified.",
+                f"Welcome, {verified_user.first_name}. Your registration has been completed and your email address verified!",
             )
             return redirect("users:profile")
     else:
         form = VerifyEmailForm()
 
-    return render(request, "verify_email.html", {"form": form})
+    return render(request, "verify_new_account.html", {"form": form})
+
+
+def verify_email_change(request):
+    if "verify_code" in request.GET:
+        form = VerifyEmailForm(request.GET)
+        if form.is_valid():
+            verified_user = form.user
+            verified_user.email = form.email  # Set the user's email
+            verified_user.save()  # Save the user
+            auth.login(request, verified_user)  # Log the user in
+            messages.success(
+                request,
+                f"Your new email address, {form.email}, has been verified.",
+            )
+            return redirect("users:profile")
+    else:
+        form = VerifyEmailForm()
+
+    return render(request, "verify_email_change.html", {"form": form})
 
 
 @login_required
@@ -139,7 +158,9 @@ def update_email(request):
             user = form.user
             new_email = form.cleaned_data["email"]
             verify_code = generate_token(user.pk, new_email)
-            verify_url = request.build_absolute_uri(reverse("users:verify"))
+            verify_url = request.build_absolute_uri(
+                reverse("users:verify-email-change")
+            )
             send_email_change_verification(
                 new_email, user.first_name, verify_url, verify_code
             )
@@ -151,7 +172,7 @@ def update_email(request):
                 request,
                 "Please follow the instructions sent to your new email address within 24 hours to complete the change.",
             )
-            return redirect("users:profile")
+            return redirect("users:verify-email-change")
     else:
         form = UserChangeEmailForm(request.user)
 
