@@ -47,14 +47,6 @@ class VerifyEmailForm(forms.Form):
         return verify_code
 
 
-class LoginForm(forms.Form):
-    template_name = "login_form.html"
-    email = forms.EmailField(label="Email address", max_length=255, required=True)
-    password = forms.CharField(
-        label="Password", required=True, widget=forms.PasswordInput()
-    )
-
-
 class UserCreationForm(forms.ModelForm):
     template_name = "bs5_form.html"
     password1 = forms.CharField(

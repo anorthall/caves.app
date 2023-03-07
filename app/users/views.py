@@ -5,15 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
+from .verify import generate_token
 from .forms import (
-    LoginForm,
     UserCreationForm,
     UserChangeForm,
     PasswordChangeForm,
     VerifyEmailForm,
     UserChangeEmailForm,
 )
-from .verify import generate_token
 from .emails import (
     send_verify_email,
     send_email_change_verification,
@@ -43,19 +42,15 @@ def login(request):
             messages.success(request, f"Now logged in as {user.email}.")
             return redirect("index")
         else:
-            form = LoginForm(request.POST)
             messages.error(
                 request, "The username and password provided do not match any account."
             )
-            return render(request, "login.html", {"form": form})
 
     if request.user.is_authenticated:
-        msg = f"You are logged in as {request.user.email}."
-        messages.info(request, msg)
+        messages.info(request, f"You are logged in as {request.user.email}.")
         return redirect("index")
 
-    form = LoginForm()
-    return render(request, "login.html", {"form": form})
+    return render(request, "login.html")
 
 
 def logout(request):
@@ -154,7 +149,7 @@ def update_email(request):
 
             messages.info(
                 request,
-                "Please follow the instructions sent to your new email address in order to complete the change.",
+                "Please follow the instructions sent to your new email address within 24 hours to complete the change.",
             )
             return redirect("users:profile")
     else:

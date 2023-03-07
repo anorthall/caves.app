@@ -10,7 +10,7 @@ def generate_token(user_pk, email):
     return serializer.dumps([user_pk, email], salt="verify-email")
 
 
-def verify_token(token, expiration=3600):
+def verify_token(token, expiration=86400):
     serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
     try:
         user_pk, email = serializer.loads(

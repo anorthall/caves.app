@@ -8,9 +8,22 @@
     <br />
     <form method="post">
       {% csrf_token %}
-      {{ form }}
+      <div class="form-floating mb-2">
+        <input type="email" name="email" autofocus autocapitalize="none" autocomplete="email" maxlength="255" required class="form-control" id="id_email" placeholder="name@example.com">
+        <label for="id_email">Email address</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" name="password" required id="id_password" placeholder="Password">
+        <label for="id_password">Password</label>
+      </div>
       <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
     </form>
+    <br />
+    <p class="text-muted text-center">
+      Forgotten your password? Please
+      <a class="link-secondary" href="mailto:andrew@northall.me.uk?subject=CavingLog">email me</a>.
+    </p>
   </div>
 </div>
 
