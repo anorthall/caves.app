@@ -3,7 +3,6 @@ from django.urls import reverse_lazy, reverse
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
 from .verify import generate_token
 from .forms import (
@@ -13,6 +12,8 @@ from .forms import (
     VerifyEmailForm,
     UserChangeEmailForm,
     ResendVerifyEmailForm,
+    PasswordResetForm,
+    SetPasswordForm,
 )
 from .emails import (
     send_verify_email,
@@ -21,16 +22,40 @@ from .emails import (
 )
 
 
-class PasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    template_name = "change_password.html"
-    success_url = reverse_lazy("users:password-done")
-    form_class = PasswordChangeForm
+class PasswordResetView(auth.views.PasswordResetView):
+    template_name = "password_reset.html"
+    email_template_name = "emails/email_password_reset.html"
+    html_email_template_name = "emails/email_html_password_reset.html"
+    subject_template_name = "emails/email_password_reset_subject.txt"
+    success_url = reverse_lazy("users:password-reset-sent")
+    form_class = PasswordResetForm
+
+
+class PasswordResetConfirmView(auth.views.PasswordResetConfirmView):
+    template_name = "password_reset_confirm.html"
+    success_url = reverse_lazy("users:password-reset-done")
+    form_class = SetPasswordForm
+    post_reset_login = True
+
+
+def password_reset_sent(request):
+    messages.info(
+        request,
+        "If such an email is on record, then a password reset link has been sent.",
+    )
+    return redirect("users:password-reset")
 
 
 @login_required
-def password_done(request):
-    messages.success(request, "Your password has been updated.")
+def password_reset_done(request):
+    messages.success(request, "Your password has been updated and you are signed in.")
     return redirect("users:profile")
+
+
+class PasswordChangeView(LoginRequiredMixin, auth.views.PasswordChangeView):
+    template_name = "change_password.html"
+    success_url = reverse_lazy("users:password-reset-done")
+    form_class = PasswordChangeForm
 
 
 def login(request):

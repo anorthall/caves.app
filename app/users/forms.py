@@ -18,6 +18,21 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
         ].help_text = "Your password can't be too similar to your other personal information, must contain at least 8 characters, cannot be entirely numeric and must not be a commonly used password."
 
 
+class PasswordResetForm(auth.forms.PasswordResetForm):
+    template_name = "bs5_form.html"
+
+
+class SetPasswordForm(auth.forms.SetPasswordForm):
+    template_name = "bs5_form.html"
+
+    def __init__(self, *args, **kwargs):
+        super(SetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields["new_password1"].help_text = ""
+        self.fields[
+            "new_password2"
+        ].help_text = "Your password can't be too similar to your other personal information, must contain at least 8 characters, cannot be entirely numeric and must not be a commonly used password."
+
+
 class VerifyEmailForm(forms.Form):
     template_name = "bs5_form.html"
     verify_code = forms.CharField(

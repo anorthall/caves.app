@@ -10,7 +10,7 @@ A list of items to complete to create a basic, functional service.
 ### Login and Registration
 - [X] Allow re-sending of email verification code for new accounts (in-case email is lost)
 - [ ] Allow manual/automatic pruning of non-verified accounts
-- [ ] Create password reset form
+- [X] Create password reset form
 - [ ] Create dedicated 'welcome' page for new accounts
 
 ### User Experience

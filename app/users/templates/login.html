@@ -20,9 +20,10 @@
       <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
     </form>
     <br />
-    <p class="text-muted text-center">
-      Forgotten your password? Please
-      <a class="link-secondary" href="mailto:andrew@northall.me.uk?subject=CavingLog">email me</a>.
+    <p class="text-center">
+      <a class="link-secondary" href="{% url 'users:password-reset' %}">
+        Forgotten your password?
+      </a>
     </p>
   </div>
 </div>
