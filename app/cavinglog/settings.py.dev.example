@@ -154,6 +154,19 @@ TIME_FORMAT = "H:i"
 # Login view
 LOGIN_URL = "users:login"
 
+#
 # Email settings
+#
+
+DEFAULT_FROM_EMAIL = "no-reply@caving-log-dev.com"  # Address to send email from
+
+# To print all emails to STDOUT (for testing):
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@caving-log-dev.com"
+
+# To send email via SMTP:
+#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#EMAIL_HOST = "smtp.someserver.net"
+#EMAIL_PORT = 465
+#EMAIL_USE_SSL = True
+#EMAIL_HOST_USER = "username"
+#EMAIL_HOST_PASSWORD = "password"
