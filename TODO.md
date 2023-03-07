@@ -8,7 +8,6 @@ A list of items to complete to create a basic, functional service.
 
 ## Users
 ### Login and Registration
-- [ ] Change to Django default login form and view
 - [ ] Allow re-sending of email verification code for new accounts (in-case email is lost)
 - [ ] Allow manual/automatic pruning of non-verified accounts
 - [ ] Create password reset form
