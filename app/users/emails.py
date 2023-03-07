@@ -17,7 +17,7 @@ def send_verify_email(to, name, verify_url, verify_code):
         },
     )
     plain_message = strip_tags(html_message)
-    from_email = settings.EMAIL_FROM
+    from_email = settings.DEFAULT_FROM_EMAIL
 
     send_mail(
         subject,
@@ -41,7 +41,7 @@ def send_email_change_verification(to, name, verify_url, verify_code):
         },
     )
     plain_message = strip_tags(html_message)
-    from_email = settings.EMAIL_FROM
+    from_email = settings.DEFAULT_FROM_EMAIL
 
     send_mail(
         subject,
@@ -65,7 +65,7 @@ def send_email_change_notification(to, name, new_email):
         },
     )
     plain_message = strip_tags(html_message)
-    from_email = settings.EMAIL_FROM
+    from_email = settings.DEFAULT_FROM_EMAIL
 
     send_mail(
         subject,
