@@ -47,6 +47,32 @@ class VerifyEmailForm(forms.Form):
         return verify_code
 
 
+class ResendVerifyEmailForm(forms.Form):
+    template_name = "bs5_form.html"
+    email = forms.EmailField(
+        label="Email address",
+        max_length=255,
+        required=True,
+        help_text="The email address you signed up with.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = None
+        super().__init__(*args, **kwargs)
+
+    def clean_email(self):
+        # Set self.user only if the email belongs to an inactive account
+        email = self.cleaned_data["email"]
+        try:
+            user = auth.get_user_model().objects.get(email__exact=email)
+        except ObjectDoesNotExist:
+            return email
+
+        if not user.is_active:
+            self.user = user
+        return email
+
+
 class UserCreationForm(forms.ModelForm):
     template_name = "bs5_form.html"
     password1 = forms.CharField(

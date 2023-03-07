@@ -12,6 +12,7 @@ from .forms import (
     PasswordChangeForm,
     VerifyEmailForm,
     UserChangeEmailForm,
+    ResendVerifyEmailForm,
 )
 from .emails import (
     send_verify_email,
@@ -128,6 +129,28 @@ def verify_new_account(request):
         form = VerifyEmailForm()
 
     return render(request, "verify_new_account.html", {"form": form})
+
+
+def resend_verify_email(request):
+    if request.user.is_authenticated:
+        return redirect("users:profile")
+
+    if request.method == "POST":
+        form = ResendVerifyEmailForm(request.POST)
+        form.is_valid()
+        if form.user:
+            # A valid, unverified user was found. Resend email.
+            user = form.user
+            verify_code = generate_token(user.pk, user.email)
+            verify_url = request.build_absolute_uri(reverse("users:verify-new-account"))
+            send_verify_email(user.email, user.first_name, verify_url, verify_code)
+        messages.info(
+            request,
+            "If the provided email matched an account then the verification email has been resent. Please wait a few minutes and then check your email.",
+        )
+    else:
+        form = ResendVerifyEmailForm()
+    return render(request, "resend_verify_email.html", {"form": form})
 
 
 def verify_email_change(request):
