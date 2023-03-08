@@ -14,7 +14,7 @@ A list of items to complete to create a basic, functional service.
 - [ ] Create dedicated 'welcome' page for new accounts
 
 ### User Experience
-- [ ] Standardise the 'Options' list on profile pages into a template
+- [X] Standardise the 'Options' list on profile pages into a template
 - [ ] Implement timezone handling
 
 ### Social

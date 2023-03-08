@@ -1,0 +1,10 @@
+{% load active_link_tags %}
+<div class="col-lg-4 mt-4 mt-lg-0">
+  <h1 class="display-5 text-muted border-bottom">Options</h1>
+  <nav class="nav nav-pills flex-column grey">
+    <a class="nav-link {% active_link 'users:profile' %}" href="{% url 'users:profile' %}">View your profile</a>
+    <a class="nav-link {% active_link 'users:update' %}" href="{% url 'users:update' %}">Edit your profile</a>
+    <a class="nav-link {% active_link 'users:email' %}" href="{% url 'users:email' %}">Update your email</a>
+    <a class="nav-link {% active_link 'users:password' %}" href="{% url 'users:password' %}">Change your password</a>
+  </nav>
+</div>
