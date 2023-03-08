@@ -5,6 +5,45 @@
 
 <div class="container">
   <h1 class="display-4">Welcome, {{ user.first_name }}!</h1>
+
+  <div class="row">
+    <div class="col">
+      <h2 class="display-4">Recent trips</h2>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Cave</th>
+              <th scope="col">Region</th>
+              <th scope="col">Trip type</th>
+              <th scope="col" class="text-center">View</th>
+              <th scope="col" class="text-center">Edit</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            {% for trip in trips %}
+              <tr>
+                <th scope="row">{{ forloop.revcounter }}</th>
+                <td>{{ trip.trip_start|date:"Y-m-d" }}</td>
+                <td>{{ trip.trip_start|time:"H:i" }}</td>
+                <td>{{ trip.cave_name }}</td>
+                <td>{{ trip.cave_region }}</td>
+                <td>{{ trip.trip_type }}</td>
+                <td class="text-center">
+                  <a href="#"><i class="bi bi-info-circle"></i></a>
+                </td>
+                <td class="text-center">
+                  <a href="#"><i class="bi bi-pencil"></i></a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 </div>
 
 {% endblock %}
