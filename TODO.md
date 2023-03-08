@@ -27,6 +27,9 @@ A list of items to complete to create a basic, functional service.
 
 
 ## Logger
+### Trips
+- [ ] Change model to default to user's country if no country entered
+
 ### Views
 - [ ] Trip: List
 - [ ] Trip: Detail
