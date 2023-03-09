@@ -53,7 +53,7 @@ def password_reset_done(request):
 
 
 class PasswordChangeView(LoginRequiredMixin, auth.views.PasswordChangeView):
-    template_name = "change_password.html"
+    template_name = "password_change.html"
     success_url = reverse_lazy("users:password-reset-done")
     form_class = PasswordChangeForm
 
@@ -102,7 +102,7 @@ def update(request):
     else:
         form = UserChangeForm(instance=request.user)
 
-    return render(request, "update_profile.html", {"form": form})
+    return render(request, "profile_update.html", {"form": form})
 
 
 @login_required
@@ -175,7 +175,7 @@ def resend_verify_email(request):
         )
     else:
         form = ResendVerifyEmailForm()
-    return render(request, "resend_verify_email.html", {"form": form})
+    return render(request, "verify_resend_email.html", {"form": form})
 
 
 def verify_email_change(request):
@@ -224,4 +224,4 @@ def update_email(request):
     else:
         form = UserChangeEmailForm(request.user)
 
-    return render(request, "update_email.html", {"form": form})
+    return render(request, "email_update.html", {"form": form})

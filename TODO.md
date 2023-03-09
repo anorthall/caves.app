@@ -1,6 +1,10 @@
 # To-do List
 A list of items to complete to create a basic, functional service.
 
+## Global
+- [ ] Change all views to built-in class based views where possible
+
+
 ## UI
 - [ ] Create consistent site-wide titles and templates for such
 - [ ] Move 'site name' or 'app name' into settings

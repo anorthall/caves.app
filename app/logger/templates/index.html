@@ -37,7 +37,9 @@
                   <a href="#"><i class="bi bi-info-circle"></i></a>
                 </td>
                 <td class="text-center">
-                  <a href="#"><i class="bi bi-pencil"></i></a>
+                  <a href="{% url 'trip_update' pk=trip.pk %}">
+                    <i class="bi bi-pencil"></i>
+                  </a>
                 </td>
               </tr>
             {% endfor %}
