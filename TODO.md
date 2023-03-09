@@ -32,6 +32,9 @@
 - [ ] About page
 - [ ] Contact page
 
+### Forms
+- [ ] Locate bs5_form.html template in a sensible place for all apps
+
 
 ## Users
 ### Login and Registration
