@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DetailView
 from .models import Trip
 from .forms import TripForm
 
@@ -31,8 +31,18 @@ def index(request):
     return render(request, "index.html", context)
 
 
-class TripUpdateView(UpdateView, LoginRequiredMixin):
+class TripUpdateView(LoginRequiredMixin, UpdateView):
     model = Trip
     form_class = TripForm
-    success_url = reverse_lazy("index")
+    success_url = reverse_lazy("log:index")
     template_name_suffix = "_update_form"
+
+    def get_queryset(self):
+        return Trip.objects.filter(user=self.request.user)
+
+
+class TripDetailView(LoginRequiredMixin, DetailView):
+    model = Trip
+
+    def get_queryset(self):
+        return Trip.objects.filter(user=self.request.user)

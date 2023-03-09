@@ -1,27 +1,49 @@
 # To-do List
-A list of items to complete to create a basic, functional service.
-
 ## Global
-- [ ] Change all views to built-in class based views where possible
+### Systems
+- [ ] Set up docker compose
+- [ ] Set up separate development and production compose files
+- [ ] Create a test database
+
+### Tests
+- [ ] Create unit tests
+- [ ] Create integration tests
 
 
 ## UI
-- [ ] Create consistent site-wide titles and templates for such
+### Front end
+- [ ] Sidebar user menu
+
+### Back end
+- [ ] Consistent site wide branding
 - [ ] Move 'site name' or 'app name' into settings
+- [ ] Change all views to built-in class based views where possible
+
+### Templates
+#### Create standard parent templates
+- [ ] Sidebar template
+- [ ] No sidebar template
+- [ ] Form with sidebar template (centered)
+- [ ] Form without sidebar template (centered)
+
+### Static pages
+- [ ] Home page (for unregistered users)
+- [ ] Home page (for registered users)
+- [ ] About page
+- [ ] Contact page
 
 
 ## Users
 ### Login and Registration
-- [X] Allow re-sending of email verification code for new accounts (in-case email is lost)
-- [X] Create password reset form
 - [ ] Allow manual/automatic pruning of non-verified accounts
 - [ ] Create dedicated 'welcome' page for new accounts
 
 ### User Experience
-- [X] Standardise the 'Options' list on profile pages into a template
 - [ ] Implement timezone handling
+- [ ] Implement distance unit preference handling
 
 ### Social
+- [ ] Allow a user profile to be public or private
 - [ ] Allow users to add friends
 - [ ] Display a feed of friend's caving trips
 
@@ -31,24 +53,23 @@ A list of items to complete to create a basic, functional service.
 
 
 ## Logger
-### Trips
+### Trip Model
 - [ ] Change model to default to user's country if no country entered
+- [ ] Add trip duration method
+- [ ] Allow trips to be public or private
+- [ ] Add 'likes' counter
 
 ### Views
-- [ ] Trip: List
-- [ ] Trip: Detail
-- [ ] Trip: Edit
-- [ ] Trip: Add
-- [ ] Trip: Public list (per user)
-- [ ] Trip: Public detail
+#### Private
+- [ ] Add/Update form
+- [ ] Detail view
+- [ ] Delete view
+- [ ] Bulk import from CSV
+
+#### Public
+- [ ] User profile with statistics and recent trips
+- [ ] Trip detail
 
 
-## Static
-- [ ] Home page
-- [ ] About page
-- [ ] Contact page
-
-
-## Systems
-- [ ] Set up Docker
-- [ ] Create a test database
+## Future Ideas
+- [ ] Equipment tracking

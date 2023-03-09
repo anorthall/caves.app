@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}View trip{% endblock %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-6 fs-4">
+              <span class="text-muted">Trip to</span> {{ trip.cave_name }}
+            </div>
+            <div class="col-6 text-end my-auto">
+              <small class="text-muted">
+                {{ trip.trip_start|date:"l jS M Y" }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row">Cave</th>
+                <td>
+                  {{ trip.cave_name }}
+                  <span class="text-muted">
+                    {{ trip.cave_region }} / {{ trip.cave_country }}
+                  </span>
+                </td>
+              </tr>
+
+              <tr>
+                <th scope="row">Trip type</th>
+                <td>
+                  {{ trip.trip_type }} trip
+                  {% if trip.club %}
+                    with {{ trip.club }}
+                  {% endif %}
+                </td>
+              </tr>
+
+              {% if trip.expedition %}
+                <tr>
+                  <th scope="row">Expedition</th>
+                  <td>{{ trip.expedition }}</td>
+                </tr>
+              {% endif %}
+
+              {% if trip.cavers %}
+                <tr>
+                  <th scope="row">Cavers</th>
+                  <td>{{ trip.cavers }}</td>
+                </tr>
+              {% endif %}
+
+              {% if trip.notes %}
+                <tr>
+                  <th scope="row">Notes</th>
+                  <td>{{ trip.notes }}</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-footer">
+          <div class="row text-muted">
+            <div class="col-6 text-start">
+              <small>
+                Created: {{ trip.trip_added|date:"jS M Y" }}
+              </small>
+            </div>
+            <div class="col-6 text-end">
+              <small>
+                Updated: {{ trip.trip_updated|date:"jS M Y" }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% include "sidebar_menu.html" %}
+
+  </div>
+</div>
+
+{% endblock %}

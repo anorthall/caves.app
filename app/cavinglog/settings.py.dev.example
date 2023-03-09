@@ -171,3 +171,6 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 #EMAIL_USE_SSL = True
 #EMAIL_HOST_USER = "username"
 #EMAIL_HOST_PASSWORD = "password"
+
+# django-active-link
+ACTIVE_LINK_STRICT = True
