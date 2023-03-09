@@ -64,3 +64,9 @@ class Trip(models.Model):
     def __str__(self):
         """Return the name of the cave visited."""
         return self.cave_name
+
+    def duration(self):
+        """Return a the trip duration or None"""
+        if not self.trip_end:
+            return None
+        return self.trip_end - self.trip_start
