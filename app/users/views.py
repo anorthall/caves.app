@@ -66,7 +66,7 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             messages.success(request, f"Now logged in as {user.email}.")
-            return redirect("index")
+            return redirect("log:index")
         else:
             messages.error(
                 request, "The username and password provided do not match any account."
@@ -74,7 +74,7 @@ def login(request):
 
     if request.user.is_authenticated:
         messages.info(request, f"You are logged in as {request.user.email}.")
-        return redirect("index")
+        return redirect("log:index")
 
     return render(request, "login.html")
 
@@ -82,7 +82,7 @@ def login(request):
 def logout(request):
     auth.logout(request)
     messages.info(request, "You have been signed out.")
-    return redirect("index")
+    return redirect("log:index")
 
 
 @login_required
