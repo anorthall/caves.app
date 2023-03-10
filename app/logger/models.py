@@ -70,3 +70,31 @@ class Trip(models.Model):
         if not self.trip_end:
             return None
         return self.trip_end - self.trip_start
+
+    def duration_str(self):
+        """Return a human english expression of the duration"""
+        td = self.duration()
+        if td is None:
+            return None
+
+        days, hours, minutes = td.days, td.seconds // 3600, (td.seconds // 60) % 60
+        results = []
+        if days == 1:
+            results.append(f"{days} day")
+        elif days > 1:
+            results.append(f"{days} days")
+
+        if hours == 1:
+            results.append(f"{hours} hour")
+        elif hours > 1:
+            results.append(f"{hours} hours")
+
+        if minutes == 1:
+            results.append(f"{minutes} minute")
+        elif minutes > 1:
+            results.append(f"{minutes} minutes")
+
+        if len(results) > 1:
+            return ", ".join(results[:-2] + [" and ".join(results[-2:])])
+        else:
+            return results[0]

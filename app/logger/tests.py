@@ -48,3 +48,14 @@ class TripTestCase(TestCase):
 
         self.assertEqual(trip_without_end.trip_end, None)
         self.assertEqual(trip_without_end.duration(), None)
+
+    def test_trip_duration_str(self):
+        """Check that the trip duration string returns the correct value"""
+        trip = Trip.objects.get(pk=1)
+        self.assertEqual(trip.duration_str(), "2 hours")
+
+        trip.trip_end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
+        self.assertEqual(trip.duration_str(), "1 day, 1 hour and 1 minute")
+
+        trip.trip_end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
+        self.assertEqual(trip.duration_str(), "2 days, 2 hours and 2 minutes")
