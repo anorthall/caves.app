@@ -11,7 +11,7 @@
 
   <div class="card-body">
     <div class="table-responsive">
-      <table class="table">
+      <table class="table table-hover">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -28,9 +28,7 @@
               <td>{{ trip.trip_start|date:"Y-m-d" }}</td>
 
               <td>
-                <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}">
-                  {{ trip.cave_name }}
-                </a>
+                {{ trip.cave_name }}
               </td>
 
               <td>{{ trip.trip_type }}</td>
