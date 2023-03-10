@@ -12,7 +12,7 @@
     <div class="table-responsive">
       <table class="table">
         <tbody>
-          <tr class="text-center">
+          <tr class="text-center fs-5 bg-light">
             <th scope="col" colspan="2">Personal Information</th>
           </tr>
 
@@ -62,10 +62,11 @@
             <th scope="row">Biography</th>
             <td>
               {% if user.bio %}{{ user.bio }}{% else %}Not recorded{% endif %}
+              <br /><br /><br />
             </td>
           </tr>
 
-          <tr class="text-center">
+          <tr class="text-center fs-5 bg-light">
             <th scope="col" colspan="2">Settings</th>
           </tr>
 
@@ -76,10 +77,13 @@
 
           <tr>
             <th scope="row">Units</th>
-            <td>{{ user.units }}</td>
+            <td>
+              {{ user.units }}
+              <br /><br /><br />
+            </td>
           </tr>
 
-          <tr class="text-center">
+          <tr class="text-center fs-5 bg-light">
             <th scope="col" colspan="2">Account Information</th>
           </tr>
 
