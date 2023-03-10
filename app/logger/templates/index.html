@@ -14,24 +14,26 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th scope="col">#</th>
+            <th class="d-none d-md-block" scope="col">#</th>
             <th scope="col">Date</th>
             <th scope="col">Cave</th>
-            <th scope="col">Trip type</th>
+            <th class="d-none d-lg-block" scope="col">Trip type</th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for trip in trips %}
             <tr>
-              <th scope="row">{{ forloop.revcounter }}</th>
+              <th class="d-none d-md-block" scope="row">{{ forloop.revcounter }}</th>
+
               <td>{{ trip.trip_start|date:"Y-m-d" }}</td>
 
               <td>
                 {{ trip.cave_name }}
               </td>
 
-              <td>{{ trip.trip_type }}</td>
+              <td class="d-none d-lg-block">{{ trip.trip_type }}</td>
+
               <td class="text-end">
                 <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
                 &nbsp;
