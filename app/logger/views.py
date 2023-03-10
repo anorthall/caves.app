@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import UpdateView, DetailView
@@ -18,7 +18,7 @@ def index(request):
 
     # Unregistered/unauthenticated users
     if not request.user.is_authenticated:
-        return render(request, "index_unregistered.html")
+        return redirect("users:login")
 
     # Authenticated users
     # Get a list of trips by the current user

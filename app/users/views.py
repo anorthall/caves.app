@@ -59,6 +59,7 @@ class PasswordChangeView(LoginRequiredMixin, auth.views.PasswordChangeView):
 
 
 def login(request):
+    lhf = False  # Login has not yet failed
     if request.method == "POST":
         username = request.POST["email"]
         password = request.POST["password"]
@@ -71,12 +72,13 @@ def login(request):
             messages.error(
                 request, "The username and password provided do not match any account."
             )
+            lhf = True  # Login has failed
 
     if request.user.is_authenticated:
         messages.info(request, f"You are logged in as {request.user.email}.")
         return redirect("log:index")
 
-    return render(request, "login.html")
+    return render(request, "login.html", {"login_has_failed": lhf})
 
 
 def logout(request):
