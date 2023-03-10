@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Sign in to Caving Log{% endblock %}
-{% block content %}
 
+{% block content %}
 <div class="container">
   <div class="col-lg-6 col-xxl-4 mx-auto">
-    <h1 class="display-4 text-center">Caving Log</h1>
-    <br />
     <form method="post">
       {% csrf_token %}
       <div class="form-floating mb-2">
@@ -27,5 +25,4 @@
     </p>
   </div>
 </div>
-
-{% endblock %}
+{% endblock content %}

@@ -1,0 +1,22 @@
+{% load active_link_tags %}
+<div class="card">
+  <div class="card-header text-center">
+    Logger
+  </div>
+
+  <nav class="nav nav-pills flex-column m-2">
+    {% if trip %}
+      <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+        <i class="bi bi-info-circle"></i>&nbsp; View this trip
+      </a>
+
+      <a class="nav-link {% active_link 'log:trip_update' pk=trip.pk %}" href="{% url 'log:trip_update' pk=trip.pk %}">
+        <i class="bi bi-pencil"></i>&nbsp; Edit this trip
+      </a>
+    {% endif %}
+
+    <a class="nav-link" href="#">
+      <i class="bi bi-plus-lg"></i>&nbsp; Add a trip
+    </a>
+  </nav>
+</div>

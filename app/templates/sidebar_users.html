@@ -1,0 +1,24 @@
+{% load active_link_tags %}
+<div class="card">
+  <div class="card-header text-center">
+    Account
+  </div>
+
+  <nav class="nav nav-pills flex-column m-2">
+    <a class="nav-link {% active_link 'users:update' %}" href="{% url 'users:update' %}">
+      <i class="bi bi-pencil"></i>&nbsp; Edit profile
+    </a>
+
+    <a class="nav-link {% active_link 'users:password' %}" href="{% url 'users:password' %}">
+      <i class="bi bi-key"></i>&nbsp; Change password
+    </a>
+
+    <a class="nav-link {% active_link 'users:email' %}" href="{% url 'users:email' %}">
+      <i class="bi bi-envelope-at"></i>&nbsp; Change email
+    </a>
+
+    <a class="nav-link {% active_link 'users:logout' %}" href="{% url 'users:logout' %}">
+      <i class="bi bi-pencil-square"></i>&nbsp; Sign out
+    </a>
+  </nav>
+</div>

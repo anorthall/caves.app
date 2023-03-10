@@ -1,0 +1,24 @@
+{% load active_link_tags %}
+<div class="card">
+  <div class="card-header text-center">
+    Navigation
+  </div>
+
+  <nav class="nav nav-pills flex-column m-2">
+    <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
+      <i class="bi bi-house"></i>&nbsp; Home
+    </a>
+
+    <a class="nav-link {% active_link 'users:profile' %}" href="{% url 'users:profile' %}">
+      <i class="bi bi-person-circle"></i>&nbsp; Account
+    </a>
+
+    {% if request.user.is_staff %}
+      <a class="nav-link" href="{% url 'admin:index' %}">
+        <i class="bi bi-gear"></i>&nbsp; Admin
+      </a>
+    {% endif %}
+  </nav>
+</div>
+
+<br />

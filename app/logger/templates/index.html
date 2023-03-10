@@ -1,56 +1,49 @@
-{% extends "base.html" %}
+{% extends "base_sidebar.html" %}
 {% block title %}Caving Log{% endblock %}
 {% block description %}An online tool to log caving trips and activity.{% endblock %}
-{% block content %}
+{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
-<div class="container">
-  <div class="row">
-    <div class="col-lg-9">
-      <div class="card">
-        <div class="card-header fs-4">
-          Recent trips
-        </div>
+{% block main %}
+<div class="card">
+  <div class="card-header">
+    <span class="fs-4">Recent trips</span>
+  </div>
 
-        <div class="table-responsive mt-2 mb-0">
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Date</th>
-                <th scope="col">Cave</th>
-                <th scope="col">Trip type</th>
-                <th scope="col" class="text-center">View</th>
-                <th scope="col" class="text-center">Edit</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              {% for trip in trips %}
-                <tr>
-                  <th scope="row">{{ forloop.revcounter }}</th>
-                  <td>{{ trip.trip_start|date:"Y-m-d" }}</td>
-                  <td>{{ trip.cave_name }}</td>
-                  <td>{{ trip.trip_type }}</td>
-                  <td class="text-center">
-                    <a href="{% url 'log:trip_detail' pk=trip.pk %}">
-                      <i class="bi bi-info-circle"></i>
-                    </a>
-                  </td>
-                  <td class="text-center">
-                    <a href="{% url 'log:trip_update' pk=trip.pk %}">
-                      <i class="bi bi-pencil"></i>
-                    </a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">Cave</th>
+            <th scope="col">Trip type</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for trip in trips %}
+            <tr>
+              <th scope="row">{{ forloop.revcounter }}</th>
+              <td>{{ trip.trip_start|date:"Y-m-d" }}</td>
+
+              <td>
+                <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}">
+                  {{ trip.cave_name }}
+                </a>
+              </td>
+
+              <td>{{ trip.trip_type }}</td>
+              <td class="text-end">
+                <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
+                &nbsp;
+                <a class="link-secondary" href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    {% include "sidebar_menu.html" %}
-
   </div>
 </div>
-
-{% endblock %}
+{% endblock main %}

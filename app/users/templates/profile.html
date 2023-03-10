@@ -1,103 +1,98 @@
-{% extends "base.html" %}
+{% extends "base_sidebar.html" %}
 {% block title %}{{ request.user.first_name }}'s profile{% endblock %}
-{% block content %}
+{% block sidebar %}{% include "sidebar_users.html" %}{% endblock %}
 
-<div class="container">
-  <div class="row">
-    <div class="col-lg-9">
-      <h1 class="display-4">Your account</h1>
-      <br />
+{% block main %}
+<div class="card">
+  <div class="card-header fs-4">
+    Your account
+  </div>
 
-      <table class="table">
-        <tbody>
-          <tr class="text-center table-light">
-            <th scope="col" colspan="2">Personal Information</th>
-          </tr>
+  <div class="card-body">
+    <table class="table">
+      <tbody>
+        <tr class="text-center">
+          <th scope="col" colspan="2">Personal Information</th>
+        </tr>
 
-          <tr>
-            <th scope="row">Full name</th>
-            <td>
-              {{ user.first_name }} {{ user.last_name }}
-            </td>
-          </tr>
+        <tr>
+          <th scope="row">Full name</th>
+          <td>
+            {{ user.first_name }} {{ user.last_name }}
+          </td>
+        </tr>
 
-          <tr>
-            <th scope="row">Email address</th>
-            <td>
-              {{ user.email }}
-            </td>
-          </tr>
+        <tr>
+          <th scope="row">Email address</th>
+          <td>
+            {{ user.email }}
+          </td>
+        </tr>
 
-          <tr>
-            <th scope="row">Username</th>
-            <td>
-              {{ user.username }}
-            </td>
-          </tr>
+        <tr>
+          <th scope="row">Username</th>
+          <td>
+            {{ user.username }}
+          </td>
+        </tr>
 
-          <tr>
-            <th scope="row">Location</th>
-            <td>
-              {% if user.location %}{{ user.location }}{% else %}Not recorded{% endif %}
-            </td>
-          </tr>
+        <tr>
+          <th scope="row">Location</th>
+          <td>
+            {% if user.location %}{{ user.location }}{% else %}Not recorded{% endif %}
+          </td>
+        </tr>
 
-          <tr>
-            <th scope="row">Country</th>
-            <td>
-              {% if user.country %}{{ user.country.name }}{% else %}Not recorded{% endif %}
-            </td>
-          </tr>
+        <tr>
+          <th scope="row">Country</th>
+          <td>
+            {% if user.country %}{{ user.country.name }}{% else %}Not recorded{% endif %}
+          </td>
+        </tr>
 
-          <tr>
-            <th scope="row">Club(s)</th>
-            <td>
-              {% if user.club %}{{ user.club }}{% else %}Not recorded{% endif %}
-            </td>
-          </tr>
+        <tr>
+          <th scope="row">Club(s)</th>
+          <td>
+            {% if user.club %}{{ user.club }}{% else %}Not recorded{% endif %}
+          </td>
+        </tr>
 
-          <tr>
-            <th scope="row">Biography</th>
-            <td>
-              {% if user.bio %}{{ user.bio }}{% else %}Not recorded{% endif %}
-            </td>
-          </tr>
+        <tr>
+          <th scope="row">Biography</th>
+          <td>
+            {% if user.bio %}{{ user.bio }}{% else %}Not recorded{% endif %}
+          </td>
+        </tr>
 
-          <tr class="text-center table-light">
-            <th scope="col" colspan="2">Settings</th>
-          </tr>
+        <tr class="text-center">
+          <th scope="col" colspan="2">Settings</th>
+        </tr>
 
-          <tr>
-            <th scope="row">Timezone</th>
-            <td>{{ user.timezone }}</td>
-          </tr>
+        <tr>
+          <th scope="row">Timezone</th>
+          <td>{{ user.timezone }}</td>
+        </tr>
 
-          <tr>
-            <th scope="row">Units</th>
-            <td>{{ user.units }}</td>
-          </tr>
+        <tr>
+          <th scope="row">Units</th>
+          <td>{{ user.units }}</td>
+        </tr>
 
-          <tr class="text-center table-light">
-            <th scope="col" colspan="2">Account Information</th>
-          </tr>
+        <tr class="text-center">
+          <th scope="col" colspan="2">Account Information</th>
+        </tr>
 
-          <tr>
-            <th scope="row">Account created</th>
-            <td>{{ user.date_joined|time:"H:i" }} on {{ user.date_joined|date:"l, jS F Y (e)" }}</td>
-          </tr>
+        <tr>
+          <th scope="row">Account created</th>
+          <td>{{ user.date_joined|time:"H:i" }} on {{ user.date_joined|date:"l, jS F Y (e)" }}</td>
+        </tr>
 
-          <tr>
-            <th scope="row">Last login</th>
-            <td>{{ user.last_login|time:"H:i" }} on {{ user.last_login|date:"l, jS F Y (e)" }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <br />
-    </div>
-
-    {% include "sidebar_menu.html" %}
-
+        <tr>
+          <th scope="row">Last login</th>
+          <td>{{ user.last_login|time:"H:i" }} on {{ user.last_login|date:"l, jS F Y (e)" }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
-
-{% endblock %}
+{% endblock main %}
