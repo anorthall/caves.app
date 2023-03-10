@@ -14,7 +14,7 @@
     </a>
 
     {% if request.user.is_staff %}
-      <a class="nav-link" href="{% url 'admin:index' %}">
+      <a class="nav-link" target="_blank" href="{% url 'admin:index' %}">
         <i class="bi bi-gear"></i>&nbsp; Admin
       </a>
     {% endif %}
