@@ -1,10 +1,13 @@
-{% extends "base.html" %}
+{% extends "base_sidebar.html" %}
 {% block title %}Verify email change{% endblock %}
 
-{% block content %}
-<div class="container">
-  <div class="col-lg-8 mx-auto">
-    <h1 class="display-4">Verify email change</h1>
+{% block main %}
+<div class="card">
+  <div class="card-header">
+      Verify email change
+  </div>
+
+  <div class="card-body">
     <p class="lead">
       You're almost there! Just one more thing - you need to verify your
       new email address before it is updated on your account.
@@ -27,4 +30,4 @@
     </form>
   </div>
 </div>
-{% endblock content %}
+{% endblock main %}

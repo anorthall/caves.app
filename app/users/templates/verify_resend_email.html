@@ -1,10 +1,13 @@
-{% extends "base.html" %}
+{% extends "base_center.html" %}
 {% block title %}Resend verification email{% endblock %}
 
-{% block content %}
-<div class="container">
-  <div class="col-lg-8 mx-auto">
-    <h1 class="display-4">Resend verification email</h1>
+{% block main %}
+<div class="card">
+  <div class="card-header">
+    Resend verification email
+  </div>
+
+  <div class="card-body">
     <p class="lead">
       If you've registered for a new account but have not received an email
       to activate it, or the activation code has expired, you can resend the
@@ -25,4 +28,4 @@
     </form>
   </div>
 </div>
-{% endblock content %}
+{% endblock main %}

@@ -1,9 +1,13 @@
-{% extends "base.html" %}
+{% extends "base_center.html" %}
 {% block title %}Sign in to Caving Log{% endblock %}
 
-{% block content %}
-<div class="container">
-  <div class="col-md-6 mt-md-5 mx-auto">
+{% block main %}
+<div class="card">
+  <div class="card-header fs-4">
+    Sign in
+  </div>
+
+  <div class="card-body">
     <form method="post">
       {% csrf_token %}
       <div class="form-floating mb-2">
@@ -31,4 +35,4 @@
     {% endif %}
   </div>
 </div>
-{% endblock content %}
+{% endblock main %}

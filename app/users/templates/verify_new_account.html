@@ -1,10 +1,13 @@
-{% extends "base.html" %}
+{% extends "base_center.html" %}
 {% block title %}Complete your registration{% endblock %}
 
-{% block content %}
-<div class="container">
-  <div class="col-lg-8 mx-auto">
-    <h1 class="display-4">Registration complete</h1>
+{% block main %}
+<div class="card">
+  <div class="card-header">
+    Registration complete
+  </div>
+
+  <div class="card-body">
     <p class="lead">
       You're almost there! Just one more thing - you need to verify your
       email address before you can sign in. You have 24 hours to confirm
@@ -26,4 +29,4 @@
     </form>
   </div>
 </div>
-{% endblock content %}
+{% endblock main %}

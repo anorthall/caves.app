@@ -1,11 +1,13 @@
-{% extends "base.html" %}
+{% extends "base_center.html" %}
 {% block title %}Create an account{% endblock %}
 
-{% block content %}
-<div class="container">
-  <div class="col-lg-8 mx-auto">
-    <h1 class="display-4">Create an account</h1>
-    <br />
+{% block main %}
+<div class="card">
+  <div class="card-header fs-4">
+    Create an account
+  </div>
+
+  <div class="card-body">
     <form method="post">
       {% csrf_token %}
       {{ form }}
@@ -13,4 +15,4 @@
     </form>
   </div>
 </div>
-{% endblock content %}
+{% endblock main %}
