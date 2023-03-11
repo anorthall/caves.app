@@ -17,7 +17,7 @@
       <hr class="m-2">
     {% endif %}
 
-    <a class="nav-link" href="#">
+    <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
       <i class="bi bi-plus-lg"></i>&nbsp; Add a trip
     </a>
   </nav>

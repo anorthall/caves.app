@@ -6,4 +6,5 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("edit/<int:pk>/", views.TripUpdateView.as_view(), name="trip_update"),
     path("trip/<int:pk>/", views.TripDetailView.as_view(), name="trip_detail"),
+    path("trip/add/", views.TripCreateView.as_view(), name="trip_create"),
 ]

@@ -4,7 +4,7 @@ from .models import Trip
 
 
 class TripForm(forms.ModelForm):
-    template_name = "forms/bs5_form.html"
+    template_name = "forms/trip_form.html"
 
     class Meta:
         model = Trip

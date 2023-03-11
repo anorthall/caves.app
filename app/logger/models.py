@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
@@ -90,6 +91,9 @@ class Trip(models.Model):
                 raise ValidationError(
                     "The trip start time must be before the trip end time."
                 )
+
+    def get_absolute_url(self):
+        return reverse("log:trip_detail", kwargs={"pk": self.pk})
 
     def duration(self):
         """Return a the trip duration or None"""
