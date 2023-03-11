@@ -9,8 +9,15 @@ class CavingUserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
     add_form = UserCreationForm
 
-    list_display = ("email", "username", "first_name", "last_name", "location")
-    list_filter = ()
+    list_display = (
+        "email",
+        "username",
+        "first_name",
+        "last_name",
+        "location",
+        "is_active",
+    )
+    list_filter = ("is_active",)
     fieldsets = (
         (
             "Contact details",
