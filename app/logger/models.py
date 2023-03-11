@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 
 
 class Trip(models.Model):
@@ -52,11 +54,27 @@ class Trip(models.Model):
     expedition = models.CharField(max_length=100, blank=True)
 
     # Distances
-    horizontal_dist = models.IntegerField("horizontal distance", blank=True, null=True)
-    vert_dist_down = models.IntegerField("rope descent distance", blank=True, null=True)
-    vert_dist_up = models.IntegerField("rope ascent distance", blank=True, null=True)
-    surveyed_dist = models.IntegerField("surveyed distance", blank=True, null=True)
-    aid_dist = models.IntegerField("aid climbing distance", blank=True, null=True)
+    horizontal_dist = models.IntegerField(
+        "horizontal distance", blank=True, null=True, validators=[MinValueValidator(1)]
+    )
+    vert_dist_down = models.IntegerField(
+        "rope descent distance",
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+    )
+    vert_dist_up = models.IntegerField(
+        "rope ascent distance", blank=True, null=True, validators=[MinValueValidator(1)]
+    )
+    surveyed_dist = models.IntegerField(
+        "surveyed distance", blank=True, null=True, validators=[MinValueValidator(1)]
+    )
+    aid_dist = models.IntegerField(
+        "aid climbing distance",
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+    )
 
     # Notes
     notes = models.TextField(blank=True)
@@ -64,6 +82,14 @@ class Trip(models.Model):
     def __str__(self):
         """Return the name of the cave visited."""
         return self.cave_name
+
+    def clean(self):
+        """Check that the start is before the end"""
+        if self.trip_end:
+            if self.trip_start > self.trip_end:
+                raise ValidationError(
+                    "The trip start time must be before the trip end time."
+                )
 
     def duration(self):
         """Return a the trip duration or None"""
