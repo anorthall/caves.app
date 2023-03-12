@@ -38,6 +38,8 @@
                 <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
                 &nbsp;
                 <a class="link-secondary" href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
+                &nbsp;
+                <a class="link-secondary" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
               </td>
             </tr>
           {% endfor %}

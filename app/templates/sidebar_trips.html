@@ -14,6 +14,10 @@
         <i class="bi bi-pencil"></i>&nbsp; Edit this trip
       </a>
 
+      <a class="nav-link {% active_link 'log:trip_delete' pk=trip.pk %}" href="{% url 'log:trip_delete' pk=trip.pk %}">
+        <i class="bi bi-x-lg"></i>&nbsp; Delete this trip
+      </a>
+
       <hr class="m-2">
     {% endif %}
 

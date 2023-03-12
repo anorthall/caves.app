@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import UpdateView, DetailView, CreateView
-from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.views.generic import UpdateView, DetailView, CreateView, DeleteView
 from .models import Trip
 from .forms import TripForm
 
@@ -60,3 +62,19 @@ class TripCreateView(LoginRequiredMixin, CreateView):
         candidate.user = self.request.user
         candidate.save()
         return super().form_valid(form)
+
+
+class TripDeleteView(LoginRequiredMixin, DeleteView):
+    model = Trip
+    template_name_suffix = "_delete"
+    success_url = reverse_lazy("log:trip_deleted")
+
+    def get_queryset(self):
+        """Only allow the user to delete trips they created"""
+        return Trip.objects.filter(user=self.request.user)
+
+
+@login_required
+def trip_deleted(request):
+    messages.info(request, "The trip has been deleted.")
+    return redirect("log:index")

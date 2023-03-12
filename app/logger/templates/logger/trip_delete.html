@@ -1,0 +1,27 @@
+{% extends "base_sidebar.html" %}
+{% block title %}Delete trip{% endblock %}
+{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
+
+{% block main %}
+<div class="card">
+  <div class="card-header fs-4">
+    Delete trip?
+  </div>
+
+  <div class="card-body">
+    {% include "trip_table.html" %}
+
+    <div class="alert alert-danger">
+      <p class="mb-0">
+        Are you sure you want to delete the above trip? Once a trip is deleted it cannot be recovered and all data is lost.
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button class="mt-3 w-100 btn btn-lg btn-danger" type="submit">Confirm deletion</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock main %}
