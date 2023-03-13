@@ -18,6 +18,10 @@
         <i class="bi bi-gear"></i>&nbsp; Admin
       </a>
     {% endif %}
+
+    <a class="nav-link {% active_link 'users:logout' %}" href="{% url 'users:logout' %}">
+      <i class="bi bi-pencil-square"></i>&nbsp; Sign out
+    </a>
   </nav>
 </div>
 
