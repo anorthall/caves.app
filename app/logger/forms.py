@@ -8,7 +8,24 @@ class TripForm(forms.ModelForm):
 
     class Meta:
         model = Trip
-        exclude = ["user", "privacy"]
+        fields = [
+            "start",
+            "end",
+            "type",
+            "cave_name",
+            "cave_region",
+            "cave_country",
+            "cavers",
+            "club",
+            "expedition",
+            "horizontal_dist",
+            "vert_dist_down",
+            "vert_dist_up",
+            "surveyed_dist",
+            "aid_dist",
+            "notes",
+        ]
+
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end": forms.DateTimeInput(attrs={"type": "datetime-local"}),
