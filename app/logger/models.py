@@ -29,11 +29,11 @@ class Trip(models.Model):
     ]
 
     # Trip privacy types
-    INHERIT = "Inherit"
+    DEFAULT = "Default"
     PUBLIC = "Public"
     PRIVATE = "Private"
     TRIP_PRIVACY_TYPES = [
-        (INHERIT, INHERIT),
+        (DEFAULT, DEFAULT),
         (PUBLIC, PUBLIC),
         (PRIVATE, PRIVATE),
     ]
@@ -46,7 +46,7 @@ class Trip(models.Model):
         "Privacy settings",
         max_length=10,
         choices=TRIP_PRIVACY_TYPES,
-        default=INHERIT,
+        default=DEFAULT,
         help_text="If set to 'inherit', the trip will have the same privacy settings as your user profile.",
     )
 

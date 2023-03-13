@@ -4,27 +4,11 @@ from .models import Trip
 
 
 class TripForm(forms.ModelForm):
-    template_name = "forms/trip_form.html"
+    template_name = "forms/trip_form_new.html"
 
     class Meta:
         model = Trip
-        fields = [
-            "start",
-            "end",
-            "type",
-            "cave_name",
-            "cave_region",
-            "cave_country",
-            "cavers",
-            "club",
-            "expedition",
-            "horizontal_dist",
-            "vert_dist_down",
-            "vert_dist_up",
-            "surveyed_dist",
-            "aid_dist",
-            "notes",
-        ]
+        exclude = ["user"]
 
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
