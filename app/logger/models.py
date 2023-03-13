@@ -28,8 +28,27 @@ class Trip(models.Model):
         (RESCUE, RESCUE),
     ]
 
+    # Trip privacy types
+    INHERIT = "Inherit"
+    PUBLIC = "Public"
+    PRIVATE = "Private"
+    TRIP_PRIVACY_TYPES = [
+        (INHERIT, INHERIT),
+        (PUBLIC, PUBLIC),
+        (PRIVATE, PRIVATE),
+    ]
+
     # User that added the caving trip
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    # Public visibility
+    privacy = models.CharField(
+        "Privacy settings",
+        max_length=10,
+        choices=TRIP_PRIVACY_TYPES,
+        default=INHERIT,
+        help_text="If set to 'inherit', the trip will have the same privacy settings as your user profile.",
+    )
 
     # Cave, cave region and country
     cave_name = models.CharField(max_length=100)

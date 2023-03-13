@@ -44,6 +44,7 @@ class TripAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "user",
+                    "privacy",
                     "added",
                     "updated",
                 ),
