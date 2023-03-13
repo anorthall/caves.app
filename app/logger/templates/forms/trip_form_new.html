@@ -76,7 +76,7 @@
 <!-- Start/end time block-->
 <div class="row mb-3">
   <!-- Start time -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.start.auto_id }}">Start time</label>
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.start.auto_id }}">Start</label>
   <div class="col-9 col-xl-4 mb-3 mb-xl-0">
     {% if form.is_bound %}
       {% if form.start.errors %}
@@ -91,7 +91,7 @@
   </div>
 
   <!-- End time -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.end.auto_id }}">End time</label>
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.end.auto_id }}">End</label>
   <div class="col-9 col-xl-4">
     {% if form.is_bound %}
       {% if form.end.errors %}
@@ -110,7 +110,7 @@
 <!-- Trip type/privacy block -->
 <div class="row mb-3">
   <!-- Trip type -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.type.auto_id }}">Trip type</label>
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.type.auto_id }}">Type</label>
   <div class="col-9 col-xl-4 mb-3 mb-xl-0">
     {% if form.is_bound %}
       {% if form.type.errors %}
@@ -190,3 +190,23 @@
     {% endif %}
   </div>
 </div>
+
+
+<!-- Notes title -->
+<div class="bg-light border rounded fs-5 p-2 mb-3 mt-5">
+  Notes
+</div>
+
+<!-- Notes -->
+{% if form.is_bound %}
+  {% if form.notes.errors %}
+    {% render_field form.notes class="form-control is-invalid" %}
+    {% for e in form.notes.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+  {% else %}
+    {% render_field form.notes class="form-control is-valid" %}
+  {% endif %}
+{% else %}
+  {% render_field form.notes class="form-control" %}
+{% endif %}
+
+<div class="mb-3"></div>
