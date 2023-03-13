@@ -22,3 +22,4 @@ class TripForm(forms.ModelForm):
                 raise ValidationError(
                     "The trip start time must be before the trip end time."
                 )
+        return end
