@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView, DetailView, CreateView, DeleteView
+from django.utils import timezone
 from .models import Trip
 from .forms import TripForm
 
@@ -55,6 +56,9 @@ class TripCreateView(LoginRequiredMixin, CreateView):
     model = Trip
     form_class = TripForm
     template_name_suffix = "_create_form"
+    initial = {
+        "start": timezone.now(),
+    }
 
     def form_valid(self, form):
         """Set the user to the current user"""
