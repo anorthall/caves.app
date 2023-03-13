@@ -10,42 +10,48 @@
   </div>
 
   <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th class="d-none d-md-block" scope="col">#</th>
-            <th scope="col">Date</th>
-            <th scope="col">Cave</th>
-            <th class="d-none d-lg-block" scope="col">Trip type</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody class="table-group-divider">
-          {% for trip in trips %}
+    {% if trips %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
             <tr>
-              <th class="d-none d-md-block" scope="row">{{ forloop.revcounter }}</th>
-
-              <td>{{ trip.start|date:"Y-m-d" }}</td>
-
-              <td>
-                {{ trip.cave_name }}
-              </td>
-
-              <td class="d-none d-lg-block">{{ trip.trip_type }}</td>
-
-              <td class="text-end">
-                <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
-                &nbsp;
-                <a class="link-secondary" href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
-                &nbsp;
-                <a class="link-secondary" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
-              </td>
+              <th class="d-none d-md-block" scope="col">#</th>
+              <th scope="col">Date</th>
+              <th scope="col">Cave</th>
+              <th class="d-none d-lg-block" scope="col">Trip type</th>
+              <th scope="col"></th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody class="table-group-divider">
+            {% for trip in trips %}
+              <tr>
+                <th class="d-none d-md-block" scope="row">{{ forloop.revcounter }}</th>
+
+                <td>{{ trip.start|date:"Y-m-d" }}</td>
+
+                <td>
+                  {{ trip.cave_name }}
+                </td>
+
+                <td class="d-none d-lg-block">{{ trip.type }}</td>
+
+                <td class="text-end">
+                  <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
+                  &nbsp;
+                  <a class="link-secondary" href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
+                  &nbsp;
+                  <a class="link-secondary" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="lead mb-0">
+        You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
+      </p>
+    {% endif %}
   </div>
 </div>
 {% endblock main %}
