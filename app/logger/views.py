@@ -63,6 +63,13 @@ class TripCreateView(LoginRequiredMixin, CreateView):
         candidate.save()
         return super().form_valid(form)
 
+    def get_initial(self):
+        """Set the cave_country field to the user's country"""
+        initial = super(TripCreateView, self).get_initial()
+        initial = initial.copy()
+        initial["cave_country"] = self.request.user.country.name
+        return initial
+
 
 class TripDeleteView(LoginRequiredMixin, DeleteView):
     model = Trip
