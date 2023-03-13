@@ -37,17 +37,17 @@ class Trip(models.Model):
     cave_country = models.CharField(max_length=100)
 
     # Trip timing and type
-    trip_start = models.DateTimeField("start time")
-    trip_end = models.DateTimeField("end time", blank=True, null=True)
-    trip_type = models.CharField(
+    start = models.DateTimeField("start time")
+    end = models.DateTimeField("end time", blank=True, null=True)
+    type = models.CharField(
         max_length=15,
         choices=TRIP_TYPES,
         default=SPORT,
     )
 
     # Internal metadata
-    trip_added = models.DateTimeField("trip added on", auto_now_add=True)
-    trip_updated = models.DateTimeField("trip last updated", auto_now=True)
+    added = models.DateTimeField("trip added on", auto_now_add=True)
+    updated = models.DateTimeField("trip last updated", auto_now=True)
 
     # Attendees and organisations
     cavers = models.CharField(max_length=200, blank=True)
@@ -86,8 +86,8 @@ class Trip(models.Model):
 
     def clean(self):
         """Check that the start is before the end"""
-        if self.trip_end:
-            if self.trip_start > self.trip_end:
+        if self.end:
+            if self.start > self.end:
                 raise ValidationError(
                     "The trip start time must be before the trip end time."
                 )
@@ -97,9 +97,9 @@ class Trip(models.Model):
 
     def duration(self):
         """Return a the trip duration or None"""
-        if not self.trip_end:
+        if not self.end:
             return None
-        return self.trip_end - self.trip_start
+        return self.end - self.start
 
     def duration_str(self):
         """Return a human english expression of the duration"""

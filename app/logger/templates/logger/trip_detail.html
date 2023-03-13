@@ -11,7 +11,7 @@
       </div>
       <div class="col text-end my-auto d-none d-lg-block">
         <small class="text-muted">
-          {{ trip.trip_start|date:"l jS M Y" }}
+          {{ trip.start|date:"l jS M Y" }}
         </small>
       </div>
     </div>
@@ -26,12 +26,12 @@
     <div class="row text-muted">
       <div class="col-12 col-lg-6 text-start">
         <small>
-          Created: {{ trip.trip_added|date:"jS M Y" }}
+          Created: {{ trip.added|date:"jS M Y" }}
         </small>
       </div>
       <div class="col text-end d-none d-lg-block">
         <small>
-          Updated: {{ trip.trip_updated|date:"jS M Y" }}
+          Updated: {{ trip.updated|date:"jS M Y" }}
         </small>
       </div>
     </div>

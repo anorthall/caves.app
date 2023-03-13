@@ -19,24 +19,24 @@ class TripAdmin(admin.ModelAdmin):
         "notes",
     )
     readonly_fields = (
-        "trip_added",
-        "trip_updated",
+        "added",
+        "updated",
     )
     list_display = (
         "cave_name",
         "user",
-        "trip_start",
-        "trip_type",
-        "trip_added",
+        "start",
+        "type",
+        "added",
     )
     list_filter = (
         "user__username",
-        "trip_added",
-        "trip_type",
+        "added",
+        "type",
     )
     ordering = (
         "user",
-        "-trip_start",
+        "-start",
     )
     fieldsets = (
         (
@@ -44,8 +44,8 @@ class TripAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "user",
-                    "trip_added",
-                    "trip_updated",
+                    "added",
+                    "updated",
                 ),
             },
         ),
@@ -63,9 +63,9 @@ class TripAdmin(admin.ModelAdmin):
             "Trip details",
             {
                 "fields": (
-                    "trip_type",
-                    "trip_start",
-                    "trip_end",
+                    "type",
+                    "start",
+                    "end",
                 ),
             },
         ),

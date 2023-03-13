@@ -42,7 +42,7 @@ class CavingUserManager(BaseUserManager):
             password,
         )
 
-        user.email_verified = True
+        user.is_active = True
         user.is_superuser = True
         user.save(using=self._db)
         return user

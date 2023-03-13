@@ -10,13 +10,13 @@ class TripForm(forms.ModelForm):
         model = Trip
         exclude = ["user"]
         widgets = {
-            "trip_start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "trip_end": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "end": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
 
-    def clean_trip_end(self):
-        start = self.cleaned_data["trip_start"]
-        end = self.cleaned_data["trip_end"]
+    def clean_end(self):
+        start = self.cleaned_data["start"]
+        end = self.cleaned_data["end"]
         if end:
             if start > end:
                 raise ValidationError(

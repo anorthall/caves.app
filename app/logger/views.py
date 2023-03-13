@@ -24,7 +24,7 @@ def index(request):
 
     # Authenticated users
     # Get a list of trips by the current user
-    trips = Trip.objects.filter(user=request.user).order_by("-trip_start")
+    trips = Trip.objects.filter(user=request.user).order_by("-start")
 
     context = {
         "user": request.user,

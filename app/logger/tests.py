@@ -22,8 +22,8 @@ class TripTestCase(TestCase):
             cave_name="Test Cave 1",
             cave_region="Test Region",
             cave_country="Test Country",
-            trip_start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
-            trip_end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
+            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
         )
 
         # Trip with no end time
@@ -32,21 +32,21 @@ class TripTestCase(TestCase):
             cave_name="Test Cave 2",
             cave_region="Test Region",
             cave_country="Test Country",
-            trip_start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
         )
 
     def test_trip_duration(self):
         """
         Check that trip duration returns a timedelta with the correct value
-        Check that trip duration returns None if no trip_end time
+        Check that trip duration returns None if no end time
         """
         trip_with_end = Trip.objects.get(pk=1)
         trip_without_end = Trip.objects.get(pk=2)
 
-        self.assertNotEqual(trip_with_end.trip_end, None)
+        self.assertNotEqual(trip_with_end.end, None)
         self.assertEqual(trip_with_end.duration(), timezone.timedelta(hours=2))
 
-        self.assertEqual(trip_without_end.trip_end, None)
+        self.assertEqual(trip_without_end.end, None)
         self.assertEqual(trip_without_end.duration(), None)
 
     def test_trip_duration_str(self):
@@ -54,8 +54,8 @@ class TripTestCase(TestCase):
         trip = Trip.objects.get(pk=1)
         self.assertEqual(trip.duration_str(), "2 hours")
 
-        trip.trip_end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
+        trip.end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
         self.assertEqual(trip.duration_str(), "1 day, 1 hour and 1 minute")
 
-        trip.trip_end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
+        trip.end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
         self.assertEqual(trip.duration_str(), "2 days, 2 hours and 2 minutes")

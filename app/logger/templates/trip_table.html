@@ -22,7 +22,7 @@
       </tr>
 
       <tr>
-        {% if trip.trip_end %}
+        {% if trip.end %}
           <th scope="row">
             Entered
           </th>
@@ -30,19 +30,19 @@
           <th scope="row">Date/Time</th>
         {% endif %}
         <td>
-          {{ trip.trip_start|time:"H:i" }}
-          <span class="text-muted">{{ trip.trip_start|date:"Y-m-d"}}</span>
+          {{ trip.start|time:"H:i" }}
+          <span class="text-muted">{{ trip.start|date:"Y-m-d"}}</span>
         </td>
       </tr>
 
-      {% if trip.trip_end %}
+      {% if trip.end %}
         <tr>
           <th scope="row">
             Exited
           </th>
           <td>
-            {{ trip.trip_end|time:"H:i" }}
-            <span class="text-muted">{{ trip.trip_end|date:"Y-m-d"}}</span>
+            {{ trip.end|time:"H:i" }}
+            <span class="text-muted">{{ trip.end|date:"Y-m-d"}}</span>
           </td>
         </tr>
 
