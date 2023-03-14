@@ -56,11 +56,9 @@ class TripCreateView(LoginRequiredMixin, CreateView):
     model = Trip
     form_class = TripForm
     template_name_suffix = "_create_form"
-
-    # initial = {
-    #    "start": timezone.now(),
-    # }
-    # TODO: Make this add the time without secrets
+    initial = {
+        "start": timezone.localdate(),
+    }
 
     def form_valid(self, form):
         """Set the user to the current user"""
