@@ -86,7 +86,7 @@ class TripCreateView(LoginRequiredMixin, CreateView):
 class TripDeleteView(LoginRequiredMixin, DeleteView):
     model = Trip
     template_name_suffix = "_delete"
-    success_url = reverse_lazy("log:trip_deleted")
+    success_url = reverse_lazy("log:trip_list")
 
     def get_queryset(self):
         """Only allow the user to delete trips they created"""
