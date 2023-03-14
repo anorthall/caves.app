@@ -9,15 +9,13 @@
       <i class="bi bi-house"></i>&nbsp; Home
     </a>
 
+    <a class="nav-link {% active_link 'log:trip_list' %}" href="{% url 'log:trip_list' %}">
+      <i class="bi bi-list"></i>&nbsp; Trips
+    </a>
+
     <a class="nav-link {% active_link 'users:profile' %}" href="{% url 'users:profile' %}">
       <i class="bi bi-person-circle"></i>&nbsp; Account
     </a>
-
-    {% if request.user.is_staff %}
-      <a class="nav-link" target="_blank" href="{% url 'admin:index' %}">
-        <i class="bi bi-gear"></i>&nbsp; Admin
-      </a>
-    {% endif %}
 
     <a class="nav-link {% active_link 'users:logout' %}" href="{% url 'users:logout' %}">
       <i class="bi bi-pencil-square"></i>&nbsp; Sign out

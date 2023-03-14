@@ -10,6 +10,21 @@
       <div class="container p-0">
         {% include "sidebar_core.html" %}
         {% block sidebar %}{% endblock %}
+
+        {% if request.user.is_staff %}
+          <br />
+          <div class="card">
+            <div class="card-header text-center">
+              Administration
+            </div>
+
+            <nav class="nav nav-pills flex-column m-2">
+              <a class="nav-link" target="_blank" href="{% url 'admin:index' %}">
+                <i class="bi bi-gear"></i>&nbsp; Admin
+              </a>
+            </nav>
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>

@@ -3,7 +3,13 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.generic import UpdateView, DetailView, CreateView, DeleteView
+from django.views.generic import (
+    UpdateView,
+    DetailView,
+    CreateView,
+    DeleteView,
+    ListView,
+)
 from django.utils import timezone
 from .models import Trip
 from .forms import TripForm
@@ -24,14 +30,16 @@ def index(request):
         return redirect("users:login")
 
     # Authenticated users
-    # Get a list of trips by the current user
-    trips = Trip.objects.filter(user=request.user).order_by("-start")
+    return render(request, "index_registered.html")
 
-    context = {
-        "user": request.user,
-        "trips": trips,
-    }
-    return render(request, "index.html", context)
+
+class TripListView(LoginRequiredMixin, ListView):
+    model = Trip
+    template_name_suffix = "_list"
+
+    def get_queryset(self):
+        """Only allow the user to update trips they created"""
+        return Trip.objects.filter(user=self.request.user)
 
 
 class TripUpdateView(LoginRequiredMixin, UpdateView):
