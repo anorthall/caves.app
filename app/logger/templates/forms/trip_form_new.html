@@ -1,9 +1,12 @@
 {% load widget_tweaks %}
 
+<!-- Hidden fields -->
 {% for hidden_field in form.hidden_fields %}
   {{ hidden_field }}
 {% endfor %}
 
+
+<!-- Non-field errors -->
 {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
     {% for error in form.non_field_errors %}
@@ -11,6 +14,7 @@
     {% endfor %}
   </div>
 {% endif %}
+
 
 <!-- Cave details title -->
 <div class="bg-light border rounded fs-5 p-2 mb-3">
@@ -32,7 +36,6 @@
       {% render_field form.cave_name class="form-control form-control-lg" %}
     {% endif %}  </div>
 </div>
-
 
 <!-- Cave region/country block -->
 <div class="row mb-3">
@@ -106,7 +109,6 @@
   </div>
 </div>
 
-
 <!-- Trip type/privacy block -->
 <div class="row mb-3">
   <!-- Trip type -->
@@ -140,24 +142,6 @@
   </div>
 </div>
 
-
-<!-- Cavers -->
-<div class="row mb-3">
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.cavers.auto_id }}">Cavers</label>
-  <div class="col-9 col-xl-10">
-    {% if form.is_bound %}
-      {% if form.cavers.errors %}
-        {% render_field form.cavers class="form-control is-invalid" %}
-        {% for e in form.cavers.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
-      {% else %}
-        {% render_field form.cavers class="form-control is-valid" %}
-      {% endif %}
-    {% else %}
-      {% render_field form.cavers class="form-control" %}
-    {% endif %}  </div>
-</div>
-
-
 <!-- Club/Expedition block -->
 <div class="row mb-3">
   <!-- Club -->
@@ -187,6 +171,109 @@
       {% endif %}
     {% else %}
       {% render_field form.expedition class="form-control" %}
+    {% endif %}
+  </div>
+</div>
+
+<!-- Cavers -->
+<div class="row mb-3">
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.cavers.auto_id }}">Cavers</label>
+  <div class="col-9 col-xl-10">
+    {% if form.is_bound %}
+      {% if form.cavers.errors %}
+        {% render_field form.cavers class="form-control is-invalid" %}
+        {% for e in form.cavers.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.cavers class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.cavers class="form-control" %}
+    {% endif %}  </div>
+</div>
+
+
+<!-- Distances title -->
+<div class="bg-light border rounded fs-5 p-2 mb-3 mt-5">
+  Distances
+</div>
+
+<!-- Horizontal/vertical distance block -->
+<div class="row mb-3">
+  <!-- Horizontal -->
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.horizontal_dist.auto_id }}">Horizontal</label>
+  <div class="col-9 col-xl-2 mb-3 mb-xl-0">
+    {% if form.is_bound %}
+      {% if form.horizontal_dist.errors %}
+        {% render_field form.horizontal_dist class="form-control is-invalid" %}
+        {% for e in form.horizontal_dist.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.horizontal_dist class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.horizontal_dist class="form-control" %}
+    {% endif %}
+  </div>
+
+  <!-- Vertical down -->
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.vert_dist_down.auto_id }}">Vertical down</label>
+  <div class="col-9 col-xl-2 mb-3 mb-xl-0">
+    {% if form.is_bound %}
+      {% if form.vert_dist_down.errors %}
+        {% render_field form.vert_dist_down class="form-control is-invalid" %}
+        {% for e in form.vert_dist_down.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.vert_dist_down class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.vert_dist_down class="form-control" %}
+    {% endif %}
+  </div>
+
+  <!-- Vertical up -->
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.vert_dist_up.auto_id }}">Vertical up</label>
+  <div class="col-9 col-xl-2">
+    {% if form.is_bound %}
+      {% if form.vert_dist_up.errors %}
+        {% render_field form.vert_dist_up class="form-control is-invalid" %}
+        {% for e in form.vert_dist_up.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.vert_dist_up class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.vert_dist_up class="form-control" %}
+    {% endif %}
+  </div>
+</div>
+
+<!-- Survey/aid climbing distance block -->
+<div class="row mb-3">
+  <!-- Survey dist -->
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.surveyed_dist.auto_id }}">Surveyed</label>
+  <div class="col-9 col-xl-4 mb-3 mb-xl-0">
+    {% if form.is_bound %}
+      {% if form.surveyed_dist.errors %}
+        {% render_field form.surveyed_dist class="form-control is-invalid" %}
+        {% for e in form.surveyed_dist.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.surveyed_dist class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.surveyed_dist class="form-control" %}
+    {% endif %}
+  </div>
+
+  <!-- Aid climbing dist -->
+  <label class="col-3 col-xl-2 col-form-label" for="{{ form.aid_dist.auto_id }}">Aid climbed</label>
+  <div class="col-9 col-xl-4">
+    {% if form.is_bound %}
+      {% if form.aid_dist.errors %}
+        {% render_field form.aid_dist class="form-control is-invalid" %}
+        {% for e in form.aid_dist.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.aid_dist class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.aid_dist class="form-control" %}
     {% endif %}
   </div>
 </div>
