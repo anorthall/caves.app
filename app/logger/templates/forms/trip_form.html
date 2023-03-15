@@ -22,13 +22,11 @@
 </div>
 
 <!-- Cave name -->
-<div class="row mb-3">
-  <label class="col-3 col-xl-2 col-form-label col-form-label-lg" for="{{ form.cave_name.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="The name of the cave visited. Required.">
+<div class="row mb-3 px-2">
+  <div class="col">
+    <label class="form-label" for="{{ form.cave_name.auto_id }}">
       Name
-    </span>
-  </label>
-  <div class="col-9 col-xl-10">
+    </label>
     {% if form.is_bound %}
       {% if form.cave_name.errors %}
         {% render_field form.cave_name class="form-control is-invalid" %}
@@ -37,20 +35,21 @@
         {% render_field form.cave_name class="form-control is-valid" %}
       {% endif %}
     {% else %}
-      {% render_field form.cave_name class="form-control form-control-lg" %}
+      {% render_field form.cave_name class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.cave_name.help_text }}
+    </div>
   </div>
 </div>
 
 <!-- Cave region/country block -->
-<div class="row mb-3">
-  <!-- Cave region -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.cave_region.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="The region that the cave is in - for example: Yorkshire Dales. Required.">
+<div class="row mb-3 px-2">
+  <div class="col-xl-6 mb-3 mb-xl-0">
+    <!-- Cave region -->
+    <label class="form-label" for="{{ form.cave_region.auto_id }}">
       Region
-    </span>
-  </label>
-  <div class="col-9 col-xl-4 mb-3 mb-xl-0">
+    </label>
     {% if form.is_bound %}
       {% if form.cave_region.errors %}
         {% render_field form.cave_region class="form-control is-invalid" %}
@@ -61,15 +60,16 @@
     {% else %}
       {% render_field form.cave_region class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.cave_region.help_text }}
+    </div>
   </div>
 
-  <!-- Cave country -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.cave_country.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="The country that the cave is in. Required.">
+  <div class="col-xl-6">
+    <!-- Cave country -->
+    <label class="form-label" for="{{ form.cave_country.auto_id }}">
       Country
-    </span>
-  </label>
-  <div class="col-9 col-xl-4">
+    </label>
     {% if form.is_bound %}
       {% if form.cave_country.errors %}
         {% render_field form.cave_country class="form-control is-invalid" %}
@@ -80,6 +80,9 @@
     {% else %}
       {% render_field form.cave_country class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.cave_country.help_text }}
+    </div>
   </div>
 </div>
 
@@ -90,14 +93,12 @@
 </div>
 
 <!-- Start/end time block-->
-<div class="row mb-3">
-  <!-- Start time -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.start.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="The date and time you entered the cave. Required.">
+<div class="row mb-3 px-2">
+  <div class="col-xl-6 mb-3 mb-xl-0">
+    <!-- Start time -->
+    <label class="form-label" for="{{ form.start.auto_id }}">
       Start
-    </span>
-  </label>
-  <div class="col-9 col-xl-4 mb-3 mb-xl-0">
+    </label>
     {% if form.is_bound %}
       {% if form.start.errors %}
         {% render_field form.start class="form-control is-invalid" %}
@@ -108,15 +109,16 @@
     {% else %}
       {% render_field form.start class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.start.help_text }}
+    </div>
   </div>
 
-  <!-- End time -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.end.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="The date and time you exited the cave.">
+  <div class="col-xl-6">
+    <!-- End time -->
+    <label class="form-label" for="{{ form.end.auto_id }}">
       End
-    </span>
-  </label>
-  <div class="col-9 col-xl-4">
+    </label>
     {% if form.is_bound %}
       {% if form.end.errors %}
         {% render_field form.end class="form-control is-invalid" %}
@@ -127,18 +129,19 @@
     {% else %}
       {% render_field form.end class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.end.help_text }}
+    </div>
   </div>
 </div>
 
 <!-- Trip type/privacy block -->
-<div class="row mb-3">
-  <!-- Trip type -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.type.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="The type of trip. Required.">
+<div class="row mb-3 px-2">
+  <div class="col-xl-6 mb-3 mb-xl-0">
+    <!-- Trip type -->
+    <label class="form-label" for="{{ form.type.auto_id }}">
       Type
-    </span>
-  </label>
-  <div class="col-9 col-xl-4 mb-3 mb-xl-0">
+    </label>
     {% if form.is_bound %}
       {% if form.type.errors %}
         {% render_field form.type class="form-select is-invalid" %}
@@ -149,17 +152,16 @@
     {% else %}
       {% render_field form.type class="form-select" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.type.help_text }}
+    </div>
   </div>
 
-  <!-- Privacy -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.privacy.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="
-      Determines whether this trip is public or private.
-      'Default' will use the setting from your profile.">
+  <div class="col-xl-6">
+    <!-- Privacy -->
+    <label class="form-label" for="{{ form.privacy.auto_id }}">
       Privacy
-    </span>
-  </label>
-  <div class="col-9 col-xl-4">
+    </label>
     {% if form.is_bound %}
       {% if form.privacy.errors %}
         {% render_field form.privacy class="form-select is-invalid" %}
@@ -170,18 +172,19 @@
     {% else %}
       {% render_field form.privacy class="form-select" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.privacy.help_text }}
+    </div>
   </div>
 </div>
 
 <!-- Club/Expedition block -->
-<div class="row mb-3">
-  <!-- Club -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.club.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="A list of caving club(s) involved with this trip.">
+<div class="row mb-3 px-2">
+  <div class="col-xl-6 mb-3 mb-xl-0">
+    <!-- Club -->
+    <label class="form-label" for="{{ form.club.auto_id }}">
       Club(s)
-    </span>
-  </label>
-  <div class="col-9 col-xl-4 mb-3 mb-xl-0">
+    </label>
     {% if form.is_bound %}
       {% if form.club.errors %}
         {% render_field form.club class="form-control is-invalid" %}
@@ -192,15 +195,16 @@
     {% else %}
       {% render_field form.club class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.club.help_text }}
+    </div>
   </div>
 
-  <!-- Expedition -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.expedition.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="The expedition this trip was part of, if applicable.">
+  <div class="col-xl-6">
+    <!-- Expedition -->
+    <label class="form-label" for="{{ form.expedition.auto_id }}">
       Expedition
-    </span>
-  </label>
-  <div class="col-9 col-xl-4">
+    </label>
     {% if form.is_bound %}
       {% if form.expedition.errors %}
         {% render_field form.expedition class="form-control is-invalid" %}
@@ -211,17 +215,18 @@
     {% else %}
       {% render_field form.expedition class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.expedition.help_text }}
+    </div>
   </div>
 </div>
 
 <!-- Cavers -->
-<div class="row mb-3">
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.cavers.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="A list of cavers that were on this trip.">
+<div class="row mb-3 px-2">
+  <div class="col">
+    <label class="form-label" for="{{ form.cavers.auto_id }}">
       Cavers
-    </span>
-  </label>
-  <div class="col-9 col-xl-10">
+    </label>
     {% if form.is_bound %}
       {% if form.cavers.errors %}
         {% render_field form.cavers class="form-control is-invalid" %}
@@ -231,7 +236,11 @@
       {% endif %}
     {% else %}
       {% render_field form.cavers class="form-control" %}
-    {% endif %}  </div>
+    {% endif %}
+    <div class="form-text">
+      {{ form.cavers.help_text }}
+    </div>
+  </div>
 </div>
 
 
@@ -241,14 +250,12 @@
 </div>
 
 <!-- Horizontal/vertical distance block -->
-<div class="row mb-3">
-  <!-- Horizontal -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.horizontal_dist.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="Horizontal distance covered underground.">
+<div class="row mb-3 px-2">
+  <div class="col-xl-4 mb-3 mb-xl-0">
+    <!-- Horizontal -->
+    <label class="form-label" for="{{ form.horizontal_dist.auto_id }}">
       Horizontal
-    </span>
-  </label>
-  <div class="col-9 col-xl-2 mb-3 mb-xl-0">
+    </label>
     {% if form.is_bound %}
       {% if form.horizontal_dist.errors %}
         {% render_field form.horizontal_dist class="form-control is-invalid" %}
@@ -259,15 +266,16 @@
     {% else %}
       {% render_field form.horizontal_dist class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.horizontal_dist.help_text }}
+    </div>
   </div>
 
-  <!-- Vertical down -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.vert_dist_down.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="Distance descended on rope.">
+  <div class="col-xl-4 mb-3 mb-xl-0">
+    <!-- Vertical down -->
+    <label class="form-label" for="{{ form.vert_dist_down.auto_id }}">
       Down
-    </span>
-  </label>
-  <div class="col-9 col-xl-2 mb-3 mb-xl-0">
+    </label>
     {% if form.is_bound %}
       {% if form.vert_dist_down.errors %}
         {% render_field form.vert_dist_down class="form-control is-invalid" %}
@@ -278,15 +286,16 @@
     {% else %}
       {% render_field form.vert_dist_down class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.vert_dist_down.help_text }}
+    </div>
   </div>
 
-  <!-- Vertical up -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.vert_dist_up.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="Distance ascended on rope.">
+  <div class="col-xl-4">
+    <!-- Vertical up -->
+    <label class="form-label" for="{{ form.vert_dist_up.auto_id }}">
       Up
-    </span>
-  </label>
-  <div class="col-9 col-xl-2">
+    </label>
     {% if form.is_bound %}
       {% if form.vert_dist_up.errors %}
         {% render_field form.vert_dist_up class="form-control is-invalid" %}
@@ -297,18 +306,19 @@
     {% else %}
       {% render_field form.vert_dist_up class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.vert_dist_up.help_text }}
+    </div>
   </div>
 </div>
 
 <!-- Survey/aid climbing distance block -->
-<div class="row mb-3">
-  <!-- Survey dist -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.surveyed_dist.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="Total distance surveyed.">
+<div class="row mb-3 px-2">
+  <div class="col-xl-6 mb-3 mb-xl-0">
+    <!-- Survey dist -->
+    <label class="form-label" for="{{ form.surveyed_dist.auto_id }}">
       Surveyed
-    </span>
-  </label>
-  <div class="col-9 col-xl-4 mb-3 mb-xl-0">
+    </label>
     {% if form.is_bound %}
       {% if form.surveyed_dist.errors %}
         {% render_field form.surveyed_dist class="form-control is-invalid" %}
@@ -319,15 +329,16 @@
     {% else %}
       {% render_field form.surveyed_dist class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.surveyed_dist.help_text }}
+    </div>
   </div>
 
-  <!-- Aid climbing dist -->
-  <label class="col-3 col-xl-2 col-form-label" for="{{ form.aid_dist.auto_id }}">
-    <span data-bs-toggle="tooltip" data-bs-title="Total vertical distance covered by aid climbing.">
+  <div class="col-xl-6">
+    <!-- Aid climbing dist -->
+    <label class="form-label" for="{{ form.aid_dist.auto_id }}">
       Aid climbed
-    </span>
-  </label>
-  <div class="col-9 col-xl-4">
+    </label>
     {% if form.is_bound %}
       {% if form.aid_dist.errors %}
         {% render_field form.aid_dist class="form-control is-invalid" %}
@@ -338,6 +349,9 @@
     {% else %}
       {% render_field form.aid_dist class="form-control" %}
     {% endif %}
+    <div class="form-text">
+      {{ form.aid_dist.help_text }}
+    </div>
   </div>
 </div>
 

@@ -63,7 +63,6 @@ class Trip(models.Model):
         max_length=10,
         choices=TRIP_PRIVACY_TYPES,
         default=DEFAULT,
-        help_text="If set to 'inherit', the trip will have the same privacy settings as your user profile.",
     )
 
     # Cave, cave region and country
@@ -85,31 +84,55 @@ class Trip(models.Model):
     updated = models.DateTimeField("trip last updated", auto_now=True)
 
     # Attendees and organisations
-    cavers = models.CharField(max_length=200, blank=True)
-    club = models.CharField(max_length=100, blank=True)
-    expedition = models.CharField(max_length=100, blank=True)
+    cavers = models.CharField(
+        max_length=200, blank=True, help_text="A list of cavers that were on this trip."
+    )
+    club = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="A list of any caving clubs associated with this trip.",
+    )
+    expedition = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="A list of any expeditions associated with this trip.",
+    )
 
     # Distances
     horizontal_dist = models.IntegerField(
-        "horizontal distance", blank=True, null=True, validators=[MinValueValidator(1)]
+        "horizontal distance",
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+        help_text="Horizontal distance covered.",
     )
     vert_dist_down = models.IntegerField(
         "rope descent distance",
         blank=True,
         null=True,
         validators=[MinValueValidator(1)],
+        help_text="Distance descended on rope.",
     )
     vert_dist_up = models.IntegerField(
-        "rope ascent distance", blank=True, null=True, validators=[MinValueValidator(1)]
+        "rope ascent distance",
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+        help_text="Distance ascended on rope.",
     )
     surveyed_dist = models.IntegerField(
-        "surveyed distance", blank=True, null=True, validators=[MinValueValidator(1)]
+        "surveyed distance",
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+        help_text="Distance surveyed.",
     )
     aid_dist = models.IntegerField(
         "aid climbing distance",
         blank=True,
         null=True,
         validators=[MinValueValidator(1)],
+        help_text="Distance covered by aid climbing.",
     )
 
     # Notes
