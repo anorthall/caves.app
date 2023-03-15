@@ -133,3 +133,6 @@ dmypy.json
 
 # Settings
 settings.py
+
+# Docker
+docker-data/

@@ -2,8 +2,9 @@
 A Django web application to log caving trips
 
 ### Test details
-First, install dependancies: `pip install -r requirements.txt`. Then, copy
-`test.db.sqlite3` to `db.sqlite3` in the `app/` directory, and run
-`python manage.py runserver`.
+Use Docker.
 
-The login details for `/admin/` are `andrew@northall.me.uk` and `admin`.
+ - Copy `/app/cavinglog/settings.py.dev.example` to `/app/cavinglog/settings.py`
+ - `docker compose up`
+ - `docker compose run web python manage.py migrate`
+ - `docker compose run web python manage.py createsuperuser`

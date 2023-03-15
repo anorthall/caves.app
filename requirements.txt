@@ -6,3 +6,5 @@ django-active-link==0.1.8
 pre-commit==3.1.0
 itsdangerous==2.1.2
 humanize==4.6.0
+psycopg2==2.9.5
+tzdata==2022.7
