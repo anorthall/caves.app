@@ -17,6 +17,15 @@
         </td>
       </tr>
 
+      {% if trip.cave_url %}
+        <tr>
+          <th scope="row">Cave website</th>
+          <td>
+            <a class="link-secondary" href="{{ trip.cave_url }}">{{ trip.cave_url }}</a>
+          </td>
+        </tr>
+      {% endif %}
+
       <tr>
         <th scope="row">Type</th>
         <td>
@@ -70,6 +79,15 @@
           <th scope="row">Cavers</th>
           <td>{{ trip.cavers }}</td>
         </tr>
+      {% endif %}
+
+      {% if trip.report_url %}
+      <tr>
+        <th scope="row">Trip report</th>
+        <td>
+          <a class="link-secondary" href="{{ trip.report_url }}">{{ trip.report_url }}</a>
+        </td>
+      </tr>
       {% endif %}
 
       {% if trip.notes %}

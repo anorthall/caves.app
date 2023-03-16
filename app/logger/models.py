@@ -50,12 +50,17 @@ class Trip(models.Model):
         default=DEFAULT,
     )
 
-    # Cave, cave region and country
+    # Cave details
     cave_name = models.CharField(max_length=100)
     cave_region = models.CharField(max_length=100, blank=True)
     cave_country = models.CharField(max_length=100, blank=True)
+    cave_url = models.URLField(
+        "cave website",
+        blank=True,
+        help_text="A website, such as a Wikipedia page, giving more information on this cave.",
+    )
 
-    # Trip timing and type
+    # Trip details
     start = models.DateTimeField("start time")
     end = models.DateTimeField("end time", blank=True, null=True)
     type = models.CharField(
@@ -63,12 +68,6 @@ class Trip(models.Model):
         choices=TRIP_TYPES,
         default=SPORT,
     )
-
-    # Internal metadata
-    added = models.DateTimeField("trip added on", auto_now_add=True)
-    updated = models.DateTimeField("trip last updated", auto_now=True)
-
-    # Attendees and organisations
     cavers = models.CharField(
         max_length=200, blank=True, help_text="A list of cavers that were on this trip."
     )
@@ -82,6 +81,15 @@ class Trip(models.Model):
         blank=True,
         help_text="A list of any expeditions associated with this trip.",
     )
+    report_url = models.URLField(
+        "trip report",
+        blank=True,
+        help_text="The URL of an externally hosted trip report, such as on an expedition website or a personal blog.",
+    )
+
+    # Internal metadata
+    added = models.DateTimeField("trip added on", auto_now_add=True)
+    updated = models.DateTimeField("trip last updated", auto_now=True)
 
     # Distances
     horizontal_dist = models.IntegerField(
