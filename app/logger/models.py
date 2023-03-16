@@ -52,8 +52,8 @@ class Trip(models.Model):
 
     # Cave, cave region and country
     cave_name = models.CharField(max_length=100)
-    cave_region = models.CharField(max_length=100)
-    cave_country = models.CharField(max_length=100)
+    cave_region = models.CharField(max_length=100, blank=True)
+    cave_country = models.CharField(max_length=100, blank=True)
 
     # Trip timing and type
     start = models.DateTimeField("start time")

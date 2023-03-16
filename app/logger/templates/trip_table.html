@@ -5,9 +5,15 @@
         <th scope="row">Cave</th>
         <td>
           {{ trip.cave_name }}
-          <span class="text-muted">
-            {{ trip.cave_region }} / {{ trip.cave_country }}
-          </span>
+          {% if trip.cave_region and trip.cave_country %}
+            <span class="text-muted">
+              {{ trip.cave_region }} / {{ trip.cave_country }}
+            </span>
+          {% elif trip.cave_region %}
+            <span class="text-muted">{{ trip.cave_region }}</span>
+          {% elif trip.cave_country %}
+            <span class="text-muted">{{ trip.cave_country }}</span>
+          {% endif %}
         </td>
       </tr>
 
