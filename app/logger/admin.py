@@ -1,53 +1,5 @@
 from django.contrib import admin
-from .models import Trip, Cave
-
-
-@admin.register(Cave)
-class CaveAdmin(admin.ModelAdmin):
-    list_display = (
-        "name",
-        "region",
-        "country",
-        "added_by",
-    )
-    search_fields = (
-        "name",
-        "region",
-        "country",
-        "added_by",
-    )
-    list_filter = (
-        "added_by__username",
-        "country",
-        "region",
-    )
-    readonly_fields = ("added",)
-    fieldsets = (
-        (
-            "Cave details",
-            {
-                "fields": (
-                    "name",
-                    "region",
-                    "country",
-                )
-            },
-        ),
-        (
-            "Internal data",
-            {
-                "fields": (
-                    "added",
-                    "added_by",
-                )
-            },
-        ),
-    )
-    ordering = (
-        "added_by",
-        "country",
-        "name",
-    )
+from .models import Trip
 
 
 @admin.register(Trip)

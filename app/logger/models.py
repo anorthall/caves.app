@@ -6,22 +6,6 @@ from django.core.exceptions import ValidationError
 import humanize
 
 
-class Cave(models.Model):
-    """Cave model."""
-
-    name = models.CharField(max_length=100)
-    region = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
-
-    added = models.DateTimeField("added on", auto_now_add=True)
-    added_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
-    )
-
-    def __str__(self):
-        return self.name
-
-
 class Trip(models.Model):
     """Caving trip model."""
 
