@@ -70,8 +70,16 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30)
     location = models.CharField(max_length=50, blank=True)
     country = CountryField(blank=True)
-    bio = models.TextField("about me", blank=True)
-    club = models.CharField(max_length=50, blank=True)
+    bio = models.TextField(
+        "about me",
+        blank=True,
+        help_text="Information about you that will be displayed on your public profile.",
+    )
+    club = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="A list of caving clubs or organisations that you are a member of.",
+    )
 
     # Unit settings
     METRIC = "Metric"
@@ -81,7 +89,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         (IMPERIAL, IMPERIAL),
     ]
     units = models.CharField(
-        "Distance units", max_length=10, default=METRIC, choices=UNIT_CHOICES
+        "Distance units",
+        max_length=10,
+        default=METRIC,
+        choices=UNIT_CHOICES,
+        help_text="Units of distance to display/enter data in.",
     )
 
     # Privacy settings
@@ -96,10 +108,15 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         max_length=10,
         choices=PRIVACY_TYPES,
         default=PRIVATE,
+        help_text="Whether your profile is public or private.",
     )
 
     # Timezone settings
-    timezone = TimeZoneField(default="Europe/London", choices_display="WITH_GMT_OFFSET")
+    timezone = TimeZoneField(
+        default="Europe/London",
+        choices_display="WITH_GMT_OFFSET",
+        help_text="Timezone to enter/display dates and times in.",
+    )
 
     # is_active determines if a user can log in or not
     is_active = models.BooleanField(

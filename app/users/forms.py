@@ -152,8 +152,11 @@ class UserAdminChangeForm(forms.ModelForm):
 
 
 class UserChangeForm(forms.ModelForm):
-    template_name = "forms/bs5_form.html"
-    email = forms.EmailField(disabled=True)  # Use specific form
+    template_name = "forms/profile_form.html"
+    email = forms.EmailField(
+        disabled=True,
+        help_text="Use the change email page to update your email address.",
+    )
 
     class Meta:
         model = CavingUser

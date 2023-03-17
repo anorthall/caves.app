@@ -60,9 +60,13 @@
 
           <tr>
             <th scope="row">Biography</th>
-            <td>
-              {% if user.bio %}{{ user.bio }}{% else %}Not recorded{% endif %}
-              <br /><br /><br />
+            <td class="notes-display">
+              {% if user.bio %}
+                {{ user.bio|linebreaks }}<br />
+              {% else %}
+                Not recorded
+                <br /><br /><br />
+              {% endif %}
             </td>
           </tr>
 
