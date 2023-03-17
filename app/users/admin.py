@@ -61,6 +61,7 @@ class CavingUserAdmin(BaseUserAdmin):
                     "last_name",
                     "password1",
                     "password2",
+                    "is_active",
                 ),
             },
         ),
