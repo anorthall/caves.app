@@ -29,9 +29,13 @@ class TripForm(forms.ModelForm):
     def clean_end(self):
         """Validate the trip end date/time"""
         # Trips must not end more than 31 days in the future.
-        one_month_from_now = timezone.now() + timedelta(days=31)
-        if self.cleaned_data.get("end") > one_month_from_now:
-            raise ValidationError("Trips must not end more than 31 days in the future.")
+        end = self.cleaned_data.get("end")
+        if end:
+            one_month_from_now = timezone.now() + timedelta(days=31)
+            if end > one_month_from_now:
+                raise ValidationError(
+                    "Trips must not end more than 31 days in the future."
+                )
         return self.cleaned_data["end"]
 
     def clean(self):
@@ -42,15 +46,17 @@ class TripForm(forms.ModelForm):
         end = self.cleaned_data.get("end")
 
         if end and start:
-            # Ensure the start time is before the end time
-            if start > end:
+            length = end - start
+            if end == start:
+                self.add_error(
+                    "end",
+                    "The start and end time must not be the same. If you do not know the end time, leave it blank.",
+                )
+            elif start > end:
                 self.add_error(
                     "start", "The trip start time must be before the trip end time."
                 )
-
-            # Check the trip is not unrealistically long
-            length = end - start
-            if length > timedelta(days=60):
+            elif length > timedelta(days=60):
                 self.add_error(
                     "end",
                     "The trip is unrealistically long in duration (over 60 days).",

@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import humanize
 
@@ -96,35 +96,35 @@ class Trip(models.Model):
         "horizontal distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1), MaxValueValidator(20000)],
         help_text="Horizontal distance covered.",
     )
     vert_dist_down = models.IntegerField(
         "rope descent distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1), MaxValueValidator(5000)],
         help_text="Distance descended on rope.",
     )
     vert_dist_up = models.IntegerField(
         "rope ascent distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1), MaxValueValidator(5000)],
         help_text="Distance ascended on rope.",
     )
     surveyed_dist = models.IntegerField(
         "surveyed distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1), MaxValueValidator(20000)],
         help_text="Distance surveyed.",
     )
     aid_dist = models.IntegerField(
         "aid climbing distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1), MaxValueValidator(1000)],
         help_text="Distance covered by aid climbing.",
     )
 
