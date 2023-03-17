@@ -15,13 +15,13 @@ class TripTestCase(TestCase):
             first_name="Firstname",
             last_name="Lastname",
         )
+        user.is_active = True
+        user.save()
 
         # Trip with a start and end time
         Trip.objects.create(
             user=user,
             cave_name="Test Cave 1",
-            cave_region="Test Region",
-            cave_country="Test Country",
             start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
             end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
         )
@@ -30,8 +30,6 @@ class TripTestCase(TestCase):
         Trip.objects.create(
             user=user,
             cave_name="Test Cave 2",
-            cave_region="Test Region",
-            cave_country="Test Country",
             start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
         )
 
@@ -40,8 +38,8 @@ class TripTestCase(TestCase):
         Check that trip duration returns a timedelta with the correct value
         Check that trip duration returns None if no end time
         """
-        trip_with_end = Trip.objects.get(pk=1)
-        trip_without_end = Trip.objects.get(pk=2)
+        trip_with_end = Trip.objects.get(cave_name="Test Cave 1")
+        trip_without_end = Trip.objects.get(cave_name="Test Cave 2")
 
         self.assertNotEqual(trip_with_end.end, None)
         self.assertEqual(trip_with_end.duration(), timezone.timedelta(hours=2))
@@ -51,7 +49,7 @@ class TripTestCase(TestCase):
 
     def test_trip_duration_str(self):
         """Check that the trip duration string returns the correct value"""
-        trip = Trip.objects.get(pk=1)
+        trip = Trip.objects.get(cave_name="Test Cave 1")
         self.assertEqual(trip.duration_str(), "2 hours")
 
         trip.end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
@@ -59,3 +57,33 @@ class TripTestCase(TestCase):
 
         trip.end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
         self.assertEqual(trip.duration_str(), "2 days, 2 hours and 2 minutes")
+
+    def test_trip_privacy(self):
+        """Test the Trip.is_private and Trip.is_public methods"""
+        trip = Trip.objects.get(cave_name="Test Cave 1")
+        user = trip.user
+
+        # Check that privacy is correctly inherited from the user
+        self.assertEqual(user.privacy, get_user_model().PRIVATE)
+        self.assertEqual(trip.privacy, Trip.DEFAULT)
+        self.assertTrue(trip.is_private())
+        self.assertFalse(trip.is_public())
+
+        # Same again, but for a profile setting of public
+        user.privacy = get_user_model().PUBLIC
+        user.save()
+        trip = Trip.objects.get(cave_name="Test Cave 1")
+        self.assertEqual(user.privacy, get_user_model().PUBLIC)
+        self.assertTrue(trip.is_public())
+        self.assertFalse(trip.is_private())
+
+        # Now test trip specific privacy
+        trip.privacy = Trip.PRIVATE
+        self.assertEqual(trip.privacy, Trip.PRIVATE)
+        self.assertTrue(trip.is_private())
+        self.assertFalse(trip.is_public())
+
+        trip.privacy = Trip.PUBLIC
+        self.assertEqual(trip.privacy, Trip.PUBLIC)
+        self.assertTrue(trip.is_public())
+        self.assertFalse(trip.is_private())

@@ -168,6 +168,7 @@ class UserChangeForm(forms.ModelForm):
             "bio",
             "timezone",
             "units",
+            "privacy",
         )
 
 

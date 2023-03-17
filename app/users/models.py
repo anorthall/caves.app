@@ -50,17 +50,22 @@ class CavingUserManager(BaseUserManager):
 
 
 class CavingUser(AbstractBaseUser, PermissionsMixin):
+    # Email is used as login username
     email = models.EmailField(
         "email address",
         max_length=255,
         unique=True,
         help_text="This will be verified before you can log in.",
     )
+
+    # Username for URLs
     username = models.SlugField(
         max_length=30,
         unique=True,
         help_text="A unique identifier that will be part of the web address for your logbook.",
     )
+
+    # Personal information
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     location = models.CharField(max_length=50, blank=True)
@@ -68,8 +73,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     bio = models.TextField("about me", blank=True)
     club = models.CharField(max_length=50, blank=True)
 
-    timezone = TimeZoneField(default="Europe/London", choices_display="WITH_GMT_OFFSET")
-
+    # Unit settings
     METRIC = "Metric"
     IMPERIAL = "Imperial"
     UNIT_CHOICES = [
@@ -80,6 +84,24 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "Distance units", max_length=10, default=METRIC, choices=UNIT_CHOICES
     )
 
+    # Privacy settings
+    PUBLIC = "Public"
+    PRIVATE = "Private"
+    PRIVACY_TYPES = [
+        (PUBLIC, PUBLIC),
+        (PRIVATE, PRIVATE),
+    ]
+    privacy = models.CharField(
+        "Profile privacy",
+        max_length=10,
+        choices=PRIVACY_TYPES,
+        default=PRIVATE,
+    )
+
+    # Timezone settings
+    timezone = TimeZoneField(default="Europe/London", choices_display="WITH_GMT_OFFSET")
+
+    # is_active determines if a user can log in or not
     is_active = models.BooleanField(
         "Enabled user",
         default=False,
@@ -113,6 +135,16 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     def has_trips(self):
         return self.trips().count() > 1
+
+    def is_private(self):
+        if self.privacy == self.PUBLIC:
+            return False
+        return True
+
+    def is_public(self):
+        if self.privacy == self.PUBLIC:
+            return True
+        return False
 
     @property
     def is_staff(self):

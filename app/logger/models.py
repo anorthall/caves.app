@@ -166,3 +166,17 @@ class Trip(models.Model):
             return True
         elif self.aid_dist or self.surveyed_dist:
             return True
+
+    def is_private(self):
+        if self.privacy == self.DEFAULT:
+            return self.user.is_private()
+        elif self.privacy == self.PUBLIC:
+            return False
+        return True
+
+    def is_public(self):
+        if self.privacy == self.DEFAULT:
+            return self.user.is_public()
+        elif self.privacy == self.PUBLIC:
+            return True
+        return False
