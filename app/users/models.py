@@ -75,7 +75,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         help_text="Information about you that will be displayed on your public profile.",
     )
-    club = models.CharField(
+    clubs = models.CharField(
         max_length=50,
         blank=True,
         help_text="A list of caving clubs or organisations that you are a member of.",

@@ -36,7 +36,7 @@ class CavingUserAdmin(BaseUserAdmin):
                 "fields": (
                     "location",
                     "country",
-                    "club",
+                    "clubs",
                     "bio",
                 )
             },

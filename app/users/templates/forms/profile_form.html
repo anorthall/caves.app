@@ -161,21 +161,21 @@
 <!-- Caving clubs -->
 <div class="row mb-3 px-2 g-3">
   <div class="col">
-    <label class="form-label" for="{{ form.club.auto_id }}">
+    <label class="form-label" for="{{ form.clubs.auto_id }}">
       Club(s)
     </label>
     {% if form.is_bound %}
-      {% if form.club.errors %}
-        {% render_field form.club class="form-control is-invalid" %}
-        {% for e in form.club.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% if form.clubs.errors %}
+        {% render_field form.clubs class="form-control is-invalid" %}
+        {% for e in form.clubs.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
       {% else %}
-        {% render_field form.club class="form-control is-valid" %}
+        {% render_field form.clubs class="form-control is-valid" %}
       {% endif %}
     {% else %}
-      {% render_field form.club class="form-control" %}
+      {% render_field form.clubs class="form-control" %}
     {% endif %}
     <div class="form-text">
-      {{ form.club.help_text }}
+      {{ form.clubs.help_text }}
     </div>
   </div>
 </div>
