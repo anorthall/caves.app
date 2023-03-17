@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 from django_countries.fields import CountryField
 from django.db import models
 from timezone_field import TimeZoneField
+from logger.models import Trip
 
 
 class CavingUserManager(BaseUserManager):
@@ -106,6 +107,12 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     def clean(self):
         self.username = self.username.lower()
+
+    def trips(self):
+        return Trip.objects.filter(user=self)
+
+    def has_trips(self):
+        return self.trips().count() > 1
 
     @property
     def is_staff(self):
