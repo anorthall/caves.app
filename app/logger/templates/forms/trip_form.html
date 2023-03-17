@@ -201,25 +201,25 @@
   </div>
 </div>
 
-<!-- Club/Expedition block -->
+<!-- Clubs/Expedition block -->
 <div class="row mb-3 px-2">
   <div class="col-xl-6 mb-3 mb-xl-0">
-    <!-- Club -->
-    <label class="form-label" for="{{ form.club.auto_id }}">
+    <!-- Clubs -->
+    <label class="form-label" for="{{ form.clubs.auto_id }}">
       Club(s)
     </label>
     {% if form.is_bound %}
-      {% if form.club.errors %}
-        {% render_field form.club class="form-control is-invalid" %}
-        {% for e in form.club.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% if form.clubs.errors %}
+        {% render_field form.clubs class="form-control is-invalid" %}
+        {% for e in form.clubs.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
       {% else %}
-        {% render_field form.club class="form-control is-valid" %}
+        {% render_field form.clubs class="form-control is-valid" %}
       {% endif %}
     {% else %}
-      {% render_field form.club class="form-control" %}
+      {% render_field form.clubs class="form-control" %}
     {% endif %}
     <div class="form-text">
-      {{ form.club.help_text }}
+      {{ form.clubs.help_text }}
     </div>
   </div>
 

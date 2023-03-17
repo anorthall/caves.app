@@ -71,7 +71,7 @@ class Trip(models.Model):
     cavers = models.CharField(
         max_length=200, blank=True, help_text="A list of cavers that were on this trip."
     )
-    club = models.CharField(
+    clubs = models.CharField(
         max_length=100,
         blank=True,
         help_text="A list of any caving clubs associated with this trip.",

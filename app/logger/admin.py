@@ -9,7 +9,7 @@ class TripAdmin(admin.ModelAdmin):
         "cave_region",
         "cave_country",
         "cavers",
-        "club",
+        "clubs",
         "expedition",
         "notes",
     )
@@ -70,7 +70,7 @@ class TripAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "cavers",
-                    "club",
+                    "clubs",
                     "expedition",
                 ),
             },
