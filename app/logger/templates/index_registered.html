@@ -4,13 +4,18 @@
 {% block main %}
 <div class="card">
   <div class="card-header fs-4">
-    Welcome to Caving Log
+    Welcome, {{ request.user.first_name }}!
   </div>
 
   <div class="card-body">
-    <p class="lead">
-      There is no content here yet!
-    </p>
+    {% if request.user.has_trips %}
+      <p class="lead">
+        Why not review your <a href="{% url 'log:trip_list' %}">submitted trips</a> or
+        <a href="{% url 'log:trip_create' %}">add a new one?</a>
+      </p>
+    {% else %}
+      {% include "index_new_user.html" %}
+    {% endif %}
   </div>
 </div>
 

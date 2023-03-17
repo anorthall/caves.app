@@ -1,0 +1,28 @@
+<p class="lead">
+  Thanks for signing up to Caving Log, {{ request.user.first_name }}!
+</p>
+
+<p class="mb-3">
+  You haven't yet added any trips. Before you do so, let me give you a quick tour of the features of the website.
+  Here are some steps to get you started:
+</p>
+
+<ol>
+  <li class="mb-2">
+    Head across to your <a href="{% url 'users:update' %}">user profile</a> and add some details about your
+    location, and what caving clubs you are a member of. Please note that timezone handling and distance
+    unit conversion is not yet implemented. All timezones are in UTC (GMT+0000) and all distances are
+    in metres.
+  </li>
+
+  <li class="mb-2">
+    <a href="{% url 'log:trip_create' %}">Add your first trip!</a> The form should be straightforward enough
+    and the only required data to create a trip is the cave name and trip start time.
+  </li>
+
+  <li>
+    Enjoy the website! It is being actively developed and you may come across features that do not work properly.
+    If you do, please <a href="mailto:andrew@northall.me.uk">let me know</a> immediately by sending an email to
+    <code>andrew@northall.me.uk</code> and I will do my best to fix them immediately.
+  </li>
+</ol>
