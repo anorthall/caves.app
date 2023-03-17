@@ -31,6 +31,10 @@
 
                 <td>
                   {{ trip.cave_name }}
+
+                  {% if trip.cave_url %}
+                    <a class="link-secondary" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
+                  {% endif %}
                 </td>
 
                 <td class="d-none d-lg-block">{{ trip.type }}</td>
