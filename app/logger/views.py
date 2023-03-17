@@ -36,6 +36,7 @@ def index(request):
 class TripListView(LoginRequiredMixin, ListView):
     model = Trip
     template_name_suffix = "_list"
+    paginate_by = 25
 
     def get_queryset(self):
         """Only allow the user to update trips they created"""

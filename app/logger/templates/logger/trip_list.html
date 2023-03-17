@@ -25,7 +25,7 @@
           <tbody class="table-group-divider">
             {% for trip in object_list %}
               <tr>
-                <th class="d-none d-md-block" scope="row">{{ forloop.revcounter }}</th>
+                <th class="d-none d-md-block" scope="row">{{ trip.number }}</th>
 
                 <td>{{ trip.start|date:"Y-m-d" }}</td>
 
@@ -47,7 +47,11 @@
           </tbody>
         </table>
       </div>
+
+      <div class="mt-2">{% include "paginate_bootstrap.html" %}</div>
+
     {% else %}
+
       <p class="lead mb-0">
         You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
       </p>

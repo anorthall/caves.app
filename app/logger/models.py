@@ -180,3 +180,9 @@ class Trip(models.Model):
         elif self.privacy == self.PUBLIC:
             return True
         return False
+
+    def number(self):
+        """Returns the 'index' of the trip by date"""
+        qs = Trip.objects.filter(user=self.user).order_by("start")
+        index = list(qs.values_list("pk", flat=True)).index(self.pk)
+        return index + 1
