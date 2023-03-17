@@ -159,3 +159,10 @@ class Trip(models.Model):
             return None
 
         return humanize.precisedelta(td, minimum_unit="minutes")
+
+    def has_distances(self):
+        """Return True if at least one distance measurement is recorded"""
+        if self.horizontal_dist or self.vert_dist_down or self.vert_dist_up:
+            return True
+        elif self.aid_dist or self.surveyed_dist:
+            return True

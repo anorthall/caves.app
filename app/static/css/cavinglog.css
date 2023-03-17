@@ -5,3 +5,11 @@
 body {
   overflow-y:scroll;
 }
+
+.trip-header {
+  line-height: 1 !important;
+}
+
+.notes-display p {
+  margin-bottom: 0;
+}

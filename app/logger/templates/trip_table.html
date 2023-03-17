@@ -1,101 +1,139 @@
-<div class="table-responsive">
-  <table class="table">
-    <tbody>
-      <tr>
-        <th scope="row">Cave</th>
-        <td>
-          {{ trip.cave_name }}
-          {% if trip.cave_region and trip.cave_country %}
-            <span class="text-muted">
-              {{ trip.cave_region }} / {{ trip.cave_country }}
-            </span>
-          {% elif trip.cave_region %}
-            <span class="text-muted">{{ trip.cave_region }}</span>
-          {% elif trip.cave_country %}
-            <span class="text-muted">{{ trip.cave_country }}</span>
-          {% endif %}
-        </td>
-      </tr>
-
-      {% if trip.cave_url %}
-        <tr>
-          <th scope="row">Cave website</th>
-          <td>
-            <a class="link-secondary" href="{{ trip.cave_url }}">{{ trip.cave_url }}</a>
-          </td>
-        </tr>
-      {% endif %}
-
-      <tr>
-        <th scope="row">Type</th>
-        <td>
-          {{ trip.type }}
-          {% if trip.club %}
-            trip with {{ trip.club }}
-          {% endif %}
-        </td>
-      </tr>
-
-      <tr>
-        {% if trip.end %}
-          <th scope="row">
-            Entered
-          </th>
-        {% else %}
-          <th scope="row">Date/Time</th>
-        {% endif %}
-        <td>
-          {{ trip.start|time:"H:i" }}
-          <span class="text-muted">{{ trip.start|date:"Y-m-d"}}</span>
-        </td>
-      </tr>
-
-      {% if trip.end %}
-        <tr>
-          <th scope="row">
-            Exited
-          </th>
-          <td>
-            {{ trip.end|time:"H:i" }}
-            <span class="text-muted">{{ trip.end|date:"Y-m-d"}}</span>
-          </td>
-        </tr>
-
-        <tr>
-          <th scope="row">Duration</th>
-          <td>{{ trip.duration_str }}</td>
-        </tr>
-      {% endif %}
-
-      {% if trip.expedition %}
-        <tr>
-          <th scope="row">Expedition</th>
-          <td>{{ trip.expedition }}</td>
-        </tr>
-      {% endif %}
-
-      {% if trip.cavers %}
-        <tr>
-          <th scope="row">Cavers</th>
-          <td>{{ trip.cavers }}</td>
-        </tr>
-      {% endif %}
-
-      {% if trip.report_url %}
-      <tr>
-        <th scope="row">Trip report</th>
-        <td>
-          <a class="link-secondary" href="{{ trip.report_url }}">{{ trip.report_url }}</a>
-        </td>
-      </tr>
-      {% endif %}
-
-      {% if trip.notes %}
-        <tr>
-          <th scope="row">Notes</th>
-          <td>{{ trip.notes|striptags|linebreaks }}</td>
-        </tr>
-      {% endif %}
-    </tbody>
-  </table>
+<!-- Cave name -->
+<div class="row">
+  <div class="col">
+    <span class="display-5 trip-header">
+      {{ trip.cave_name }}
+    </span>
+  </div>
 </div>
+
+{% if trip.cave_region or trip.cave_country %}
+  <!-- Region, Country -->
+  <div class="row">
+    <div class="col">
+      <span class="fs-5 text-muted trip-header">
+        {{ trip.cave_region }}{% if trip.cave_region and trip.cave_country %} &middot; {% endif %}{{ trip.cave_country }}
+      </span>
+    </div>
+  </div>
+{% endif %}
+
+<!-- Badges: Type, Expedition, Clubs -->
+<div class="row">
+  <div class="col">
+    <span class="badge rounded-pill text-bg-primary">{{ trip.type }} trip</span>
+    {% if trip.club %}
+      <span class="badge rounded-pill text-bg-success">Clubs: {{ trip.club }}</span>
+    {% endif %}
+    {% if trip.expedition %}
+      <span class="badge rounded-pill text-bg-warning">Expedition: {{ trip.expedition }}</span>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Data blocks -->
+<div class="row g-2 mt-3">
+  <!-- Start time-->
+  <div class="col-6 col-lg-4">
+    <small class="text-muted">Date/time entered</small><br />
+    {{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}
+  </div>
+
+  {% if trip.end %}
+    <!-- End time -->
+    <div class="col-6 col-lg-4">
+      <small class="text-muted">Date/time exited</small><br />
+      {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
+    </div>
+
+    <!-- Duration -->
+    <div class="col-6 col-lg-4">
+      <small class="text-muted">Trip duration</small><br />
+      {{ trip.duration_str }}
+    </div>
+  {% endif %}
+</div>
+
+{% if trip.has_distances %}
+  <hr />
+
+  <div class="row g-2">
+    {% if trip.horizontal_dist %}
+      <!-- Horizontal dist -->
+      <div class="col-6 col-lg-4">
+        <small class="text-muted">Horizontal distance</small><br />
+        {{ trip.horizontal_dist }} metres
+      </div>
+    {% endif %}
+
+    {% if trip.vert_dist_down %}
+      <!-- Vertical distance descended -->
+      <div class="col-6 col-lg-4">
+        <small class="text-muted">Distance descended</small><br />
+        {{ trip.vert_dist_down }} metres
+      </div>
+    {% endif %}
+
+    {% if trip.vert_dist_up %}
+      <!-- Vertical distance ascended -->
+      <div class="col-6 col-lg-4">
+        <small class="text-muted">Distance ascended</small><br />
+        {{ trip.vert_dist_up }} metres
+      </div>
+    {% endif %}
+
+    {% if trip.surveyed_dist %}
+      <!-- Surveyed distance -->
+      <div class="col-6 col-lg-4">
+        <small class="text-muted">Surveyed distance</small><br />
+        {{ trip.surveyed_dist }} metres
+      </div>
+    {% endif %}
+
+    {% if trip.aid_dist %}
+      <!-- Aid climbing distance -->
+      <div class="col-6 col-lg-4">
+        <small class="text-muted">Aid climbing distance</small><br />
+        {{ trip.aid_dist }} metres
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+
+{% if trip.cavers %}
+  <hr />
+
+  <!-- Cavers -->
+  <div class="row g-2">
+    <div class="col-12">
+      <small class="text-muted">Cavers on trip</small><br />
+      {{ trip.cavers }}
+    </div>
+  </div>
+{% endif %}
+
+{% if trip.notes %}
+  <hr />
+
+  <!-- Notes -->
+  <div class="row g-2 mb-3">
+    <div class="col-12 notes-display">
+      <small class="text-muted">Notes</small><br />
+      {{ trip.notes|linebreaks }}
+    </div>
+  </div>
+{% endif %}
+
+{% if trip.report_url or trip.cave_url %}
+  <!-- External Resources -->
+  <div class="row g-2">
+    <div class="col-12">
+      <small class="text-muted">External resources</small>
+      <ol class="mb-0">
+        {% if trip.report_url %}<li><a class="link-secondary" href="{{ trip.report_url }}" target="_blank">Trip report</a></li>{% endif %}
+        {% if trip.cave_url %}<li><a class="link-secondary" href="{{ trip.cave_url }}" target="_blank">Website for {{ trip.cave_name }}</a></li>{% endif %}
+      </ol>
+    </div>
+  </div>
+{% endif %}
