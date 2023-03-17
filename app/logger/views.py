@@ -39,7 +39,7 @@ class TripListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """Only allow the user to update trips they created"""
-        return Trip.objects.filter(user=self.request.user)
+        return Trip.objects.filter(user=self.request.user).order_by("-start")
 
 
 class TripUpdateView(LoginRequiredMixin, UpdateView):
