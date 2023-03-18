@@ -1,5 +1,5 @@
 """
-Caving Log Settings
+caves.app Settings
 """
 import os, socket
 from pathlib import Path
@@ -10,10 +10,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ########################
 # App specific options #
 ########################
-
-# Site name and tagline
-SITE_NAME = "Caving Log"
-SITE_TAG = "It logs caves"
 
 # Date formats
 DATETIME_FORMAT = "H:i Y-m-d"

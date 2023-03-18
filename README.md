@@ -1,4 +1,4 @@
-# Caving Log
+# caves.app
 A Django web application to log caving trips
 
 ### Test details

@@ -7,7 +7,7 @@ from django.utils.html import strip_tags
 def send_verify_email(to, name, verify_url, verify_code):
     """Send an email to a new user to verify their email address"""
     mail_template = "emails/email_verify_new_account.html"
-    subject = "Welcome to Caving Log - verify your email"
+    subject = "Welcome to caves.app - verify your email"
     html_message = render_to_string(
         mail_template,
         context={

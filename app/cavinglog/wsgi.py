@@ -1,5 +1,5 @@
 """
-WSGI config for cavinglog project.
+WSGI config for caves.app project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

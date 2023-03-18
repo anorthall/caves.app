@@ -1,5 +1,5 @@
 """
-ASGI config for cavinglog project.
+ASGI config for caves.app project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
