@@ -19,10 +19,9 @@ TIME_FORMAT = "H:i"
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
 # WARNING: do not run with debug on in production!
-SECRET_KEY = "django-insecure-c3+z5mi8bc3ah4@_eb11ure9l(6nip1mfri!_vgbe0k-8_*1_l"
-ALLOWED_HOSTS = ['*']
-DEBUG = True
-
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ##################
 # Email settings #
