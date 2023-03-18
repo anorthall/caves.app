@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
@@ -31,6 +32,22 @@ def index(request):
 
     # Authenticated users
     return render(request, "index_registered.html")
+
+
+def about(request):
+    """About page, rendering differently depending whether the user is logged in or not"""
+
+    context = {
+        "trip_count": Trip.objects.all().count(),
+        "user_count": get_user_model().objects.all().count(),
+    }
+
+    # Unregistered/unauthenticated users
+    if not request.user.is_authenticated:
+        return render(request, "about/about_unregistered.html", context)
+
+    # Authenticated users
+    return render(request, "about/about_registered.html", context)
 
 
 class TripListView(LoginRequiredMixin, ListView):

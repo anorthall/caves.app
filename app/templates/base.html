@@ -47,11 +47,8 @@
         </span>
         <span class="float-end text-muted">
           {% block footer_right %}
+          <a href="{% url 'log:about' %}" class="link-secondary">About</a>
           {% endblock %}
-        </span>
-
-        <span class="float-end text-muted">
-          {% comment %}{% if user.is_superuser %}<a href="{% url 'admin:index' %}" class="text-muted">Admin</a>{% endif %}{% endcomment %}
         </span>
       </div>
     </footer>

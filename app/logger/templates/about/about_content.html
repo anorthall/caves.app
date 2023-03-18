@@ -1,0 +1,57 @@
+<div class="card">
+  <div class="card-header fs-4">
+    About Caving Log
+  </div>
+
+  <div class="card-body">
+    <p class="lead">
+      I created Caving Log after finding that using spreadsheets to maintain a record of my caving activity was
+      cumbersome and inconvenient. It has been initially developed for my own use, but I have made the service available
+      freely online in the hope that other cavers may find it useful.
+    </p>
+
+    <p>
+      Hopefully, the use of a mobile accessible website with a streamlined interface will enable others to more easily keep
+      track of their caving activity and allow better sharing of activities. This website <strong>is not</strong> supposed to
+      be a database of caves - all of your added data is completely private (unless you opt to make it public), and other users
+      cannot (by default) see what caves you have added.
+    </p>
+
+    <p>
+      I am also not intending to 'lock in' anyone to this platform. If you find it useful - great - if not, it is my intention
+      that all data will be easily exported via means of an comma separated text file, so that anyone can back up their own data
+      at any time, or leave the platform if they so wish. I take being entrusted with your (potentially irreplaceable) data very
+      seriously, and regular backups are performed.
+    </p>
+
+    <hr class="my-4" />
+
+    <h5>Current and planned features</h5>
+    <p>
+      This website is in active development and not all features are currently implemented. Notably, <strong>timezone and distance
+      unit handling</strong> is not implemented. All units of distance are measured in metres and all times are entered/displayed in
+      UTC (GMT+0000). <strong>Public profiles are also currently not implemented.</strong> Even though you may select a privacy setting
+      for your trips and profile, it has no affect, as there is no public view for trips or profiles implemented yet.
+    </p>
+
+    <p>
+      Other features which will be implemented but are not yet include: the adding of photos to trips, import and export of data
+      via CSV file, a trash bin for deleted trips (all deletions are permanent!), a friends/social 'timeline' functionality, and a
+      'trip report' functionality which would show rich text trip reports in the style of a blog post.
+    </p>
+
+
+    <h5 class="mt-4">Contact and support</h5>
+    <p>
+      If you encounter any issues, however minor, with the website then please do send me an email and let me know. I am keen to get things
+      fixed promptly and would really appreciate your feedback, even if it is negative. The same goes if you believe a particular user flow
+      or feature could be changed or improved. To contact me, simply send an email to <code>andrew@northall.me.uk</code>.
+    </p>
+
+    <h5 class="mt-4">Statistics</h5>
+    <p>
+      Caving Log currently has <strong>{{ user_count }}</strong> registered users, with a total of <strong>{{ trip_count }}</strong> trips
+      stored in the database.
+    </p>
+  </div>
+</div>
