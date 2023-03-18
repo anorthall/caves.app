@@ -1,4 +1,5 @@
 {% extends "base_sidebar.html" %}
+{% load get %}
 {% block title %}List of trips{% endblock %}
 {% block description %}A list of your caving trips.{% endblock %}
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
@@ -25,7 +26,7 @@
           <tbody class="table-group-divider">
             {% for trip in object_list %}
               <tr>
-                <th class="d-none d-md-block" scope="row">{{ trip.number }}</th>
+                <th class="d-none d-md-block" scope="row">{{ trip_index|get:trip.pk }}</th>
 
                 <td>{{ trip.start|date:"Y-m-d" }}</td>
 

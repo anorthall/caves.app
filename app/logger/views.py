@@ -60,6 +60,12 @@ class TripListView(LoginRequiredMixin, ListView):
         qs = Trip.objects.filter(user=self.request.user).order_by("-start")
         return qs.select_related("user")
 
+    def get_context_data(self):
+        """Add the trip 'index' dict to prevent many DB queriers"""
+        context = super().get_context_data()
+        context["trip_index"] = Trip.trip_index(self.request.user)
+        return context
+
 
 class TripUpdateView(LoginRequiredMixin, UpdateView):
     model = Trip

@@ -131,6 +131,16 @@ class Trip(models.Model):
     # Notes
     notes = models.TextField(blank=True)
 
+    @classmethod
+    def trip_index(cls, user):
+        """Build a dict of a user's trips with their 'date index' mapped to the trip pk"""
+        qs = cls.objects.filter(user=user).order_by("start")
+        trip_list = list(qs.values_list("pk", flat=True))
+        index = {}
+        for trip in qs:
+            index[trip.pk] = trip_list.index(trip.pk) + 1
+        return index
+
     def __str__(self):
         """Return the name of the cave visited."""
         return self.cave_name
