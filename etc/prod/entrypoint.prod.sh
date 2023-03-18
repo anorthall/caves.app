@@ -11,6 +11,10 @@ then
     echo "PostgreSQL started"
 fi
 
-python manage.py collectstatic --no-input
+if [ "$COLLECT_STATIC" = "yes" ]
+then
+    echo "Collecting static files..."
+    python manage.py collectstatic --no-input
+fi
 
 exec "$@"

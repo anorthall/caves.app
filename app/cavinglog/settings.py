@@ -1,9 +1,10 @@
 """
-caves.app Settings
+caves.app settings
 """
 import os, socket
 from pathlib import Path
 from django.contrib.messages import constants as messages
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -22,23 +23,22 @@ TIME_FORMAT = "H:i"
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 DEBUG = int(os.environ.get("DEBUG", default=0))
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
+
 
 ##################
 # Email settings #
 ##################
 
-DEFAULT_FROM_EMAIL = "admin@caves.app"
-
-# To print all emails to STDOUT (for testing):
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# To send email via SMTP:
-#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-#EMAIL_HOST = "smtp.someserver.net"
-#EMAIL_PORT = 465
-#EMAIL_USE_SSL = True
-#EMAIL_HOST_USER = "username"
-#EMAIL_HOST_PASSWORD = "password"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = os.environ.get("EMAIL_HOST", None)
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 0))
+EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", 0))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", None)
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", None)
 
 
 ################################
@@ -162,4 +162,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Debug toolbar for Docker
 if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + [
+        "127.0.0.1",
+        "10.0.2.2",
+    ]

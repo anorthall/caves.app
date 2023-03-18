@@ -1,10 +1,11 @@
 # caves.app
-A Django web application to log caving trips
+A Django web application to log caving trips. Located online at https://caves.app/.
 
 ### Test details
 Use Docker.
 
- - Copy `app/cavinglog/settings.py.dev.example` to `app/cavinglog/settings.py`
+ - Copy `etc/dev/dev.env.example` to `etc/dev/dev.env`
  - Run `docker compose up`
- - Run `docker compose run web python manage.py migrate`
- - Run `docker compose run web python manage.py createsuperuser`
+ - Go to http://127.0.0.1:8000/
+ - Login with the user `admin@caving.log` and the password `admin`.
+ - Have a look around!

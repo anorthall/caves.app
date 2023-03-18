@@ -131,9 +131,7 @@ dmypy.json
 # Mac
 .DS_Store
 
-# Settings
-settings.py
-
 # Docker
 docker-dev-data/
 etc/prod/prod.env
+etc/dev/dev.env
