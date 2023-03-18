@@ -135,4 +135,5 @@ dmypy.json
 settings.py
 
 # Docker
-docker-data/
+docker-dev-data/
+etc/prod/prod.env

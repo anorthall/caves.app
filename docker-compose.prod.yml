@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db-prod:
+    image: postgres:15.0-alpine
+    volumes:
+      - caves-prod-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web-prod:
+    build:
+      context: .
+      dockerfile: ./etc/prod/Dockerfile.prod
+    command: gunicorn cavinglog.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - caves-prod-app:/opt/cavesapp/app
+      - caves-prod-static:/opt/cavesapp/staticfiles
+    expose:
+      - 8000
+    env_file:
+      - ./etc/prod/prod.env
+    depends_on:
+      - db-prod
+  nginx-prod:
+    build:
+      context: .
+      dockerfile: ./etc/prod/Dockerfile.nginx
+    volumes:
+      - caves-prod-static:/opt/cavesapp/staticfiles
+    ports:
+      - 8080:80
+    depends_on:
+      - web-prod
+
+volumes:
+  caves-prod-app:
+  caves-prod-db:
+  caves-prod-static:

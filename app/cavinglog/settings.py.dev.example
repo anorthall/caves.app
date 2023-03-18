@@ -27,7 +27,7 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 # Email settings #
 ##################
 
-DEFAULT_FROM_EMAIL = "no-reply@caving-log-dev.com"  # Address to send email from
+DEFAULT_FROM_EMAIL = "admin@caves.app"
 
 # To print all emails to STDOUT (for testing):
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -124,12 +124,12 @@ ROOT_URLCONF = "cavinglog.urls"
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_NAME"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": 'db',
-        "PORT": 5432,
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": os.environ.get("SQL_USER", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
 
@@ -150,7 +150,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/cavesapp/staticfiles")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
