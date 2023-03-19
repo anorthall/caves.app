@@ -81,8 +81,11 @@ class TripDetailView(LoginRequiredMixin, DetailView):
     model = Trip
 
     def get_queryset(self):
-        """Only allow the user to view trips they created"""
-        return Trip.objects.filter(user=self.request.user).select_related("user")
+        """Only allow non-superusers to view trips they created"""
+        if self.request.user.is_superuser:
+            return Trip.objects.all()
+        else:
+            return Trip.objects.filter(user=self.request.user).select_related("user")
 
 
 class TripCreateView(LoginRequiredMixin, CreateView):
