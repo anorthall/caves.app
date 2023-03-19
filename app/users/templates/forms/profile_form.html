@@ -5,18 +5,6 @@
   {{ hidden_field }}
 {% endfor %}
 
-
-<!-- Non-field errors -->
-{% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-    <strong>Please correct the following errors:</strong>
-    {% for error in form.non_field_errors %}
-      <br />{{ error }}
-    {% endfor %}
-  </div>
-{% endif %}
-
-
 <!-- Account details title -->
 <div class="bg-light border rounded fs-5 p-2 mb-3">
   Account details

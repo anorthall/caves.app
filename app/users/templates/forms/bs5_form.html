@@ -4,14 +4,6 @@
   {{ hidden_field }}
 {% endfor %}
 
-{% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-    {% for error in form.non_field_errors %}
-      {{ error }}
-    {% endfor %}
-  </div>
-{% endif %}
-
 {% for field in form.visible_fields %}
   <div class="row mb-3">
     <label class="col-sm-4 col-form-label" for="{{ field.auto_id}}">{{ field.label }}</label>
