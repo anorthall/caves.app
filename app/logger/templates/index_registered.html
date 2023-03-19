@@ -1,4 +1,5 @@
 {% extends "base_sidebar.html" %}
+{% load get %}
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
@@ -6,38 +7,49 @@
 
 <div class="row g-4">
   <div class="col-12 col-lg-6">
-    <div class="card">
-      <div class="card-header fs-5">
-        Overall statistics
+    <div class="card h-100">
+      <div class="card-header text-muted">
+        Welcome, {{ request.user.first_name }}!
       </div>
 
-      <div class="card-body">
-        <table class="table table-borderless">
-          {% for field, value in request.user.get_trip_stats.items %}
-            <tr>
-              <th scope="row">{{ field|capfirst }}</th>
-              <td>{{ value }}{% if field != "total trips" %}m{% endif %}</td>
-            </tr>
-          {% endfor %}
-        </table>
+      <div class="card-body text-center">
+        <p class="lead">Hello! Do you want to...</p>
+
+        <div class="row mx-auto">
+          <div class="col-md-8 col-sm-10 col-lg-12 mx-auto d-flex flex-column">
+            <a class="btn btn-light m-1" href="{% url 'log:trip_create' %}">Add a trip</a>
+            <a class="btn btn-light m-1" href="{% url 'log:trip_list' %}">View your trips</a>
+            <a class="btn btn-light m-1" href="{% url 'users:profile' %}">View your profile</a>
+            <a class="btn btn-light m-1" href="{% url 'users:update' %}">Update your profile</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="col-12 col-lg-6">
     <div class="card">
-      <div class="card-header fs-5">
-        Statistics for {% now "Y" %}
+      <div class="card-header text-muted">
+        Statistics
       </div>
 
       <div class="card-body">
-        <table class="table table-borderless">
-          {% for field, value in request.user.get_current_year_trip_stats.items %}
+        <table class="table table-sm m-0">
+          <thead>
+            <th scope="col"></th>
+            <th scope="col">{% now "Y" %}</th>
+            <th scope="col">Total</th>
+          </thead>
+
+          <tbody>
+          {% for field, value in stats_year.items %}
             <tr>
               <th scope="row">{{ field|capfirst }}</th>
+              <td>{{ stats|get:field }}{% if field != "total trips" %}m{% endif %}</td>
               <td>{{ value }}{% if field != "total trips" %}m{% endif %}</td>
             </tr>
           {% endfor %}
+          </tbody>
         </table>
       </div>
     </div>

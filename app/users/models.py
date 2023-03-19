@@ -194,10 +194,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
         return results
 
-    def get_current_year_trip_stats(self, fields=None):
-        """Call Trip.get_trip_stats() with the current year as an argument"""
-        return self.get_trip_stats(year=timezone.now().year, fields=fields)
-
     def is_private(self):
         if self.privacy == self.PUBLIC:
             return False

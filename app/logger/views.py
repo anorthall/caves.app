@@ -48,6 +48,8 @@ def index(request):
         "recent_trips": recent_trips,
         "trip_count": trip_count,
         "site_trip_count": site_trip_count,
+        "stats": request.user.get_trip_stats(),
+        "stats_year": request.user.get_trip_stats(year=timezone.now().year),
     }
     return render(request, "index_registered.html", context)
 
