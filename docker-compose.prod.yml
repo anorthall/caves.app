@@ -15,7 +15,6 @@ services:
       dockerfile: ./etc/prod/Dockerfile.prod
     command: gunicorn cavinglog.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - caves-prod-app:/opt/cavesapp/app
       - caves-prod-static:/opt/cavesapp/staticfiles
     expose:
       - 8000
@@ -35,6 +34,5 @@ services:
       - web-prod
 
 volumes:
-  caves-prod-app:
   caves-prod-db:
   caves-prod-static:
