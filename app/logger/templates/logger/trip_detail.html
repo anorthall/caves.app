@@ -15,10 +15,11 @@
         <!-- Small title -->
         <span class="d-lg-none">
           <small>
-            {{ trip.start|time:"H:i" }} on {{ trip.start|date:"l, jS M Y" }}
+            <i class="bi bi-clock-history"></i> &nbsp; {{ trip.start|time:"H:i" }} on {{ trip.start|date:"l, jS M Y" }}
           </small>
         </span>
       </div>
+
       <!-- Trip number only displayed above -lg -->
       <div class="col text-end d-none d-lg-block">
         Trip 	&#35;{{ trip.number }}
