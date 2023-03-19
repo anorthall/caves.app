@@ -1,38 +1,42 @@
-{% extends "base_center.html" %}
+{% extends "base.html" %}
 {% block title %}Sign in to caves.app{% endblock %}
 
-{% block main %}
-<div class="card">
-  <div class="card-header fs-4">
-    Sign in
-  </div>
-
-  <div class="card-body">
-    <form method="post">
-      {% csrf_token %}
-      <div class="form-floating mb-2">
-        <input type="email" name="email" autofocus autocapitalize="none" autocomplete="email" maxlength="255" required class="form-control" id="id_email" placeholder="name@example.com">
-        <label for="id_email">Email address</label>
+{% block content %}
+<div class="container">
+  <div class="col-md-8 col-lg-7 col-xl-6 col-xxl-5 mx-auto">
+    <div class="card">
+      <div class="card-header fs-4">
+        Sign in
       </div>
 
-      <div class="form-floating mb-3">
-        <input type="password" class="form-control" name="password" required id="id_password" placeholder="Password">
-        <label for="id_password">Password</label>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-floating mb-2">
+            <input type="email" name="email" autofocus autocapitalize="none" autocomplete="email" maxlength="255" required class="form-control" id="id_email" placeholder="name@example.com">
+            <label for="id_email">Email address</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" name="password" required id="id_password" placeholder="Password">
+            <label for="id_password">Password</label>
+          </div>
+          <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+        </form>
+        <br />
+        <p class="text-center lead">
+          Need an account? <a href="{% url 'users:register' %}">Sign up!</a>
+        </p>
+        <div>
+        {% if login_has_failed %}
+        <p class="text-center">
+          <a class="link-secondary" href="{% url 'users:password-reset' %}">
+            <small>Forgotten your password?</small>
+          </a>
+        </p>
+        {% endif %}
       </div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-    </form>
-    <br />
-    <p class="text-center lead">
-      Need an account? <a href="{% url 'users:register' %}">Sign up!</a>
-    </p>
-    <div>
-    {% if login_has_failed %}
-    <p class="text-center">
-      <a class="link-secondary" href="{% url 'users:password-reset' %}">
-        <small>Forgotten your password?</small>
-      </a>
-    </p>
-    {% endif %}
+    </div>
   </div>
 </div>
-{% endblock main %}
+{% endblock content %}
