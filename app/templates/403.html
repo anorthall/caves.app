@@ -1,12 +1,11 @@
 {% extends "base.html" %}
-{% block title %}caves.app - internal server error{% endblock %}
-{% block description %}Oops! Something went wrong.{% endblock %}
+{% block title %}caves.app - permission denied{% endblock %}
+{% block description %}You do not have permission to view this page.{% endblock %}
 {% block content %}
 <div class="container">
   <div class="col text-center">
     <h1 class="display-4">Oops</h1>
-    <p class="fs-4">There was an internal server error.</p>
-    <p>Please report this via email to <code>admin@caves.app</code>.</p>
+    <p class="fs-4">You do not have permission to view this page.</p>
     <button class="btn btn-primary btn-lg mt-5" onclick="window.history.back()">Go back</button>
   </div>
 </div>

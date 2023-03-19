@@ -16,7 +16,7 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th class="d-none d-md-block" scope="col">#</th>
+              <th class="d-none d-sm-block" scope="col">#</th>
               <th scope="col">Date</th>
               <th scope="col">Cave</th>
               <th class="d-none d-lg-block" scope="col">Trip type</th>
@@ -26,7 +26,7 @@
           <tbody class="table-group-divider">
             {% for trip in object_list %}
               <tr>
-                <th class="d-none d-md-block" scope="row">{{ trip_index|get:trip.pk }}</th>
+                <th class="d-none d-sm-block" scope="row">{{ trip_index|get:trip.pk }}</th>
 
                 <td>{{ trip.start|date:"Y-m-d" }}</td>
 
@@ -34,7 +34,7 @@
                   {{ trip.cave_name }}
 
                   {% if trip.cave_url %}
-                    <a class="link-secondary" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
+                    <a class="link-secondary d-none d-md-inline" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
                   {% endif %}
                 </td>
 
@@ -42,10 +42,12 @@
 
                 <td class="text-end">
                   <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
-                  &nbsp;
-                  <a class="link-secondary" href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
-                  &nbsp;
-                  <a class="link-secondary" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
+                  <span class="d-none d-sm-inline">
+                    &nbsp;
+                    <a class="link-secondary" href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
+                    &nbsp;
+                    <a class="link-secondary" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
+                  </span>
                 </td>
               </tr>
             {% endfor %}
