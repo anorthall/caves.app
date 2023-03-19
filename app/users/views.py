@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -29,6 +30,9 @@ class PasswordResetView(auth.views.PasswordResetView):
     subject_template_name = "emails/email_password_reset_subject.txt"
     success_url = reverse_lazy("users:password-reset-sent")
     form_class = PasswordResetForm
+    extra_email_context = {
+        "site_root": settings.SITE_ROOT,
+    }
 
 
 class PasswordResetConfirmView(auth.views.PasswordResetConfirmView):
@@ -59,7 +63,7 @@ class PasswordChangeView(LoginRequiredMixin, auth.views.PasswordChangeView):
 
 
 def login(request):
-    lhf = False  # Login has not yet failed
+    context = {}
     if request.method == "POST":
         username = request.POST["email"]
         password = request.POST["password"]
@@ -72,13 +76,16 @@ def login(request):
             messages.error(
                 request, "The username and password provided do not match any account."
             )
-            lhf = True  # Login has failed
+            context = {
+                "login_has_failed": True,  # Displays reset password link
+                "no_form_error_alert": True,  # Silences default form error
+            }
 
     if request.user.is_authenticated:
         messages.info(request, f"You are logged in as {request.user.email}.")
         return redirect("log:index")
 
-    return render(request, "login.html", {"login_has_failed": lhf})
+    return render(request, "login.html", context)
 
 
 def logout(request):
@@ -97,10 +104,6 @@ def update(request):
                 request, f"Your details have been updated, {request.user.first_name}."
             )
             return redirect("users:profile")
-        else:
-            messages.error(
-                request, "Details not updated. Please correct the error(s) below."
-            )
     else:
         form = UserChangeForm(instance=request.user)
 
@@ -123,15 +126,11 @@ def register(request):
 
             # Generate verification token and send email
             verify_code = generate_token(user.pk, user.email)
-            verify_url = request.build_absolute_uri(reverse("users:verify-new-account"))
+            verify_url = settings.SITE_ROOT + reverse("users:verify-new-account")
             send_verify_email(user.email, user.first_name, verify_url, verify_code)
 
             # Redirect to Verify Email page.
             return redirect("users:verify-new-account")
-        else:
-            messages.error(
-                request, "Registration not successful. Please fix the error(s) below."
-            )
     else:
         form = UserCreationForm()
 
@@ -169,7 +168,7 @@ def resend_verify_email(request):
             # A valid, unverified user was found. Resend email.
             user = form.user
             verify_code = generate_token(user.pk, user.email)
-            verify_url = request.build_absolute_uri(reverse("users:verify-new-account"))
+            verify_url = settings.SITE_ROOT + reverse("users:verify-new-account")
             send_verify_email(user.email, user.first_name, verify_url, verify_code)
         messages.info(
             request,
@@ -208,9 +207,7 @@ def update_email(request):
             user = form.user
             new_email = form.cleaned_data["email"]
             verify_code = generate_token(user.pk, new_email)
-            verify_url = request.build_absolute_uri(
-                reverse("users:verify-email-change")
-            )
+            verify_url = settings.SITE_ROOT + reverse("users:verify-email-change")
             send_email_change_verification(
                 new_email, user.first_name, verify_url, verify_code
             )

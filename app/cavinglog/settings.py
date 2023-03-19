@@ -17,6 +17,9 @@ DATETIME_FORMAT = "H:i Y-m-d"
 DATE_FORMAT = "Y-m-d"
 TIME_FORMAT = "H:i"
 
+# Site root URL with protocol
+SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
+
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
 # WARNING: do not run with debug on in production!
