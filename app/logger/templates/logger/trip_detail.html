@@ -6,9 +6,20 @@
 <div class="card">
   <div class="card-header">
     <div class="row text-muted">
-      <div class="col-12 col-lg-9 text-start">
-        <i class="bi bi-clock-history"></i> &nbsp; Trip at {{ trip.start|time:"H:i" }} on {{ trip.start|date:"l, jS M Y" }}
+      <div class="col-12 col-lg-9">
+        <!-- Large title -->
+        <span class="d-none d-lg-block">
+          <i class="bi bi-clock-history"></i> &nbsp; Trip at {{ trip.start|time:"H:i" }} on {{ trip.start|date:"l, jS M Y" }}
+        </span>
+
+        <!-- Small title -->
+        <span class="d-lg-none">
+          <small>
+            {{ trip.start|time:"H:i" }} on {{ trip.start|date:"l, jS M Y" }}
+          </small>
+        </span>
       </div>
+      <!-- Trip number only displayed above -lg -->
       <div class="col text-end d-none d-lg-block">
         Trip 	&#35;{{ trip.number }}
       </div>
