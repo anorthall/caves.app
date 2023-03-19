@@ -4,15 +4,30 @@
 {% block main %}
 <div class="card">
   <div class="card-header fs-4">
-    Welcome, {{ request.user.first_name }}!
+    Home
   </div>
 
   <div class="card-body">
-    {% if request.user.has_trips %}
+    {% if recent_trips %}
       <p class="lead">
-        Why not review your <a href="{% url 'log:trip_list' %}">submitted trips</a> or
-        <a href="{% url 'log:trip_create' %}">add a new one?</a>
+        Welcome back, {{ request.user.first_name }}!
       </p>
+
+      <p>
+        You currently have <strong>{{ trip_count }}</strong> trips stored in the database, out of a total of
+        {{ site_trip_count }} recorded by all caves.app users.
+        Why not <a href="{% url 'log:trip_create' %}">add another?</a>
+      </p>
+
+      <hr class="my-3" />
+
+      <div class="row g-4">
+        {% for trip in recent_trips %}
+          <div class="col-12 col-lg-6 flex-fill flex-column">
+            {% include "trip_card_small.html" %}
+          </div>
+        {% endfor %}
+      </div>
     {% else %}
       {% include "index_new_user.html" %}
     {% endif %}

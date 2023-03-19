@@ -31,7 +31,24 @@ def index(request):
         return redirect("users:login")
 
     # Authenticated users
-    return render(request, "index_registered.html")
+    # Get most recent 4 trips
+    qs = Trip.objects.filter(user=request.user).order_by("-start")
+    recent_trips = qs[:4]
+    trip_count = qs.count()
+    site_trip_count = Trip.objects.all().count()
+
+    # Only display 2 or 4 trips
+    if recent_trips.count() < 2:
+        recent_trips = None  # Display welcome text until the user has created two trips
+    elif recent_trips.count() == 3:
+        recent_trips = recent_trips[:2]  # Display only two trips
+
+    context = {
+        "recent_trips": recent_trips,
+        "trip_count": trip_count,
+        "site_trip_count": site_trip_count,
+    }
+    return render(request, "index_registered.html", context)
 
 
 def about(request):

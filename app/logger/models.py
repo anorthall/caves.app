@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.html import escape
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
@@ -196,3 +197,48 @@ class Trip(models.Model):
         qs = Trip.objects.filter(user=self.user).order_by("start")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
+
+    def get_tidbits(self, num_items=4, escape_html=True):
+        """Return a dict of tidbits of information for small cards"""
+        data = []
+        if self.cave_region and self.cave_country:
+            data.append(("Location", f"{self.cave_region} / {self.cave_country}"))
+
+        data.extend(
+            [  # Fields eligible for inclusion
+                ("Clubs", self.clubs),
+                ("Expedition", self.expedition),
+                ("Duration", self.duration_str()),
+                ("Distance", self.horizontal_dist),
+                ("Climbed", self.vert_dist_up),
+                ("Descended", self.vert_dist_down),
+                ("Surveyed", self.surveyed_dist),
+                ("Aided", self.aid_dist),
+            ]
+        )
+        valid_data = []
+        for k, v in data:  # Remove empty values
+            if v:
+                if escape_html:
+                    valid_data.append((k, escape(v)))
+                else:
+                    valid_data.append((k, v))
+        return valid_data[:num_items]
+
+    def get_html_tidbits(self, **kwargs):
+        """Return usable HTML from get_tidbits()"""
+        tidbits = self.get_tidbits(**kwargs)
+        if not tidbits:
+            return None
+
+        span = '<span class="text-muted">'
+        if len(tidbits) == 1:
+            return f"{span}{tidbits[0][0]}</span> {tidbits[0][1]}"
+
+        html = ""
+        for k, v in tidbits:
+            new = f" &middot; {span}{k}</span> {v}"
+            html = html + new
+        html = html[10:]  # Remove first &middot;
+
+        return html
