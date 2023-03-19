@@ -31,17 +31,18 @@ def index(request):
         return redirect("users:login")
 
     # Authenticated users
-    # Get most recent 4 trips
+    # Get most recent trips
     qs = Trip.objects.filter(user=request.user).order_by("-start")
-    recent_trips = qs[:4]
+    recent_trips = qs[:6]
     trip_count = qs.count()
     site_trip_count = Trip.objects.all().count()
 
-    # Only display 2 or 4 trips
-    if recent_trips.count() < 2:
-        recent_trips = None  # Display welcome text until the user has created two trips
-    elif recent_trips.count() == 3:
-        recent_trips = recent_trips[:2]  # Display only two trips
+    # Only display 3 or 6 trips
+    if recent_trips.count() < 3:
+        # Display welcome text until the user has created three trips
+        recent_trips = None
+    elif recent_trips.count() == 4 or recent_trips.count() == 5:
+        recent_trips = recent_trips[:3]  # Display only three trips
 
     context = {
         "recent_trips": recent_trips,

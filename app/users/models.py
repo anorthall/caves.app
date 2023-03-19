@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django_countries.fields import CountryField
+from django.utils import timezone
 from django.db import models
 from timezone_field import TimeZoneField
 from logger.models import Trip
@@ -152,6 +153,50 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     def has_trips(self):
         return self.trips().count() > 1
+
+    def get_trip_stats(self, year=None, fields=None):
+        """Get statistics of Trips, optionally by year"""
+        # Default fields
+        if fields is None:
+            fields = [
+                "horizontal_dist",
+                "vert_dist_down",
+                "vert_dist_up",
+                "surveyed_dist",
+                "aid_dist",
+            ]
+
+        # Get the QuerySet
+        qs = Trip.objects.filter(user=self)
+        if year:
+            qs = qs.filter(start__year=year)
+
+        # Initialise results
+        results = {
+            "total trips": 0,
+        }
+        for field in Trip._meta.get_fields():
+            if field.name in fields:
+                results[field.verbose_name] = 0
+
+        # If there are no trips, return the "empty" results
+        if not qs:
+            return results
+
+        # Iterate and add up
+        for trip in qs:
+            results["total trips"] += 1
+            for field in trip._meta.get_fields():
+                if field.name in fields:
+                    value = field.value_from_object(trip)
+                    if value:
+                        results[field.verbose_name] += field.value_from_object(trip)
+
+        return results
+
+    def get_current_year_trip_stats(self, fields=None):
+        """Call Trip.get_trip_stats() with the current year as an argument"""
+        return self.get_trip_stats(year=timezone.now().year, fields=fields)
 
     def is_private(self):
         if self.privacy == self.PUBLIC:

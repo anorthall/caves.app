@@ -2,36 +2,60 @@
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-header fs-4">
-    Home
+{% if recent_trips %}
+
+<div class="row g-4">
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-header fs-5">
+        Overall statistics
+      </div>
+
+      <div class="card-body">
+        <table class="table table-borderless">
+          {% for field, value in request.user.get_trip_stats.items %}
+            <tr>
+              <th scope="row">{{ field|capfirst }}</th>
+              <td>{{ value }}{% if field != "total trips" %}m{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
   </div>
 
-  <div class="card-body">
-    {% if recent_trips %}
-      <p class="lead">
-        Welcome back, {{ request.user.first_name }}!
-      </p>
-
-      <p>
-        You currently have <strong>{{ trip_count }}</strong> trips stored in the database, out of a total of
-        {{ site_trip_count }} recorded by all caves.app users.
-        Why not <a href="{% url 'log:trip_create' %}">add another?</a>
-      </p>
-
-      <hr class="my-3" />
-
-      <div class="row g-4">
-        {% for trip in recent_trips %}
-          <div class="col-12 col-lg-6 flex-fill flex-column">
-            {% include "trip_card_small.html" %}
-          </div>
-        {% endfor %}
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-header fs-5">
+        Statistics for {% now "Y" %}
       </div>
-    {% else %}
-      {% include "index_new_user.html" %}
-    {% endif %}
+
+      <div class="card-body">
+        <table class="table table-borderless">
+          {% for field, value in request.user.get_current_year_trip_stats.items %}
+            <tr>
+              <th scope="row">{{ field|capfirst }}</th>
+              <td>{{ value }}{% if field != "total trips" %}m{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
   </div>
 </div>
+
+<hr class="my-4" />
+
+<div class="row g-4">
+  {% for trip in recent_trips %}
+    <div class="col-12 col-xl-4 flex-fill flex-column">
+      {% include "trip_card_small.html" %}
+    </div>
+  {% endfor %}
+</div>
+
+{% else %}
+  {% include "index_new_user.html" %}
+{% endif %}
 
 {% endblock main %}
