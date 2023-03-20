@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     UpdateView,
     DetailView,
@@ -71,6 +71,8 @@ def about(request):
 
 
 class TripListView(LoginRequiredMixin, ListView):
+    """List all of a user's trips."""
+
     model = Trip
     template_name_suffix = "_list"
     paginate_by = 25
@@ -87,10 +89,13 @@ class TripListView(LoginRequiredMixin, ListView):
         return context
 
 
-class TripUpdateView(LoginRequiredMixin, UpdateView):
+class TripUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    """Update/edit a trip."""
+
     model = Trip
     form_class = TripForm
     template_name_suffix = "_update_form"
+    success_message = "The trip has been updated."
 
     def get_queryset(self):
         """Only allow the user to update trips they created"""
@@ -98,6 +103,8 @@ class TripUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class TripDetailView(LoginRequiredMixin, DetailView):
+    """View the details of a trip."""
+
     model = Trip
 
     def get_queryset(self):
@@ -108,10 +115,13 @@ class TripDetailView(LoginRequiredMixin, DetailView):
             return Trip.objects.filter(user=self.request.user).select_related("user")
 
 
-class TripCreateView(LoginRequiredMixin, CreateView):
+class TripCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    """Create a new trip."""
+
     model = Trip
     form_class = TripForm
     template_name_suffix = "_create_form"
+    success_message = "The trip has been created."
     initial = {
         "start": timezone.localdate(),
     }
@@ -132,6 +142,8 @@ class TripCreateView(LoginRequiredMixin, CreateView):
 
 
 class TripDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete a trip."""
+
     model = Trip
     template_name_suffix = "_delete"
     success_url = reverse_lazy("log:trip_list")
@@ -140,8 +152,8 @@ class TripDeleteView(LoginRequiredMixin, DeleteView):
         """Only allow the user to delete trips they created"""
         return Trip.objects.filter(user=self.request.user)
 
-
-@login_required
-def trip_deleted(request):
-    messages.info(request, "The trip has been deleted.")
-    return redirect("log:index")
+    def form_valid(self, form):
+        """Provide a success message upon deletion."""
+        response = super().form_valid(form)
+        messages.success(self.request, "The trip has been deleted.")
+        return response
