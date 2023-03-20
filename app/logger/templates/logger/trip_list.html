@@ -10,13 +10,13 @@
     <span class="fs-4">Your trips</span>
   </div>
 
-  <div class="card-body">
+  <div class="card-body px-0 pt-0">
     {% if object_list %}
       <div class="table-responsive">
-        <table class="table table-hover">
+        <table class="table table-hover table-striped">
           <thead>
             <tr>
-              <th class="d-none d-sm-block" scope="col">#</th>
+              <th class="d-none d-sm-block ps-1 text-center" scope="col">#</th>
               <th scope="col">Date</th>
               <th scope="col">Cave</th>
               <th class="d-none d-lg-block" scope="col">Trip type</th>
@@ -26,7 +26,7 @@
           <tbody class="table-group-divider">
             {% for trip in object_list %}
               <tr>
-                <th class="d-none d-sm-block" scope="row">{{ trip_index|get:trip.pk }}</th>
+                <th class="d-none d-sm-block ps-1 text-center" scope="row">{{ trip_index|get:trip.pk }}</th>
 
                 <td>{{ trip.start|date:"Y-m-d" }}</td>
 
@@ -40,7 +40,7 @@
 
                 <td class="d-none d-lg-block">{{ trip.type }}</td>
 
-                <td class="text-end">
+                <td class="text-end pe-2">
                   <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
                   <span class="d-none d-sm-inline">
                     &nbsp;
@@ -54,6 +54,7 @@
           </tbody>
         </table>
       </div>
+
 
       <div class="mt-2">{% include "paginate_bootstrap.html" %}</div>
 

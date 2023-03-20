@@ -28,25 +28,25 @@
   </div>
 
   <div class="col-12 col-lg-6">
-    <div class="card">
+    <div class="card h-100">
       <div class="card-header text-muted">
         Statistics
       </div>
 
-      <div class="card-body">
-        <table class="statistics-table table table-sm table-borderless m-0 ">
+      <div class="card-body px-0">
+        <table class="statistics-table table table-sm table-striped table-borderless m-0">
           <thead>
-            <th scope="col"></th>
+            <th scope="col" class="ps-3">Statistic</th>
             <th scope="col" class="text-center">{% now "Y" %}</th>
-            <th scope="col" class="text-center">Total</th>
+            <th scope="col" class="text-center pe-3">Total</th>
           </thead>
 
           <tbody>
           {% for field, value in stats_year.items %}
             <tr>
-              <th scope="row">{{ field|capfirst }}</th>
+              <th scope="row" class="ps-3">{{ field|capfirst }}</th>
               <td class="text-center">{{ stats|get:field }}{% if field != "total trips" %}m{% endif %}</td>
-              <td class="text-center">{{ value }}{% if field != "total trips" %}m{% endif %}</td>
+              <td class="text-center pe-3">{{ value }}{% if field != "total trips" %}m{% endif %}</td>
             </tr>
           {% endfor %}
           </tbody>
