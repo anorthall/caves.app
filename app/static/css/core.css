@@ -13,3 +13,8 @@ body {
 .notes-display p {
   margin-bottom: 0;
 }
+
+.statistics-table th {
+  font-weight: 280;
+  color: #6c757d !important;
+}

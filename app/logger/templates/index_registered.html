@@ -34,19 +34,19 @@
       </div>
 
       <div class="card-body">
-        <table class="table table-sm m-0">
+        <table class="statistics-table table table-sm table-borderless m-0 ">
           <thead>
             <th scope="col"></th>
-            <th scope="col">{% now "Y" %}</th>
-            <th scope="col">Total</th>
+            <th scope="col" class="text-center">{% now "Y" %}</th>
+            <th scope="col" class="text-center">Total</th>
           </thead>
 
           <tbody>
           {% for field, value in stats_year.items %}
             <tr>
               <th scope="row">{{ field|capfirst }}</th>
-              <td>{{ stats|get:field }}{% if field != "total trips" %}m{% endif %}</td>
-              <td>{{ value }}{% if field != "total trips" %}m{% endif %}</td>
+              <td class="text-center">{{ stats|get:field }}{% if field != "total trips" %}m{% endif %}</td>
+              <td class="text-center">{{ value }}{% if field != "total trips" %}m{% endif %}</td>
             </tr>
           {% endfor %}
           </tbody>
