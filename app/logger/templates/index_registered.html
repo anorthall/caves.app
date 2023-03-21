@@ -45,8 +45,8 @@
           {% for field, value in stats_year.items %}
             <tr>
               <th scope="row" class="ps-3">{{ field|capfirst }}</th>
-              <td class="text-center">{{ stats|get:field }}{% if field != "total trips" %}m{% endif %}</td>
               <td class="text-center pe-3">{{ value }}{% if field != "total trips" %}m{% endif %}</td>
+              <td class="text-center">{{ stats|get:field }}{% if field != "total trips" %}m{% endif %}</td>
             </tr>
           {% endfor %}
           </tbody>
