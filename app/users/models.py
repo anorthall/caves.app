@@ -164,7 +164,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
                 "vert_dist_down",
                 "vert_dist_up",
                 "surveyed_dist",
-                "aid_dist",
             ]
 
         # Get the QuerySet

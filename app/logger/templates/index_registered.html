@@ -34,11 +34,13 @@
       </div>
 
       <div class="card-body px-0">
-        <table class="statistics-table table table-sm table-striped table-borderless m-0">
+        <table class="statistics-table table table-sm table-borderless m-0">
           <thead>
-            <th scope="col" class="ps-3">Distance</th>
-            <th scope="col" class="text-center">{% now "Y" %}</th>
-            <th scope="col" class="text-center pe-3">Total</th>
+            <tr class="border">
+              <th scope="col" class="ps-3 fw-bold">Distance</th>
+              <th scope="col" class="text-center fw-bold">{% now "Y" %}</th>
+              <th scope="col" class="text-center fw-bold pe-3">Total</th>
+            </tr>
           </thead>
 
           <tbody>
@@ -50,8 +52,15 @@
               </tr>
             {% endfor %}
 
-            <tr>
-              <th scope="row" class="ps-3 fw-bold">Total time:</th>
+            <tr class="border">
+              <th scope="row" class="ps-3 fw-bold">Total trips</th>
+              <td class="text-center">{{ yr_total_trips }}</td>
+              <td class="text-center pe-3">{{ total_trips }}</td>
+
+            </tr>
+
+            <tr class="border">
+              <th scope="row" class="ps-3 fw-bold">Total time</th>
               <td class="text-center" colspan="2">{{ total_duration }}</td>
             </tr>
           </tbody>
