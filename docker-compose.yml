@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./etc/dev/Dockerfile.dev.db
     volumes:
-      - ./docker-dev-data/db:/var/lib/postgresql/data
+      - ./dev-data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres

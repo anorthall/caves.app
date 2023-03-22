@@ -3,13 +3,23 @@ version: '3.8'
 services:
   db-prod:
     image: postgres:15.0-alpine
+    restart: always
     volumes:
       - caves-prod-db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - ./etc/prod/postgres.env
+  pgbackups-prod:
+    image: prodrigestivill/postgres-backup-local
+    restart: always
+    user: postgres:postgres
+    volumes:
+      - ./prod-data/backups/db:/backups
+    env_file:
+      - ./etc/prod/postgres-backup.env
+    depends_on:
+      - db-prod
   web-prod:
+    restart: always
     build:
       context: .
       dockerfile: ./etc/prod/Dockerfile.prod
@@ -23,6 +33,7 @@ services:
     depends_on:
       - db-prod
   nginx-prod:
+    restart: always
     build:
       context: .
       dockerfile: ./etc/prod/Dockerfile.nginx

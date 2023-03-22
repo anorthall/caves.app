@@ -132,6 +132,7 @@ dmypy.json
 .DS_Store
 
 # Docker
-docker-dev-data/
+dev-data/
+prod-data/
 etc/prod/prod.env
 etc/dev/dev.env
