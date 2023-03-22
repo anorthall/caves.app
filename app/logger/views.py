@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import get_user_model
@@ -139,6 +139,12 @@ class TripCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         initial = initial.copy()
         initial["cave_country"] = self.request.user.country.name
         return initial
+
+    def get_success_url(self):
+        """If 'addanother' is set, redirect to the form again."""
+        if self.request.POST.get("addanother", False):
+            return reverse("log:trip_create")
+        return super().get_success_url()
 
 
 class TripDeleteView(LoginRequiredMixin, DeleteView):
