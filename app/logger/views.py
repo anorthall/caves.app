@@ -98,6 +98,7 @@ def export(request):
     # Headers
     writer.writerow(
         [
+            "Number",
             "Cave name",
             "Cave region",
             "Cave country",
@@ -123,8 +124,10 @@ def export(request):
 
     # Content
     tf = "%Y-%m-%d %H:%M"  # Time format to use
+    x = 1
     for t in qs:
         row = [  # Break row into two to process end time
+            x,
             t.cave_name,
             t.cave_region,
             t.cave_country,
@@ -156,6 +159,7 @@ def export(request):
         ]
 
         writer.writerow(row)  # Finally write the complete row
+        x += 1
 
     return response  # Return the CSV file as a HttpResponse
 
