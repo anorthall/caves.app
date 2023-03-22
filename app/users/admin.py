@@ -15,6 +15,7 @@ class CavingUserAdmin(BaseUserAdmin):
         "first_name",
         "last_name",
         "location",
+        "date_joined",
         "is_active",
     )
     list_filter = ("is_active",)
@@ -67,8 +68,13 @@ class CavingUserAdmin(BaseUserAdmin):
         ),
     )
 
-    search_fields = ("email",)
-    ordering = ("email",)
+    search_fields = (
+        "email",
+        "username",
+        "bio",
+        "clubs",
+    )
+    ordering = ("-date_joined",)
     filter_horizontal = ()
 
 

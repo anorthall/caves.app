@@ -18,21 +18,18 @@ class TripAdmin(admin.ModelAdmin):
         "updated",
     )
     list_display = (
-        "cave_name",
         "user",
-        "start",
-        "type",
+        "cave_name",
+        "cave_country",
         "added",
     )
     list_filter = (
         "user__username",
+        "user__email",
         "added",
         "type",
     )
-    ordering = (
-        "user",
-        "-start",
-    )
+    ordering = ("-added",)
     fieldsets = (
         (
             "Internal data",
