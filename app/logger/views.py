@@ -48,12 +48,22 @@ def index(request):
     elif recent_trips.count() == 4 or recent_trips.count() == 5:
         recent_trips = recent_trips[:3]  # Display only three trips
 
+    # Distance stats
+    total_trips, total_duration, dist_stats = request.user.get_trip_stats()
+    yr_total_trips, yr_total_duration, yr_dist_stats = request.user.get_trip_stats(
+        year=timezone.now().year
+    )
+
     context = {
         "recent_trips": recent_trips,
         "trip_count": trip_count,
         "site_trip_count": site_trip_count,
-        "stats": request.user.get_trip_stats(),
-        "stats_year": request.user.get_trip_stats(year=timezone.now().year),
+        "total_trips": total_trips,
+        "total_duration": total_duration,
+        "dist_stats": dist_stats,
+        "yr_total_trips": yr_total_trips,
+        "yr_total_duration": yr_total_duration,
+        "yr_dist_stats": yr_dist_stats,
     }
     return render(request, "index_registered.html", context)
 

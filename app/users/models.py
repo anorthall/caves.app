@@ -1,3 +1,4 @@
+import humanize
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -172,27 +173,38 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             qs = qs.filter(start__year=year)
 
         # Initialise results
-        results = {
-            "total trips": 0,
-        }
+        results = {}
+        total_trips = 0
+        total_duration = timezone.timedelta(minutes=0)
         for field in Trip._meta.get_fields():
             if field.name in fields:
                 results[field.verbose_name] = 0
 
-        # If there are no trips, return the "empty" results
         if not qs:
-            return results
+            return [None, None, None]
 
         # Iterate and add up
         for trip in qs:
-            results["total trips"] += 1
+            total_trips += 1
+            if trip.end:
+                total_duration += trip.duration()
+
             for field in trip._meta.get_fields():
                 if field.name in fields:
                     value = field.value_from_object(trip)
                     if value:
                         results[field.verbose_name] += field.value_from_object(trip)
 
-        return results
+        # Remove 'distance' from field names and add units
+        short_names_results = {}
+        for k, v in results.items():
+            new_name = k.replace("distance", "")
+            short_names_results[new_name] = f"{v}m"
+
+        # Humanise duration
+        total_duration = humanize.precisedelta(total_duration, minimum_unit="minutes")
+
+        return total_trips, total_duration, short_names_results
 
     def is_private(self):
         if self.privacy == self.PUBLIC:
