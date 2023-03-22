@@ -9,5 +9,6 @@ urlpatterns = [
     path("trip/delete/<int:pk>/", views.TripDeleteView.as_view(), name="trip_delete"),
     path("trip/add/", views.TripCreateView.as_view(), name="trip_create"),
     path("trips/", views.TripListView.as_view(), name="trip_list"),
+    path("trips/export/", views.export, name="export"),
     path("about/", views.about, name="about"),
 ]

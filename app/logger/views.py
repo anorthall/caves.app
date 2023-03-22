@@ -1,8 +1,12 @@
+import csv
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
+from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
     UpdateView,
@@ -11,7 +15,7 @@ from django.views.generic import (
     DeleteView,
     ListView,
 )
-from django.utils import timezone
+
 from .models import Trip
 from .forms import TripForm
 
@@ -68,6 +72,92 @@ def about(request):
 
     # Authenticated users
     return render(request, "about/about_registered.html", context)
+
+
+@login_required
+def export(request):
+    """Export a user's trips to CSV file"""
+    if not request.POST:  # Display information page
+        return render(request, "export.html")
+
+    # Generate HTTP response and the CSV file
+    qs = Trip.objects.filter(user=request.user).order_by("start")
+    if not qs:
+        messages.error(request, "You do not have any trips to export.")
+        return redirect("log:export")
+
+    timestamp = timezone.now().strftime("%Y-%m-%d-%H%M")
+    filename = f"{request.user.username}-trips-{timestamp}.csv"
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+    writer = csv.writer(response)
+
+    # Headers
+    writer.writerow(
+        [
+            "Cave name",
+            "Cave region",
+            "Cave country",
+            "Cave URL",
+            "Trip start",
+            "Trip end",
+            "Duration",
+            "Trip type",
+            "Cavers",
+            "Clubs",
+            "Expedition",
+            "Horizontal distance",
+            "Vertical distance down",
+            "Vertical distance up",
+            "Surveyed distance",
+            "Aid climbing distance",
+            "Trip report",
+            "Notes",
+            "Added on",
+            "Last updated",
+        ]
+    )
+
+    # Content
+    tf = "%Y-%m-%d %H:%M"  # Time format to use
+    for t in qs:
+        row = [  # Break row into two to process end time
+            t.cave_name,
+            t.cave_region,
+            t.cave_country,
+            t.cave_url,
+            t.start.strftime(tf),
+        ]
+
+        # End time may not exist, so check first
+        try:
+            row = row + [t.end.strftime(tf)]
+        except AttributeError:
+            row = row + [t.end]
+
+        row = row + [  # Second half of row
+            t.duration_str(),
+            t.type,
+            t.cavers,
+            t.clubs,
+            t.expedition,
+            t.horizontal_dist,
+            t.vert_dist_down,
+            t.vert_dist_up,
+            t.surveyed_dist,
+            t.aid_dist,
+            t.report_url,
+            t.notes,
+            t.added.strftime(tf),
+            t.updated.strftime(tf),
+        ]
+
+        writer.writerow(row)  # Finally write the complete row
+
+    return response  # Return the CSV file as a HttpResponse
 
 
 class TripListView(LoginRequiredMixin, ListView):
