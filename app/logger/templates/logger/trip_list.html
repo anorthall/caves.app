@@ -10,8 +10,8 @@
     <span class="fs-4">Your trips</span>
   </div>
 
-  <div class="card-body px-0 pt-0">
-    {% if object_list %}
+  {% if object_list %}
+    <div class="card-body px-0 pt-0">
       <div class="table-responsive">
         <table class="table table-hover table-striped">
           <thead>
@@ -57,13 +57,14 @@
 
 
       <div class="mt-2">{% include "paginate_bootstrap.html" %}</div>
-
-    {% else %}
-
+    </div>
+  {% else %}
+    <div class="card-body">
       <p class="lead mb-0">
         You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
       </p>
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 </div>
+
 {% endblock main %}
