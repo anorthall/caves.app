@@ -180,7 +180,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
                 results[field.verbose_name] = 0
 
         if not qs:
-            return [None, None, None]
+            short_names_results = {}  # Remove 'distance' from field names
+            for k, v in results.items():
+                new_name = k.replace(" distance", "")
+                short_names_results[new_name] = "0m"
+            return 0, timezone.timedelta(minutes=0), short_names_results
 
         # Iterate and add up
         for trip in qs:
@@ -197,7 +201,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         # Remove 'distance' from field names and add units
         short_names_results = {}
         for k, v in results.items():
-            new_name = k.replace("distance", "")
+            new_name = k.replace(" distance", "")
             short_names_results[new_name] = f"{v}m"
 
         # Humanise duration
