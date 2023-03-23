@@ -6,7 +6,7 @@
 FROM python:3.11.2-alpine as builder
 
 # Set working directory
-WORKDIR /usr/src/cavesapp
+WORKDIR /usr/src/caves
 
 # Environment setup
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -19,36 +19,35 @@ RUN apk update \
 # Python packages
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/cavesapp/wheels -r requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/caves/wheels -r requirements.txt
 
 ##################
 ### Production ###
 ##################
 FROM python:3.11.2-alpine
 
-# Create infrastructure
-RUN mkdir -p /opt/cavesapp /opt/cavesapp/staticfiles
-RUN addgroup -S cavesapp && adduser -S cavesapp -G cavesapp
-
 # Install psycopg2 depencencies
 RUN apk update && apk add libpq
 
 # Copy wheels
-COPY --from=builder /usr/src/cavesapp/requirements.txt $HOME
-COPY --from=builder /usr/src/cavesapp/wheels /opt/cavesapp/wheels
-RUN pip install --no-cache /opt/cavesapp/wheels/*
+COPY --from=builder /usr/src/caves/wheels /opt/caves/wheels
+RUN pip install --no-cache /opt/caves/wheels/*
+
+# Create directories
+RUN mkdir -p /opt/caves /opt/caves/staticfiles
 
 # Copy entrypoint
-COPY ./etc/prod/entrypoint.prod.sh /opt/cavesapp
-RUN chmod +x /opt/cavesapp/entrypoint.prod.sh
-
-# Copy app
-COPY ./app /opt/cavesapp/app
-RUN chown -R cavesapp:cavesapp /opt/cavesapp
+COPY ./etc/prod/entrypoint.prod.sh /opt/caves
+RUN chmod +x /opt/caves/entrypoint.prod.sh
 
 # Final working environment
-USER cavesapp
-WORKDIR /opt/cavesapp/app
+
+# Set up user
+RUN addgroup --g 1001 caves
+RUN adduser -u 1001 -G caves -h /opt/caves -D caves
+RUN chown caves:caves -R /opt/caves
+USER caves
+WORKDIR /opt/caves/app
 
 # Run entrypoint.sh.
-ENTRYPOINT ["/opt/cavesapp/entrypoint.prod.sh"]
+ENTRYPOINT ["/opt/caves/entrypoint.prod.sh"]

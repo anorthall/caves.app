@@ -154,7 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
-STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/cavesapp/staticfiles")
+STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]

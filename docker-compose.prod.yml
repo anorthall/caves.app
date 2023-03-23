@@ -1,14 +1,15 @@
 version: '3.8'
 
 services:
-  db-prod:
+  db:
     image: postgres:15.0-alpine
     restart: always
     volumes:
-      - caves-prod-db:/var/lib/postgresql/data
+      - ./prod-data/db:/var/lib/postgresql/data
     env_file:
       - ./etc/prod/postgres.env
-  pgbackups-prod:
+
+  pgbackups:
     image: prodrigestivill/postgres-backup-local
     restart: always
     user: postgres:postgres
@@ -17,33 +18,21 @@ services:
     env_file:
       - ./etc/prod/postgres-backup.env
     depends_on:
-      - db-prod
-  web-prod:
+      - db
+
+  web:
     restart: always
+    user: 1001:1001
     build:
       context: .
       dockerfile: ./etc/prod/Dockerfile.prod
     command: gunicorn cavinglog.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - caves-prod-static:/opt/cavesapp/staticfiles
-    expose:
-      - 8000
+      - ./prod-data/staticfiles:/opt/caves/staticfiles
+      - ./app:/opt/caves/app
+    ports:
+      - 8000:8000
     env_file:
       - ./etc/prod/prod.env
     depends_on:
-      - db-prod
-  nginx-prod:
-    restart: always
-    build:
-      context: .
-      dockerfile: ./etc/prod/Dockerfile.nginx
-    volumes:
-      - caves-prod-static:/opt/cavesapp/staticfiles
-    ports:
-      - 8080:80
-    depends_on:
-      - web-prod
-
-volumes:
-  caves-prod-db:
-  caves-prod-static:
+      - db
