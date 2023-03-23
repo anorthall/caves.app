@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "logger.apps.LoggerConfig",
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -169,3 +170,36 @@ if DEBUG:
         "127.0.0.1",
         "10.0.2.2",
     ]
+
+# Jazzmin
+JAZZMIN_SETTINGS = {
+    "site_title": "caves.app",
+    "site_header": "caves.app",
+    "site_brand": "caves.app",
+    "copyright": "Andrew Northall",
+    "search_model": ["logger.Trip", "users.CavingUser"],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": ["auth"],
+    "order_with_respect_to": ["logger", "users"],
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "changeform_format": "single",
+    "topmenu_links": [
+        {"name": "Main Site", "url": "log:index"},
+        {
+            "name": "Analytics",
+            "url": "https://stats.caver.dev/caves.app",
+            "new_window": True,
+        },
+        {
+            "name": "GitHub",
+            "url": "https://github.com/anorthall/caves.app",
+            "new_window": True,
+        },
+    ],
+    "icons": {
+        "logger.trip": "fas fa-hard-hat",
+        "users.cavinguser": "fas fa-users",
+    },
+}

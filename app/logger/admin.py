@@ -18,11 +18,11 @@ class TripAdmin(admin.ModelAdmin):
         "updated",
     )
     list_display = (
-        "added",
-        "start",
         "user",
         "cave_name",
         "cave_country",
+        "added",
+        "start",
     )
     list_filter = (
         "user__username",
