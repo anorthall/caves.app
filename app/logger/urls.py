@@ -11,4 +11,5 @@ urlpatterns = [
     path("trips/", views.TripListView.as_view(), name="trip_list"),
     path("trips/export/", views.export, name="export"),
     path("about/", views.about, name="about"),
+    path("admin-tools/", views.admin_tools, name="admin_tools"),
 ]

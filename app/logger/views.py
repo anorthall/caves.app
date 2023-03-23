@@ -2,10 +2,11 @@ import csv
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
@@ -191,6 +192,39 @@ class TripListView(LoginRequiredMixin, ListView):
         context = super().get_context_data()
         context["trip_index"] = Trip.trip_index(self.request.user)
         return context
+
+
+def admin_tools(request):
+    """Tools for website administrators."""
+    if not request.user.is_superuser:
+        raise Http404
+
+    if request.POST:
+        if request.POST["login_as"]:
+            try:
+                user = get_user_model().objects.get(email=request.POST["login_as"])
+                if user.is_superuser:
+                    messages.error(
+                        request, "Cannot login as a superuser via this page."
+                    )
+                elif user:
+                    messages.success(request, f"Now logged in as {user.email}.")
+                    login(request, user)
+                    return redirect("log:index")
+
+            except ObjectDoesNotExist:
+                messages.error(request, f"User was not found.")
+
+    # Build user list
+    qs = get_user_model().objects.filter(is_active=True, is_superuser=False)
+    user_list = []
+    for user in qs:
+        user_list.append(user.email)
+
+    # Build context
+    context = {"user_list": user_list}
+
+    return render(request, "admin_tools.html", context)
 
 
 class TripUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% load active_link_tags %}
+
 {% block content %}
+
 <div class="container">
   <div class="row">
     <div class="col-lg-9">
@@ -21,6 +24,10 @@
               <a class="nav-link" target="_blank" href="{% url 'admin:index' %}">
                 <i class="bi bi-gear"></i>&nbsp; Admin
               </a>
+
+              <a class="nav-link {% active_link 'log:admin_tools' %}" href="{% url 'log:admin_tools' %}">
+                <i class="bi bi-tools"></i>&nbsp; Tools
+              </a>
             </nav>
           </div>
         {% endif %}
@@ -28,4 +35,5 @@
     </div>
   </div>
 </div>
-{% endblock %}
+
+{% endblock content %}
