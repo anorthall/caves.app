@@ -17,3 +17,10 @@ body {
 .statistics-table tbody th {
   font-weight: normal;
 }
+
+@media (max-width: 768px) {
+  .base-col {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}

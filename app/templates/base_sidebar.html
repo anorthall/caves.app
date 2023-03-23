@@ -5,11 +5,11 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-lg-9">
+    <div class="base-col col-lg-9">
       {% block main %}{% endblock %}
     </div>
 
-    <div class="col-lg-3 mb-4 order-last order-lg-last">
+    <div class="base-col col-lg-3 mb-4 order-last order-lg-last">
       <div class="container p-0">
         {% include "sidebar_core.html" %}
         {% block sidebar %}{% endblock %}
