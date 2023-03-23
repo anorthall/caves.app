@@ -8,12 +8,12 @@ https://ourcodeworld.com/articles/read/1757/how-to-implement-a-paginator-in-a-dj
       {% if page_obj.has_previous %}
         <li class="page-item">
           <a class="page-link" href="?page=1">
-            First
+            <i class="bi bi-skip-start-fill"></i>
           </a>
         </li>
         <li class="page-item">
           <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-            Previous
+            <i class="bi bi-arrow-left"></i>
           </a>
         </li>
       {% endif %}
@@ -39,12 +39,12 @@ https://ourcodeworld.com/articles/read/1757/how-to-implement-a-paginator-in-a-dj
       {% if page_obj.has_next %}
         <li class="page-item">
           <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-            Next
+            <i class="bi bi-arrow-right"></i>
           </a>
         </li>
         <li class="page-item">
           <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
-            Last
+            <i class="bi bi-skip-end-fill"></i>
           </a>
         </li>
       {% endif %}
