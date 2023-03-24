@@ -6,10 +6,10 @@
   </div>
 
   <div class="card-body d-flex flex-column">
-    <h5 class="card-title">
+    <h5 class="card-title fs-4">
       {{ trip.cave_name }}
     </h5>
-    <h6 class="card-subtitle mb-2 text-muted">
+    <h6 class="card-subtitle mb-2 fs-5 text-muted">
       {{ trip.start|date:"Y-m-d" }}
     </h6>
 
@@ -30,6 +30,6 @@
       {% endwith %}
     </p>
 
-    <a class="btn btn-primary btn-sm mt-auto" href="{% url 'log:trip_detail' trip.pk %}">View trip...</a>
+    <a class="btn btn-info text-dark mt-auto" href="{% url 'log:trip_detail' trip.pk %}">View trip</a>
   </div>
 </div>

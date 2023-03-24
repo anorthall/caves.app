@@ -8,6 +8,8 @@ body {
 
 .trip-header {
   line-height: 1 !important;
+  letter-spacing: 0 !important;
+  white-space: normal;
 }
 
 .notes-display p:last-child {

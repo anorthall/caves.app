@@ -5,9 +5,9 @@
 {% endif %}
 
 <!-- Cave name -->
-<div class="row">
+<div class="row mt-1">
   <div class="col">
-    <span class="display-5 trip-header">
+    <span class="fs-1 trip-header">
       {{ trip.cave_name }}
     </span>
   </div>
@@ -17,7 +17,7 @@
   <!-- Region, Country -->
   <div class="row">
     <div class="col">
-      <span class="fs-5 text-muted trip-header">
+      <span class="fs-5 text-muted">
         {{ trip.cave_region }}{% if trip.cave_region and trip.cave_country %} &middot; {% endif %}{{ trip.cave_country }}
       </span>
     </div>
@@ -27,12 +27,12 @@
 <!-- Badges: Type, Expedition, Clubs -->
 <div class="row">
   <div class="col">
-    <span class="badge rounded-pill text-bg-primary">{{ trip.type }} trip</span>
+    <span class="badge rounded-pill text-bg-warning">{{ trip.type }} trip</span>
     {% if trip.clubs %}
-      <span class="badge rounded-pill text-bg-success">Clubs: {{ trip.clubs }}</span>
+      <span class="badge rounded-pill text-bg-info">Clubs: {{ trip.clubs }}</span>
     {% endif %}
     {% if trip.expedition %}
-      <span class="badge rounded-pill text-bg-warning">Expedition: {{ trip.expedition }}</span>
+      <span class="badge rounded-pill text-bg-success">Expedition: {{ trip.expedition }}</span>
     {% endif %}
   </div>
 </div>
