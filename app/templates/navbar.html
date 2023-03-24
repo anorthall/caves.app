@@ -1,43 +1,7 @@
 <header>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom mb-3" aria-label="navbar">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow mb-4" aria-label="navbar">
     <div class="container">
-      <a class="navbar-brand fs-3 mx-auto" href="/">caves.app</a>
-      {% comment %}
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbar">
-        <ul class="navbar-nav me-auto">
-        </ul>
-
-        <ul class="navbar-nav ms-auto">
-          {% if request.user.is_authenticated %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
-
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-              <li><span class="dropdown-item">{{ request.user.email }}</span></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{% url 'users:profile' %}">Profile</a></li>
-              {% if request.user.is_staff %}
-              <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
-              {% endif %}
-              <li><a class="dropdown-item" href="{% url 'users:logout' %}">Logout</a></li>
-            </ul>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'users:login' %}">Login</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'users:register' %}">Register</a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
-      {% endcomment %}
+      <a class="navbar-brand fs-3 mx-auto mx-lg-0 fw-bolder" href="/">caves.app</a>
     </div>
   </nav>
 </header>

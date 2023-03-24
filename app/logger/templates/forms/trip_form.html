@@ -7,16 +7,11 @@
   {{ hidden_field }}
 {% endfor %}
 
-<!-- Cave details title -->
-<div class="bg-light border rounded fs-5 p-2 mb-3">
-  Cave details
-</div>
-
 <!-- Cave name -->
 <div class="row mb-3 px-2">
   <div class="col">
     <label class="form-label fw-bold" for="{{ form.cave_name.auto_id }}">
-      Name
+      Cave name
     </label>
     {% if form.is_bound %}
       {% if form.cave_name.errors %}
@@ -39,7 +34,7 @@
   <div class="col-xl-6 mb-3 mb-xl-0">
     <!-- Cave region -->
     <label class="form-label" for="{{ form.cave_region.auto_id }}">
-      Region
+      Cave region
     </label>
     {% if form.is_bound %}
       {% if form.cave_region.errors %}
@@ -59,7 +54,7 @@
   <div class="col-xl-6">
     <!-- Cave country -->
     <label class="form-label" for="{{ form.cave_country.auto_id }}">
-      Country
+      Cave country
     </label>
     {% if form.is_bound %}
       {% if form.cave_country.errors %}
@@ -101,7 +96,7 @@
 
 
 <!-- Trip details title -->
-<div class="bg-light border rounded fs-5 p-2 mb-3 mt-5">
+<div class="bg-primary bg-gradident text-white shadow border fs-5 p-2 mb-3 mt-5">
   Trip details
 </div>
 
@@ -154,7 +149,7 @@
 <div class="row mb-3 px-2">
   <div class="col-xl-6 mb-3 mb-xl-0">
     <!-- Trip type -->
-    <label class="form-label fw-bold" for="{{ form.type.auto_id }}">
+    <label class="form-label" for="{{ form.type.auto_id }}">
       Type
     </label>
     {% if form.is_bound %}
@@ -174,7 +169,7 @@
 
   <div class="col-xl-6">
     <!-- Privacy -->
-    <label class="form-label fw-bold" for="{{ form.privacy.auto_id }}">
+    <label class="form-label" for="{{ form.privacy.auto_id }}">
       Privacy
     </label>
     {% if form.is_bound %}
@@ -282,7 +277,7 @@
 
 
 <!-- Distances title -->
-<div class="bg-light border rounded fs-5 p-2 mt-5 mb-3">
+<div class="bg-primary bg-gradident text-white shadow border fs-5 p-2 mb-3 mt-5">
   Distances
 </div>
 
@@ -394,7 +389,7 @@
 
 
 <!-- Notes title -->
-<div class="bg-light border rounded fs-5 p-2 mb-3 mt-5">
+<div class="bg-primary bg-gradident text-white shadow border fs-5 p-2 mb-3 mt-5">
   Notes
 </div>
 

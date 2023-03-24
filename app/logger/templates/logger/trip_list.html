@@ -11,9 +11,9 @@
   </div>
 
   {% if object_list %}
-    <div class="card-body px-0 pt-0">
+    <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table table-hover table-striped">
+        <table class="table table-hover table-striped table-borderless mb-0">
           <thead>
             <tr>
               <th class="d-none d-sm-block ps-1 text-center" scope="col">#</th>
@@ -23,7 +23,7 @@
               <th scope="col"></th>
             </tr>
           </thead>
-          <tbody class="table-group-divider">
+          <tbody>
             {% for trip in object_list %}
               <tr>
                 <th class="d-none d-sm-block ps-1 text-center" scope="row">{{ trip_index|get:trip.pk }}</th>
@@ -34,19 +34,19 @@
                   {{ trip.cave_name }}
 
                   {% if trip.cave_url %}
-                    <a class="link-secondary d-none d-md-inline" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
+                    <a class="d-none d-md-inline" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
                   {% endif %}
                 </td>
 
                 <td class="d-none d-lg-block">{{ trip.type }}</td>
 
                 <td class="text-end pe-2">
-                  <a class="link-secondary" href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
+                  <a href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
                   <span class="d-none d-sm-inline">
                     &nbsp;
-                    <a class="link-secondary" href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
                     &nbsp;
-                    <a class="link-secondary" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
+                    <a href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
                   </span>
                 </td>
               </tr>
@@ -55,8 +55,7 @@
         </table>
       </div>
 
-
-      <div class="mt-2">{% include "paginate_bootstrap.html" %}</div>
+      {% include "paginate_bootstrap.html" %}
     </div>
   {% else %}
     <div class="card-body">

@@ -30,7 +30,7 @@
         <div>
         {% if login_has_failed %}
         <p class="text-center">
-          <a class="link-secondary" href="{% url 'users:password-reset' %}">
+          <a href="{% url 'users:password-reset' %}">
             <small>Forgotten your password?</small>
           </a>
         </p>

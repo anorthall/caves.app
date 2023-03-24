@@ -132,13 +132,15 @@
 {% endif %}
 
 {% if trip.report_url or trip.cave_url %}
+  <hr />
+
   <!-- External Resources -->
   <div class="row g-2">
     <div class="col-12">
       <small class="text-muted">External resources</small>
       <ol class="mb-0">
-        {% if trip.report_url %}<li><a class="link-secondary" href="{{ trip.report_url }}" target="_blank">Trip report</a></li>{% endif %}
-        {% if trip.cave_url %}<li><a class="link-secondary" href="{{ trip.cave_url }}" target="_blank">Website for {{ trip.cave_name }}</a></li>{% endif %}
+        {% if trip.report_url %}<li><a href="{{ trip.report_url }}" target="_blank">Trip report</a></li>{% endif %}
+        {% if trip.cave_url %}<li><a href="{{ trip.cave_url }}" target="_blank">Website for {{ trip.cave_name }}</a></li>{% endif %}
       </ol>
     </div>
   </div>

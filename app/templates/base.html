@@ -13,7 +13,7 @@
     <!-- Local styles -->
     <link href="{% static 'css/core.css' %}" rel="stylesheet">
 
-    <!-- Bootstrap v5.2.3 CSS -->
+    <!-- Bootstrap v5.2.3 CSS from https://bootswatch.com/ -->
     <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
 
     <!-- Bootstrap Icons v1.10.3 -->
@@ -45,12 +45,12 @@
       <div class="container">
         <span class="float-start text-muted">
           {% block footer_left %}
-          Copyright &copy; 2023 <a class="link-secondary" href="https://northall.me.uk/">Andrew Northall</a>
+          Copyright &copy; 2023 <a href="https://northall.me.uk/">Andrew Northall</a>
           {% endblock %}
         </span>
         <span class="d-none d-lg-block float-end text-muted">
           {% block footer_right %}
-          <a href="{% url 'log:about' %}" class="link-secondary">About</a>
+          <a href="{% url 'log:about' %}">About</a>
           {% endblock %}
         </span>
       </div>

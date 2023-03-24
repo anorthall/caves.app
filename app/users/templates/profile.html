@@ -66,8 +66,8 @@
             </td>
           </tr>
 
-          <tr class="text-center fs-5 bg-light">
-            <th scope="col" colspan="2" class="ps-3">Settings</th>
+          <tr class="fs-5 bg-secondary bg-gradient">
+            <th class="ps-3 fw-normal" scope="col" colspan="2">Settings</th>
           </tr>
 
           <tr>
@@ -90,8 +90,8 @@
             </td>
           </tr>
 
-          <tr class="text-center fs-5 bg-light">
-            <th scope="col" colspan="2">Account Information</th>
+          <tr class="fs-5 bg-secondary bg-gradient">
+            <th class="ps-3 fw-normal" scope="col" colspan="2">Account information</th>
           </tr>
 
           <tr>
@@ -100,8 +100,8 @@
           </tr>
 
           <tr>
-            <th scope="row" class="ps-3">Last login</th>
-            <td>{{ user.last_login|time:"H:i" }} on {{ user.last_login|date:"l, jS F Y (e)" }}</td>
+            <th class="no-bottom-border ps-3" scope="row">Last login</th>
+            <td class="no-bottom-border">{{ user.last_login|time:"H:i" }} on {{ user.last_login|date:"l, jS F Y (e)" }}</td>
           </tr>
         </tbody>
       </table>

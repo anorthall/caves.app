@@ -24,7 +24,7 @@
         {% elif trip.html_tidbits %}
           {{ trip.html_tidbits|safe|truncatechars_html:max_chars }}
         {% else %}
-          Why not <a class="link-secondary" href="{% url 'log:trip_update' trip.pk %}">edit this trip</a>
+          Why not <a href="{% url 'log:trip_update' trip.pk %}">edit this trip</a>
           and add some more information?
         {% endif %}
       {% endwith %}

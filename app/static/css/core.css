@@ -10,8 +10,12 @@ body {
   line-height: 1 !important;
 }
 
-.notes-display p {
+.notes-display p:last-child {
   margin-bottom: 0;
+}
+
+.no-bottom-border {
+  border-bottom: none;
 }
 
 .statistics-table tbody th {
