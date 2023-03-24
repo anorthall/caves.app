@@ -154,7 +154,7 @@ def verify_new_account(request):
                 request,
                 f"Welcome, {verified_user.first_name}. Your registration has been completed and your email address verified!",
             )
-            return redirect("users:profile")
+            return redirect("log:index")
     else:
         form = VerifyEmailForm()
 
