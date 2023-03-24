@@ -15,21 +15,7 @@
         {% block sidebar %}{% endblock %}
 
         {% if request.user.is_staff %}
-          <div class="card mt-4">
-            <div class="card-header text-center">
-              Administration
-            </div>
-
-            <nav class="nav nav-pills flex-column m-2">
-              <a class="nav-link" target="_blank" href="{% url 'admin:index' %}">
-                <i class="bi bi-gear"></i>&nbsp; Admin
-              </a>
-
-              <a class="nav-link {% active_link 'log:admin_tools' %}" href="{% url 'log:admin_tools' %}">
-                <i class="bi bi-tools"></i>&nbsp; Tools
-              </a>
-            </nav>
-          </div>
+          {% include "sidebar_admin.html" %}
         {% endif %}
       </div>
     </div>
