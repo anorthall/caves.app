@@ -160,7 +160,7 @@ class Trip(models.Model):
             "aided": 0,
             "horizontal": 0,
             "trips": 0,
-            "time": timezone.timedelta(minutes=0),
+            "time": timezone.timedelta(0),
         }
 
         # Return the empty results if there are no trips.
@@ -170,7 +170,7 @@ class Trip(models.Model):
         # Iterate and add up
         for trip in qs:
             results["trips"] += 1
-            results["time"] += trip.duration if trip.end else 0
+            results["time"] += trip.duration if trip.end else timezone.timedelta(0)
             results["vert_down"] += trip.vert_dist_down if trip.vert_dist_down else 0
             results["vert_up"] += trip.vert_dist_up if trip.vert_dist_up else 0
             results["surveyed"] += trip.surveyed_dist if trip.surveyed_dist else 0
