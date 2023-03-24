@@ -9,15 +9,13 @@
     </p>
 
     <p class="mb-3">
-      I thought I'd give you a few hints on how to best use the site. This page will disappear once you've added three
-      trips. Follow the steps below to get started:
+      I thought I'd give you a few hints on how to best use the site. Follow the steps below to get started:
     </p>
 
     <ol>
       <li class="mb-2">
         <a href="{% url 'users:update' %}">Fill out your user profile</a>. Some settings are important for the functionality
-        of the site &mdash; such as the timezone that will be used to enter/display trips. Please note that distance unit
-        conversion is not yet implemented &mdash; all distances are displayed and entered in metres.
+        of the site &mdash; such as the timezone that will be used to enter/display trips and which distance units to use.
       </li>
 
       <li class="mb-2">
@@ -31,5 +29,11 @@
         <code>admin@caves.app</code> and I will do my best to fix them.
       </li>
     </ol>
+
+    <div class="text-muted">
+      <small>
+        This notice will disappear once you've added three trips.
+      </small>
+    </div>
   </div>
 </div>

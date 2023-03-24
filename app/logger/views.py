@@ -17,6 +17,7 @@ from django.views.generic import (
     ListView,
 )
 
+from .templatetags.distformat import distformat
 from .models import Trip
 from .forms import TripForm
 
@@ -55,6 +56,7 @@ def index(request):
         "trip_count": trip_count,
         "trip_stats": trip_stats,
         "trip_stats_year": trip_stats_year,
+        "dist_format": request.user.units,
     }
     return render(request, "index_registered.html", context)
 
@@ -124,6 +126,7 @@ def export(request):
     )
 
     # Content
+    units = request.user.units  # Distance units
     tf = "%Y-%m-%d %H:%M"  # Time format to use
     x = 1
     for t in qs:
@@ -148,11 +151,11 @@ def export(request):
             t.cavers,
             t.clubs,
             t.expedition,
-            t.horizontal_dist,
-            t.vert_dist_down,
-            t.vert_dist_up,
-            t.surveyed_dist,
-            t.aid_dist,
+            distformat(t.horizontal_dist, units, simplify=False),
+            distformat(t.vert_dist_down, units, simplify=False),
+            distformat(t.vert_dist_up, units, simplify=False),
+            distformat(t.surveyed_dist, units, simplify=False),
+            distformat(t.aid_dist, units, simplify=False),
             t.report_url,
             t.notes,
             t.added.strftime(tf),
@@ -170,7 +173,7 @@ class TripListView(LoginRequiredMixin, ListView):
 
     model = Trip
     template_name_suffix = "_list"
-    paginate_by = 25
+    paginate_by = 100
 
     def get_queryset(self):
         """Only allow the user to update trips they created"""

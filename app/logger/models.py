@@ -4,8 +4,10 @@ from django.utils.html import escape
 from django.conf import settings
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
+from distance import DistanceField, DistanceUnitField
+from .validators import *
+from django.contrib.gis.measure import Distance
 import humanize
 
 
@@ -95,41 +97,70 @@ class Trip(models.Model):
     updated = models.DateTimeField("trip last updated", auto_now=True)
 
     # Distances
-    horizontal_dist = models.IntegerField(
-        "horizontal distance",
+    horizontal_dist = DistanceField(
+        max_digits=14,
+        decimal_places=6,
+        verbose_name="horizontal distance",
+        unit="m",
+        unit_field="horizontal_dist_units",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[above_zero_dist_validator, horizontal_dist_validator],
         help_text="Horizontal distance covered.",
     )
-    vert_dist_down = models.IntegerField(
-        "rope descent distance",
+    horizontal_dist_units = DistanceUnitField()
+
+    vert_dist_down = DistanceField(
+        max_digits=14,
+        decimal_places=6,
+        verbose_name="rope descent distance",
+        unit="m",
+        unit_field="vert_dist_down_units",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[above_zero_dist_validator, vertical_dist_validator],
         help_text="Distance descended on rope.",
     )
-    vert_dist_up = models.IntegerField(
-        "rope ascent distance",
+    vert_dist_down_units = DistanceUnitField()
+
+    vert_dist_up = DistanceField(
+        max_digits=14,
+        decimal_places=6,
+        verbose_name="rope ascent distance",
+        unit="m",
+        unit_field="vert_dist_up_units",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[above_zero_dist_validator, vertical_dist_validator],
         help_text="Distance ascended on rope.",
     )
-    surveyed_dist = models.IntegerField(
-        "surveyed distance",
+    vert_dist_up_units = DistanceUnitField()
+
+    surveyed_dist = DistanceField(
+        max_digits=14,
+        decimal_places=6,
+        verbose_name="surveyed distance",
+        unit="m",
+        unit_field="surveyed_dist_units",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[above_zero_dist_validator, horizontal_dist_validator],
         help_text="Distance surveyed.",
     )
-    aid_dist = models.IntegerField(
-        "aid climbing distance",
+    surveyed_dist_units = DistanceUnitField()
+
+    aid_dist = DistanceField(
+        max_digits=14,
+        decimal_places=6,
+        verbose_name="aid climbing distance",
+        unit="m",
+        unit_field="aid_dist_units",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[above_zero_dist_validator, vertical_dist_validator],
         help_text="Distance covered by aid climbing.",
     )
+    aid_dist_units = DistanceUnitField()
 
     # Notes
     notes = models.TextField(blank=True)
@@ -154,11 +185,11 @@ class Trip(models.Model):
 
         # Initialise results
         results = {
-            "vert_down": 0,
-            "vert_up": 0,
-            "surveyed": 0,
-            "aided": 0,
-            "horizontal": 0,
+            "vert_down": Distance(m=0),
+            "vert_up": Distance(m=0),
+            "surveyed": Distance(m=0),
+            "aided": Distance(m=0),
+            "horizontal": Distance(m=0),
             "trips": 0,
             "time": timezone.timedelta(0),
         }
@@ -171,11 +202,11 @@ class Trip(models.Model):
         for trip in qs:
             results["trips"] += 1
             results["time"] += trip.duration if trip.end else timezone.timedelta(0)
-            results["vert_down"] += trip.vert_dist_down if trip.vert_dist_down else 0
-            results["vert_up"] += trip.vert_dist_up if trip.vert_dist_up else 0
-            results["surveyed"] += trip.surveyed_dist if trip.surveyed_dist else 0
-            results["horizontal"] += trip.horizontal_dist if trip.horizontal_dist else 0
-            results["aided"] += trip.aid_dist if trip.aid_dist else 0
+            results["vert_down"] += trip.vert_dist_down
+            results["vert_up"] += trip.vert_dist_up
+            results["surveyed"] += trip.surveyed_dist
+            results["horizontal"] += trip.horizontal_dist
+            results["aided"] += trip.aid_dist
 
         # Humanise duration
         results["time"] = humanize.precisedelta(results["time"], minimum_unit="minutes")
@@ -213,6 +244,7 @@ class Trip(models.Model):
 
         return humanize.precisedelta(td, minimum_unit="minutes")
 
+    @property
     def has_distances(self):
         """Return True if at least one distance measurement is recorded"""
         if self.horizontal_dist or self.vert_dist_down or self.vert_dist_up:
@@ -267,7 +299,7 @@ class Trip(models.Model):
             if v:
                 valid_data.append((k, escape(v)))
 
-        return valid_data[:4]  # Only return a maximum of 4 items
+        return valid_data  # Only return a maximum of 4 items
 
     @cached_property
     def html_tidbits(self):
@@ -281,8 +313,7 @@ class Trip(models.Model):
 
         html = ""
         for k, v in self.tidbits:
-            new = f" &middot; {span}{k}</span> {v}"
+            new = f" {span}{k}</span> {v}"
             html = html + new
-        html = html[10:]  # Remove first &middot;
 
         return html

@@ -21,8 +21,8 @@
         {% elif trip.cavers %}
           <span class="text-muted">Cavers</span>
           {{ trip.cavers|truncatechars:max_chars }}
-        {% elif trip.get_tidbits %}
-          {{ trip.get_html_tidbits|safe|truncatechars_html:max_chars }}
+        {% elif trip.html_tidbits %}
+          {{ trip.html_tidbits|safe|truncatechars_html:max_chars }}
         {% else %}
           Why not <a class="link-secondary" href="{% url 'log:trip_update' trip.pk %}">edit this trip</a>
           and add some more information?

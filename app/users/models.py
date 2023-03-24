@@ -92,7 +92,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         max_length=10,
         default=METRIC,
         choices=UNIT_CHOICES,
-        help_text="Units of distance to display/enter data in.",
+        help_text="Preferred units of distance.",
     )
 
     # Privacy settings
@@ -114,7 +114,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     timezone = TimeZoneField(
         default="Europe/London",
         choices_display="WITH_GMT_OFFSET",
-        help_text="Timezone to enter/display dates and times in.",
+        help_text="Timezone to enter and display dates and times in.",
     )
 
     # is_active determines if a user can log in or not

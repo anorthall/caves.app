@@ -1,5 +1,6 @@
 {% extends "base_sidebar.html" %}
 {% load get %}
+{% load distformat %}
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
@@ -46,26 +47,26 @@
           <tbody>
             <tr>
               <th scope="row" class="ps-3">Rope ascent</th>
-              <td class="text-center">{{ trip_stats_year.vert_up }}m</td>
-              <td class="text-center pe-3">{{ trip_stats.vert_up }}m</td>
+              <td class="text-center">{{ trip_stats_year.vert_up|distformat:dist_format }}</td>
+              <td class="text-center pe-3">{{ trip_stats.vert_up|distformat:dist_format }}</td>
             </tr>
 
             <tr>
               <th scope="row" class="ps-3">Rope descent</th>
-              <td class="text-center">{{ trip_stats_year.vert_down }}m</td>
-              <td class="text-center pe-3">{{ trip_stats.vert_down }}m</td>
+              <td class="text-center">{{ trip_stats_year.vert_down|distformat:dist_format }}</td>
+              <td class="text-center pe-3">{{ trip_stats.vert_down|distformat:dist_format }}</td>
             </tr>
 
             <tr>
               <th scope="row" class="ps-3">Surveyed</th>
-              <td class="text-center">{{ trip_stats_year.surveyed }}m</td>
-              <td class="text-center pe-3">{{ trip_stats.surveyed }}m</td>
+              <td class="text-center">{{ trip_stats_year.surveyed|distformat:dist_format }}</td>
+              <td class="text-center pe-3">{{ trip_stats.surveyed|distformat:dist_format }}</td>
             </tr>
 
             <tr>
               <th scope="row" class="ps-3">Horizontal</th>
-              <td class="text-center">{{ trip_stats_year.horizontal }}m</td>
-              <td class="text-center pe-3">{{ trip_stats.horizontal }}m</td>
+              <td class="text-center">{{ trip_stats_year.horizontal|distformat:dist_format }}</td>
+              <td class="text-center pe-3">{{ trip_stats.horizontal|distformat:dist_format }}</td>
             </tr>
 
             <tr class="border-top">
