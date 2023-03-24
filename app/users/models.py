@@ -1,11 +1,9 @@
-import humanize
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
 from django_countries.fields import CountryField
-from django.utils import timezone
 from django.db import models
 from timezone_field import TimeZoneField
 from logger.models import Trip
