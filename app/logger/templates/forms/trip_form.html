@@ -1,4 +1,6 @@
 {% load widget_tweaks %}
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
 
 <!-- Hidden fields -->
 {% for hidden_field in form.hidden_fields %}
@@ -121,6 +123,7 @@
       {% render_field form.start class="form-control" %}
     {% endif %}
     <div class="form-text">
+      Timezone: {{ TIME_ZONE }}<br />
       {{ form.start.help_text }}
     </div>
   </div>
@@ -141,6 +144,7 @@
       {% render_field form.end class="form-control" %}
     {% endif %}
     <div class="form-text">
+      Timezone: {{ TIME_ZONE }}<br />
       {{ form.end.help_text }}
     </div>
   </div>
