@@ -42,21 +42,23 @@ class TripTestCase(TestCase):
         trip_without_end = Trip.objects.get(cave_name="Test Cave 2")
 
         self.assertNotEqual(trip_with_end.end, None)
-        self.assertEqual(trip_with_end.duration(), timezone.timedelta(hours=2))
+        self.assertEqual(trip_with_end.duration, timezone.timedelta(hours=2))
 
         self.assertEqual(trip_without_end.end, None)
-        self.assertEqual(trip_without_end.duration(), None)
+        self.assertEqual(trip_without_end.duration, None)
 
     def test_trip_duration_str(self):
         """Check that the trip duration string returns the correct value"""
         trip = Trip.objects.get(cave_name="Test Cave 1")
-        self.assertEqual(trip.duration_str(), "2 hours")
+        self.assertEqual(trip.duration_str, "2 hours")
 
+        trip = Trip.objects.get(cave_name="Test Cave 1")  # Cached, grab again
         trip.end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
-        self.assertEqual(trip.duration_str(), "1 day, 1 hour and 1 minute")
+        self.assertEqual(trip.duration_str, "1 day, 1 hour and 1 minute")
 
+        trip = Trip.objects.get(cave_name="Test Cave 1")  # Cached, grab again
         trip.end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
-        self.assertEqual(trip.duration_str(), "2 days, 2 hours and 2 minutes")
+        self.assertEqual(trip.duration_str, "2 days, 2 hours and 2 minutes")
 
     def test_trip_privacy(self):
         """Test the Trip.is_private and Trip.is_public methods"""

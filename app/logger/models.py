@@ -2,7 +2,9 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import escape
 from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+from django.utils.functional import cached_property
+from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 import humanize
 
@@ -97,35 +99,35 @@ class Trip(models.Model):
         "horizontal distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(20000)],
+        validators=[MinValueValidator(1)],
         help_text="Horizontal distance covered.",
     )
     vert_dist_down = models.IntegerField(
         "rope descent distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(5000)],
+        validators=[MinValueValidator(1)],
         help_text="Distance descended on rope.",
     )
     vert_dist_up = models.IntegerField(
         "rope ascent distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(5000)],
+        validators=[MinValueValidator(1)],
         help_text="Distance ascended on rope.",
     )
     surveyed_dist = models.IntegerField(
         "surveyed distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(20000)],
+        validators=[MinValueValidator(1)],
         help_text="Distance surveyed.",
     )
     aid_dist = models.IntegerField(
         "aid climbing distance",
         blank=True,
         null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(1000)],
+        validators=[MinValueValidator(1)],
         help_text="Distance covered by aid climbing.",
     )
 
@@ -142,6 +144,44 @@ class Trip(models.Model):
             index[trip.pk] = trip_list.index(trip.pk) + 1
         return index
 
+    @classmethod
+    def stats_for_user(cls, user, year=None):
+        """Get statistics of Trips for a user, optionally by year"""
+        # Get the QuerySet.
+        qs = Trip.objects.filter(user=user)
+        if year:
+            qs = qs.filter(start__year=year)
+
+        # Initialise results
+        results = {
+            "vert_down": 0,
+            "vert_up": 0,
+            "surveyed": 0,
+            "aided": 0,
+            "horizontal": 0,
+            "trips": 0,
+            "time": timezone.timedelta(minutes=0),
+        }
+
+        # Return the empty results if there are no trips.
+        if not qs:
+            return results
+
+        # Iterate and add up
+        for trip in qs:
+            results["trips"] += 1
+            results["time"] += trip.duration if trip.end else 0
+            results["vert_down"] += trip.vert_dist_down if trip.vert_dist_down else 0
+            results["vert_up"] += trip.vert_dist_up if trip.vert_dist_up else 0
+            results["surveyed"] += trip.surveyed_dist if trip.surveyed_dist else 0
+            results["horizontal"] += trip.horizontal_dist if trip.horizontal_dist else 0
+            results["aided"] += trip.aid_dist if trip.aid_dist else 0
+
+        # Humanise duration
+        results["time"] = humanize.precisedelta(results["time"], minimum_unit="minutes")
+
+        return results
+
     def __str__(self):
         """Return the name of the cave visited."""
         return self.cave_name
@@ -157,15 +197,17 @@ class Trip(models.Model):
     def get_absolute_url(self):
         return reverse("log:trip_detail", kwargs={"pk": self.pk})
 
+    @cached_property
     def duration(self):
         """Return a the trip duration or None"""
         if not self.end:
             return None
         return self.end - self.start
 
+    @cached_property
     def duration_str(self):
         """Return a human english expression of the duration"""
-        td = self.duration()
+        td = self.duration
         if td is None:
             return None
 
@@ -192,13 +234,15 @@ class Trip(models.Model):
             return True
         return False
 
+    @cached_property
     def number(self):
         """Returns the 'index' of the trip by date"""
         qs = Trip.objects.filter(user=self.user).order_by("start")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
 
-    def get_tidbits(self, num_items=4, escape_html=True):
+    @cached_property
+    def tidbits(self):
         """Return a dict of tidbits of information for small cards"""
         data = []
         if self.cave_region and self.cave_country:
@@ -208,7 +252,7 @@ class Trip(models.Model):
             [  # Fields eligible for inclusion
                 ("Clubs", self.clubs),
                 ("Expedition", self.expedition),
-                ("Duration", self.duration_str()),
+                ("Duration", self.duration_str),
                 ("Distance", self.horizontal_dist),
                 ("Climbed", self.vert_dist_up),
                 ("Descended", self.vert_dist_down),
@@ -216,27 +260,27 @@ class Trip(models.Model):
                 ("Aided", self.aid_dist),
             ]
         )
+
+        # Remove empty values and escape HTML
         valid_data = []
-        for k, v in data:  # Remove empty values
+        for k, v in data:
             if v:
-                if escape_html:
-                    valid_data.append((k, escape(v)))
-                else:
-                    valid_data.append((k, v))
-        return valid_data[:num_items]
+                valid_data.append((k, escape(v)))
 
-    def get_html_tidbits(self, **kwargs):
+        return valid_data[:4]  # Only return a maximum of 4 items
+
+    @cached_property
+    def html_tidbits(self):
         """Return usable HTML from get_tidbits()"""
-        tidbits = self.get_tidbits(**kwargs)
-        if not tidbits:
+        if not self.tidbits:
             return None
-
         span = '<span class="text-muted">'
-        if len(tidbits) == 1:
-            return f"{span}{tidbits[0][0]}</span> {tidbits[0][1]}"
+
+        if len(self.tidbits) == 1:  # Return just the one
+            return f"{span}{self.tidbits[0][0]}</span> {self.tidbits[0][1]}"
 
         html = ""
-        for k, v in tidbits:
+        for k, v in self.tidbits:
             new = f" &middot; {span}{k}</span> {v}"
             html = html + new
         html = html[10:]  # Remove first &middot;

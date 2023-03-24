@@ -30,17 +30,13 @@ def index(request):
     Registered users will be shown an interface to add/manage
     recent caving trips.
     """
-
-    # Unregistered/unauthenticated users
     if not request.user.is_authenticated:
         return redirect("users:login")
 
-    # Authenticated users
     # Get most recent trips
     qs = Trip.objects.filter(user=request.user).order_by("-start")
     recent_trips = qs[:6]
     trip_count = qs.count()
-    site_trip_count = Trip.objects.all().count()
 
     # Only display 3 or 6 trips
     if recent_trips.count() < 3:
@@ -50,21 +46,14 @@ def index(request):
         recent_trips = recent_trips[:3]  # Display only three trips
 
     # Distance stats
-    total_trips, total_duration, dist_stats = request.user.get_trip_stats()
-    yr_total_trips, yr_total_duration, yr_dist_stats = request.user.get_trip_stats(
-        year=timezone.now().year
-    )
+    trip_stats = Trip.stats_for_user(request.user)
+    trip_stats_year = Trip.stats_for_user(request.user, year=timezone.now().year)
 
     context = {
         "recent_trips": recent_trips,
         "trip_count": trip_count,
-        "site_trip_count": site_trip_count,
-        "total_trips": total_trips,
-        "total_duration": total_duration,
-        "dist_stats": dist_stats,
-        "yr_total_trips": yr_total_trips,
-        "yr_total_duration": yr_total_duration,
-        "yr_dist_stats": yr_dist_stats,
+        "trip_stats": trip_stats,
+        "trip_stats_year": trip_stats_year,
     }
     return render(request, "index_registered.html", context)
 
@@ -153,7 +142,7 @@ def export(request):
             row = row + [t.end]
 
         row = row + [  # Second half of row
-            t.duration_str(),
+            t.duration_str,
             t.type,
             t.cavers,
             t.clubs,

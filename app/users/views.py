@@ -5,6 +5,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from .verify import generate_token
 from .forms import (
     UserCreationForm,
@@ -23,46 +24,44 @@ from .emails import (
 )
 
 
-class PasswordResetView(auth.views.PasswordResetView):
+class PasswordResetView(SuccessMessageMixin, auth.views.PasswordResetView):
     template_name = "password_reset.html"
     email_template_name = "emails/email_password_reset.html"
     html_email_template_name = "emails/email_html_password_reset.html"
     subject_template_name = "emails/email_password_reset_subject.txt"
-    success_url = reverse_lazy("users:password-reset-sent")
+    success_url = reverse_lazy("users:login")
+    success_message = (
+        "If such an email is on record, then a password reset link has been sent."
+    )
     form_class = PasswordResetForm
     extra_email_context = {
         "site_root": settings.SITE_ROOT,
     }
 
 
-class PasswordResetConfirmView(auth.views.PasswordResetConfirmView):
+class PasswordResetConfirmView(
+    SuccessMessageMixin, auth.views.PasswordResetConfirmView
+):
     template_name = "password_reset_confirm.html"
-    success_url = reverse_lazy("users:password-reset-done")
+    success_url = reverse_lazy("users:profile")
     form_class = SetPasswordForm
     post_reset_login = True
+    success_message = "Your password has been updated and you are signed in."
 
 
-def password_reset_sent(request):
-    messages.info(
-        request,
-        "If such an email is on record, then a password reset link has been sent.",
-    )
-    return redirect("users:password-reset")
+class PasswordChangeView(
+    LoginRequiredMixin, SuccessMessageMixin, auth.views.PasswordChangeView
+):
+    """Presents a password change form."""
 
-
-@login_required
-def password_reset_done(request):
-    messages.success(request, "Your password has been updated and you are signed in.")
-    return redirect("users:profile")
-
-
-class PasswordChangeView(LoginRequiredMixin, auth.views.PasswordChangeView):
     template_name = "password_change.html"
-    success_url = reverse_lazy("users:password-reset-done")
+    success_url = reverse_lazy("users:profile")
     form_class = PasswordChangeForm
+    success_message = "Your password has been updated."
 
 
 def login(request):
+    """Log in the user."""
     context = {}
     if request.method == "POST":
         username = request.POST["email"]
@@ -89,6 +88,7 @@ def login(request):
 
 
 def logout(request):
+    """Log out the user."""
     auth.logout(request)
     messages.info(request, "You have been signed out.")
     return redirect("log:index")
@@ -96,6 +96,7 @@ def logout(request):
 
 @login_required
 def update(request):
+    """Update the user profile."""
     if request.method == "POST":
         form = UserChangeForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -112,10 +113,12 @@ def update(request):
 
 @login_required
 def profile(request):
+    """View the user profile."""
     return render(request, "profile.html", {"user": request.user})
 
 
 def register(request):
+    """Register a user."""
     if request.user.is_authenticated:
         return redirect("users:profile")  # Already registered
 
@@ -138,6 +141,7 @@ def register(request):
 
 
 def verify_new_account(request):
+    """Verify a new registration."""
     if "verify_code" in request.GET:
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
@@ -158,6 +162,7 @@ def verify_new_account(request):
 
 
 def resend_verify_email(request):
+    """Resend a registration verification email."""
     if request.user.is_authenticated:
         return redirect("users:profile")
 
@@ -180,6 +185,7 @@ def resend_verify_email(request):
 
 
 def verify_email_change(request):
+    """Verify an email change code."""
     if "verify_code" in request.GET:
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
@@ -200,6 +206,7 @@ def verify_email_change(request):
 
 @login_required
 def update_email(request):
+    """Send an email change code."""
     if request.method == "POST":
         form = UserChangeEmailForm(request.user, request.POST)
         if form.is_valid():
