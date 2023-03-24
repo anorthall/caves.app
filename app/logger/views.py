@@ -32,7 +32,7 @@ def index(request):
     recent caving trips.
     """
     if not request.user.is_authenticated:
-        return redirect("users:login")
+        return render(request, "index_unregistered.html")
 
     # Get most recent trips
     qs = Trip.objects.filter(user=request.user).order_by("-start")

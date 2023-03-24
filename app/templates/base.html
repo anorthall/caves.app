@@ -29,7 +29,7 @@
 
     {% include "navbar.html" %}
 
-    <main class="flex-shrink-0 mb-4 mt-3">
+    <main class="flex-shrink-0 mb-4">
       {% include "messages.html" %}
 
       <!-- Content start -->
@@ -43,14 +43,13 @@
     <!-- Footer start-->
     <footer class="footer mt-auto py-3 border-top bg-light">
       <div class="container">
-        <span class="float-start text-muted">
+        <span class="float-start">
           {% block footer_left %}
-          Copyright &copy; 2023 <a href="https://northall.me.uk/">Andrew Northall</a>
+          Copyright &copy; 2023 <a class="text-decoration-none text-dark" href="https://northall.me.uk/">Andrew Northall</a>
           {% endblock %}
         </span>
-        <span class="d-none d-lg-block float-end text-muted">
+        <span class="d-none d-lg-block float-end">
           {% block footer_right %}
-          <a href="{% url 'log:about' %}">About</a>
           {% endblock %}
         </span>
       </div>

@@ -1,10 +1,46 @@
-{% extends "base.html" %}
+{% extends "base_center.html" %}
 {% block title %}caves.app{% endblock %}
 {% block description %}An online tool to log caving trips and activity.{% endblock %}
-{% block content %}
 
-<div class="container">
-  <h1 class="display-4">Welcome to caves.app!</h1>
+{% block main %}
+
+<div class="card mt-md-5">
+  <div class="card-header fs-4">
+    Welcome!
+  </div>
+
+  <div class="card-body">
+    <p class="lead fw-bold">
+      caves.app is the modern way to log your underground activity
+    </p>
+
+    <p>
+      A streamlined, mobile-friendly interface allows you to record and view your caving trips
+      from anywhere. Keep detailed records of everything you've done &mdash; who was there, the
+      distance you surveyed, how long you spent underground, and more.
+    </p>
+
+    <p>
+      The service is free to use and you have complete control over your data. Everything is private
+      until you choose to share it, and you can export your data to your own computer at any time.
+    </p>
+
+    <p>
+      Want more information? Have a look at the <a href="{% url 'log:about' %}">about page</a>.
+    </p>
+
+    <div class="d-flex flex-column flex-fill text-center">
+      <a class="btn btn-lg btn-primary mt-4" href="{% url 'users:register' %}">Sign up!</a>
+      <a class="btn btn-lg btn-success mt-3" href="{% url 'users:login' %}">Log in</a>
+    </div>
+
+  </div>
+
+  <div class="card-footer">
+    <small class="text-muted">
+      Need any help? Email admin@caves.app.
+    </small>
+  </div>
 </div>
 
-{% endblock content %}
+{% endblock main %}

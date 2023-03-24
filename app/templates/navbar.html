@@ -1,7 +1,10 @@
+{% if no_nav %}
+{% else %}
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow mb-4" aria-label="navbar">
     <div class="container">
-      <a class="navbar-brand fs-3 mx-auto mx-lg-0 fw-bolder" href="/">caves.app</a>
+      <a class="navbar-brand fs-3 fw-bolder{% if not request.user.is_authenticated %} mx-auto{% endif %}" href="/">caves.app</a>
     </div>
   </nav>
 </header>
+{% endif %}
