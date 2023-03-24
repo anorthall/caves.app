@@ -12,6 +12,10 @@ body {
   white-space: normal;
 }
 
+[data-href] {
+  cursor: pointer;
+}
+
 .notes-display p:last-child {
   margin-bottom: 0;
 }

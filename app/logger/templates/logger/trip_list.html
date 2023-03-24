@@ -19,16 +19,19 @@
               <th class="d-none d-sm-block ps-1 text-center" scope="col">#</th>
               <th scope="col">Date</th>
               <th scope="col">Cave</th>
-              <th class="d-none d-lg-block" scope="col">Trip type</th>
+              <th class="d-none d-xl-table-cell" scope="col">Duration</th>
+              <th class="d-none d-lg-table-cell" scope="col">Trip type</th>
               <th scope="col"></th>
             </tr>
           </thead>
+
           <tbody>
             {% for trip in object_list %}
-              <tr>
+              <tr data-href="{% url 'log:trip_detail' pk=trip.pk %}">
                 <th class="d-none d-sm-block ps-1 text-center" scope="row">{{ trip_index|get:trip.pk }}</th>
 
                 <td>{{ trip.start|date:"j M y" }}</td>
+
 
                 <td>
                   {{ trip.cave_name }}
@@ -38,16 +41,14 @@
                   {% endif %}
                 </td>
 
-                <td class="d-none d-lg-block">{{ trip.type }}</td>
+                <td class="d-none d-xl-table-cell">{{ trip.duration_str }}</td>
 
-                <td class="text-end pe-2">
-                  <a href="{% url 'log:trip_detail' pk=trip.pk %}"><i class="bi bi-info-circle"></i></a>
-                  <span class="d-none d-sm-inline">
-                    &nbsp;
-                    <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
-                    &nbsp;
-                    <a href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
-                  </span>
+                <td class="d-none d-lg-table-cell">{{ trip.type }}</td>
+
+                <td class="text-end pe-2 d-none d-sm-table-cell">
+                  <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
+                  &nbsp;
+                  <a class="text-danger" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
                 </td>
               </tr>
             {% endfor %}
@@ -67,3 +68,15 @@
 </div>
 
 {% endblock main %}
+
+{% block footer_scripts %}
+<!-- Clickable table rows -->
+<script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
+<script>
+  jQuery(document).ready(function($) {
+    $('*[data-href]').on('click', function() {
+        window.location = $(this).data("href");
+    });
+  });
+</script>
+{% endblock footer_scripts %}
