@@ -13,8 +13,7 @@ fi
 
 if [ "$RUN_MIGRATIONS" = "yes" ]
 then
-    echo "Flushing and running migrations..."
-    python manage.py flush --no-input
+    echo "Running migrations..."
     python manage.py migrate
 fi
 
