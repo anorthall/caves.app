@@ -17,4 +17,10 @@ then
     python manage.py collectstatic --no-input
 fi
 
+if [ "$RUN_MAILER" = "yes" ]
+then
+    echo "Running mailer..."
+    python manage.py runmailer &
+fi
+
 exec "$@"

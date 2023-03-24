@@ -37,6 +37,10 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
+MAILER_EMAIL_BACKEND = os.environ.get(
+    "MAILER_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+MAILER_EMPTY_QUEUE_SLEEP = int(os.environ.get("MAILER_EMPTY_QUEUE_SLEEP", 30))
 EMAIL_HOST = os.environ.get("EMAIL_HOST", None)
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 0))
 EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", 0))
@@ -72,6 +76,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django_countries",
     "active_link",
+    "mailer",
     "debug_toolbar",
 ]
 
