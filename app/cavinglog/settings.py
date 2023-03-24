@@ -172,6 +172,20 @@ if DEBUG:
         "10.0.2.2",
     ]
 
+# Sentry SDK
+if not DEBUG and os.environ.get("SENTRY_KEY", None):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=os.environ.get("SENTRY_KEY"),
+        integrations=[
+            DjangoIntegration(),
+        ],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+    )
+
 # Jazzmin
 JAZZMIN_SETTINGS = {
     "site_title": "caves.app",
