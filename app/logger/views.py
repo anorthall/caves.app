@@ -37,12 +37,13 @@ def index(request):
     qs = Trip.objects.filter(user=request.user).order_by("-start")
     recent_trips = qs[:6]
     trip_count = qs.count()
+    recent_trip_count = recent_trips.count()
 
     # Only display 3 or 6 trips
-    if recent_trips.count() < 3:
+    if recent_trip_count < 3:
         # Display welcome text until the user has created three trips
         recent_trips = None
-    elif recent_trips.count() == 4 or recent_trips.count() == 5:
+    elif recent_trip_count == 4 or recent_trip_count == 5:
         recent_trips = recent_trips[:3]  # Display only three trips
 
     # Distance stats
