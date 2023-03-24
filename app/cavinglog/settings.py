@@ -201,7 +201,14 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": True,
     "navigation_expanded": True,
     "hide_apps": ["auth"],
-    "order_with_respect_to": ["logger", "users"],
+    "order_with_respect_to": [
+        "logger",
+        "users",
+        "mailer",
+        "mailer.message",
+        "mailer.messagelog",
+        "mailer.dontsendentry",
+    ],
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
     "changeform_format": "single",
@@ -221,5 +228,8 @@ JAZZMIN_SETTINGS = {
     "icons": {
         "logger.trip": "fas fa-hard-hat",
         "users.cavinguser": "fas fa-users",
+        "mailer.message": "fas fa-envelope",
+        "mailer.messagelog": "fas fa-list",
+        "mailer.dontsendentry": "fas fa-ban",
     },
 }
