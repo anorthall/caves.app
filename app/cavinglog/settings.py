@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "logger.apps.LoggerConfig",
+    "public.apps.PublicConfig",
     "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",

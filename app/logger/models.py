@@ -241,7 +241,7 @@ class Trip(models.Model):
         """Return a human english expression of the duration"""
         td = self.duration
         if td is None:
-            return None
+            return ""
 
         return humanize.precisedelta(td, minimum_unit="minutes")
 

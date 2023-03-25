@@ -18,6 +18,12 @@
         <i class="bi bi-x-lg"></i>&nbsp; Delete this trip
       </a>
 
+      {% if trip.is_public %}
+        <a class="nav-link" target="_blank" href="{% url 'public:trip' username=trip.user.username pk=trip.pk %}">
+          <i class="bi bi-globe"></i>&nbsp; View public page
+        </a>
+      {% endif %}
+
       <hr class="m-2">
     {% endif %}
 

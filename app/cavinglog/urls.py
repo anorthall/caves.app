@@ -20,5 +20,6 @@ urlpatterns = [
     path("", include("logger.urls")),
     path("account/", include("users.urls")),
     path("admin/", admin.site.urls),
+    path("u/", include("public.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
 ]
