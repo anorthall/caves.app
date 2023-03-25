@@ -1,5 +1,6 @@
 {% extends "base_public.html" %}
 {% load distformat %}
+{% load markdownify %}
 {% block title %}{{ user.first_name }}'s trips{% endblock %}
 {% block description %}{{ user.full_name }}'s trips on caves.app.{% endblock %}
 {% block main %}
@@ -12,7 +13,7 @@
   <div class="row mt-3">
     <div class="col">
       {% if user.bio %}
-        {{ user.bio|linebreaks }}
+        {{ user.bio|markdownify }}
       {% elif not user.bio and not trips %}
         This is the public profile of a caves.app user who has not added any trips or a bio yet.
       {% endif %}

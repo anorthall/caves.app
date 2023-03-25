@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     "django_countries",
     "active_link",
     "mailer",
+    "markdownify.apps.MarkdownifyConfig",
     "debug_toolbar",
 ]
 
@@ -233,4 +234,42 @@ JAZZMIN_SETTINGS = {
         "mailer.messagelog": "fas fa-list",
         "mailer.dontsendentry": "fas fa-ban",
     },
+}
+
+# Markdownify
+MARKDOWNIFY = {
+    "default": {
+        "WHITELIST_TAGS": [
+            "a",
+            "abbr",
+            "acronym",
+            "b",
+            "blockquote",
+            "em",
+            "i",
+            "li",
+            "ol",
+            "p",
+            "strong",
+            "ul",
+            "code",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "h7",
+        ],
+        "WHITELIST_STYLES": [
+            "color",
+            "font-weight",
+        ],
+        "MARKDOWN_EXTENSIONS": [
+            "fenced_code",
+        ],
+        "LINKIFY_TEXT": {
+            "PARSE_URLS": True,
+        },
+    }
 }

@@ -1,4 +1,5 @@
 {% extends "base_sidebar.html" %}
+{% load markdownify %}
 {% block title %}{{ request.user.first_name }}'s profile{% endblock %}
 {% block sidebar %}{% include "sidebar_users.html" %}{% endblock %}
 
@@ -67,7 +68,7 @@
             <th scope="row" class="ps-3">Biography</th>
             <td class="notes-display">
               {% if user.bio %}
-                {{ user.bio|linebreaks }}<br />
+                {{ user.bio|markdownify }}<br />
               {% else %}
                 Not recorded
                 <br /><br /><br />
