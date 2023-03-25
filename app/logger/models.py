@@ -196,6 +196,7 @@ class Trip(models.Model):
 
         # Return the empty results if there are no trips.
         if not qs:
+            results["time"] = "0 minutes"
             return results
 
         # Iterate and add up
@@ -301,7 +302,7 @@ class Trip(models.Model):
             if v:
                 valid_data.append((k, escape(v)))
 
-        return valid_data  # Only return a maximum of 4 items
+        return valid_data
 
     @cached_property
     def html_tidbits(self):
