@@ -23,6 +23,9 @@ class Trip(models.Model):
     PHOTO = "Photography"
     TRAINING = "Training"
     RESCUE = "Rescue"
+    SCIENCE = "Science"
+    SURFACE = "Surface"
+    OTHER = "Other"
     TRIP_TYPES = [
         (SPORT, SPORT),
         (DIGGING, DIGGING),
@@ -32,6 +35,9 @@ class Trip(models.Model):
         (PHOTO, PHOTO),
         (TRAINING, TRAINING),
         (RESCUE, RESCUE),
+        (SCIENCE, SCIENCE),
+        (SURFACE, SURFACE),
+        (OTHER, OTHER),
     ]
 
     # Trip privacy types
@@ -201,6 +207,8 @@ class Trip(models.Model):
 
         # Iterate and add up
         for trip in qs:
+            if trip.type == Trip.SURFACE:
+                continue  # Don't count surface trips
             results["trips"] += 1
             results["time"] += trip.duration if trip.end else timezone.timedelta(0)
             results["vert_down"] += trip.vert_dist_down

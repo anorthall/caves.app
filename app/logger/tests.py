@@ -153,6 +153,31 @@ class TripTestCase(TestCase):
     def test_stats_for_user(self):
         """Test the Trip.stats_for_user class method"""
         user = get_user_model().objects.get(username="testusername")
+        self.assertEqual(user.trips.count(), 6)
+        stats = Trip.stats_for_user(user)
+        self.assertEqual(stats["trips"], 6)
+        self.assertEqual(stats["vert_down"], D(m=100))
+        self.assertEqual(stats["vert_up"], D(m=200))
+        self.assertEqual(stats["horizontal"], D(m=300))
+        self.assertEqual(stats["surveyed"], D(m=400))
+        self.assertEqual(stats["aided"], D(m=500))
+        self.assertEqual(stats["time"], "4 hours")
+
+    def test_surface_trips_are_not_counted_towards_stats(self):
+        """Test that surface trips are not counted towards stats"""
+        user = get_user_model().objects.get(username="testusername")
+        Trip.objects.create(
+            user=user,
+            cave_name="Surface Trip",
+            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
+            vert_dist_down="100m",
+            vert_dist_up="200m",
+            horizontal_dist="300m",
+            surveyed_dist="400m",
+            aid_dist="500m",
+            type=Trip.SURFACE,
+        )
         stats = Trip.stats_for_user(user)
         self.assertEqual(stats["trips"], 6)
         self.assertEqual(stats["vert_down"], D(m=100))
