@@ -137,7 +137,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-    def get_full_name(self):
+    @property
+    def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
     def get_short_name(self):
@@ -146,17 +147,21 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     def clean(self):
         self.username = self.username.lower()
 
+    @property
     def trips(self):
         return Trip.objects.filter(user=self)
 
+    @property
     def has_trips(self):
-        return self.trips().count() > 1
+        return self.trips.count() > 1
 
+    @property
     def is_private(self):
         if self.privacy == self.PUBLIC:
             return False
         return True
 
+    @property
     def is_public(self):
         if self.privacy == self.PUBLIC:
             return True

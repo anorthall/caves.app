@@ -68,24 +68,24 @@ class TripTestCase(TestCase):
         # Check that privacy is correctly inherited from the user
         self.assertEqual(user.privacy, get_user_model().PRIVATE)
         self.assertEqual(trip.privacy, Trip.DEFAULT)
-        self.assertTrue(trip.is_private())
-        self.assertFalse(trip.is_public())
+        self.assertTrue(trip.is_private)
+        self.assertFalse(trip.is_public)
 
         # Same again, but for a profile setting of public
         user.privacy = get_user_model().PUBLIC
         user.save()
         trip = Trip.objects.get(cave_name="Test Cave 1")
         self.assertEqual(user.privacy, get_user_model().PUBLIC)
-        self.assertTrue(trip.is_public())
-        self.assertFalse(trip.is_private())
+        self.assertTrue(trip.is_public)
+        self.assertFalse(trip.is_private)
 
         # Now test trip specific privacy
         trip.privacy = Trip.PRIVATE
         self.assertEqual(trip.privacy, Trip.PRIVATE)
-        self.assertTrue(trip.is_private())
-        self.assertFalse(trip.is_public())
+        self.assertTrue(trip.is_private)
+        self.assertFalse(trip.is_public)
 
         trip.privacy = Trip.PUBLIC
         self.assertEqual(trip.privacy, Trip.PUBLIC)
-        self.assertTrue(trip.is_public())
-        self.assertFalse(trip.is_private())
+        self.assertTrue(trip.is_public)
+        self.assertFalse(trip.is_private)

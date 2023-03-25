@@ -22,11 +22,11 @@ class TripTestCase(TestCase):
         # Test where Privacy is Private
         user.privacy = get_user_model().PRIVATE
         self.assertEqual(user.privacy, get_user_model().PRIVATE)
-        self.assertTrue(user.is_private())
-        self.assertFalse(user.is_public())
+        self.assertTrue(user.is_private)
+        self.assertFalse(user.is_public)
 
         # Test where Privacy is Public
         user.privacy = get_user_model().PUBLIC
         self.assertEqual(user.privacy, get_user_model().PUBLIC)
-        self.assertFalse(user.is_private())
-        self.assertTrue(user.is_public())
+        self.assertFalse(user.is_private)
+        self.assertTrue(user.is_public)
