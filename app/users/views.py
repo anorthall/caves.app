@@ -64,8 +64,8 @@ def login(request):
     """Log in the user."""
     context = {}
     if request.method == "POST":
-        username = request.POST["email"]
-        password = request.POST["password"]
+        username = request.POST.get("email", None)
+        password = request.POST.get("password", None)
         user = auth.authenticate(request, username=username, password=password)
         if user is not None:
             auth.login(request, user)

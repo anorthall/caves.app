@@ -1,9 +1,10 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.utils import timezone
 from django.utils.timezone import datetime as dt
 from django.contrib.gis.measure import D
 from django.contrib.auth import get_user_model
 from .models import Trip
+from .urls import urlpatterns as trip_urlpatterns
 
 
 class TripTestCase(TestCase):
@@ -178,3 +179,148 @@ class TripTestCase(TestCase):
         self.assertEqual(stats["surveyed"], D(m=0))
         self.assertEqual(stats["aided"], D(m=0))
         self.assertEqual(stats["time"], "0 minutes")
+
+
+class TripIntegrationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+        # Create a user
+        self.superuser = get_user_model().objects.create_superuser(
+            email="super@user.app",
+            username="superuser",
+            password="testpassword",
+            first_name="Joe",
+            last_name="Bloggs",
+        )
+        self.superuser.is_active = True
+        self.superuser.save()
+
+        # Create an enabled user
+        self.enabled = get_user_model().objects.create_user(
+            email="enabled@user.app",
+            username="enabled",
+            password="testpassword",
+            first_name="Joe",
+            last_name="Bloggs",
+        )
+        self.enabled.is_active = True
+        self.enabled.save()
+
+        # Create a disabled user
+        self.disabled = get_user_model().objects.create_user(
+            email="disabled@user.app",
+            username="disabled",
+            password="testpassword",
+            first_name="Joe",
+            last_name="Bloggs",
+        )
+        self.disabled.is_active = False
+        self.disabled.save()
+
+        # Create a trip belonging to the superuser
+        self.trip = Trip.objects.create(
+            user=self.superuser,
+            cave_name="Test Cave",
+            start=timezone.now() - timezone.timedelta(days=1),
+            end=timezone.now(),
+        )
+
+    def test_status_200_on_all_pages(self):
+        """Test that all pages return a status code of 200"""
+        self.client.login(email="super@user.app", password="testpassword")
+        self.trip
+        pages = [
+            "/",
+            f"/trip/{self.trip.pk}/",
+            f"/trip/edit/{self.trip.pk}/",
+            f"/trip/delete/{self.trip.pk}/",
+            "/trip/add/",
+            "/trips/",
+            "/trips/export/",
+            "/about/",
+            "/admin-tools/",
+        ]
+        for page in pages:
+            response = self.client.get(page)
+            self.assertEqual(response.status_code, 200)
+
+    def test_non_superuser_cannot_access_admin_tools(self):
+        """Test that a non-superuser cannot access the admin tools"""
+        self.client.login(email="enabled@user.app", password="testpassword")
+        response = self.client.get("/admin-tools/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_anonymous_user_cannot_access_trip_pages(self):
+        """Test that an anonymous user cannot access trip pages"""
+        pages = [
+            f"/trip/{self.trip.pk}/",
+            f"/trip/edit/{self.trip.pk}/",
+            f"/trip/delete/{self.trip.pk}/",
+            "/trip/add/",
+            "/trips/",
+            "/trips/export/",
+        ]
+        for page in pages:
+            response = self.client.get(page)
+            self.assertIn(response.status_code, [301, 302])
+            self.assertEqual(response.url, "/account/login/?next=" + page)
+
+    def test_user_cannot_access_other_users_trips(self):
+        """Test that a user cannot access other users trips"""
+        self.client.login(email="enabled@user.app", password="testpassword")
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_trip_delete_view(self):
+        """Test the trip delete view"""
+        self.client.login(email="super@user.app", password="testpassword")
+        response = self.client.get(f"/trip/delete/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Cave")
+        self.assertContains(response, "Delete trip?")
+        self.assertContains(response, "Are you sure you want to delete the above trip?")
+
+    def test_trip_delete_post_request(self):
+        """Test the trip delete post request"""
+        self.client.login(email="super@user.app", password="testpassword")
+        response = self.client.post(f"/trip/delete/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/trips/")
+        self.assertEqual(Trip.objects.count(), 0)
+
+    def test_trip_create_view(self):
+        """Test the trip create view"""
+        self.client.login(email="enabled@user.app", password="testpassword")
+        response = self.client.get("/trip/add/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Add a trip")
+        self.assertContains(response, "Cave name")
+        self.assertContains(response, "Start")
+        self.assertContains(response, "End")
+        self.assertContains(response, "Down")
+        self.assertContains(response, "Up")
+        self.assertContains(response, "Horizontal")
+        self.assertContains(response, "Surveyed")
+        self.assertContains(response, "Aid climbed")
+        self.assertContains(response, "Notes")
+        self.assertContains(response, "Save and add another")
+        self.assertContains(response, "Save")
+
+    def test_trip_update_view(self):
+        """Test the trip update view"""
+        self.client.login(email="super@user.app", password="testpassword")
+        response = self.client.get(f"/trip/edit/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Edit trip")
+        self.assertContains(response, "Cave name")
+        self.assertContains(response, "Start")
+        self.assertContains(response, "End")
+        self.assertContains(response, "Down")
+        self.assertContains(response, "Up")
+        self.assertContains(response, "Horizontal")
+        self.assertContains(response, "Surveyed")
+        self.assertContains(response, "Aid climbed")
+        self.assertContains(response, "Notes")
+        self.assertNotContains(response, "Save and add another")
+        self.assertContains(response, "Save")
