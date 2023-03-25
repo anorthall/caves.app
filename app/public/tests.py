@@ -101,3 +101,50 @@ class PublicViewsIntegrationTests(TestCase):
             response,
             "This is the public profile of a caves.app user who has not added any trips or a bio yet.",
         )
+
+    def test_show_statistics_user_setting(self):
+        """Test that the user profile page shows statistics if the user has the setting enabled"""
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.show_statistics = True
+        self.user.profile_page_title = ""
+        self.user.save()
+        response = self.client.get(f"/u/{self.user.username}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.bio)
+
+        # Test that the user's trips are listed
+        for trip in self.user.trip_set.all():
+            self.assertContains(response, trip.cave_name)
+
+        # Test that the statistics are shown
+        self.assertContains(response, "Total trips")
+        self.assertContains(response, "Rope ascent")
+        self.assertContains(response, "Aid climbed")
+
+        # Test that the statistics are not shown if diabled
+        self.user.show_statistics = False
+        self.user.save()
+        response = self.client.get(f"/u/{self.user.username}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.bio)
+
+        # Test that the user's trips are listed
+        for trip in self.user.trip_set.all():
+            self.assertContains(response, trip.cave_name)
+
+        # Test that the statistics are not shown
+        self.assertNotContains(response, "Total trips")
+        self.assertNotContains(response, "Rope ascent")
+        self.assertNotContains(response, "Aid climbed")
+
+    def test_custom_profile_page_title(self):
+        """Test that the user profile page uses the custom title if set"""
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+        self.user.profile_page_title = "This is my custom title"
+        self.user.save()
+        response = self.client.get(f"/u/{self.user.username}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.profile_page_title)

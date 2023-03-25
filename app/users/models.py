@@ -117,6 +117,19 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         help_text="Timezone to enter and display dates and times in.",
     )
 
+    # Profile settings
+    profile_page_title = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="A title to display on your profile page. If left blank it will use your full name.",
+    )
+
+    show_statistics = models.BooleanField(
+        "Show statistics",
+        default=True,
+        help_text="Should the statistics table be displayed on your public profile?",
+    )
+
     # is_active determines if a user can log in or not
     is_active = models.BooleanField(
         "Enabled user",

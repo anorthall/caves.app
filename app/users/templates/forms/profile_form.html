@@ -168,6 +168,34 @@
   </div>
 </div>
 
+
+<!-- Profile settings -->
+<div class="bg-light border rounded fs-5 p-2 mb-3 mt-4">
+  Profile settings
+</div>
+
+<!-- Profile page title -->
+<div class="row mb-3 px-2 g-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.profile_page_title.auto_id }}">
+      Profile page title
+    </label>
+    {% if form.is_bound %}
+      {% if form.profile_page_title.errors %}
+        {% render_field form.profile_page_title class="form-control is-invalid" %}
+        {% for e in form.profile_page_title.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.profile_page_title class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.profile_page_title class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.profile_page_title.help_text }}
+    </div>
+  </div>
+</div>
+
 <!-- Biography -->
 <div class="row mb-3 px-2 g-3">
   <div class="col">
@@ -187,6 +215,30 @@
     <div class="form-text">
       {{ form.bio.help_text }}
       You can use <a target="_blank" href="https://www.markdownguide.org/basic-syntax/">Markdown</a> to apply styling.
+    </div>
+  </div>
+</div>
+
+<!-- Show statistics-->
+<div class="row mb-3 px-2 g-3">
+  <div class="col">
+    <div class="form-check">
+      {% if form.is_bound %}
+        {% if form.show_statistics.errors %}
+          {% render_field form.show_statistics class="form-check-input is-invalid" %}
+          {% for e in form.show_statistics.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        {% else %}
+          {% render_field form.show_statistics class="form-check-input is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field form.show_statistics class="form-check-input" %}
+      {% endif %}
+      <label class="form-check-label" for="{{ form.show_statistics.auto_id }}">
+        Show statistics on profile
+      </label>
+    </div>
+    <div class="form-text">
+      {{ form.show_statistics.help_text }}
     </div>
   </div>
 </div>

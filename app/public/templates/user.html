@@ -7,7 +7,11 @@
 
 <div class="container">
   <div class="row border-bottom border-3 border-primary mt-4">
-    <h1 class="display-5">{{ user.first_name }} {{ user.last_name }}'s trips</h1>
+    {% if user.profile_page_title %}
+      <h1 class="display-5">{{ user.profile_page_title }}</h1>
+    {% else %}
+      <h1 class="display-5">{{ user.first_name }} {{ user.last_name }}'s trips</h1>
+    {% endif %}
   </div>
 
   <div class="row mt-3">
@@ -21,73 +25,75 @@
   </div>
 
   {% if trips %}
-    <div class="row mt-4">
-      <div class="col">
-        <h3 class="fs-2 mb-0">Statistics</h3>
-        <table class="table">
-          <thead>
-            <tr class="border-bottom">
-              <th scope="col"></th>
-              <th scope="col" class="d-none d-lg-table-cell text-center">{{ year1 }}</th>
-              <th scope="col" class="text-center">{{ year2 }}</th>
-              <th scope="col" class="text-center">Total</th>
-            </tr>
-          </thead>
+    {% if user.show_statistics %}
+      <div class="row mt-4">
+        <div class="col">
+          <h3 class="fs-2 mb-0">Statistics</h3>
+          <table class="table">
+            <thead>
+              <tr class="border-bottom">
+                <th scope="col"></th>
+                <th scope="col" class="d-none d-lg-table-cell text-center">{{ year1 }}</th>
+                <th scope="col" class="text-center">{{ year2 }}</th>
+                <th scope="col" class="text-center">Total</th>
+              </tr>
+            </thead>
 
-          <tbody class="table-group-divider">
-            <tr>
-              <th scope="row">Rope ascent</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_up|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.vert_up|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.vert_up|distformat:dist_format }}</td>
-            </tr>
+            <tbody class="table-group-divider">
+              <tr>
+                <th scope="row">Rope ascent</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_up|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.vert_up|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.vert_up|distformat:dist_format }}</td>
+              </tr>
 
-            <tr>
-              <th scope="row">Rope descent</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_down|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.vert_down|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.vert_down|distformat:dist_format }}</td>
-            </tr>
+              <tr>
+                <th scope="row">Rope descent</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_down|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.vert_down|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.vert_down|distformat:dist_format }}</td>
+              </tr>
 
-            <tr>
-              <th scope="row">Surveyed</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.surveyed|distformat:dist_format }}</td>
-            </tr>
+              <tr>
+                <th scope="row">Surveyed</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.surveyed|distformat:dist_format }}</td>
+              </tr>
 
-            <tr>
-              <th scope="row">Horizontal</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.horizontal|distformat:dist_format }}</td>
-            </tr>
+              <tr>
+                <th scope="row">Horizontal</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.horizontal|distformat:dist_format }}</td>
+              </tr>
 
-            <tr>
-              <th scope="row">Aid climbed</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.aided|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.aided|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.aided|distformat:dist_format }}</td>
-            </tr>
-            <tr class="table-group-divider">
-              <th scope="row">Total trips</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.trips }}</td>
-              <td class="text-center">{{ trip_stats_year2.trips }}</td>
-              <td class="text-center">{{ trip_stats.trips }}</td>
-            </tr>
+              <tr>
+                <th scope="row">Aid climbed</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.aided|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.aided|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.aided|distformat:dist_format }}</td>
+              </tr>
+              <tr class="table-group-divider">
+                <th scope="row">Total trips</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.trips }}</td>
+                <td class="text-center">{{ trip_stats_year2.trips }}</td>
+                <td class="text-center">{{ trip_stats.trips }}</td>
+              </tr>
 
-            <tr>
-              <th scope="row">
-                Time
-              </th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.time }}</th>
-              <td class="text-center">{{ trip_stats_year2.time }}</th>
-              <td class="text-center">{{ trip_stats.time }}</td>
-            </tr>
-          </tbody>
-        </table>
+              <tr>
+                <th scope="row">
+                  Time
+                </th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.time }}</th>
+                <td class="text-center">{{ trip_stats_year2.time }}</th>
+                <td class="text-center">{{ trip_stats.time }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    {% endif %}
 
     <div class="row mt-4">
       <h3 class="fs-2">Trip list</h3>

@@ -60,7 +60,29 @@
           <tr>
             <th scope="row" class="ps-3">Club(s)</th>
             <td>
-              {% if user.clubs %}{{ user.clubs }}{% else %}Not recorded{% endif %}
+              {% if user.clubs %}{{ user.clubs }}{% else %}Not recorded{% endif %}<br /><br />
+            </td>
+          </tr>
+
+          <tr class="fs-5 bg-secondary bg-gradient">
+            <th class="ps-3 fw-normal" scope="col" colspan="2">Profile settings</th>
+          </tr>
+
+          <tr>
+            <th scope="row" class="ps-3">Profile title</th>
+            <td>
+              {% if user.profile_page_title %}
+                {{ user.profile_page_title }}
+              {% else %}
+                {{ user.full_name }}'s trips
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <th scope="row" class="ps-3">Show statistics?</th>
+            <td>
+              {% if user.show_statistics %}Yes{% else %}No{% endif %}
             </td>
           </tr>
 
@@ -77,7 +99,7 @@
           </tr>
 
           <tr class="fs-5 bg-secondary bg-gradient">
-            <th class="ps-3 fw-normal" scope="col" colspan="2">Settings</th>
+            <th class="ps-3 fw-normal" scope="col" colspan="2">Site settings</th>
           </tr>
 
           <tr>

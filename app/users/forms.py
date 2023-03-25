@@ -168,6 +168,8 @@ class UserChangeForm(forms.ModelForm):
             "location",
             "country",
             "clubs",
+            "profile_page_title",
+            "show_statistics",
             "bio",
             "timezone",
             "units",
