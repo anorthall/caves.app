@@ -18,7 +18,7 @@ def user(request, username):
 
     # Public trips. We know that the user is set to Public as we tested that above,
     # so 'Default' privacy must be acceptable.
-    public_trips = Trip.objects.filter(
+    public_trips = all_trips.filter(
         Q(privacy="Public") | Q(privacy="Default")
     ).prefetch_related("user")
 
