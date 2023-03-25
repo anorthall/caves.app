@@ -21,7 +21,7 @@
           </tr>
 
           <tr>
-            <th scope="row" class="ps-3">Email address</th>
+            <th scope="row" class="ps-3">Email</th>
             <td>
               {{ user.email }}
             </td>
@@ -33,15 +33,6 @@
               {{ user.username }}
             </td>
           </tr>
-
-          {% if user.is_public %}
-            <tr>
-              <th scope="row" class="ps-3">Public profile</th>
-              <td>
-                <a href="{% url 'public:user' user.username %}">https://caves.app{% url 'public:user' user.username %}</a>
-              </td>
-            </tr>
-          {% endif %}
 
           <tr>
             <th scope="row" class="ps-3">Location</th>
@@ -80,9 +71,27 @@
           </tr>
 
           <tr>
-            <th scope="row" class="ps-3">Show statistics?</th>
+            <th scope="row" class="ps-3">Privacy</th>
             <td>
-              {% if user.show_statistics %}Yes{% else %}No{% endif %}
+              {{ user.privacy }}
+            </td>
+          </tr>
+
+          <tr>
+            <th scope="row" class="ps-3">Profile URL</th>
+            <td>
+              {% if user.is_public %}
+                <a href="{% url 'public:user' user.username %}">https://caves.app{% url 'public:user' user.username %}</a>
+              {% else %}
+                Disabled
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <th scope="row" class="ps-3">Statistics</th>
+            <td>
+              Public statistics {% if user.show_statistics %}enabled{% else %}disabled{% endif %}
             </td>
           </tr>
 
@@ -110,15 +119,7 @@
           <tr>
             <th scope="row" class="ps-3">Units</th>
             <td>
-              {{ user.units }}
-            </td>
-          </tr>
-
-          <tr>
-            <th scope="row" class="ps-3">Profile privacy</th>
-            <td>
-              {{ user.privacy }}
-              <br /><br /><br />
+              {{ user.units }}<br /><br />
             </td>
           </tr>
 

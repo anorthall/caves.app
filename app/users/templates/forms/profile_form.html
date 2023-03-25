@@ -219,10 +219,31 @@
   </div>
 </div>
 
-<!-- Show statistics-->
+<!-- Statistics/privacy block-->
 <div class="row mb-3 px-2 g-3">
-  <div class="col">
-    <div class="form-check">
+  <!-- Privacy -->
+  <div class="col-xl-6">
+    <label class="form-label" for="{{ form.privacy.auto_id }}">
+      Privacy
+    </label>
+    {% if form.is_bound %}
+      {% if form.privacy.errors %}
+        {% render_field form.privacy class="form-select is-invalid" %}
+        {% for e in form.privacy.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.privacy class="form-select is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.privacy class="form-select" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.privacy.help_text }}
+    </div>
+  </div>
+
+  <!-- Statistics checkbox -->
+  <div class="col-xl-6">
+    <div class="form-check mt-3">
       {% if form.is_bound %}
         {% if form.show_statistics.errors %}
           {% render_field form.show_statistics class="form-check-input is-invalid" %}
@@ -249,9 +270,9 @@
   Settings
 </div>
 
-<!-- Privacy/units block -->
+<!-- Units/timezone block -->
 <div class="row mb-3 px-2 g-3">
-  <div class="col-xl-6">
+  <div class="col">
     <!-- Units -->
     <label class="form-label" for="{{ form.units.auto_id }}">
       Units
@@ -271,30 +292,8 @@
     </div>
   </div>
 
+  <!-- Timezone -->
   <div class="col-xl-6">
-    <!-- Privacy -->
-    <label class="form-label" for="{{ form.privacy.auto_id }}">
-      Privacy
-    </label>
-    {% if form.is_bound %}
-      {% if form.privacy.errors %}
-        {% render_field form.privacy class="form-select is-invalid" %}
-        {% for e in form.privacy.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
-      {% else %}
-        {% render_field form.privacy class="form-select is-valid" %}
-      {% endif %}
-    {% else %}
-      {% render_field form.privacy class="form-select" %}
-    {% endif %}
-    <div class="form-text">
-      {{ form.privacy.help_text }}
-    </div>
-  </div>
-</div>
-
-<!-- Timezone -->
-<div class="row mb-3 px-2 g-3">
-  <div class="col">
     <label class="form-label" for="{{ form.timezone.auto_id }}">
       Timezone
     </label>
