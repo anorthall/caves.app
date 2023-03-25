@@ -196,7 +196,7 @@ class Trip(models.Model):
 
         # Return the empty results if there are no trips.
         if not qs:
-            results["time"] = "0 minutes"
+            results["time"] = "0"
             return results
 
         # Iterate and add up

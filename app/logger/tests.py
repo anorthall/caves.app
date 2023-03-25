@@ -178,7 +178,7 @@ class TripTestCase(TestCase):
         self.assertEqual(stats["horizontal"], D(m=0))
         self.assertEqual(stats["surveyed"], D(m=0))
         self.assertEqual(stats["aided"], D(m=0))
-        self.assertEqual(stats["time"], "0 minutes")
+        self.assertEqual(stats["time"], "0")
 
 
 class TripIntegrationTests(TestCase):
