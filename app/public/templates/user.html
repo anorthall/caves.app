@@ -94,6 +94,7 @@
         <table class="table table-hover">
           <thead>
             <tr>
+              <th scope="col" class="d-none d-md-table-cell">#</th>
               <th scope="col">Date</th>
               <th scope="col">Cave</th>
               <th scope="col" class="d-none d-lg-table-cell">Region</th>
@@ -105,6 +106,7 @@
           <tbody class="table-group-divider">
             {% for trip in trips %}
               <tr data-href="{% url 'public:trip' trip.user.username trip.pk %}">
+                <td class="d-none d-md-table-cell">{{ forloop.revcounter }}</td>
                 <td>{{ trip.start|date }}</td>
                 <td>
                   {% if trip.cave_url %}

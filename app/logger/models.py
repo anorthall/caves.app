@@ -210,7 +210,9 @@ class Trip(models.Model):
             results["aided"] += trip.aid_dist
 
         # Humanise duration
-        results["time"] = humanize.precisedelta(results["time"], minimum_unit="minutes")
+        results["time"] = humanize.precisedelta(
+            results["time"], minimum_unit="hours", format="%.0f"
+        )
 
         return results
 
