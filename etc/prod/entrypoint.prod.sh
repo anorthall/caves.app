@@ -11,16 +11,22 @@ then
     echo "PostgreSQL started"
 fi
 
-if [ "$COLLECT_STATIC" = "yes" ]
+if [ "$RUN_MIGRATIONS" = "yes" ]
 then
-    echo "Collecting static files..."
-    python manage.py collectstatic --no-input
+    echo "Running migrations..."
+    python manage.py migrate
 fi
 
 if [ "$RUN_MAILER" = "yes" ]
 then
     echo "Running mailer..."
     python manage.py runmailer &
+fi
+
+if [ "$COLLECT_STATIC" = "yes" ]
+then
+    echo "Collecting static files..."
+    python manage.py collectstatic --no-input
 fi
 
 exec "$@"
