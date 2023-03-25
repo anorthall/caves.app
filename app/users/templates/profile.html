@@ -33,6 +33,15 @@
             </td>
           </tr>
 
+          {% if user.is_public %}
+            <tr>
+              <th scope="row" class="ps-3">Public profile</th>
+              <td>
+                <a href="{% url 'public:user' user.username %}">https://caves.app{% url 'public:user' user.username %}</a>
+              </td>
+            </tr>
+          {% endif %}
+
           <tr>
             <th scope="row" class="ps-3">Location</th>
             <td>

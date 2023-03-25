@@ -1,0 +1,20 @@
+{% extends "minimal.html" %}
+
+{% block body %}
+<main class="flex-shrink-0 mb-4">
+  <div class="container">
+      {% block main %}{% endblock%}
+    </div>
+  </div>
+</main>
+
+<footer class="footer mt-auto py-3 border-top bg-primary bg-gradient text-white">
+  <div class="container">
+    <span class="float-start">
+      Powered by <a class="text-white" href="https://caves.app/">caves.app</a>.
+    </span>
+    <span class="d-none d-lg-block float-end">
+    </span>
+  </div>
+</footer>
+{% endblock body %}

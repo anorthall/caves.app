@@ -9,7 +9,7 @@ from logger.models import Trip
 def user(request, username):
     """View the public profile for a user."""
     user = get_object_or_404(get_user_model(), username=username)
-    if user.privacy == get_user_model().PRIVATE:
+    if not user.privacy == get_user_model().PUBLIC:
         raise Http404  # No public profile allowed
 
     # Get the QuerySet. Only accept trips with 'Public' or 'Default' privacy. We know that
@@ -17,6 +17,7 @@ def user(request, username):
     trips = Trip.objects.filter(
         Q(user=user), Q(privacy="Public") | Q(privacy="Default")
     )
+
     context = {"user": user, "trips": trips.order_by("-start")}
     return render(request, "user.html", context)
 
@@ -24,6 +25,9 @@ def user(request, username):
 def trip(request, username, pk):
     """View a public trip."""
     trip = get_object_or_404(Trip, pk=pk)
+    if trip.user.username != username:
+        raise Http404
+
     if not trip.is_public:
         raise Http404  # Private trip
 
