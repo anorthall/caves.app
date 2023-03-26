@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}caves.app - permission denied{% endblock %}
+{% block description %}You do not have permission to view this page.{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="col text-center">
+    <h1 class="display-4">Oops</h1>
+    <p class="fs-4 mt-3">You do not have permission to view this page.</p>
+    <button class="btn btn-primary btn-lg mt-3" onclick="window.history.back()">Go back</button>
+  </div>
+</div>
+{% endblock %}
