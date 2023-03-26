@@ -60,6 +60,13 @@
           </tr>
 
           <tr>
+            <th scope="row" class="ps-3">Privacy</th>
+            <td>
+              {{ user.privacy }}
+            </td>
+          </tr>
+
+          <tr>
             <th scope="row" class="ps-3">Profile title</th>
             <td>
               {% if user.profile_page_title %}
@@ -71,19 +78,12 @@
           </tr>
 
           <tr>
-            <th scope="row" class="ps-3">Privacy</th>
-            <td>
-              {{ user.privacy }}
-            </td>
-          </tr>
-
-          <tr>
             <th scope="row" class="ps-3">Profile URL</th>
             <td>
               {% if user.is_public %}
                 <a href="{% url 'public:user' user.username %}">https://caves.app{% url 'public:user' user.username %}</a>
               {% else %}
-                Disabled
+                Your public profile is disabled as your account is private.
               {% endif %}
             </td>
           </tr>
@@ -91,7 +91,11 @@
           <tr>
             <th scope="row" class="ps-3">Statistics</th>
             <td>
-              Public statistics {% if user.show_statistics %}enabled{% else %}disabled{% endif %}
+              {% if user.is_private %}
+                Public statistics are disabled as your profile is private.
+              {% else %}
+                Public statistics {% if user.show_statistics %}enabled{% else %}disabled{% endif %}
+              {% endif %}
             </td>
           </tr>
 
