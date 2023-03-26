@@ -338,7 +338,10 @@ class Trip(models.Model):
         """Return the next trip for the user ordered by start date"""
         qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
-        return qs[index + 1]
+        try:
+            return qs[index + 1]
+        except (IndexError, ValueError):
+            return None
 
     @cached_property
     def prev_trip(self):
@@ -347,5 +350,5 @@ class Trip(models.Model):
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         try:
             return qs[index - 1]
-        except ValueError:  # Negative index
+        except (IndexError, ValueError):
             return None
