@@ -33,26 +33,26 @@ class TripTestCase(TestCase):
         Trip.objects.create(
             user=user,
             cave_name="Test Cave 2",
-            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            start=dt.fromisoformat("2010-01-01T13:00:00+00:00"),
         )
 
         # Create several trips with different privacy settings
         Trip.objects.create(  # Private
             user=user,
             cave_name="Test Cave 3",
-            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            start=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
             privacy=Trip.PRIVATE,
         )
         Trip.objects.create(  # Public
             user=user,
             cave_name="Test Cave 4",
-            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            start=dt.fromisoformat("2010-01-01T15:00:00+00:00"),
             privacy=Trip.PUBLIC,
         )
         Trip.objects.create(  # Default
             user=user,
             cave_name="Test Cave 5",
-            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            start=dt.fromisoformat("2010-01-01T16:00:00+00:00"),
             privacy=Trip.DEFAULT,
         )
 
@@ -60,8 +60,8 @@ class TripTestCase(TestCase):
         Trip.objects.create(
             user=user,
             cave_name="Test Cave 6",
-            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
-            end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
+            start=dt.fromisoformat("2010-01-01T17:00:00+00:00"),
+            end=dt.fromisoformat("2010-01-01T19:00:00+00:00"),
             vert_dist_down="100m",
             vert_dist_up="200m",
             horizontal_dist="300m",
