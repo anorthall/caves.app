@@ -148,3 +148,26 @@ class PublicViewsIntegrationTests(TestCase):
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.profile_page_title)
+
+    def test_private_notes(self):
+        """Test that notes are not shown on public trip pages if the user has notes set to private"""
+        trip = self.user.trip_set.first()
+        trip.privacy = Trip.PUBLIC
+        trip.notes = "This is a note."
+        trip.save()
+
+        # Test that the notes are not shown if the user has notes set to private
+        self.user.private_notes = True
+        self.user.save()
+        response = self.client.get(f"/u/{self.user.username}/{trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.cave_name)
+        self.assertNotContains(response, trip.notes)
+
+        # Test that the notes are shown if the user has notes set to public
+        self.user.private_notes = False
+        self.user.save()
+        response = self.client.get(f"/u/{self.user.username}/{trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.cave_name)
+        self.assertContains(response, trip.notes)

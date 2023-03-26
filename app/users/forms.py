@@ -170,6 +170,7 @@ class UserChangeForm(forms.ModelForm):
             "clubs",
             "profile_page_title",
             "show_statistics",
+            "private_notes",
             "bio",
             "timezone",
             "units",

@@ -70,7 +70,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     location = models.CharField(max_length=50, blank=True)
     country = CountryField(blank=True)
     bio = models.TextField(
-        "about me",
+        "biography",
         blank=True,
         help_text="Information about you that will be displayed on your public profile.",
     )
@@ -121,13 +121,19 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     profile_page_title = models.CharField(
         max_length=50,
         blank=True,
-        help_text="A title to display on your profile page. If left blank it will use your full name.",
+        help_text="A title to display on your profile page (if enabled). If left blank it will use your full name.",
     )
 
     show_statistics = models.BooleanField(
         "Show statistics",
         default=True,
-        help_text="Should the statistics table be displayed on your public profile?",
+        help_text="Check this box to show a statistics table on your public profile (if enabled).",
+    )
+
+    private_notes = models.BooleanField(
+        "Keep notes private",
+        default=True,
+        help_text="Check this box to prevent your trip notes being displayed on your public profile (if enabled).",
     )
 
     # is_active determines if a user can log in or not

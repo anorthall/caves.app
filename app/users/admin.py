@@ -38,11 +38,22 @@ class CavingUserAdmin(BaseUserAdmin):
                     "location",
                     "country",
                     "clubs",
-                    "bio",
                 )
             },
         ),
-        ("Settings", {"fields": ("units", "timezone", "privacy")}),
+        (
+            "Profile settings",
+            {
+                "fields": (
+                    "privacy",
+                    "profile_page_title",
+                    "bio",
+                    "show_statistics",
+                    "private_notes",
+                )
+            },
+        ),
+        ("Settings", {"fields": ("units", "timezone")}),
         ("Permissions", {"fields": ("user_permissions",)}),
         (
             "Authentication",

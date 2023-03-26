@@ -219,10 +219,9 @@
   </div>
 </div>
 
-<!-- Statistics/privacy block-->
+<!-- Privacy -->
 <div class="row mb-3 px-2 g-3">
-  <!-- Privacy -->
-  <div class="col-xl-6">
+  <div class="col">
     <label class="form-label" for="{{ form.privacy.auto_id }}">
       Privacy
     </label>
@@ -240,10 +239,13 @@
       {{ form.privacy.help_text }}
     </div>
   </div>
+</div>
 
+<!-- Statistics/private notes block -->
+<div class="row mb-3 px-2 g-3">
   <!-- Statistics checkbox -->
-  <div class="col-xl-6">
-    <div class="form-check mt-3">
+  <div class="col-lg-6">
+    <div class="form-check">
       {% if form.is_bound %}
         {% if form.show_statistics.errors %}
           {% render_field form.show_statistics class="form-check-input is-invalid" %}
@@ -260,6 +262,28 @@
     </div>
     <div class="form-text">
       {{ form.show_statistics.help_text }}
+    </div>
+  </div>
+
+  <!-- Private notes checkbox -->
+  <div class="col-lg-6">
+    <div class="form-check">
+      {% if form.is_bound %}
+        {% if form.private_notes.errors %}
+          {% render_field form.private_notes class="form-check-input is-invalid" %}
+          {% for e in form.private_notes.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        {% else %}
+          {% render_field form.private_notes class="form-check-input is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field form.private_notes class="form-check-input" %}
+      {% endif %}
+      <label class="form-check-label" for="{{ form.private_notes.auto_id }}">
+        Keep notes private
+      </label>
+    </div>
+    <div class="form-text">
+      {{ form.private_notes.help_text }}
     </div>
   </div>
 </div>

@@ -156,7 +156,7 @@
     </div>
   {% endif %}
 
-  {% if trip.notes %}
+  {% if trip.notes and trip.user.private_notes is False %}
     <hr />
 
     <!-- Notes -->

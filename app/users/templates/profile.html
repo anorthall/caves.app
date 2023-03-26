@@ -94,7 +94,22 @@
               {% if user.is_private %}
                 Public statistics are disabled as your profile is private.
               {% else %}
-                Public statistics {% if user.show_statistics %}enabled{% else %}disabled{% endif %}
+                Statistics are {% if not user.show_statistics %}not {% endif %}shown on your profile page.
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <th scope="row" class="ps-3">Trip notes</th>
+            <td>
+              {% if user.is_private %}
+                If you select a trip to be public, the notes will be {% if user.private_notes %}hidden{% else %}shown{% endif %}.
+              {% else %}
+                {% if user.private_notes %}
+                  Your trip notes are hidden.
+                {% else %}
+                  Your trip notes are public, unless the trip is set to private.
+                {% endif %}
               {% endif %}
             </td>
           </tr>
