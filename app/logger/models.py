@@ -174,7 +174,7 @@ class Trip(models.Model):
     @classmethod
     def trip_index(cls, user):
         """Build a dict of a user's trips with their 'date index' mapped to the trip pk"""
-        qs = cls.objects.filter(user=user).order_by("start")
+        qs = cls.objects.filter(user=user).order_by("start", "-pk")
         trip_list = list(qs.values_list("pk", flat=True))
         index = {}
         for trip in qs:
@@ -284,7 +284,7 @@ class Trip(models.Model):
     @cached_property
     def number(self):
         """Returns the 'index' of the trip by date"""
-        qs = Trip.objects.filter(user=self.user).order_by("start")
+        qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
 
@@ -332,3 +332,20 @@ class Trip(models.Model):
             html = html + new
 
         return html
+
+    @cached_property
+    def next_trip(self):
+        """Return the next trip for the user ordered by start date"""
+        qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
+        index = list(qs.values_list("pk", flat=True)).index(self.pk)
+        return qs[index + 1]
+
+    @cached_property
+    def prev_trip(self):
+        """Return the previous trip ordered by start date"""
+        qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
+        index = list(qs.values_list("pk", flat=True)).index(self.pk)
+        try:
+            return qs[index - 1]
+        except ValueError:  # Negative index
+            return None

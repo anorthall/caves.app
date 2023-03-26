@@ -35,7 +35,7 @@ def index(request):
         return render(request, "index_unregistered.html")
 
     # Get most recent trips
-    qs = Trip.objects.filter(user=request.user).order_by("-start")
+    qs = Trip.objects.filter(user=request.user).order_by("-start", "pk")
     recent_trips = qs[:6]
     trip_count = qs.count()
     recent_trip_count = recent_trips.count()
@@ -84,7 +84,7 @@ def export(request):
         return render(request, "export.html")
 
     # Generate HTTP response and the CSV file
-    qs = Trip.objects.filter(user=request.user).order_by("start")
+    qs = Trip.objects.filter(user=request.user).order_by("start", "pk")
     if not qs:
         messages.error(request, "You do not have any trips to export.")
         return redirect("log:export")
@@ -177,11 +177,11 @@ class TripListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """Only allow the user to update trips they created"""
-        qs = Trip.objects.filter(user=self.request.user).order_by("-start")
+        qs = Trip.objects.filter(user=self.request.user).order_by("-start", "pk")
         return qs.select_related("user")
 
     def get_context_data(self):
-        """Add the trip 'index' dict to prevent many DB queriers"""
+        """Add the trip 'index' dict to prevent many DB queries"""
         context = super().get_context_data()
         context["trip_index"] = Trip.trip_index(self.request.user)
         return context

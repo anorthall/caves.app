@@ -29,6 +29,21 @@
 
   <div class="card-body pt-2">
     {% include "trip_table.html" %}
+
+    {% if trip.next_trip or trip.prev_trip %}
+      <div class="row mt-5">
+        <div class="col-6">
+          {% if trip.prev_trip %}
+          <a class="btn btn-sm btn-secondary" href="{% url 'log:trip_detail' trip.prev_trip.pk %}">Previous trip</a>
+          {% endif %}
+        </div>
+        <div class="col-6">
+          {% if trip.next_trip %}
+            <a class="btn btn-sm btn-secondary float-end" href="{% url 'log:trip_detail' trip.next_trip.pk %}">Next trip</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
   </div>
 
 

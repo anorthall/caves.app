@@ -31,7 +31,7 @@ def user(request, username):
 
     context = {
         "user": user,
-        "trips": public_trips.order_by("-start"),
+        "trips": public_trips.order_by("-start", "pk"),
         "dist_format": user.units,
         "year1": prev_year,
         "year2": this_year,
