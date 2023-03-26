@@ -230,7 +230,9 @@ class Trip(models.Model):
 
     def clean(self):
         """Check that the start is before the end"""
-        if self.end:
+        # Check self.start exists - may have been removed by form validation
+        # If it does not exist 'for real', the form/low level model validation will catch it.
+        if self.start and self.end:
             if self.start > self.end:
                 raise ValidationError(
                     "The trip start time must be before the trip end time."
