@@ -20,8 +20,7 @@ class TripTestCase(TestCase):
             email="test@test.com",
             username="testusername",
             password="password",
-            first_name="Firstname",
-            last_name="Lastname",
+            name="Firstname",
         )
         user.privacy = get_user_model().PRIVATE
         user.is_active = True
@@ -239,8 +238,7 @@ class TripTestCase(TestCase):
             email="test_no_trips@test.com",
             username="testusername2",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         stats = Trip.stats_for_user(user)
         self.assertEqual(stats["trips"], 0)
@@ -278,8 +276,7 @@ class TripIntegrationTests(TestCase):
             email="super@user.app",
             username="superuser",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         self.superuser.is_active = True
         self.superuser.save()
@@ -289,8 +286,7 @@ class TripIntegrationTests(TestCase):
             email="enabled@user.app",
             username="enabled",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         self.enabled.is_active = True
         self.enabled.save()
@@ -300,8 +296,7 @@ class TripIntegrationTests(TestCase):
             email="disabled@user.app",
             username="disabled",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         self.disabled.is_active = False
         self.disabled.save()
@@ -610,8 +605,7 @@ class TripReportTestCase(TestCase):
             email="test@user.app",
             username="username",
             password="password",
-            first_name="Test",
-            last_name="User",
+            name="Test",
         )
         self.user.is_active = True
         self.user.save()
@@ -645,8 +639,7 @@ class TripReportTestCase(TestCase):
             email="test2@users.app",
             username="username2",
             password="password2",
-            first_name="Test2",
-            last_name="User2",
+            name="Test2",
         )
         trip2 = Trip.objects.create(
             user=user2,
@@ -928,8 +921,7 @@ class TripReportTestCase(TestCase):
             email="new@user.app",
             password="password",
             username="newuser",
-            first_name="New",
-            last_name="User",
+            name="New",
         )
         user.is_active = True
         user.save()
@@ -982,8 +974,7 @@ class TripReportTestCase(TestCase):
             email="new@user.app",
             password="password",
             username="testuser",
-            first_name="Test",
-            last_name="User",
+            name="Test",
         )
         user.is_active = True
         user.save()

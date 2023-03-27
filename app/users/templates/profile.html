@@ -1,6 +1,6 @@
 {% extends "base_sidebar.html" %}
 {% load markdownify %}
-{% block title %}{{ request.user.first_name }}'s profile{% endblock %}
+{% block title %}{{ request.user.name }}'s profile{% endblock %}
 {% block sidebar %}{% include "sidebar_users.html" %}{% endblock %}
 
 {% block main %}
@@ -14,9 +14,9 @@
       <table class="table">
         <tbody>
           <tr>
-            <th scope="row" class="ps-3 pt-3">Full name</th>
+            <th scope="row" class="ps-3 pt-3">Name</th>
             <td class="pt-3">
-              {{ user.first_name }} {{ user.last_name }}
+              {{ user.name }}
             </td>
           </tr>
 
@@ -72,7 +72,7 @@
               {% if user.profile_page_title %}
                 {{ user.profile_page_title }}
               {% else %}
-                {{ user.full_name }}'s trips
+                {{ user.name }}'s trips
               {% endif %}
             </td>
           </tr>

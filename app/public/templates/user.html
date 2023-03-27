@@ -1,8 +1,8 @@
 {% extends "base_public.html" %}
 {% load distformat %}
 {% load markdownify %}
-{% block title %}{{ user.first_name }}'s trips{% endblock %}
-{% block description %}{{ user.full_name }}'s trips on caves.app.{% endblock %}
+{% block title %}{{ user.name }}'s trips{% endblock %}
+{% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
 {% block main %}
 
 <div class="container">
@@ -10,7 +10,7 @@
     {% if user.profile_page_title %}
       <h1 class="display-5">{{ user.profile_page_title }}</h1>
     {% else %}
-      <h1 class="display-5">{{ user.first_name }} {{ user.last_name }}'s trips</h1>
+      <h1 class="display-5">{{ user.name }}'s trips</h1>
     {% endif %}
   </div>
 

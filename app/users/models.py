@@ -10,7 +10,7 @@ from logger.models import Trip
 
 
 class CavingUserManager(BaseUserManager):
-    def create_user(self, email, username, first_name, last_name, password=None):
+    def create_user(self, email, username, name, password=None):
         """Creates a CavingUser"""
         if not email:
             raise ValueError("Users must have an email address")
@@ -18,27 +18,25 @@ class CavingUserManager(BaseUserManager):
         if not username:
             raise ValueError("Users must have a username")
 
-        if not first_name or not last_name:
-            raise ValueError("Users must have a first and last name")
+        if not name:
+            raise ValueError("Users must have a name")
 
         user = self.model(
             email=self.normalize_email(email),
             username=username.lower(),
-            first_name=first_name,
-            last_name=last_name,
+            name=name,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username, first_name, last_name, password=None):
+    def create_superuser(self, email, username, name, password=None):
         """Creates a CavingUser which is a superuser"""
         user = self.create_user(
             email,
             username,
-            first_name,
-            last_name,
+            name,
             password,
         )
 
@@ -65,8 +63,10 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     )
 
     # Personal information
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    name = models.CharField(
+        max_length=30,
+        help_text="Your name as you would like it to appear on your public profile.",
+    )
     location = models.CharField(max_length=50, blank=True)
     country = CountryField(blank=True)
     bio = models.TextField(
@@ -146,7 +146,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
+    REQUIRED_FIELDS = ["username", "name"]
 
     objects = CavingUserManager()
 
@@ -156,12 +156,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+    def get_full_name(self):
+        return self.name
 
     def get_short_name(self):
-        return self.first_name
+        return self.name
 
     def clean(self):
         self.username = self.username.lower()

@@ -1,6 +1,6 @@
 {% extends "base_public.html" %}
 {% block title %}Trip to {{ trip.cave_name }}{% endblock %}
-{% block description %}{{ trip.user.full_name }}'s trip to {{ trip.cave_name }} on caves.app.{% endblock %}
+{% block description %}{{ trip.user.name }}'s trip to {{ trip.cave_name }} on caves.app.{% endblock %}
 {% block main %}
 
 <div class="container">
@@ -14,9 +14,9 @@
     <div class="col-6 col-lg-4">
       <small class="text-muted">Trip by</small><br />
       {% if trip.user.is_public %}
-        <a class="text-decoration-none" href="{% url 'public:user' user.username %}">{{ trip.user.full_name }}</a>
+        <a class="text-decoration-none" href="{% url 'public:user' user.username %}">{{ trip.user.name }}</a>
       {% else %}
-        {{ trip.user.full_name }}
+        {{ trip.user.name }}
       {% endif %}
     </div>
 

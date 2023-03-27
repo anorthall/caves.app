@@ -20,8 +20,7 @@ class PublicViewsIntegrationTests(TestCase):
             email="test@user.app",
             password="password",
             username="testuser",
-            first_name="Test",
-            last_name="User",
+            name="Test",
         )
         self.user.bio = "This is my bio."
         self.user.is_active = True
@@ -55,7 +54,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.bio)
 
         # Test that the user's trips are listed
@@ -116,7 +115,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.trip_set.all().delete()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(
             response,
             "This is the public profile of a caves.app user who has not added any trips or a bio yet.",
@@ -130,7 +129,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.bio)
 
         # Test that the user's trips are listed
@@ -147,7 +146,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.bio)
 
         # Test that the user's trips are listed
