@@ -142,6 +142,9 @@ def register(request):
 
 def verify_new_account(request):
     """Verify a new registration."""
+    if request.user.is_authenticated:
+        return redirect("log:index")
+
     if "verify_code" in request.GET:
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
@@ -164,7 +167,7 @@ def verify_new_account(request):
 def resend_verify_email(request):
     """Resend a registration verification email."""
     if request.user.is_authenticated:
-        return redirect("users:profile")
+        return redirect("log:index")
 
     if request.method == "POST":
         form = ResendVerifyEmailForm(request.POST)

@@ -6,6 +6,13 @@ from logger.models import Trip
 
 class PublicViewsIntegrationTests(TestCase):
     def setUp(self):
+        # Reduce log level to avoid 404 error
+        import logging
+
+        logger = logging.getLogger("django.request")
+        self.previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         self.client = Client()
 
         # Create a test user
@@ -22,14 +29,27 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.save()
 
         # Iterate and create several trips belonging to the user
-        for i in range(1, 10):
-            start = timezone.make_aware(timezone.datetime(year=2020, month=i, day=1))
+        for i in range(1, 11):
+            start = timezone.make_aware(
+                timezone.datetime(year=timezone.now().year, month=i, day=1)
+            )
             end = start + timezone.timedelta(hours=5)
             self.user.trip_set.create(
-                cave_name=f"Trip {i}", start=start, end=end, privacy=Trip.DEFAULT
+                cave_name=f"Trip {i}",
+                start=start,
+                end=end,
+                privacy=Trip.DEFAULT,
+                vert_dist_up="100m",
             )
 
-    def test_user_profile(self):
+    def tearDown(self):
+        """Reset the log level back to normal"""
+        import logging
+
+        logger = logging.getLogger("django.request")
+        logger.setLevel(self.previous_level)
+
+    def test_public_user_profile_accessible(self):
         """Test that the user profile page loads"""
         self.user.privacy = get_user_model().PUBLIC
         self.user.save()
@@ -49,7 +69,7 @@ class PublicViewsIntegrationTests(TestCase):
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 404)
 
-    def test_trip_not_accessible_for_private_user(self):
+    def test_default_privacy_trip_not_accessible_for_private_user(self):
         """Test that a trip belonging to a private user is not accessible"""
         self.user.privacy = get_user_model().PRIVATE
         self.user.save()
@@ -171,3 +191,25 @@ class PublicViewsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
         self.assertContains(response, trip.notes)
+
+    def test_statistics_show_in_correct_units_for_user(self):
+        """Test that the statistics on the user profile page are shown in the correct units"""
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.show_statistics = True
+        self.user.profile_page_title = "Testing statistics unit function"
+        self.user.units = get_user_model().METRIC
+        self.user.save()
+
+        # Test that the statistics are shown in the correct metric units
+        response = self.client.get(f"/u/{self.user.username}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.profile_page_title)
+        self.assertContains(response, "1000m")
+
+        # Test that the statistics are shown in the correct imperial units
+        self.user.units = get_user_model().IMPERIAL
+        self.user.save()
+        response = self.client.get(f"/u/{self.user.username}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.profile_page_title)
+        self.assertContains(response, "3281ft")

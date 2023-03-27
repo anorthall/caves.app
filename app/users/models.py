@@ -172,7 +172,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def has_trips(self):
-        return self.trips.count() > 1
+        return self.trips.count() > 0
 
     @property
     def is_private(self):
