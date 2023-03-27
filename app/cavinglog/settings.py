@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "widget_tweaks",
     "django_countries",
+    "tinymce",
     "active_link",
     "mailer",
     "markdownify.apps.MarkdownifyConfig",
@@ -271,4 +272,15 @@ MARKDOWNIFY = {
             "PARSE_URLS": True,
         },
     }
+}
+
+# TinyMCE configuration
+TINYMCE_DEFAULT_CONFIG = {
+    "theme": "silver",
+    "resize": "true",
+    "menubar": "file edit view insert format tools table help",
+    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment code typography",
+    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table powerpaste advcode help wordcount spellchecker typography",
+    "removed_menuitems": "newdocument spellchecker help",
+    "height": "500",
 }

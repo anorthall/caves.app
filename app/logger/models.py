@@ -1,14 +1,15 @@
+import humanize
 from django.db import models
-from django.urls import reverse
-from django.utils.html import escape
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.contrib.gis.measure import Distance
+from distance import DistanceField, DistanceUnitField
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.core.exceptions import ValidationError
-from distance import DistanceField, DistanceUnitField
+from django.utils.html import escape
+from django.urls import reverse
 from .validators import *
-from django.contrib.gis.measure import Distance
-import humanize
+from tinymce.models import HTMLField
 
 
 class Trip(models.Model):
@@ -281,6 +282,10 @@ class Trip(models.Model):
             return True
         return False
 
+    @property
+    def has_report(self):
+        return hasattr(self, "report") and self.report is not None
+
     @cached_property
     def number(self):
         """Returns the 'index' of the trip by date"""
@@ -352,3 +357,64 @@ class Trip(models.Model):
             return qs[index - 1]
         except (IndexError, ValueError):
             return None
+
+
+class TripReport(models.Model):
+    class Meta:
+        unique_together = ("user", "slug")
+
+    # Relationships
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    trip = models.OneToOneField(
+        Trip, on_delete=models.CASCADE, primary_key=True, related_name="report"
+    )
+
+    # Content
+    title = models.CharField(max_length=100)
+    pub_date = models.DateField(
+        "date published", help_text="The date which will be shown on the report."
+    )
+    slug = models.SlugField(
+        max_length=100,
+        help_text="A unique identifier for the URL of the report. No spaces or special characters allowed.",
+    )
+    content = HTMLField()
+
+    # Metadata
+    added = models.DateTimeField("report added on", auto_now_add=True)
+    updated = models.DateTimeField("report last updated", auto_now=True)
+
+    # Privacy
+    DEFAULT = "Anyone, if they can view the trip"
+    PUBLIC = "Anyone, even if the trip is private"
+    FRIENDS = "Only my friends"
+    PRIVATE = "Only me"
+    PRIVACY_CHOICES = [
+        (DEFAULT, DEFAULT),
+        (PUBLIC, PUBLIC),
+        (FRIENDS, FRIENDS),
+        (PRIVATE, PRIVATE),
+    ]
+
+    privacy = models.CharField(
+        "Who can view", max_length=40, choices=PRIVACY_CHOICES, default=DEFAULT
+    )
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("log:report_detail", kwargs={"pk": self.pk})
+
+    @property
+    def is_private(self):
+        if self.privacy == self.DEFAULT:
+            return self.trip.is_private
+        elif self.privacy == self.PUBLIC:
+            return False
+        return True
+
+    @property
+    def is_public(self):
+        if self.is_private == False:
+            return True
