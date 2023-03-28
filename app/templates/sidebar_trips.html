@@ -19,7 +19,7 @@
       </a>
 
       {% if trip.is_public %}
-        <a class="nav-link" target="_blank" href="{% url 'public:trip' username=trip.user.username pk=trip.pk %}">
+        <a class="nav-link" href="{% url 'public:trip' username=trip.user.username pk=trip.pk %}">
           <i class="bi bi-globe"></i>&nbsp; View public page
         </a>
       {% endif %}
@@ -39,8 +39,7 @@
         </a>
 
         {% if trip.report.is_public %}
-          <a class="nav-link {% active_link 'public:report' username=user.username slug=trip.report.slug %}"
-            target="_blank" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
+          <a class="nav-link" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
             <i class="bi bi-globe"></i>&nbsp; View public report
           </a>
         {% endif %}

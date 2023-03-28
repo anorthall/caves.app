@@ -118,7 +118,7 @@
                 <td>{{ trip.start|date }}</td>
                 <td>
                   {% if trip.cave_url %}
-                    <a href="{{ trip.cave_url }}" target="_blank">{{ trip.cave_name }}</a>
+                    <a href="{{ trip.cave_url }}">{{ trip.cave_name }}</a>
                   {% else %}
                     {{ trip.cave_name }}
                   {% endif %}
