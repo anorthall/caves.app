@@ -3,7 +3,20 @@
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow mb-4" aria-label="navbar">
     <div class="container">
-      <a class="navbar-brand fs-3 fw-bolder{% if not request.user.is_authenticated %} mx-auto{% endif %}" href="/">caves.app</a>
+      {% if request.user.is_authenticated %}
+        <div class="float-start">
+          <a class="navbar-brand fs-3 fw-bolder{% if not request.user.is_authenticated %} mx-auto{% endif %}" href="/">caves.app</a>
+        </div>
+
+        <div class="float-end">
+          <button class="btn btn-lg btn-primary opacity-100 border-0 d-lg-none"
+            type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      {% else %}
+        <a class="navbar-brand fs-3 fw-bolder mx-auto" href="/">caves.app</a>
+      {% endif %}
     </div>
   </nav>
 </header>
