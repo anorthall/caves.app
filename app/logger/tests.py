@@ -1056,3 +1056,88 @@ class TripReportTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/trip/{self.trip.pk}/")
         self.assertEqual(TripReport.objects.count(), 0)
+
+    def test_trip_report_link_appears_on_trip_list(self):
+        """Test the trip report link appears on the trip list page."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the link appears on the trip list page
+        response = self.client.get("/trips/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/{report.pk}/")
+
+    def test_trip_report_link_appears_on_trip_detail(self):
+        """Test the trip report link appears on the trip detail page."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the link appears on the trip detail page
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/{report.pk}/")
+
+    def test_add_trip_report_appears_when_no_report_added(self):
+        """Test the add trip report link appears on the trip detail page when no report has been added."""
+        # Test the link appears on the trip detail page
+        self.client.login(email="test@user.app", password="password")
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/add/{self.trip.pk}/")
+
+    def test_add_trip_report_does_not_appear_when_report_added(self):
+        """Test the add trip report link does not appear on the trip detail page when a report has been added."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the link does not appear on the trip detail page
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, f"/report/add/{self.trip.pk}/")
+
+    def test_view_and_edit_trip_report_links_appear_when_a_report_has_been_added(self):
+        """Test the view and edit trip report links appear on the trip detail page when a report has been added."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the links appear on the trip detail page
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/{report.pk}/")
+        self.assertContains(response, f"/report/edit/{report.pk}/")
