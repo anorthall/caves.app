@@ -6,6 +6,7 @@ django-active-link==0.1.8
 django-mailer==2.2
 django-distance-field==1.2.5
 django-markdownify==0.9.3
+django-tinymce==3.6.1
 django_debug_toolbar
 itsdangerous==2.1.2
 humanize==4.6.0

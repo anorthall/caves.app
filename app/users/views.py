@@ -102,7 +102,7 @@ def update(request):
         if form.is_valid():
             form.save()
             messages.success(
-                request, f"Your details have been updated, {request.user.first_name}."
+                request, f"Your details have been updated, {request.user.name}."
             )
             return redirect("users:profile")
     else:
@@ -130,7 +130,7 @@ def register(request):
             # Generate verification token and send email
             verify_code = generate_token(user.pk, user.email)
             verify_url = settings.SITE_ROOT + reverse("users:verify-new-account")
-            send_verify_email(user.email, user.first_name, verify_url, verify_code)
+            send_verify_email(user.email, user.name, verify_url, verify_code)
 
             # Redirect to Verify Email page.
             return redirect("users:verify-new-account")
@@ -155,7 +155,7 @@ def verify_new_account(request):
             auth.login(request, verified_user)  # Log the user in
             messages.success(
                 request,
-                f"Welcome, {verified_user.first_name}. Your registration has been completed and your email address verified!",
+                f"Welcome, {verified_user.name}. Your registration has been completed and your email address verified!",
             )
             return redirect("log:index")
     else:
@@ -177,7 +177,7 @@ def resend_verify_email(request):
             user = form.user
             verify_code = generate_token(user.pk, user.email)
             verify_url = settings.SITE_ROOT + reverse("users:verify-new-account")
-            send_verify_email(user.email, user.first_name, verify_url, verify_code)
+            send_verify_email(user.email, user.name, verify_url, verify_code)
         messages.info(
             request,
             "If the provided email matched an account then the verification email has been resent. Please wait a few minutes and then check your email.",
@@ -219,11 +219,11 @@ def update_email(request):
             verify_code = generate_token(user.pk, new_email)
             verify_url = settings.SITE_ROOT + reverse("users:verify-email-change")
             send_email_change_verification(
-                new_email, user.first_name, verify_url, verify_code
+                new_email, user.name, verify_url, verify_code
             )
 
             # Send the security notification email
-            send_email_change_notification(user.email, user.first_name, new_email)
+            send_email_change_notification(user.email, user.name, new_email)
 
             messages.info(
                 request,

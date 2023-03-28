@@ -21,7 +21,7 @@
               <th scope="col">Cave</th>
               <th class="d-none d-xl-table-cell" scope="col">Duration</th>
               <th class="d-none d-lg-table-cell" scope="col">Trip type</th>
-              <th scope="col"></th>
+              <th class="d-none d-sm-table-cell" scope="col"></th>
             </tr>
           </thead>
 
@@ -46,6 +46,10 @@
                 <td class="d-none d-lg-table-cell">{{ trip.type }}</td>
 
                 <td class="text-end pe-2 d-none d-sm-table-cell">
+                  {% if trip.has_report %}
+                    <a class="text-warning" href="{% url 'log:report_detail' pk=trip.report.pk %}"><i class="bi bi-card-text"></i></a>
+                    &nbsp;
+                  {% endif %}
                   <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
                   &nbsp;
                   <a class="text-danger" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>

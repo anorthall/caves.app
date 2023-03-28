@@ -1,8 +1,8 @@
 {% extends "base_public.html" %}
 {% load distformat %}
 {% load markdownify %}
-{% block title %}{{ user.first_name }}'s trips{% endblock %}
-{% block description %}{{ user.full_name }}'s trips on caves.app.{% endblock %}
+{% block title %}{{ user.name }}'s trips{% endblock %}
+{% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
 {% block main %}
 
 <div class="container">
@@ -10,7 +10,7 @@
     {% if user.profile_page_title %}
       <h1 class="display-5">{{ user.profile_page_title }}</h1>
     {% else %}
-      <h1 class="display-5">{{ user.first_name }} {{ user.last_name }}'s trips</h1>
+      <h1 class="display-5">{{ user.name }}'s trips</h1>
     {% endif %}
   </div>
 
@@ -107,6 +107,7 @@
               <th scope="col" class="d-none d-lg-table-cell">Region</th>
               <th scope="col" class="d-none d-lg-table-cell">Country</th>
               <th scope="col" class="d-none d-md-table-cell">Duration</th>
+              <th></th>
             </tr>
           </thead>
 
@@ -117,7 +118,7 @@
                 <td>{{ trip.start|date }}</td>
                 <td>
                   {% if trip.cave_url %}
-                    <a href="{{ trip.cave_url }}" target="_blank">{{ trip.cave_name }}</a>
+                    <a href="{{ trip.cave_url }}">{{ trip.cave_name }}</a>
                   {% else %}
                     {{ trip.cave_name }}
                   {% endif %}
@@ -125,6 +126,13 @@
                 <td class="d-none d-lg-table-cell">{{ trip.cave_region }}</td>
                 <td class="d-none d-lg-table-cell">{{ trip.cave_country }}</td>
                 <td class="d-none d-md-table-cell">{{ trip.duration_str }}</td>
+                <td>
+                  {% if trip.has_report and trip.report.is_public %}
+                    <a class="text-warning" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
+                      <i class="bi bi-card-text"></i>
+                    </a>
+                  {% endif %}
+                </td>
               </tr>
             {% endfor %}
           </tbody>

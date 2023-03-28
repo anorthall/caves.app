@@ -1,5 +1,5 @@
 {% load active_link_tags %}
-<div class="card mt-4 mt-lg-0">
+<div class="card mt-lg-0">
   <div class="card-header text-center">
     Navigation
   </div>
@@ -22,7 +22,7 @@
     </a>
 
     {% if request.user.is_public %}
-      <a class="nav-link" target="_blank" href="{% url 'public:user' request.user.username %}">
+      <a class="nav-link" href="{% url 'public:user' request.user.username %}">
         <i class="bi bi-globe"></i>&nbsp; Public profile
       </a>
     {% endif %}

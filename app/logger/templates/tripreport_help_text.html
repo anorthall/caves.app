@@ -1,0 +1,17 @@
+<p class="lead">
+  Trip reports are an optional add-on to a trip, used to store a comprehensive account of what happened, using
+  a full range of rich-text formatting options.
+</p>
+
+<p>
+  Trip reports that are public will be available online for anyone to read. If you want your trip report to be private,
+  or limited to your friends, simply select the appropriate privacy option. The public URL of a trip report will be visible
+  on the trip page.
+</p>
+
+<p>
+  You are editing a trip report for the trip to <code>{{ trip.cave_name }}</code> on <code>{{ trip.start|date }}</code>. Would you
+  like to <a target="_blank" href="{% url 'log:trip_detail' trip.id %}">view the trip</a>?
+</p>
+
+<hr class="my-4" />

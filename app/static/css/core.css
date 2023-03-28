@@ -28,9 +28,12 @@ body {
   font-weight: normal;
 }
 
-@media (max-width: 768px) {
-  .base-col {
-    padding-left: 5px !important;
-    padding-right: 5px !important;
-  }
+.sidebar {
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
 }

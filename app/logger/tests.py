@@ -1,17 +1,16 @@
+import logging
 from django.test import TestCase, Client
-from django.utils import timezone
-from django.utils.timezone import datetime as dt
+from django.db.utils import IntegrityError
 from django.contrib.gis.measure import D
 from django.contrib.auth import get_user_model
-from .models import Trip
-from .urls import urlpatterns as trip_urlpatterns
+from django.utils import timezone
+from django.utils.timezone import datetime as dt
+from .models import Trip, TripReport
 
 
 class TripTestCase(TestCase):
     def setUp(self):
-        # Reduce log level to avoid 404 error
-        import logging
-
+        """Reduce log level to avoid 404 error"""
         logger = logging.getLogger("django.request")
         self.previous_level = logger.getEffectiveLevel()
         logger.setLevel(logging.ERROR)
@@ -21,8 +20,7 @@ class TripTestCase(TestCase):
             email="test@test.com",
             username="testusername",
             password="password",
-            first_name="Firstname",
-            last_name="Lastname",
+            name="Firstname",
         )
         user.privacy = get_user_model().PRIVATE
         user.is_active = True
@@ -78,8 +76,6 @@ class TripTestCase(TestCase):
 
     def tearDown(self):
         """Reset the log level back to normal"""
-        import logging
-
         logger = logging.getLogger("django.request")
         logger.setLevel(self.previous_level)
 
@@ -242,8 +238,7 @@ class TripTestCase(TestCase):
             email="test_no_trips@test.com",
             username="testusername2",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         stats = Trip.stats_for_user(user)
         self.assertEqual(stats["trips"], 0)
@@ -269,9 +264,7 @@ class TripTestCase(TestCase):
 
 class TripIntegrationTests(TestCase):
     def setUp(self):
-        # Reduce log level to avoid 404 error
-        import logging
-
+        """Reduce log level to avoid 404 error"""
         logger = logging.getLogger("django.request")
         self.previous_level = logger.getEffectiveLevel()
         logger.setLevel(logging.ERROR)
@@ -283,8 +276,7 @@ class TripIntegrationTests(TestCase):
             email="super@user.app",
             username="superuser",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         self.superuser.is_active = True
         self.superuser.save()
@@ -294,8 +286,7 @@ class TripIntegrationTests(TestCase):
             email="enabled@user.app",
             username="enabled",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         self.enabled.is_active = True
         self.enabled.save()
@@ -305,8 +296,7 @@ class TripIntegrationTests(TestCase):
             email="disabled@user.app",
             username="disabled",
             password="testpassword",
-            first_name="Joe",
-            last_name="Bloggs",
+            name="Joe",
         )
         self.disabled.is_active = False
         self.disabled.save()
@@ -321,8 +311,6 @@ class TripIntegrationTests(TestCase):
 
     def tearDown(self):
         """Reset the log level back to normal"""
-        import logging
-
         logger = logging.getLogger("django.request")
         logger.setLevel(self.previous_level)
 
@@ -604,3 +592,552 @@ class TripIntegrationTests(TestCase):
         self.assertEqual(trip.cavers, "Test Cavers")
         self.assertEqual(trip.notes, "Test Notes")
         self.assertEqual(trip.privacy, Trip.DEFAULT)
+
+
+class TripReportTestCase(TestCase):
+    def setUp(self):
+        """Reduce log level to avoid 404 error"""
+        logger = logging.getLogger("django.request")
+        self.previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
+        self.user = get_user_model().objects.create_user(
+            email="test@user.app",
+            username="username",
+            password="password",
+            name="Test",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+        self.trip = Trip.objects.create(
+            user=self.user,
+            cave_name="Test Cave",
+            start=timezone.now(),
+        )
+
+    def tearDown(self):
+        """Reset the log level back to normal"""
+        logger = logging.getLogger("django.request")
+        logger.setLevel(self.previous_level)
+
+    def test_slug_is_unique_for_user_only(self):
+        """Test that the slug is unique for the user only"""
+        # Create a trip report for the user with slug 'slug'
+        TripReport.objects.create(
+            user=self.user,
+            trip=self.trip,
+            title="Test Report",
+            slug="slug",
+            content="Test Content",
+            pub_date=timezone.now().date(),
+        )
+
+        # Create another user, trip, and trip report with the same slug
+        # This code running without exception is considered a 'pass'.
+        user2 = get_user_model().objects.create_user(
+            email="test2@users.app",
+            username="username2",
+            password="password2",
+            name="Test2",
+        )
+        trip2 = Trip.objects.create(
+            user=user2,
+            cave_name="Test Cave 2",
+            start=timezone.now(),
+        )
+        TripReport.objects.create(
+            user=user2,
+            trip=trip2,
+            title="Test Report 2",
+            slug="slug",
+            content="Test Content 2",
+            pub_date=timezone.now().date(),
+        )
+
+        # Now create a second trip/report for the original user with the same
+        # slug. This should fail with an IntegrityError.
+        with self.assertRaises(IntegrityError):
+            trip = Trip.objects.create(
+                user=self.user,
+                cave_name="Test Cave",
+                start=timezone.now(),
+            )
+            TripReport.objects.create(
+                user=self.user,
+                trip=trip,
+                title="Test Report",
+                slug="slug",
+                content="Test Content",
+                pub_date=timezone.now().date(),
+            )
+
+    def test_report_privacy(self):
+        """Test the TripReport.is_private and TripReport.is_public methods"""
+        # Test default privacy when the trip is set to default and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.DEFAULT
+        self.trip.save()
+
+        self.assertTrue(self.user.is_private)
+        self.assertEqual(self.trip.privacy, Trip.DEFAULT)
+
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=self.trip,
+            title="Test Report",
+            slug="slug",
+            content="Test Content",
+            pub_date=timezone.now().date(),
+            privacy=TripReport.DEFAULT,
+        )
+        self.assertEqual(report.privacy, TripReport.DEFAULT)
+        self.assertTrue(report.is_private)
+        self.assertFalse(report.is_public)
+
+        # Test default privacy when the trip is set to default and the user is public
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+
+        self.assertEqual(report.privacy, TripReport.DEFAULT)
+        self.assertTrue(self.user.is_public)
+        self.assertEqual(self.trip.privacy, Trip.DEFAULT)
+        self.assertFalse(report.is_private)
+        self.assertTrue(report.is_public)
+
+        # Test default privacy when the trip is set to public and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.PUBLIC
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.DEFAULT)
+        self.assertTrue(self.user.is_private)
+        self.assertTrue(self.trip.is_public)
+        self.assertFalse(report.is_private)
+        self.assertTrue(report.is_public)
+
+        # Test default privacy when the trip is private and the user is public
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+        self.trip.privacy = Trip.PRIVATE
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.DEFAULT)
+        self.assertTrue(self.user.is_public)
+        self.assertTrue(self.trip.is_private)
+        self.assertTrue(report.is_private)
+        self.assertFalse(report.is_public)
+
+        # Test public privacy when the trip is set to default and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.DEFAULT
+        self.trip.save()
+        report.privacy = TripReport.PUBLIC
+        report.save()
+
+        self.assertEqual(report.privacy, TripReport.PUBLIC)
+        self.assertTrue(self.user.is_private)
+        self.assertEqual(self.trip.privacy, Trip.DEFAULT)
+        self.assertFalse(report.is_private)
+        self.assertTrue(report.is_public)
+
+        # Test public privacy when the trip is set to default and the user is public
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+        self.trip.privacy = Trip.DEFAULT
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PUBLIC)
+        self.assertTrue(self.user.is_public)
+        self.assertEqual(self.trip.privacy, Trip.DEFAULT)
+        self.assertFalse(report.is_private)
+        self.assertTrue(report.is_public)
+
+        # Test public privacy when the trip is set to public and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.PUBLIC
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PUBLIC)
+        self.assertTrue(self.user.is_private)
+        self.assertTrue(self.trip.is_public)
+        self.assertFalse(report.is_private)
+        self.assertTrue(report.is_public)
+
+        # Test public privacy when the trip is private and the user is public
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+        self.trip.privacy = Trip.PRIVATE
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PUBLIC)
+        self.assertTrue(self.user.is_public)
+        self.assertTrue(self.trip.is_private)
+        self.assertFalse(report.is_private)
+        self.assertTrue(report.is_public)
+
+        # Test public privacy when the trip is private and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.PRIVATE
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PUBLIC)
+        self.assertTrue(self.user.is_private)
+        self.assertTrue(self.trip.is_private)
+        self.assertFalse(report.is_private)
+        self.assertTrue(report.is_public)
+
+        # Test private privacy when the trip is set to default and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.DEFAULT
+        self.trip.save()
+        report.privacy = TripReport.PRIVATE
+        report.save()
+
+        self.assertEqual(report.privacy, TripReport.PRIVATE)
+        self.assertTrue(self.user.is_private)
+        self.assertEqual(self.trip.privacy, Trip.DEFAULT)
+        self.assertTrue(report.is_private)
+        self.assertFalse(report.is_public)
+
+        # Test private privacy when the trip is set to default and the user is public
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+        self.trip.privacy = Trip.DEFAULT
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PRIVATE)
+        self.assertTrue(self.user.is_public)
+        self.assertEqual(self.trip.privacy, Trip.DEFAULT)
+        self.assertTrue(report.is_private)
+        self.assertFalse(report.is_public)
+
+        # Test private privacy when the trip is set to public and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.PUBLIC
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PRIVATE)
+        self.assertTrue(self.user.is_private)
+        self.assertTrue(self.trip.is_public)
+        self.assertTrue(report.is_private)
+        self.assertFalse(report.is_public)
+
+        # Test private privacy when the trip is private and the user is public
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+        self.trip.privacy = Trip.PRIVATE
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PRIVATE)
+        self.assertTrue(self.user.is_public)
+        self.assertTrue(self.trip.is_private)
+        self.assertTrue(report.is_private)
+        self.assertFalse(report.is_public)
+
+        # Test private privacy when the trip is private and the user is private
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        self.trip.privacy = Trip.PRIVATE
+        self.trip.save()
+
+        self.assertEqual(report.privacy, TripReport.PRIVATE)
+        self.assertTrue(self.user.is_private)
+        self.assertTrue(self.trip.is_private)
+        self.assertTrue(report.is_private)
+        self.assertFalse(report.is_public)
+
+    def test_trip_report_create_view(self):
+        """Test the trip report create view in GET and POST."""
+        # Test view loads
+        self.client.login(email="test@user.app", password="password")
+        response = self.client.get(f"/report/add/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+
+        # Test post request
+        response = self.client.post(
+            f"/report/add/{self.trip.pk}/",
+            {
+                "title": "Test Report",
+                "pub_date": dt.now().date(),
+                "slug": "test-report",
+                "content": "Test content.",
+                "privacy": TripReport.PUBLIC,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/report/{self.trip.pk}/")
+        self.assertEqual(TripReport.objects.count(), 1)
+        self.assertEqual(TripReport.objects.get().title, "Test Report")
+        self.assertEqual(TripReport.objects.get().content, "Test content.")
+        self.assertEqual(TripReport.objects.get().privacy, TripReport.PUBLIC)
+        self.assertEqual(TripReport.objects.get().trip, self.trip)
+
+    def test_trip_report_create_view_with_duplicate_slug(self):
+        """Test the trip report create view in POST with a duplicate slug."""
+        # Create a report with the slug 'slug'
+        TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="slug",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Create a new trip
+        trip = Trip.objects.create(
+            cave_name="Test Trip",
+            start=timezone.now(),
+            user=self.user,
+        )
+
+        # Submit a POST request with the same slug
+        self.client.login(email="test@user.app", password="password")
+        response = self.client.post(
+            f"/report/add/{trip.pk}/",
+            {
+                "title": "Test Report",
+                "pub_date": dt.now().date(),
+                "slug": "slug",
+                "content": "Test content.",
+                "privacy": TripReport.PUBLIC,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(TripReport.objects.count(), 1)
+        self.assertContains(response, "The slug must be unique.")
+
+        # Create a new user, trip, and report and test the slug is allowed
+        user = get_user_model().objects.create_user(
+            email="new@user.app",
+            password="password",
+            username="newuser",
+            name="New",
+        )
+        user.is_active = True
+        user.save()
+
+        trip = Trip.objects.create(
+            cave_name="Test Trip",
+            start=timezone.now(),
+            user=user,
+        )
+
+        # Submit a POST request as the new user with the slug 'slug'
+        self.client.login(email="new@user.app", password="password")
+        response = self.client.post(
+            f"/report/add/{trip.pk}/",
+            {
+                "title": "Test Report as new user",
+                "pub_date": dt.now().date(),
+                "slug": "slug",
+                "content": "Test content.",
+                "privacy": TripReport.PUBLIC,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(TripReport.objects.count(), 2)
+        self.assertEqual(TripReport.objects.last().title, "Test Report as new user")
+
+    def test_trip_report_create_view_redirects_if_a_report_already_exists(self):
+        """Test the trip report create view redirects if a report already exists for that trip."""
+        # Create a report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the view redirects
+        self.client.login(email="test@user.app", password="password")
+        response = self.client.get(f"/report/add/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/report/{report.pk}/")
+
+    def test_users_cannot_view_or_edit_a_trip_report_for_other_users(self):
+        """Test users cannot view or edit a trip report which does not belong to them."""
+        # Create a new user
+        user = get_user_model().objects.create_user(
+            email="new@user.app",
+            password="password",
+            username="testuser",
+            name="Test",
+        )
+        user.is_active = True
+        user.save()
+
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the view redirects
+        self.client.login(email="new@user.app", password="password")
+        response = self.client.get(f"/report/edit/{report.pk}/")
+        self.assertEqual(response.status_code, 404)
+
+        # Test the user cannot view the report
+        response = self.client.get(f"/report/{report.pk}/")
+        self.assertEqual(response.status_code, 404)
+
+        # Test the user cannot delete the report
+        response = self.client.post(f"/report/delete/{report.pk}/")
+        self.assertEqual(response.status_code, 404)
+
+        # Test user cannot create a report for a trip belonging to another user
+        response = self.client.get(f"/report/add/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_users_can_view_and_edit_their_own_trip_reports(self):
+        """Test users can view and edit their own trip reports."""
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the user can view the report
+        self.client.login(email="test@user.app", password="password")
+        response = self.client.get(f"/report/{report.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Report")
+        self.assertContains(response, "Test content.")
+
+        # Test the user can edit the report
+        response = self.client.get(f"/report/edit/{report.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Report")
+        self.assertContains(response, "Test content.")
+
+        # Test the user can POST to the edit view
+        response = self.client.post(
+            f"/report/edit/{report.pk}/",
+            {
+                "title": "Test Report Updated",
+                "pub_date": dt.now().date(),
+                "slug": "test-report-updated",
+                "content": "Test content updated.",
+                "privacy": TripReport.PUBLIC,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/report/{report.pk}/")
+        report.refresh_from_db()
+        self.assertEqual(report.title, "Test Report Updated")
+        self.assertEqual(report.slug, "test-report-updated")
+        self.assertEqual(report.content, "Test content updated.")
+
+        # Test the user can delete the report
+        response = self.client.post(f"/report/delete/{report.pk}/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/trip/{self.trip.pk}/")
+        self.assertEqual(TripReport.objects.count(), 0)
+
+    def test_trip_report_link_appears_on_trip_list(self):
+        """Test the trip report link appears on the trip list page."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the link appears on the trip list page
+        response = self.client.get("/trips/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/{report.pk}/")
+
+    def test_trip_report_link_appears_on_trip_detail(self):
+        """Test the trip report link appears on the trip detail page."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the link appears on the trip detail page
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/{report.pk}/")
+
+    def test_add_trip_report_appears_when_no_report_added(self):
+        """Test the add trip report link appears on the trip detail page when no report has been added."""
+        # Test the link appears on the trip detail page
+        self.client.login(email="test@user.app", password="password")
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/add/{self.trip.pk}/")
+
+    def test_add_trip_report_does_not_appear_when_report_added(self):
+        """Test the add trip report link does not appear on the trip detail page when a report has been added."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the link does not appear on the trip detail page
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, f"/report/add/{self.trip.pk}/")
+
+    def test_view_and_edit_trip_report_links_appear_when_a_report_has_been_added(self):
+        """Test the view and edit trip report links appear on the trip detail page when a report has been added."""
+        self.client.login(email="test@user.app", password="password")
+        # Create a trip report
+        report = TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            privacy=TripReport.PUBLIC,
+            trip=self.trip,
+            user=self.user,
+        )
+
+        # Test the links appear on the trip detail page
+        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"/report/{report.pk}/")
+        self.assertContains(response, f"/report/edit/{report.pk}/")

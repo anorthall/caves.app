@@ -1,0 +1,120 @@
+{% load widget_tweaks %}
+
+{% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+{% endfor %}
+
+<!-- Title -->
+<div class="row mb-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.title.auto_id }}">
+      Report title
+    </label>
+
+    {% if form.is_bound %}
+      {% if form.title.errors %}
+        {% render_field form.title class="form-control is-invalid" %}
+        {% for e in form.title.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.title class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.title class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.title.help_text }}
+    </div>
+  </div>
+</div>
+
+<!-- Date -->
+<div class="row mb-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.pub_date.auto_id }}">
+      Date published
+    </label>
+
+    {% if form.is_bound %}
+      {% if form.pub_date.errors %}
+        {% render_field form.pub_date class="form-control is-invalid" %}
+        {% for e in form.pub_date.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.pub_date class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.pub_date class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.pub_date.help_text }}
+    </div>
+  </div>
+</div>
+
+<!-- Slug -->
+<div class="row mb-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.slug.auto_id }}">
+      Slug
+    </label>
+
+    {% if form.is_bound %}
+      {% if form.slug.errors %}
+        {% render_field form.slug class="form-control is-invalid" %}
+        {% for e in form.slug.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.slug class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.slug class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.slug.help_text }}
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="row mb-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.content.auto_id }}">
+      Content
+    </label>
+
+    {% if form.is_bound %}
+      {% if form.content.errors %}
+        {% render_field form.content class="form-control is-invalid" %}
+        {% for e in form.content.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.content class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.content class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.content.help_text }}
+    </div>
+  </div>
+</div>
+
+<!-- Privacy -->
+<div class="row mb-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.privacy.auto_id }}">
+      Who can view this report?
+    </label>
+
+    {% if form.is_bound %}
+      {% if form.privacy.errors %}
+        {% render_field form.privacy class="form-select is-invalid" %}
+        {% for e in form.privacy.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.privacy class="form-select is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.privacy class="form-select" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.privacy.help_text }}
+    </div>
+  </div>
+</div>

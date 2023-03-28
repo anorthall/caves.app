@@ -10,6 +10,18 @@ urlpatterns = [
     path("trip/add/", views.TripCreateView.as_view(), name="trip_create"),
     path("trips/", views.TripListView.as_view(), name="trip_list"),
     path("trips/export/", views.export, name="export"),
+    path("report/<int:pk>/", views.ReportDetailView.as_view(), name="report_detail"),
+    path(
+        "report/add/<int:pk>/", views.ReportCreateView.as_view(), name="report_create"
+    ),
+    path(
+        "report/edit/<int:pk>/", views.ReportUpdateView.as_view(), name="report_update"
+    ),
+    path(
+        "report/delete/<int:pk>/",
+        views.ReportDeleteView.as_view(),
+        name="report_delete",
+    ),
     path("about/", views.about, name="about"),
     path("admin-tools/", views.admin_tools, name="admin_tools"),
 ]

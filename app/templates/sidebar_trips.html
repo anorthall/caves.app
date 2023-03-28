@@ -19,11 +19,36 @@
       </a>
 
       {% if trip.is_public %}
-        <a class="nav-link" target="_blank" href="{% url 'public:trip' username=trip.user.username pk=trip.pk %}">
+        <a class="nav-link" href="{% url 'public:trip' username=trip.user.username pk=trip.pk %}">
           <i class="bi bi-globe"></i>&nbsp; View public page
         </a>
       {% endif %}
 
+      {% if trip.report %}
+        <hr class="m-2">
+        <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+          <i class="bi bi-card-text"></i>&nbsp; View trip report
+        </a>
+
+        <a class="nav-link {% active_link 'log:report_update' pk=trip.report.pk %}" href="{% url 'log:report_update' pk=trip.report.pk %}">
+          <i class="bi bi-pencil"></i>&nbsp; Edit trip report
+        </a>
+
+        <a class="nav-link {% active_link 'log:report_delete' pk=trip.report.pk %}" href="{% url 'log:report_delete' pk=trip.report.pk %}">
+          <i class="bi bi-x-lg"></i>&nbsp; Delete trip report
+        </a>
+
+        {% if trip.report.is_public %}
+          <a class="nav-link" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
+            <i class="bi bi-globe"></i>&nbsp; View public report
+          </a>
+        {% endif %}
+      {% else %}
+        <hr class="m-2">
+        <a class="nav-link {% active_link 'log:report_create' pk=trip.pk %}" href="{% url 'log:report_create' pk=trip.pk %}">
+          <i class="bi bi-card-text"></i>&nbsp; Add trip report
+        </a>
+      {% endif %}
       <hr class="m-2">
     {% endif %}
 

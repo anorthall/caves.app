@@ -19,8 +19,7 @@ class UserTestCase(TestCase):
             email="user@caves.app",
             username="username",
             password="password",
-            first_name="Firstname",
-            last_name="Lastname",
+            name="Firstname",
         )
         user.is_active = True
         user.save()
@@ -80,8 +79,7 @@ class UserIntegrationTestCase(TestCase):
             email="enabled@user.app",
             username="testuser",
             password="password",
-            first_name="Firstname",
-            last_name="Lastname",
+            name="Firstname",
         )
         self.enabled.is_active = True
         self.enabled.save()
@@ -90,8 +88,7 @@ class UserIntegrationTestCase(TestCase):
             email="disabled@user.app",
             username="testuser2",
             password="password",
-            first_name="Firstname",
-            last_name="Lastname",
+            name="Firstname",
         )
         self.disabled.is_active = False
         self.disabled.save()
@@ -100,8 +97,7 @@ class UserIntegrationTestCase(TestCase):
             email="super@user.app",
             username="testuser3",
             password="password",
-            first_name="Firstname",
-            last_name="Lastname",
+            name="Firstname",
         )
         self.superuser.is_active = True
         self.superuser.save()
@@ -180,8 +176,7 @@ class UserIntegrationTestCase(TestCase):
         response = client.post(
             "/account/register/",
             {
-                "first_name": "Test",
-                "last_name": "User",
+                "name": "Test",
                 "email": "test_register@user.app",
                 "username": "testregistration",
                 "password1": "this_is_a_password",
@@ -201,8 +196,7 @@ class UserIntegrationTestCase(TestCase):
         # Load the user
         user = get_user_model().objects.get(email="test_register@user.app")
         self.assertFalse(user.is_active)
-        self.assertEquals(user.first_name, "Test")
-        self.assertEquals(user.last_name, "User")
+        self.assertEquals(user.name, "Test")
         self.assertEquals(user.username, "testregistration")
 
         # Test resending verification email with invalid email
@@ -266,8 +260,7 @@ class UserIntegrationTestCase(TestCase):
         response = client.post(
             "/account/register/",
             {
-                "first_name": "Test",
-                "last_name": "User",
+                "name": "Test",
                 "email": "test_register",
                 "username": "testr egistration",
                 "password1": "this_is_a_password",
@@ -332,7 +325,7 @@ class UserIntegrationTestCase(TestCase):
         client.login(email=user.email, password="password")
         response = client.get("/account/profile/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, user.full_name)
+        self.assertContains(response, user.name)
         self.assertContains(response, user.email)
         self.assertContains(response, user.username)
         self.assertContains(response, user.privacy)
@@ -355,8 +348,7 @@ class UserIntegrationTestCase(TestCase):
         response = client.post(
             "/account/update/",
             {
-                "first_name": "New",
-                "last_name": "Name",
+                "name": "New",
                 "username": "newusername",
                 "location": "Testing New Location",
                 "privacy": "Public",
@@ -375,8 +367,7 @@ class UserIntegrationTestCase(TestCase):
         user.refresh_from_db()
         from zoneinfo import ZoneInfo
 
-        self.assertEqual(user.first_name, "New")
-        self.assertEqual(user.last_name, "Name")
+        self.assertEqual(user.name, "New")
         self.assertEqual(user.username, "newusername")
         self.assertEqual(user.location, "Testing New Location")
         self.assertEqual(user.privacy, user.PUBLIC)

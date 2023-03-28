@@ -103,7 +103,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = CavingUser
-        fields = ("first_name", "last_name", "email", "username")
+        fields = ("name", "email", "username")
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -138,8 +138,7 @@ class UserAdminChangeForm(forms.ModelForm):
         model = CavingUser
         fields = (
             "email",
-            "first_name",
-            "last_name",
+            "name",
             "location",
             "country",
             "clubs",
@@ -162,8 +161,7 @@ class UserChangeForm(forms.ModelForm):
         model = CavingUser
         fields = (
             "email",
-            "first_name",
-            "last_name",
+            "name",
             "username",
             "location",
             "country",

@@ -1,7 +1,8 @@
 from django.test import TestCase, Client
 from django.utils import timezone
+from django.urls import reverse
 from django.contrib.auth import get_user_model
-from logger.models import Trip
+from logger.models import Trip, TripReport
 
 
 class PublicViewsIntegrationTests(TestCase):
@@ -20,8 +21,7 @@ class PublicViewsIntegrationTests(TestCase):
             email="test@user.app",
             password="password",
             username="testuser",
-            first_name="Test",
-            last_name="User",
+            name="Test",
         )
         self.user.bio = "This is my bio."
         self.user.is_active = True
@@ -55,7 +55,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.bio)
 
         # Test that the user's trips are listed
@@ -116,7 +116,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.trip_set.all().delete()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(
             response,
             "This is the public profile of a caves.app user who has not added any trips or a bio yet.",
@@ -130,7 +130,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.bio)
 
         # Test that the user's trips are listed
@@ -147,7 +147,7 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.full_name)
+        self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.bio)
 
         # Test that the user's trips are listed
@@ -213,3 +213,134 @@ class PublicViewsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.profile_page_title)
         self.assertContains(response, "3281ft")
+
+    def test_public_trip_report_view(self):
+        """Test that the public trip report view loads"""
+        trip = self.user.trip_set.first()
+        trip.privacy = Trip.PUBLIC
+        trip.save()
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+
+        # Create a trip report
+        trip_report = TripReport.objects.create(
+            trip=trip,
+            user=self.user,
+            slug="report",
+            title="This is a trip report",
+            pub_date=timezone.now().date(),
+            content="This is the body of the trip report",
+            privacy=TripReport.PUBLIC,
+        )
+
+        # Check the trip report loads
+        response = self.client.get(f"/u/{self.user.username}/{trip_report.slug}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip_report.title)
+        self.assertContains(response, trip_report.content)
+        self.assertContains(response, trip_report.user.name)
+        self.assertContains(response, trip_report.trip.cave_name)
+        self.assertContains(response, reverse("public:user", args=[self.user.username]))
+        self.assertContains(
+            response, reverse("public:trip", args=[self.user.username, trip.pk])
+        )
+
+        # Make the report private and check it returns 404
+        trip_report.privacy = TripReport.PRIVATE
+        trip_report.save()
+
+        response = self.client.get(f"/u/{self.user.username}/{trip_report.slug}/")
+        self.assertEqual(response.status_code, 404)
+
+        # Make the user and trip private and check the links do not appear
+        self.user.privacy = get_user_model().PRIVATE
+        self.user.save()
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+        trip_report.privacy = TripReport.PUBLIC
+        trip_report.save()
+
+        response = self.client.get(f"/u/{self.user.username}/{trip_report.slug}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip_report.title)
+        self.assertContains(response, trip_report.content)
+        self.assertNotContains(
+            response, reverse("public:user", args=[self.user.username])
+        )
+        self.assertNotContains(
+            response, reverse("public:trip", args=[self.user.username, trip.pk])
+        )
+
+    def test_trip_report_links_appear_on_public_user_page(self):
+        """Test links to trip reports appear on the public user page"""
+        trip = self.user.trip_set.first()
+        trip.privacy = Trip.PUBLIC
+        trip.save()
+        self.user.privacy = get_user_model().PUBLIC
+        self.user.save()
+
+        # Create a trip report
+        trip_report = TripReport.objects.create(
+            trip=trip,
+            user=self.user,
+            slug="report",
+            title="This is a trip report",
+            pub_date=timezone.now().date(),
+            content="This is the body of the trip report",
+            privacy=TripReport.PUBLIC,
+        )
+
+        # Check the link to the trip report is contained on the user profile page
+        response = self.client.get(f"/u/{self.user.username}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            reverse("public:report", args=[self.user.username, trip_report.slug]),
+        )
+
+        # Make the report private and check it does not appear
+        trip_report.privacy = TripReport.PRIVATE
+        trip_report.save()
+
+        response = self.client.get(f"/u/{self.user.username}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(
+            response,
+            reverse("public:report", args=[self.user.username, trip_report.slug]),
+        )
+
+    def test_trip_report_links_on_trip_page(self):
+        """Test links to trip reports appear on the trip page"""
+        trip = self.user.trip_set.first()
+        trip.privacy = Trip.PUBLIC
+        trip.save()
+
+        # Create a trip report
+        trip_report = TripReport.objects.create(
+            trip=trip,
+            user=self.user,
+            slug="report",
+            title="This is a trip report",
+            pub_date=timezone.now().date(),
+            content="This is the body of the trip report",
+            privacy=TripReport.PUBLIC,
+        )
+
+        # Check the link to the trip report is contained on the trip page
+        response = self.client.get(f"/u/{self.user.username}/{trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            reverse("public:report", args=[self.user.username, trip_report.slug]),
+        )
+
+        # Make the report private and check it does not appear
+        trip_report.privacy = TripReport.PRIVATE
+        trip_report.save()
+
+        response = self.client.get(f"/u/{self.user.username}/{trip.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(
+            response,
+            reverse("public:report", args=[self.user.username, trip_report.slug]),
+        )

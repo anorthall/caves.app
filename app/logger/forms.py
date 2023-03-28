@@ -2,7 +2,34 @@ from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from datetime import timedelta
-from .models import Trip
+from .models import Trip, TripReport
+
+
+class TripReportForm(forms.ModelForm):
+    template_name = "forms/tripreport_form.html"
+
+    class Meta:
+        model = TripReport
+        exclude = ["user", "trip"]
+        widgets = {
+            "pub_date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Store the trip user. This is used to validate the slug."""
+        self.user = kwargs.pop("user")
+        return super().__init__(*args, **kwargs)
+
+    def clean_slug(self):
+        """Check that the user does not have another slug with the same value"""
+        slug = self.cleaned_data.get("slug")
+        try:
+            tr = TripReport.objects.get(user=self.user, slug=slug)
+            if tr == self.instance:
+                return slug
+            raise ValidationError("The slug must be unique.")
+        except TripReport.DoesNotExist:
+            return slug
 
 
 class TripForm(forms.ModelForm):
@@ -36,7 +63,7 @@ class TripForm(forms.ModelForm):
                 raise ValidationError(
                     "Trips must not end more than 31 days in the future."
                 )
-        return self.cleaned_data["end"]
+        return end
 
     def clean(self):
         """Validate relations between the start/end datetimes"""

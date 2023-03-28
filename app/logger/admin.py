@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Trip
+from .models import Trip, TripReport
 
 
 @admin.register(Trip)
@@ -87,3 +87,12 @@ class TripAdmin(admin.ModelAdmin):
         ),
         ("Notes", {"fields": ("notes",)}),
     )
+
+
+@admin.register(TripReport)
+class TripReportAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "pub_date", "trip", "privacy")
+    list_filter = ("user", "pub_date", "privacy")
+    search_fields = ("title", "content")
+    prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ("added", "updated")

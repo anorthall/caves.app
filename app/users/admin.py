@@ -12,8 +12,7 @@ class CavingUserAdmin(BaseUserAdmin):
     list_display = (
         "email",
         "username",
-        "first_name",
-        "last_name",
+        "name",
         "location",
         "date_joined",
         "is_active",
@@ -24,8 +23,7 @@ class CavingUserAdmin(BaseUserAdmin):
             "Contact details",
             {
                 "fields": (
-                    "first_name",
-                    "last_name",
+                    "name",
                     "username",
                     "email",
                 )
@@ -69,8 +67,7 @@ class CavingUserAdmin(BaseUserAdmin):
                 "fields": (
                     "email",
                     "username",
-                    "first_name",
-                    "last_name",
+                    "name",
                     "password1",
                     "password2",
                     "is_active",

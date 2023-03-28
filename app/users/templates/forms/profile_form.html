@@ -60,51 +60,27 @@
   Personal information
 </div>
 
-<!-- First/last name block -->
 <div class="row mb-3 px-2 g-3">
   <div class="col-xl-6">
-    <!-- First name -->
-    <label class="form-label" for="{{ form.first_name.auto_id }}">
-      First name
+    <!-- Name -->
+    <label class="form-label" for="{{ form.name.auto_id }}">
+      Name
     </label>
     {% if form.is_bound %}
-      {% if form.first_name.errors %}
-        {% render_field form.first_name class="form-control is-invalid" %}
-        {% for e in form.first_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% if form.name.errors %}
+        {% render_field form.name class="form-control is-invalid" %}
+        {% for e in form.name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
       {% else %}
-        {% render_field form.first_name class="form-control is-valid" %}
+        {% render_field form.name class="form-control is-valid" %}
       {% endif %}
     {% else %}
-      {% render_field form.first_name class="form-control" %}
+      {% render_field form.name class="form-control" %}
     {% endif %}
     <div class="form-text">
-      {{ form.first_name.help_text }}
+      {{ form.name.help_text }}
     </div>
   </div>
 
-  <div class="col-xl-6">
-    <!-- Last name -->
-    <label class="form-label" for="{{ form.last_name.auto_id }}">
-      Last name
-    </label>
-    {% if form.is_bound %}
-      {% if form.last_name.errors %}
-        {% render_field form.last_name class="form-control is-invalid" %}
-        {% for e in form.last_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
-      {% else %}
-        {% render_field form.last_name class="form-control is-valid" %}
-      {% endif %}
-    {% else %}
-      {% render_field form.last_name class="form-control" %}
-    {% endif %}
-    <div class="form-text">
-      {{ form.last_name.help_text }}
-    </div>
-  </div>
-</div>
-
-<!-- Location and Country block -->
-<div class="row mb-3 px-2 g-3">
   <div class="col-xl-6">
     <!-- Location -->
     <label class="form-label" for="{{ form.location.auto_id }}">
@@ -124,14 +100,16 @@
       {{ form.location.help_text }}
     </div>
   </div>
+</div>
 
+<div class="row mb-3 px-2 g-3">
   <div class="col-xl-6">
     <!-- Country -->
     <label class="form-label" for="{{ form.country.auto_id }}">
       Country
     </label>
     {% if form.is_bound %}
-      {% if form.last_name.errors %}
+      {% if form.country.errors %}
         {% render_field form.country class="form-select is-invalid" %}
         {% for e in form.country.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
       {% else %}
@@ -144,11 +122,9 @@
       {{ form.country.help_text }}
     </div>
   </div>
-</div>
 
-<!-- Caving clubs -->
-<div class="row mb-3 px-2 g-3">
-  <div class="col">
+  <div class="col-xl-6">
+    <!-- Caving clubs -->
     <label class="form-label" for="{{ form.clubs.auto_id }}">
       Club(s)
     </label>

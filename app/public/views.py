@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.timezone import timedelta
 from django.http import Http404
 from django.contrib.auth import get_user_model
-from logger.models import Trip
+from logger.models import Trip, TripReport
 
 
 def user(request, username):
@@ -57,3 +57,20 @@ def trip(request, username, pk):
         "user_is_public": trip.user.is_public,
     }
     return render(request, "trip.html", context)
+
+
+def tripreport(request, username, slug):
+    """View a public trip report."""
+    report = get_object_or_404(TripReport, user__username=username, slug=slug)
+    if not report.is_public:
+        raise Http404
+
+    context = {
+        "report": report,
+        "user": report.user,
+        "trip": report.trip,
+        "trip_is_public": report.trip.is_public,
+        "user_is_public": report.user.is_public,
+    }
+
+    return render(request, "tripreport.html", context)
