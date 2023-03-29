@@ -81,7 +81,7 @@ class Trip(models.Model):
         default=SPORT,
     )
     cavers = models.CharField(
-        max_length=200, blank=True, help_text="A list of cavers that were on this trip."
+        max_length=250, blank=True, help_text="A list of cavers that were on this trip."
     )
     clubs = models.CharField(
         max_length=100,
