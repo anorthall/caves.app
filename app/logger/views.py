@@ -2,6 +2,7 @@ import csv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
+from django.utils.timezone import localtime as lt
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
@@ -99,6 +100,7 @@ def export(request):
     writer = csv.writer(response)
 
     # Headers
+    tz = timezone.get_current_timezone()
     writer.writerow(
         [
             "Number",
@@ -106,8 +108,8 @@ def export(request):
             "Cave region",
             "Cave country",
             "Cave URL",
-            "Trip start",
-            "Trip end",
+            f"Trip start ({tz})",
+            f"Trip end ({tz})",
             "Duration",
             "Trip type",
             "Cavers",
@@ -118,10 +120,11 @@ def export(request):
             "Vertical distance up",
             "Surveyed distance",
             "Aid climbing distance",
-            "Trip report",
             "Notes",
-            "Added on",
-            "Last updated",
+            "URL",
+            "Trip report",
+            f"Added on ({tz})",
+            f"Last updated ({tz})",
         ]
     )
 
@@ -136,14 +139,18 @@ def export(request):
             t.cave_region,
             t.cave_country,
             t.cave_url,
-            t.start.strftime(tf),
+            lt(t.start).strftime(tf),
         ]
 
         # End time may not exist, so check first
         try:
-            row = row + [t.end.strftime(tf)]
+            row = row + [lt(t.end).strftime(tf)]
         except AttributeError:
             row = row + [t.end]
+
+        trip_report = ""
+        if t.has_report:
+            trip_report = f"https://caves.app{t.report.get_absolute_url()}"
 
         row = row + [  # Second half of row
             t.duration_str,
@@ -156,10 +163,11 @@ def export(request):
             distformat(t.vert_dist_up, units, simplify=False),
             distformat(t.surveyed_dist, units, simplify=False),
             distformat(t.aid_dist, units, simplify=False),
-            t.report_url,
             t.notes,
-            t.added.strftime(tf),
-            t.updated.strftime(tf),
+            f"https://caves.app{t.get_absolute_url()}",
+            trip_report,
+            lt(t.added).strftime(tf),
+            lt(t.updated).strftime(tf),
         ]
 
         writer.writerow(row)  # Finally write the complete row
