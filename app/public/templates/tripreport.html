@@ -1,6 +1,6 @@
 {% extends "base_public.html" %}
 {% block title %}{{ report.title }}{% endblock %}
-{% block description %}A trip report for a trip to {{ report.cave_name }} by {{ user.name }} on caves.app.{% endblock %}
+{% block description %}A report for a trip to {{ report.trip.cave_name }} by {{ user.name }} on caves.app.{% endblock %}
 {% block main %}
 
 <div class="container">
