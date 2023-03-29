@@ -93,11 +93,6 @@ class Trip(models.Model):
         blank=True,
         help_text="A list of any expeditions associated with this trip.",
     )
-    report_url = models.URLField(
-        "trip report",
-        blank=True,
-        help_text="The URL of an externally hosted trip report, such as on an expedition website or a personal blog.",
-    )
 
     # Internal metadata
     added = models.DateTimeField("trip added on", auto_now_add=True)

@@ -253,28 +253,6 @@
   </div>
 </div>
 
-<!-- Trip report -->
-<div class="row mb-3 px-2">
-  <div class="col">
-    <label class="form-label" for="{{ form.report_url.auto_id }}">
-      Trip report
-    </label>
-    {% if form.is_bound %}
-      {% if form.report_url.errors %}
-        {% render_field form.report_url class="form-control is-invalid" %}
-        {% for e in form.report_url.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
-      {% else %}
-        {% render_field form.report_url class="form-control is-valid" %}
-      {% endif %}
-    {% else %}
-      {% render_field form.report_url class="form-control" %}
-    {% endif %}
-    <div class="form-text">
-      {{ form.report_url.help_text }}
-    </div>
-  </div>
-</div>
-
 
 <!-- Distances title -->
 <div class="bg-primary bg-gradident text-white shadow border fs-5 p-2 mb-3 mt-5">
