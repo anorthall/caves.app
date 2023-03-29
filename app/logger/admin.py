@@ -21,14 +21,14 @@ class TripAdmin(admin.ModelAdmin):
         "user",
         "cave_name",
         "cave_country",
+        "privacy",
         "added",
         "start",
     )
     list_filter = (
-        "user__username",
         "user__email",
-        "added",
         "type",
+        "privacy",
     )
     ordering = ("-added",)
     fieldsets = (

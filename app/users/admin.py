@@ -14,10 +14,16 @@ class CavingUserAdmin(BaseUserAdmin):
         "username",
         "name",
         "location",
+        "privacy",
         "date_joined",
+        "last_login",
         "is_active",
     )
-    list_filter = ("is_active",)
+    list_filter = (
+        "is_active",
+        "privacy",
+        "last_login",
+    )
     fieldsets = (
         (
             "Contact details",
