@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="card">
   <div class="card-header fs-4">
     About caves.app
@@ -44,7 +45,7 @@
 
     <h5 class="mt-4">Statistics</h5>
     <p>
-      caves.app currently has <strong>{{ user_count }}</strong> registered users and <strong>{{ trip_count }}</strong> trips
+      caves.app currently has <strong>{{ user_count|intcomma }}</strong> registered users and <strong>{{ trip_count|intcomma }}</strong> trips
       stored in the database, amounting to <strong>{{ total_duration }}</strong> of underground time!
     </p>
   </div>
