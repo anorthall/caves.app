@@ -55,9 +55,9 @@ user = get_user_model().objects.get(email=USER_EMAIL)
 with open(os.path.join(BASE_DIR, TRIP_FILE)) as f:
     r = csv.reader(f)
     next(r)  # Skip header
-    # 0: Number, 1: Start Date, 2: Start Time, 3: End Date, 4: End Time, 5: Duration, 6: Cave Name
-    # 7: Cave Region, 8: Cave Country, 9: Type, 10: Cavers, 11: Vert Dist Up, 12: Vert Dist Down,
-    # 13: Surveyed, 14: Aided, 15: Notes
+    # 0: Start Date, 1: Start Time, 2: End Date, 3: End Time, 4: Duration, 5: Cave Name
+    # 6: Cave Region, 7: Cave Country, 8: Type, 9: Cavers, 10: Vert Dist Up, 11: Vert Dist Down,
+    # 12: Surveyed, 13: Resurveyed, 14: Aided, 15: Notes
 
     # Stats
     x = 0
@@ -65,12 +65,13 @@ with open(os.path.join(BASE_DIR, TRIP_FILE)) as f:
     total_v_up = D(m=0)
     total_v_down = D(m=0)
     total_surveyed = D(m=0)
+    total_resurveyed = D(m=0)
+    survey_total = D(m=0)
     total_aided = D(m=0)
 
     for row in r:
         x += 1
         (
-            number,
             s_date,
             s_time,
             e_date,
@@ -84,6 +85,7 @@ with open(os.path.join(BASE_DIR, TRIP_FILE)) as f:
             v_up,
             v_down,
             surveyed,
+            resurveyed,
             aided,
             notes,
         ) = row
@@ -104,13 +106,17 @@ with open(os.path.join(BASE_DIR, TRIP_FILE)) as f:
             vert_dist_up=convert_dist(v_up),
             vert_dist_down=convert_dist(v_down),
             surveyed_dist=convert_dist(surveyed),
+            resurveyed_dist=convert_dist(resurveyed),
             aid_dist=convert_dist(aided),
+            notes=notes,
         )
 
         total_dur += new_trip.duration
         total_v_up += new_trip.vert_dist_up
         total_v_down += new_trip.vert_dist_down
         total_surveyed += new_trip.surveyed_dist
+        total_resurveyed += new_trip.resurveyed_dist
+        survey_total += new_trip.surveyed_dist + new_trip.resurveyed_dist
         total_aided += new_trip.aid_dist
 
         print(
@@ -146,6 +152,18 @@ with open(os.path.join(BASE_DIR, TRIP_FILE)) as f:
     print(f"      m: {total_surveyed.m:.2f}")
     print(f"      mi: {total_surveyed.mi:.2f}")
     print(f"      km: {total_surveyed.km:.2f}")
+
+    print("Total resurveyed distance:")
+    print(f"      ft: {total_resurveyed.ft:.2f}")
+    print(f"      m: {total_resurveyed.m:.2f}")
+    print(f"      mi: {total_resurveyed.mi:.2f}")
+    print(f"      km: {total_resurveyed.km:.2f}")
+
+    print(f"Total surveyed and resurveyed distance:")
+    print(f"      ft: {survey_total.ft:.2f}")
+    print(f"      m: {survey_total.m:.2f}")
+    print(f"      mi: {survey_total.mi:.2f}")
+    print(f"      km: {survey_total.km:.2f}")
 
     print(f"Total aided distance:")
     print(f"      ft: {total_aided.ft:.2f}")
