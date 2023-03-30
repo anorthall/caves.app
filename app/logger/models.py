@@ -39,14 +39,16 @@ class Trip(models.Model):
         (OTHER, OTHER),
     ]
 
-    # Trip privacy types
+    # Privacy
     DEFAULT = "Default"
     PUBLIC = "Public"
+    FRIENDS = "Friends"
     PRIVATE = "Private"
-    TRIP_PRIVACY_TYPES = [
-        (DEFAULT, DEFAULT),
-        (PUBLIC, PUBLIC),
-        (PRIVATE, PRIVATE),
+    PRIVACY_CHOICES = [
+        (DEFAULT, "Anyone who can view my profile"),
+        (PUBLIC, "Anyone, even if my profile is private"),
+        (FRIENDS, "Only my friends"),
+        (PRIVATE, "Only me"),
     ]
 
     # User that added the caving trip
@@ -54,9 +56,9 @@ class Trip(models.Model):
 
     # Public visibility
     privacy = models.CharField(
-        "Privacy settings",
+        "Who can view this trip?",
         max_length=10,
-        choices=TRIP_PRIVACY_TYPES,
+        choices=PRIVACY_CHOICES,
         default=DEFAULT,
     )
 
@@ -325,19 +327,22 @@ class TripReport(models.Model):
     updated = models.DateTimeField("report last updated", auto_now=True)
 
     # Privacy
-    DEFAULT = "Anyone, if they can view the trip"
-    PUBLIC = "Anyone, even if the trip is private"
-    FRIENDS = "Only my friends"
-    PRIVATE = "Only me"
+    DEFAULT = "Default"
+    PUBLIC = "Public"
+    FRIENDS = "Friends"
+    PRIVATE = "Private"
     PRIVACY_CHOICES = [
-        (DEFAULT, DEFAULT),
-        (PUBLIC, PUBLIC),
-        (FRIENDS, FRIENDS),
-        (PRIVATE, PRIVATE),
+        (DEFAULT, "Anyone who can view the trip"),
+        (PUBLIC, "Anyone, even if the trip is private"),
+        (FRIENDS, "Only my friends"),
+        (PRIVATE, "Only me"),
     ]
 
     privacy = models.CharField(
-        "Who can view", max_length=40, choices=PRIVACY_CHOICES, default=DEFAULT
+        "Who can view this report?",
+        max_length=10,
+        choices=PRIVACY_CHOICES,
+        default=DEFAULT,
     )
 
     def __str__(self):

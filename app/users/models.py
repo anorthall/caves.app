@@ -95,19 +95,21 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         help_text="Preferred units of distance.",
     )
 
-    # Privacy settings
+    # Privacy
     PUBLIC = "Public"
+    FRIENDS = "Friends"
     PRIVATE = "Private"
-    PRIVACY_TYPES = [
-        (PUBLIC, PUBLIC),
-        (PRIVATE, PRIVATE),
+    PRIVACY_CHOICES = [
+        (PUBLIC, "Anyone"),
+        (FRIENDS, "Only my friends"),
+        (PRIVATE, "Only me"),
     ]
     privacy = models.CharField(
         "Profile privacy",
         max_length=10,
-        choices=PRIVACY_TYPES,
+        choices=PRIVACY_CHOICES,
         default=PRIVATE,
-        help_text="Whether your profile is public or private.",
+        help_text="Who can view your profile?",
     )
 
     # Timezone settings
