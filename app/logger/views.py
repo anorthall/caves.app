@@ -229,7 +229,7 @@ class TripListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Only allow the user to update trips they created"""
         qs = Trip.objects.filter(user=self.request.user).order_by("-start", "pk")
-        return qs.select_related("user")
+        return qs.select_related("report")
 
     def get_context_data(self):
         """Add the trip 'index' dict to prevent many DB queries"""

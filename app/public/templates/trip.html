@@ -11,7 +11,7 @@
     </small>
   </div>
 
-  {% if trip.has_report and trip.report.is_public %}
+  {% if trip.report and trip.report.is_public %}
     <div class="alert alert-primary fs-5 mx-auto my-3">
       Would you like to view the <a class="text-white" href="{% url 'public:report' user.username trip.report.slug %}">trip report</a>
       for this trip?

@@ -127,7 +127,7 @@
                 <td class="d-none d-lg-table-cell">{{ trip.cave_country }}</td>
                 <td class="d-none d-md-table-cell">{{ trip.duration_str }}</td>
                 <td>
-                  {% if trip.has_report and trip.report.is_public %}
+                  {% if trip.report and trip.report.is_public %}
                     <a class="text-warning" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
                       <i class="bi bi-card-text"></i>
                     </a>

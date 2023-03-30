@@ -21,7 +21,7 @@ def user(request, username):
     # so 'Default' privacy must be acceptable.
     public_trips = all_trips.filter(
         Q(privacy="Public") | Q(privacy="Default")
-    ).prefetch_related("user")
+    ).prefetch_related("report", "user")
 
     # Generate stats.
     this_year = timezone.now().year

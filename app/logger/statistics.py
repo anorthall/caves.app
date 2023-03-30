@@ -22,7 +22,7 @@ def stats_for_user(qs, year=None):
     }
 
     # Return the empty results if there are no trips.
-    if not qs:
+    if not bool(qs):
         results["time"] = "0"
         return results
 
