@@ -2,9 +2,7 @@ import humanize
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.contrib.gis.measure import Distance
 from distance import DistanceField, DistanceUnitField
-from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import escape
 from django.urls import reverse
