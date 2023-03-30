@@ -21,6 +21,7 @@ from django.views.generic import (
 from .templatetags.distformat import distformat
 from .models import Trip, TripReport
 from .forms import TripForm, TripReportForm
+from logger import services, statistics
 
 
 def index(request):
@@ -49,8 +50,8 @@ def index(request):
         recent_trips = recent_trips[:3]  # Display only three trips
 
     # Distance stats
-    trip_stats = Trip.stats_for_user(request.user)
-    trip_stats_year = Trip.stats_for_user(request.user, year=timezone.now().year)
+    trip_stats = statistics.stats_for_user(request.user)
+    trip_stats_year = statistics.stats_for_user(request.user, year=timezone.now().year)
 
     context = {
         "recent_trips": recent_trips,
@@ -224,7 +225,7 @@ class TripListView(LoginRequiredMixin, ListView):
     def get_context_data(self):
         """Add the trip 'index' dict to prevent many DB queries"""
         context = super().get_context_data()
-        context["trip_index"] = Trip.trip_index(self.request.user)
+        context["trip_index"] = services.trip_index(self.request.user)
         return context
 
 

@@ -4,7 +4,9 @@ from django.db.utils import IntegrityError
 from django.contrib.gis.measure import D
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.utils.timezone import localtime as lt
 from django.utils.timezone import datetime as dt
+from logger import services, statistics
 from .models import Trip, TripReport
 
 
@@ -177,29 +179,26 @@ class TripTestCase(TestCase):
                 self.assertEqual(v, escape(trip.aid_dist))
 
     def test_trip_number_property(self):
-        """Test the Trip.trip_index class method"""
-        trip = Trip.objects.get(cave_name="Test Cave 1")
-        trip_index = Trip.trip_index(trip.user)
-        self.assertEqual(len(trip_index), 6)
-        self.assertEqual(trip_index[trip.pk], 1)
-
-        trip = Trip.objects.get(cave_name="Test Cave 6")
-        trip_index = Trip.trip_index(trip.user)
-        self.assertEqual(trip_index[trip.pk], 6)
+        """Test the Trip.number property"""
+        qs = Trip.objects.all()
+        x = 1
+        for trip in qs:
+            self.assertEqual(trip.number, x)
+            x += 1
 
     def test_trip_index(self):
         """Test the Trip.trip_index class method"""
         user = get_user_model().objects.get(username="testusername")
-        trip_index = Trip.trip_index(user)
+        trip_index = services.trip_index(user)
         self.assertEqual(len(trip_index), 6)
         for trip in Trip.objects.all():
             self.assertEqual(trip_index[trip.pk], trip.number)
 
     def test_stats_for_user(self):
-        """Test the Trip.stats_for_user class method"""
+        """Test the stats_for_user method from the statistics module"""
         user = get_user_model().objects.get(username="testusername")
         self.assertEqual(user.trips.count(), 6)
-        stats = Trip.stats_for_user(user)
+        stats = statistics.stats_for_user(user)
         self.assertEqual(stats["trips"], 6)
         self.assertEqual(stats["vert_down"], D(m=100))
         self.assertEqual(stats["vert_up"], D(m=200))
@@ -223,7 +222,7 @@ class TripTestCase(TestCase):
             aid_dist="500m",
             type=Trip.SURFACE,
         )
-        stats = Trip.stats_for_user(user)
+        stats = statistics.stats_for_user(user)
         self.assertEqual(stats["trips"], 6)
         self.assertEqual(stats["vert_down"], D(m=100))
         self.assertEqual(stats["vert_up"], D(m=200))
@@ -240,7 +239,7 @@ class TripTestCase(TestCase):
             password="testpassword",
             name="Joe",
         )
-        stats = Trip.stats_for_user(user)
+        stats = statistics.stats_for_user(user)
         self.assertEqual(stats["trips"], 0)
         self.assertEqual(stats["vert_down"], D(m=0))
         self.assertEqual(stats["vert_up"], D(m=0))
@@ -440,8 +439,8 @@ class TripIntegrationTests(TestCase):
             self.assertEqual(row[2], trip.cave_region)
             self.assertEqual(row[3], trip.cave_country)
             self.assertEqual(row[9], trip.cavers)
-            self.assertEqual(row[5], trip.start.strftime("%Y-%m-%d %H:%M"))
-            self.assertEqual(row[6], trip.end.strftime("%Y-%m-%d %H:%M"))
+            self.assertEqual(row[5], lt(trip.start).strftime("%Y-%m-%d %H:%M"))
+            self.assertEqual(row[6], lt(trip.end).strftime("%Y-%m-%d %H:%M"))
             i += 1
 
     def test_trip_delete_post_request(self):
