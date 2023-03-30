@@ -198,7 +198,7 @@ class TripTestCase(TestCase):
         """Test the stats_for_user method from the statistics module"""
         user = get_user_model().objects.get(username="testusername")
         self.assertEqual(user.trips.count(), 6)
-        stats = statistics.stats_for_user(user)
+        stats = statistics.stats_for_user(user.trips)
         self.assertEqual(stats["trips"], 6)
         self.assertEqual(stats["vert_down"], D(m=100))
         self.assertEqual(stats["vert_up"], D(m=200))
@@ -222,7 +222,7 @@ class TripTestCase(TestCase):
             aid_dist="500m",
             type=Trip.SURFACE,
         )
-        stats = statistics.stats_for_user(user)
+        stats = statistics.stats_for_user(user.trips)
         self.assertEqual(stats["trips"], 6)
         self.assertEqual(stats["vert_down"], D(m=100))
         self.assertEqual(stats["vert_up"], D(m=200))
@@ -239,7 +239,7 @@ class TripTestCase(TestCase):
             password="testpassword",
             name="Joe",
         )
-        stats = statistics.stats_for_user(user)
+        stats = statistics.stats_for_user(user.trips)
         self.assertEqual(stats["trips"], 0)
         self.assertEqual(stats["vert_down"], D(m=0))
         self.assertEqual(stats["vert_up"], D(m=0))

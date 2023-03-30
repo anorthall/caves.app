@@ -1,4 +1,4 @@
-import csv
+import csv, humanize
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
@@ -37,8 +37,8 @@ def index(request):
         return render(request, "index_unregistered.html")
 
     # Get most recent trips
-    qs = Trip.objects.filter(user=request.user).order_by("-start", "pk")
-    recent_trips = qs[:6]
+    qs = request.user.trips
+    recent_trips = qs.order_by("-start", "pk")[:6]
     trip_count = qs.count()
     recent_trip_count = recent_trips.count()
 
@@ -50,8 +50,8 @@ def index(request):
         recent_trips = recent_trips[:3]  # Display only three trips
 
     # Distance stats
-    trip_stats = statistics.stats_for_user(request.user)
-    trip_stats_year = statistics.stats_for_user(request.user, year=timezone.now().year)
+    trip_stats = statistics.stats_for_user(qs)
+    trip_stats_year = statistics.stats_for_user(qs, year=timezone.now().year)
 
     context = {
         "recent_trips": recent_trips,
@@ -66,9 +66,18 @@ def index(request):
 def about(request):
     """About page, rendering differently depending whether the user is logged in or not"""
 
+    total_duration = timezone.timedelta(0)
+    for trip in Trip.objects.all():
+        if trip.duration:
+            total_duration += trip.duration
+    total_duration = humanize.precisedelta(
+        total_duration, minimum_unit="hours", format="%.0f"
+    )
+
     context = {
         "trip_count": Trip.objects.all().count(),
         "user_count": get_user_model().objects.all().count(),
+        "total_duration": total_duration,
     }
 
     # Unregistered/unauthenticated users

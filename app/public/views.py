@@ -26,9 +26,9 @@ def user(request, username):
     # Generate stats.
     this_year = timezone.now().year
     prev_year = (timezone.now() - timedelta(days=365)).year
-    trip_stats = statistics.stats_for_user(user)
-    trip_stats_year1 = statistics.stats_for_user(user, year=prev_year)
-    trip_stats_year2 = statistics.stats_for_user(user, year=this_year)
+    trip_stats = statistics.stats_for_user(public_trips)
+    trip_stats_year1 = statistics.stats_for_user(public_trips, year=prev_year)
+    trip_stats_year2 = statistics.stats_for_user(public_trips, year=this_year)
 
     context = {
         "user": user,

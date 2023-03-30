@@ -5,10 +5,8 @@ from django.core.exceptions import ValidationError
 import humanize
 
 
-def stats_for_user(user, year=None):
-    """Get statistics of Trips for a user, optionally by year"""
-    # Get the QuerySet.
-    qs = Trip.objects.filter(user=user)
+def stats_for_user(qs, year=None):
+    """Get statistics of trips within a QuerySet, optionally by year"""
     if year:
         qs = qs.filter(start__year=year)
 
