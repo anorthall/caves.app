@@ -73,7 +73,8 @@ class TripTestCase(TestCase):
             vert_dist_up="200m",
             horizontal_dist="300m",
             surveyed_dist="400m",
-            aid_dist="500m",
+            resurveyed_dist="500m",
+            aid_dist="600m",
         )
 
     def tearDown(self):
@@ -152,6 +153,7 @@ class TripTestCase(TestCase):
             "Climbed",
             "Distance",
             "Surveyed",
+            "Resurveyed",
             "Aided",
             "Duration",
         ]
@@ -175,6 +177,8 @@ class TripTestCase(TestCase):
                 self.assertEqual(v, escape(trip.vert_dist_down))
             elif k == "Surveyed":
                 self.assertEqual(v, escape(trip.surveyed_dist))
+            elif k == "Resurveyed":
+                self.assertEqual(v, escape(trip.resurveyed_dist))
             elif k == "Aided":
                 self.assertEqual(v, escape(trip.aid_dist))
 
@@ -204,7 +208,8 @@ class TripTestCase(TestCase):
         self.assertEqual(stats["vert_up"], D(m=200))
         self.assertEqual(stats["horizontal"], D(m=300))
         self.assertEqual(stats["surveyed"], D(m=400))
-        self.assertEqual(stats["aided"], D(m=500))
+        self.assertEqual(stats["resurveyed"], D(m=500))
+        self.assertEqual(stats["aided"], D(m=600))
         self.assertEqual(stats["time"], "4 hours")
 
     def test_surface_trips_are_not_counted_towards_stats(self):
@@ -219,7 +224,8 @@ class TripTestCase(TestCase):
             vert_dist_up="200m",
             horizontal_dist="300m",
             surveyed_dist="400m",
-            aid_dist="500m",
+            resurveyed_dist="500m",
+            aid_dist="600m",
             type=Trip.SURFACE,
         )
         stats = statistics.stats_for_user(user.trips)
@@ -228,7 +234,8 @@ class TripTestCase(TestCase):
         self.assertEqual(stats["vert_up"], D(m=200))
         self.assertEqual(stats["horizontal"], D(m=300))
         self.assertEqual(stats["surveyed"], D(m=400))
-        self.assertEqual(stats["aided"], D(m=500))
+        self.assertEqual(stats["resurveyed"], D(m=500))
+        self.assertEqual(stats["aided"], D(m=600))
         self.assertEqual(stats["time"], "4 hours")
 
     def test_stats_for_user_with_no_trips(self):
@@ -245,6 +252,7 @@ class TripTestCase(TestCase):
         self.assertEqual(stats["vert_up"], D(m=0))
         self.assertEqual(stats["horizontal"], D(m=0))
         self.assertEqual(stats["surveyed"], D(m=0))
+        self.assertEqual(stats["resurveyed"], D(m=0))
         self.assertEqual(stats["aided"], D(m=0))
         self.assertEqual(stats["time"], "0")
 

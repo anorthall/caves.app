@@ -62,6 +62,13 @@
               </tr>
 
               <tr>
+                <th scope="row">Resurveyed</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
+              </tr>
+
+              <tr>
                 <th scope="row">Horizontal</th>
                 <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
                 <td class="text-center">{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>

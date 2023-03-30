@@ -8,7 +8,7 @@
 {% endfor %}
 
 <!-- Cave name -->
-<div class="row mb-3 px-2">
+<div class="row mb-3 px-2 g-3">
   <div class="col">
     <label class="form-label fw-bold" for="{{ form.cave_name.auto_id }}">
       Cave name
@@ -30,8 +30,8 @@
 </div>
 
 <!-- Cave region/country block -->
-<div class="row mb-3 px-2">
-  <div class="col-xl-6 mb-3 mb-xl-0">
+<div class="row mb-3 px-2 g-3">
+  <div class="col-xl-6">
     <!-- Cave region -->
     <label class="form-label" for="{{ form.cave_region.auto_id }}">
       Cave region
@@ -73,7 +73,7 @@
 </div>
 
 <!-- Cave website -->
-<div class="row mb-3 px-2">
+<div class="row mb-3 px-2 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.cave_url.auto_id }}">
       Cave website
@@ -101,8 +101,8 @@
 </div>
 
 <!-- Start/end time block-->
-<div class="row mb-3 px-2">
-  <div class="col-xl-6 mb-3 mb-xl-0">
+<div class="row mb-3 px-2 g-3">
+  <div class="col-xl-6">
     <!-- Start time -->
     <label class="form-label fw-bold" for="{{ form.start.auto_id }}">
       Start
@@ -146,8 +146,8 @@
 </div>
 
 <!-- Trip type/privacy block -->
-<div class="row mb-3 px-2">
-  <div class="col-xl-6 mb-3 mb-xl-0">
+<div class="row mb-3 px-2 g-3">
+  <div class="col-xl-6">
     <!-- Trip type -->
     <label class="form-label" for="{{ form.type.auto_id }}">
       Type
@@ -189,8 +189,8 @@
 </div>
 
 <!-- Clubs/Expedition block -->
-<div class="row mb-3 px-2">
-  <div class="col-xl-6 mb-3 mb-xl-0">
+<div class="row mb-3 px-2 g-3">
+  <div class="col-xl-6">
     <!-- Clubs -->
     <label class="form-label" for="{{ form.clubs.auto_id }}">
       Club(s)
@@ -232,7 +232,7 @@
 </div>
 
 <!-- Cavers -->
-<div class="row mb-3 px-2">
+<div class="row mb-3 px-2 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.cavers.auto_id }}">
       Cavers
@@ -266,8 +266,8 @@
 </div>
 
 <!-- Horizontal/vertical distance block -->
-<div class="row mb-3 px-2">
-  <div class="col-xl-4 mb-3 mb-xl-0">
+<div class="row mb-3 px-2 g-3">
+  <div class="col-xl-4">
     <!-- Horizontal -->
     <label class="form-label" for="{{ form.horizontal_dist.auto_id }}">
       Horizontal
@@ -287,7 +287,7 @@
     </div>
   </div>
 
-  <div class="col-xl-4 mb-3 mb-xl-0">
+  <div class="col-xl-4">
     <!-- Vertical down -->
     <label class="form-label" for="{{ form.vert_dist_down.auto_id }}">
       Down
@@ -328,9 +328,9 @@
   </div>
 </div>
 
-<!-- Survey/aid climbing distance block -->
-<div class="row mb-3 px-2">
-  <div class="col-xl-6 mb-3 mb-xl-0">
+<!-- Survey/resurvey/aid climbing distance block -->
+<div class="row mb-3 px-2 g-3">
+  <div class="col-xl-4">
     <!-- Survey dist -->
     <label class="form-label" for="{{ form.surveyed_dist.auto_id }}">
       Surveyed
@@ -350,7 +350,27 @@
     </div>
   </div>
 
-  <div class="col-xl-6">
+  <div class="col-xl-4">
+    <!-- Resurvey dist -->
+    <label class="form-label" for="{{ form.resurveyed_dist.auto_id }}">
+      Resurveyed
+    </label>
+    {% if form.is_bound %}
+      {% if form.resurveyed_dist.errors %}
+        {% render_field form.resurveyed_dist class="form-control is-invalid" %}
+        {% for e in form.resurveyed_dist.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.resurveyed_dist class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.resurveyed_dist class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.resurveyed_dist.help_text }}
+    </div>
+  </div>
+
+  <div class="col-xl-4">
     <!-- Aid climbing dist -->
     <label class="form-label" for="{{ form.aid_dist.auto_id }}">
       Aid climbed

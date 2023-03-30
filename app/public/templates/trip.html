@@ -143,6 +143,14 @@
         </div>
       {% endif %}
 
+      {% if trip.resurveyed_dist %}
+        <!-- Surveyed distance -->
+        <div class="col-6 col-lg-4">
+          <small class="text-muted">Resurveyed distance</small><br />
+          {{ trip.resurveyed_dist }}
+        </div>
+      {% endif %}
+
       {% if trip.aid_dist %}
         <!-- Aid climbing distance -->
         <div class="col-6 col-lg-4">

@@ -147,9 +147,22 @@ class Trip(models.Model):
         blank=True,
         null=True,
         validators=[above_zero_dist_validator, horizontal_dist_validator],
-        help_text="Distance surveyed.",
+        help_text="New passage surveyed.",
     )
     surveyed_dist_units = DistanceUnitField()
+
+    resurveyed_dist = DistanceField(
+        max_digits=14,
+        decimal_places=6,
+        verbose_name="resurveyed distance",
+        unit="m",
+        unit_field="resurveyed_dist_units",
+        blank=True,
+        null=True,
+        validators=[above_zero_dist_validator, horizontal_dist_validator],
+        help_text="Distance resurveyed.",
+    )
+    resurveyed_dist_units = DistanceUnitField()
 
     aid_dist = DistanceField(
         max_digits=14,
@@ -251,6 +264,7 @@ class Trip(models.Model):
                 ("Climbed", self.vert_dist_up),
                 ("Descended", self.vert_dist_down),
                 ("Surveyed", self.surveyed_dist),
+                ("Resurveyed", self.resurveyed_dist),
                 ("Aided", self.aid_dist),
             ]
         )
