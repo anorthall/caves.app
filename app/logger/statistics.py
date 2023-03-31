@@ -76,8 +76,29 @@ def common_caves(qs, limit=10):
 
 
 def common_cavers(qs, limit=10):
-    """Get a list of the most common cavers in a QuerySet"""
+    """Get a list of the most common cavers by hour from a QuerySet"""
     return sort_comma_separated_list(qs, "cavers", limit)
+
+
+def common_cavers_by_time(qs, limit=10):
+    """Get a list of the most common cavers in a QuerySet"""
+    cavers = {}
+    for trip in qs:
+        if not trip.cavers:
+            continue
+        split_list = trip.cavers.split(",")
+        for caver in split_list:
+            caver = caver.strip()
+            if caver in cavers and trip.end:
+                cavers[caver] += trip.duration
+            elif trip.end:
+                cavers[caver] = trip.duration
+
+    sorted_dict = sorted(cavers.items(), key=lambda x: x[1], reverse=True)[0:limit]
+    humanised = {}
+    for k, v in sorted_dict:
+        humanised[k] = humanize.precisedelta(v, minimum_unit="minutes", format="%.0f")
+    return humanised.items()
 
 
 def common_clubs(qs, limit=10):

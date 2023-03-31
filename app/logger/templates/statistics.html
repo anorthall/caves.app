@@ -113,23 +113,23 @@
     <div class="card-body">
       <div class="row g-3">
         <div class="col-12 col-lg-6">
-          <h5>Most common caves</h5>
-          {% if common_caves %}
+          <h5>Most common cavers (by time)</h5>
+          {% if common_cavers_by_time %}
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Cave</th>
-                    <th scope="col">Trips</th>
+                    <th scope="col">Caver</th>
+                    <th scope="col">Time</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for cave in common_caves %}
+                  {% for caver, time in common_cavers_by_time %}
                     <tr>
                       <th scope="row">{{ forloop.counter }}</th>
-                      <td>{{ cave.cave_name }}</td>
-                      <td>{{ cave.count }} trip{{ cave.count|pluralize }}</td>
+                      <td>{{ caver }}</td>
+                      <td>{{ time }}</td>
                     </tr>
                   {% endfor %}
                 </tbody>
@@ -141,7 +141,7 @@
         </div>
 
         <div class="col-12 col-lg-6">
-          <h5>Most common cavers</h5>
+          <h5>Most common cavers (by trips)</h5>
           {% if common_cavers %}
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
@@ -169,23 +169,23 @@
         </div>
 
         <div class="col-12 col-lg-6">
-          <h5>Most common trip types</h5>
-          {% if common_types %}
+          <h5>Most common caves</h5>
+          {% if common_caves %}
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Type</th>
+                    <th scope="col">Cave</th>
                     <th scope="col">Trips</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for type in common_types %}
+                  {% for cave in common_caves %}
                     <tr>
                       <th scope="row">{{ forloop.counter }}</th>
-                      <td>{{ type.type }}</td>
-                      <td>{{ type.count }} trip{{ type.count|pluralize }}</td>
+                      <td>{{ cave.cave_name }}</td>
+                      <td>{{ cave.count }} trip{{ cave.count|pluralize }}</td>
                     </tr>
                   {% endfor %}
                 </tbody>

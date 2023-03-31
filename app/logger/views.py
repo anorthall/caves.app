@@ -219,7 +219,7 @@ def user_statistics(request):
         "trip_stats_year2": trip_stats_year2,
         "common_caves": statistics.common_caves(trips),
         "common_cavers": statistics.common_cavers(trips),
-        "common_types": statistics.common_types(trips),
+        "common_cavers_by_time": statistics.common_cavers_by_time(trips),
         "common_clubs": statistics.common_clubs(trips),
         "most_duration": statistics.most_duration(trips),
         "averages": statistics.trip_averages(trips, request.user.units),
