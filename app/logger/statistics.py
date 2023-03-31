@@ -87,3 +87,19 @@ def common_clubs(qs, limit=10):
 def common_types(qs, limit=10):
     """Get a list of the most common types in a QuerySet"""
     return qs.values("type").annotate(count=Count("type")).order_by("-count")[0:limit]
+
+
+def most_duration(qs, limit=10):
+    """Get trips with the most duration from a QuerySet"""
+    most_duration = {}
+    for trip in qs:
+        if trip.duration:
+            most_duration[trip] = trip.duration
+    results = sorted(most_duration.items(), key=lambda x: x[1], reverse=True)[0:limit]
+
+    humanised_results = {}
+    for trip, duration in results:
+        humanised_results[trip] = humanize.precisedelta(
+            duration, minimum_unit="minutes", format="%.0f"
+        )
+    return humanised_results.items()

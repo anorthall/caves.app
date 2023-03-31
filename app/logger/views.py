@@ -217,6 +217,23 @@ def user_statistics(request):
         "common_cavers": statistics.common_cavers(trips),
         "common_types": statistics.common_types(trips),
         "common_clubs": statistics.common_clubs(trips),
+        "most_duration": statistics.most_duration(trips),
+        "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
+            0:10
+        ],
+        "most_vert_down": trips.filter(vert_dist_down__gt=0).order_by(
+            "-vert_dist_down"
+        )[0:10],
+        "most_surveyed": trips.filter(surveyed_dist__gt=0).order_by("-surveyed_dist")[
+            0:10
+        ],
+        "most_resurveyed": trips.filter(resurveyed_dist__gt=0).order_by(
+            "-resurveyed_dist"
+        )[0:10],
+        "most_aid": trips.filter(aid_dist__gt=0).order_by("-aid_dist")[0:10],
+        "most_horizontal": trips.filter(horizontal_dist__gt=0).order_by(
+            "-horizontal_dist"
+        )[0:10],
     }
     return render(request, "statistics.html", context)
 

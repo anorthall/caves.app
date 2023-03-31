@@ -168,6 +168,235 @@
       </div>
     </div>
   </div>
+
+  <div class="card mt-4">
+    <div class="card-header">
+      Biggest trips
+    </div>
+
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-12">
+          {% if most_duration %}
+            <h5>Longest trips</h5>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <th scope="col">#</th>
+                  <th scope="col">Trip</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Duration</th>
+                </thead>
+
+                <tbody>
+                  {% for trip, duration in most_duration %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>
+                        <a href="{% url 'log:trip_detail' trip.pk %}">
+                          {{ trip.cave_name }}
+                        </a>
+                      </td>
+                      <td>{{ trip.start|date }}</td>
+                      <td>{{ duration }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+          {% else %}
+            <p class="m-0">Sorry, no data for this!</p>
+          {% endif %}
+        </div>
+
+        {% if most_vert_up %}
+          <div class="col-12 col-lg-6">
+            <h5>Rope climbed</h5>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <th scope="col">#</th>
+                  <th scope="col">Trip</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Rope climbed</th>
+                </thead>
+
+                <tbody>
+                  {% for trip in most_vert_up %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>
+                        <a href="{% url 'log:trip_detail' trip.pk %}">
+                          {{ trip.cave_name }}
+                        </a>
+                      </td>
+                      <td>{{ trip.start|date }}</td>
+                      <td>{{ trip.vert_dist_up|distformat:dist_format }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if most_vert_down %}
+          <div class="col-12 col-lg-6">
+            <h5>Rope descended</h5>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <th scope="col">#</th>
+                  <th scope="col">Trip</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Rope descended</th>
+                </thead>
+
+                <tbody>
+                  {% for trip in most_vert_down %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>
+                        <a href="{% url 'log:trip_detail' trip.pk %}">
+                          {{ trip.cave_name }}
+                        </a>
+                      </td>
+                      <td>{{ trip.start|date }}</td>
+                      <td>{{ trip.vert_dist_down|distformat:dist_format }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if most_surveyed %}
+          <div class="col-12 col-lg-6">
+            <h5>Surveying</h5>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <th scope="col">#</th>
+                  <th scope="col">Trip</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Surveyed</th>
+                </thead>
+
+                <tbody>
+                  {% for trip in most_surveyed %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>
+                        <a href="{% url 'log:trip_detail' trip.pk %}">
+                          {{ trip.cave_name }}
+                        </a>
+                      </td>
+                      <td>{{ trip.start|date }}</td>
+                      <td>{{ trip.surveyed_dist|distformat:dist_format }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if most_resurveyed %}
+          <div class="col-12 col-lg-6">
+            <h5>Resurveying</h5>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <th scope="col">#</th>
+                  <th scope="col">Trip</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Resurveyed</th>
+                </thead>
+
+                <tbody>
+                  {% for trip in most_resurveyed %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>
+                        <a href="{% url 'log:trip_detail' trip.pk %}">
+                          {{ trip.cave_name }}
+                        </a>
+                      </td>
+                      <td>{{ trip.start|date }}</td>
+                      <td>{{ trip.resurveyed_dist|distformat:dist_format }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if most_aid %}
+          <div class="col-12 col-lg-6">
+            <h5>Aid climbing</h5>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <th scope="col">#</th>
+                  <th scope="col">Trip</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Aid climbed</th>
+                </thead>
+
+                <tbody>
+                  {% for trip in most_aid %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>
+                        <a href="{% url 'log:trip_detail' trip.pk %}">
+                          {{ trip.cave_name }}
+                        </a>
+                      </td>
+                      <td>{{ trip.start|date }}</td>
+                      <td>{{ trip.aid_dist|distformat:dist_format }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if most_horizontal %}
+          <div class="col-12 col-lg-6">
+            <h5>Horizontal distance</h5>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <th scope="col">#</th>
+                  <th scope="col">Trip</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Horizontal distance</th>
+                </thead>
+
+                <tbody>
+                  {% for trip in most_horizontal %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>
+                        <a href="{% url 'log:trip_detail' trip.pk %}">
+                          {{ trip.cave_name }}
+                        </a>
+                      </td>
+                      <td>{{ trip.start|date }}</td>
+                      <td>{{ trip.horizontal_dist|distformat:dist_format }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 {% else %}
 
 <div class="card">
