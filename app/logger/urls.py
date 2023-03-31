@@ -1,7 +1,9 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from . import charts
 
 app_name = "log"
+
 urlpatterns = [
     path("", views.index, name="index"),
     path("trip/<int:pk>/", views.TripDetailView.as_view(), name="trip_detail"),
@@ -25,4 +27,5 @@ urlpatterns = [
     path("statistics/", views.user_statistics, name="statistics"),
     path("about/", views.about, name="about"),
     path("admin-tools/", views.admin_tools, name="admin_tools"),
+    path("charts/", include("logger.charts_urls")),
 ]

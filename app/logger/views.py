@@ -192,6 +192,9 @@ def export(request):
 def user_statistics(request):
     """Show statistics for a user."""
     trips = request.user.trips
+    chart_units = "m"
+    if request.user.units == get_user_model().IMPERIAL:
+        chart_units = "ft"
 
     # Generate stats for trips/distances by year
     this_year = timezone.now().year
@@ -234,6 +237,7 @@ def user_statistics(request):
         "most_horizontal": trips.filter(horizontal_dist__gt=0).order_by(
             "-horizontal_dist"
         )[0:10],
+        "chart_units": chart_units,
     }
     return render(request, "statistics.html", context)
 

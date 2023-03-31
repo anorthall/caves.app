@@ -4,6 +4,12 @@
 {% block title %}Your statistics{% endblock %}
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
+{% block header_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+    integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+{% endblock%}
+
 {% block main %}
 
 {% if trips %}
@@ -397,12 +403,17 @@
       </div>
     </div>
   </div>
-{% else %}
 
-<div class="card">
-  <div class="card-header fs-4">
-    Statistics
+  <div class="card mt-4">
+    <div class="card-header">
+      Statistics over time
+    </div>
+
+    <div class="card-body">
+      <canvas id="stats-over-time" data-url="{% url 'log:charts:stats_over_time' %}"></canvas>
+    </div>
   </div>
+{% else %}
 
   <div class="card-body">
     <p class="m-0">
@@ -414,3 +425,66 @@
 {% endif %}
 
 {% endblock main %}
+
+{% block footer_scripts %}
+  <script>
+    $(function () {
+      var $statsTimeChart = $("#stats-over-time");
+      $.ajax({
+        url: $statsTimeChart.data("url"),
+        success: function (data) {
+
+          var ctx = $statsTimeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Hours',
+                borderColor: '#008CBA',
+                backgroundColor: '#008CBA',
+                data: data.duration,
+              },
+              {
+                label: 'Rope climbed ({{ chart_units }})',
+                borderColor: 'orange',
+                backgroundColor: 'orange',
+                data: data.vert_up,
+              },
+              {
+                label: 'Rope descended ({{ chart_units }})',
+                borderColor: 'red',
+                backgroundColor: 'red',
+                data: data.vert_down,
+              },
+              {
+                label: 'Surveyed ({{ chart_units }})',
+                borderColor: 'green',
+                backgroundColor: 'green',
+                data: data.surveyed,
+              },
+              {
+                label: 'Resurveyed ({{ chart_units }})',
+                borderColor: 'purple',
+                backgroundColor: 'purple',
+                data: data.resurveyed,
+              }],
+            },
+            options: {
+              responsive: true,
+              elements: {
+                point: {
+                  pointStyle: false,
+                },
+                line: {
+                  tension: 0.4,
+                }
+              },
+            }
+          });
+        }
+      });
+    });
+  </script>
+{% endblock footer_scripts %}
