@@ -470,6 +470,36 @@
     </div>
   </div>
 
+  {% if averages %}
+    <div class="card mt-4">
+      <div class="card-header text-center">
+        Averages
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-borderless table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Statistic</th>
+                <th scope="col">Average value</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for key, value in averages %}
+                <tr>
+                  <td scope="row">{{ key }}</td>
+                  <td>{{ value }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="card mt-4">
     <div class="card-header text-center">
       Statistics over time
@@ -497,14 +527,18 @@
       Click the legend to toggle data
     </small>
   </div>
+
 {% else %}
 
-  <div class="card-body">
-    <p class="m-0">
-      You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
-    </p>
+  <div class="card">
+    <div class="card-header">Statistics</div>
+
+    <div class="card-body">
+      <p class="m-0">
+        You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
+      </p>
+    </div>
   </div>
-</div>
 
 {% endif %}
 

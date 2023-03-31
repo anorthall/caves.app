@@ -209,6 +209,7 @@ def user_statistics(request):
         "trips": trips,
         "user": request.user,
         "dist_format": request.user.units,
+        "chart_units": chart_units,
         "year0": prev_year_2,
         "year1": prev_year,
         "year2": this_year,
@@ -221,6 +222,7 @@ def user_statistics(request):
         "common_types": statistics.common_types(trips),
         "common_clubs": statistics.common_clubs(trips),
         "most_duration": statistics.most_duration(trips),
+        "averages": statistics.trip_averages(trips, request.user.units),
         "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
             0:10
         ],
@@ -237,7 +239,6 @@ def user_statistics(request):
         "most_horizontal": trips.filter(horizontal_dist__gt=0).order_by(
             "-horizontal_dist"
         )[0:10],
-        "chart_units": chart_units,
     }
     return render(request, "statistics.html", context)
 
