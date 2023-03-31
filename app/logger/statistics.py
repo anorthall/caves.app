@@ -120,34 +120,71 @@ def vertical_and_horizontal_count(qs):
 def trip_averages(qs, units):
     """Get the average distances in a QuerySet"""
     results = {
-        "Rope climbed": Distance(m=0),
-        "Rope descended": Distance(m=0),
-        "Surveyed": Distance(m=0),
-        "Resurveyed": Distance(m=0),
-        "Aid climbed": Distance(m=0),
-        "Horizontal": Distance(m=0),
-        "Time underground": timezone.timedelta(0),
+        "Rope climbed per trip": Distance(m=0),
+        "Rope descended per trip": Distance(m=0),
+        "Surveyed per trip": Distance(m=0),
+        "Resurveyed per trip": Distance(m=0),
+        "Aid climbed per trip": Distance(m=0),
+        "Horizontal distance per trip": Distance(m=0),
+        "Time underground per trip": timezone.timedelta(0),
     }
-
+    survey_trips = 0
+    survey_hours = 0
+    vert_trips = 0
+    vert_hours = 0
     for trip in qs:  # Add up
-        results["Time underground"] += (
+        results["Time underground per trip"] += (
             trip.duration if trip.end else timezone.timedelta(0)
         )
-        results["Rope climbed"] += trip.vert_dist_up if trip.vert_dist_up else D()
-        results["Rope descended"] += trip.vert_dist_down if trip.vert_dist_down else D()
-        results["Surveyed"] += trip.surveyed_dist if trip.surveyed_dist else D()
-        results["Resurveyed"] += trip.resurveyed_dist if trip.resurveyed_dist else D()
-        results["Aid climbed"] += trip.aid_dist if trip.aid_dist else D()
-        results["Horizontal"] += trip.horizontal_dist if trip.horizontal_dist else D()
+        results["Rope climbed per trip"] += (
+            trip.vert_dist_up if trip.vert_dist_up else D()
+        )
+        results["Rope descended per trip"] += (
+            trip.vert_dist_down if trip.vert_dist_down else D()
+        )
+        results["Surveyed per trip"] += (
+            trip.surveyed_dist if trip.surveyed_dist else D()
+        )
+        results["Resurveyed per trip"] += (
+            trip.resurveyed_dist if trip.resurveyed_dist else D()
+        )
+        results["Aid climbed per trip"] += trip.aid_dist if trip.aid_dist else D()
+        results["Horizontal distance per trip"] += (
+            trip.horizontal_dist if trip.horizontal_dist else D()
+        )
+        if trip.surveyed_dist > D(0) or trip.resurveyed_dist > D(0):
+            survey_trips += 1
+            if trip.duration:
+                survey_hours += trip.duration.total_seconds() / 3600
+        if trip.vert_dist_up > D() or trip.vert_dist_down > D() or trip.aid_dist > D():
+            vert_trips += 1
+            if trip.duration:
+                vert_hours += trip.duration.total_seconds() / 3600
 
-    climbed, descended = results["Rope climbed"], results["Rope descended"]
+    climbed, descended = (
+        results["Rope climbed per trip"],
+        results["Rope descended per trip"],
+    )
+    total_hours = results["Time underground per trip"].total_seconds() / 3600
+    total_survey = results["Surveyed per trip"] + results["Resurveyed per trip"]
+    surveyed, resurveyed = results["Surveyed per trip"], results["Resurveyed per trip"]
     for key, value in results.items():  # Divide by number of trips
         if value:
             results[key] = value / qs.count()
 
-    vert_trips = vertical_and_horizontal_count(qs)[0]
-    results["Rope climbed (excl horizontal trips)"] = climbed / vert_trips
-    results["Rope descended (excl horizontal trips)"] = descended / vert_trips
+    results["Rope climbed per trip*"] = climbed / vert_trips
+    results["Rope descended per trip*"] = descended / vert_trips
+    results["Rope climbed per hour"] = climbed / total_hours
+    results["Rope descended per hour"] = descended / total_hours
+    results["Rope climbed per hour*"] = climbed / vert_hours
+    results["Rope descended per hour*"] = descended / vert_hours
+
+    results["Survey per hour"] = surveyed / total_hours
+    results["Resurvey per hour"] = resurveyed / total_hours
+    results["Survey** per hour***"] = total_survey / survey_hours
+
+    results["Survey per trip***"] = surveyed / survey_trips
+    results["Survey** per trip***"] = total_survey / survey_trips
 
     processed_results = {}
     for key, value in results.items():
@@ -166,4 +203,4 @@ def trip_averages(qs, units):
     last_trip = qs.order_by("-start").first().start
     weeks = (last_trip - first_trip).days / 7
     processed_results["Trips per week"] = round(qs.count() / weeks, 2)
-    return processed_results.items()
+    return sorted(processed_results.items())
