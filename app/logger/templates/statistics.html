@@ -1,0 +1,187 @@
+{% extends "base_sidebar.html" %}
+{% load get %}
+{% load distformat %}
+{% block title %}Your statistics{% endblock %}
+{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
+
+{% block main %}
+
+{% if trips %}
+  <div class="card">
+    <div class="card-header">
+      Distance and time
+    </div>
+
+    <div class="card-body p-0">
+      <div class="row">
+        <div class="table-responsive">
+          <table class="table table-borderless text-center">
+            <thead>
+              <tr class="border-bottom">
+                <th scope="col"></th>
+                <th scope="col">{{ year0 }}</th>
+                <th scope="col">{{ year1 }}</th>
+                <th scope="col">{{ year2 }}</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <th scope="row">Rope ascent</th>
+                <td>{{ trip_stats_year0.vert_up|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year1.vert_up|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year2.vert_up|distformat:dist_format }}</td>
+                <td>{{ trip_stats.vert_up|distformat:dist_format }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">Rope descent</th>
+                <td>{{ trip_stats_year0.vert_down|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year1.vert_down|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year2.vert_down|distformat:dist_format }}</td>
+                <td>{{ trip_stats.vert_down|distformat:dist_format }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">Surveyed</th>
+                <td>{{ trip_stats_year0.surveyed|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
+                <td>{{ trip_stats.surveyed|distformat:dist_format }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">Resurveyed</th>
+                <td>{{ trip_stats_year0.resurveyed|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
+                <td>{{ trip_stats.resurveyed|distformat:dist_format }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">Horizontal</th>
+                <td>{{ trip_stats_year0.horizontal|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
+                <td>{{ trip_stats.horizontal|distformat:dist_format }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">Aid climbed</th>
+                <td>{{ trip_stats_year0.aided|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year1.aided|distformat:dist_format }}</td>
+                <td>{{ trip_stats_year2.aided|distformat:dist_format }}</td>
+                <td>{{ trip_stats.aided|distformat:dist_format }}</td>
+              </tr>
+
+              <tr class="border-top">
+                <th scope="row">Total trips</th>
+                <td>{{ trip_stats_year0.trips }}</td>
+                <td>{{ trip_stats_year1.trips }}</td>
+                <td>{{ trip_stats_year2.trips }}</td>
+                <td>{{ trip_stats.trips }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">
+                  Time
+                </th>
+                <td>{{ trip_stats_year0.time }}</th>
+                <td>{{ trip_stats_year1.time }}</th>
+                <td>{{ trip_stats_year2.time }}</th>
+                <td>{{ trip_stats.time }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-header">
+      Most common
+    </div>
+
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-12 col-lg-6">
+          <h5>Most common caves</h5>
+          {% if common_caves %}
+            <ol>
+              {% for cave in common_caves %}
+                <li>
+                  <strong>{{ cave.cave_name }}</strong> &mdash; {{ cave.count }} trip{{ cave.count|pluralize }}
+                </li>
+              {% endfor %}
+            </ol>
+          {% else %}
+            <p>Sorry, no data for this!</p>
+          {% endif %}
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <h5>Most common cavers</h5>
+          {% if common_cavers %}
+            <ol>
+              {% for caver, count in common_cavers %}
+                <li>
+                  <strong>{{ caver }}</strong> &mdash; {{ count }} trip{{ count|pluralize }}
+                </li>
+              {% endfor %}
+            </ol>
+          {% else %}
+            <p>Sorry, no data for this!</p>
+          {% endif %}
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <h5>Most common trip types</h5>
+          {% if common_types %}
+            <ol>
+              {% for type in common_types %}
+                <li>
+                  <strong>{{ type.type }}</strong> &mdash; {{ type.count }} trip{{ type.count|pluralize }}
+                </li>
+              {% endfor %}
+            </ol>
+          {% else %}
+            <p>Sorry, no data for this!</p>
+          {% endif %}
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <h5>Most common clubs</h5>
+          {% if common_clubs %}
+            <ol>
+              {% for club, count in common_clubs %}
+                <li>
+                  <strong>{{ club }}</strong> &mdash; {{ count }} trip{{ count|pluralize }}
+                </li>
+              {% endfor %}
+            </ol>
+          {% else %}
+            <p>Sorry, no data for this!</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% else %}
+
+<div class="card">
+  <div class="card-header fs-4">
+    Statistics
+  </div>
+
+  <div class="card-body">
+    <p class="m-0">
+      You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
+    </p>
+  </div>
+</div>
+
+{% endif %}
+
+{% endblock main %}

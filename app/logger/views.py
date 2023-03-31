@@ -188,6 +188,39 @@ def export(request):
     return response  # Return the CSV file as a HttpResponse
 
 
+@login_required
+def user_statistics(request):
+    """Show statistics for a user."""
+    trips = request.user.trips
+
+    # Generate stats for trips/distances by year
+    this_year = timezone.now().year
+    prev_year = (timezone.now() - timezone.timedelta(days=365)).year
+    prev_year_2 = (timezone.now() - timezone.timedelta(days=730)).year
+    trip_stats = statistics.stats_for_user(trips)
+    trip_stats_year0 = statistics.stats_for_user(trips, year=prev_year_2)
+    trip_stats_year1 = statistics.stats_for_user(trips, year=prev_year)
+    trip_stats_year2 = statistics.stats_for_user(trips, year=this_year)
+
+    context = {
+        "trips": trips,
+        "user": request.user,
+        "dist_format": request.user.units,
+        "year0": prev_year_2,
+        "year1": prev_year,
+        "year2": this_year,
+        "trip_stats": trip_stats,
+        "trip_stats_year0": trip_stats_year0,
+        "trip_stats_year1": trip_stats_year1,
+        "trip_stats_year2": trip_stats_year2,
+        "common_caves": statistics.common_caves(trips),
+        "common_cavers": statistics.common_cavers(trips),
+        "common_types": statistics.common_types(trips),
+        "common_clubs": statistics.common_clubs(trips),
+    }
+    return render(request, "statistics.html", context)
+
+
 def admin_tools(request):
     """Tools for website administrators."""
     if not request.user.is_superuser:

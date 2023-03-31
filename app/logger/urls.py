@@ -22,6 +22,7 @@ urlpatterns = [
         views.ReportDeleteView.as_view(),
         name="report_delete",
     ),
+    path("statistics/", views.user_statistics, name="statistics"),
     path("about/", views.about, name="about"),
     path("admin-tools/", views.admin_tools, name="admin_tools"),
 ]

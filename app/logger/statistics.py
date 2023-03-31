@@ -1,7 +1,25 @@
-from .models import Trip
+import humanize
+from django.db.models import Count
 from django.contrib.gis.measure import Distance
 from django.utils import timezone
-import humanize
+from .models import Trip
+
+
+def sort_comma_separated_list(qs, value, limit=10):
+    """Sort a field that has a comma separated list of values from a QuerySet"""
+    values = qs.values(value)
+    common = {}
+    for v in values:
+        split_list = v[value].split(",")
+        for v in split_list:
+            trimmed = v.strip()
+            if not trimmed:
+                continue
+            if v in common:
+                common[trimmed] += 1
+            else:
+                common[trimmed] = 1
+    return sorted(common.items(), key=lambda x: x[1], reverse=True)[0:limit]
 
 
 def stats_for_user(qs, year=None):
@@ -45,3 +63,27 @@ def stats_for_user(qs, year=None):
     )
 
     return results
+
+
+def common_caves(qs, limit=10):
+    """Get a list of the most common caves in a QuerySet"""
+    return (
+        qs.values("cave_name")
+        .annotate(count=Count("cave_name"))
+        .order_by("-count")[0:limit]
+    )
+
+
+def common_cavers(qs, limit=10):
+    """Get a list of the most common cavers in a QuerySet"""
+    return sort_comma_separated_list(qs, "cavers", limit)
+
+
+def common_clubs(qs, limit=10):
+    """Get a list of the most common clubs in a QuerySet"""
+    return sort_comma_separated_list(qs, "clubs", limit)
+
+
+def common_types(qs, limit=10):
+    """Get a list of the most common types in a QuerySet"""
+    return qs.values("type").annotate(count=Count("type")).order_by("-count")[0:limit]
