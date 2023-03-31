@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from .models import Trip
 
 
-def use_units(value, units):
+def _use_units(value, units):
     if units == get_user_model().IMPERIAL:
         return value.ft
     else:
@@ -54,10 +54,10 @@ def stats_over_time(request):
         accum_surveyed += week_surveyed
         accum_resurveyed += week_resurveyed
         duration.append(accum_duration)
-        vert_up.append(use_units(accum_vert_up, request.user.units))
-        vert_down.append(use_units(accum_vert_down, request.user.units))
-        surveyed.append(use_units(accum_surveyed, request.user.units))
-        resurveyed.append(use_units(accum_resurveyed, request.user.units))
+        vert_up.append(_use_units(accum_vert_up, request.user.units))
+        vert_down.append(_use_units(accum_vert_down, request.user.units))
+        surveyed.append(_use_units(accum_surveyed, request.user.units))
+        resurveyed.append(_use_units(accum_resurveyed, request.user.units))
         cur_date += td(days=7)
 
     data = {
@@ -80,14 +80,39 @@ def stats_over_time(request):
 @login_required
 def trip_types(request):
     """JSON data for a chart showing trip types"""
-    qs = (
-        Trip.objects.filter(user=request.user)
-        .values("type")
-        .annotate(count=Count("type"))
-    )
-    labels = []
-    data = []
-    for x in qs:
-        labels.append(x["type"])
-        data.append(x["count"])
+    qs = Trip.objects.filter(user=request.user)
+    result = {}
+    for trip in qs:
+        if trip.type not in result:
+            result[trip.type] = 1
+        else:
+            result[trip.type] += 1
+    result = dict(sorted(result.items(), key=lambda item: item[1], reverse=True))
+    labels, data = [], []
+    for k, v in result.items():
+        labels.append(k)
+        data.append(v)
+
+    return JsonResponse(data={"labels": labels, "data": data})
+
+
+@login_required
+def trip_types_time(request):
+    """JSON data for a chart showing trip types by time"""
+    qs = Trip.objects.filter(user=request.user)
+    result = {}
+    for trip in qs:
+        if trip.end:
+            if trip.type not in result:
+                result[trip.type] = trip.duration
+            else:
+                result[trip.type] += trip.duration
+
+    result = dict(sorted(result.items(), key=lambda item: item[1], reverse=True))
+    labels, data = [], []
+    for k, v in result.items():
+        result[k] = v.total_seconds() / 60 / 60
+        labels.append(k)
+        data.append(result[k])
+
     return JsonResponse(data={"labels": labels, "data": data})
