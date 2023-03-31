@@ -11,11 +11,11 @@ def sort_comma_separated_list(qs, value, limit=10):
     common = {}
     for v in values:
         split_list = v[value].split(",")
-        for v in split_list:
-            trimmed = v.strip()
+        for split_value in split_list:
+            trimmed = split_value.strip()
             if not trimmed:
                 continue
-            if v in common:
+            if trimmed in common:
                 common[trimmed] += 1
             else:
                 common[trimmed] = 1
