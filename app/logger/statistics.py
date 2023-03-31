@@ -179,12 +179,12 @@ def trip_averages(qs, units):
     results["Rope climbed per hour*"] = climbed / vert_hours
     results["Rope descended per hour*"] = descended / vert_hours
 
-    results["Survey per hour"] = surveyed / total_hours
-    results["Resurvey per hour"] = resurveyed / total_hours
-    results["Survey** per hour***"] = total_survey / survey_hours
+    results["Surveyed per hour"] = surveyed / total_hours
+    results["Resurveyed per hour"] = resurveyed / total_hours
+    results["Surveyed** per hour***"] = total_survey / survey_hours
 
-    results["Survey per trip***"] = surveyed / survey_trips
-    results["Survey** per trip***"] = total_survey / survey_trips
+    results["Surveyed per trip***"] = surveyed / survey_trips
+    results["Surveyed** per trip***"] = total_survey / survey_trips
 
     processed_results = {}
     for key, value in results.items():
