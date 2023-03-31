@@ -1,4 +1,5 @@
 from datetime import timedelta as td
+from django.db.models import Count
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.measure import D
@@ -35,17 +36,18 @@ def stats_over_time(request):
         week_vert_down = D(m=0)
         week_surveyed = D(m=0)
         week_resurveyed = D(m=0)
-        for trip in qs.filter(start__gte=cur_date, start__lt=cur_date + td(days=7)):
-            if trip.duration:
-                week_duration += trip.duration.total_seconds() / 60 / 60
-            if trip.vert_dist_up:
-                week_vert_up += trip.vert_dist_up
-            if trip.vert_dist_down:
-                week_vert_down += trip.vert_dist_down
-            if trip.surveyed_dist:
-                week_surveyed += trip.surveyed_dist
-            if trip.resurveyed_dist:
-                week_resurveyed += trip.resurveyed_dist
+        for trip in qs:
+            if trip.start >= cur_date and trip.start < cur_date + td(days=7):
+                if trip.duration:
+                    week_duration += trip.duration.total_seconds() / 60 / 60
+                if trip.vert_dist_up:
+                    week_vert_up += trip.vert_dist_up
+                if trip.vert_dist_down:
+                    week_vert_down += trip.vert_dist_down
+                if trip.surveyed_dist:
+                    week_surveyed += trip.surveyed_dist
+                if trip.resurveyed_dist:
+                    week_resurveyed += trip.resurveyed_dist
         accum_duration += week_duration
         accum_vert_up += week_vert_up
         accum_vert_down += week_vert_down
@@ -73,3 +75,19 @@ def stats_over_time(request):
             data[x] = locals()[x]
 
     return JsonResponse(data=data)
+
+
+@login_required
+def trip_types(request):
+    """JSON data for a chart showing trip types"""
+    qs = (
+        Trip.objects.filter(user=request.user)
+        .values("type")
+        .annotate(count=Count("type"))
+    )
+    labels = []
+    data = []
+    for x in qs:
+        labels.append(x["type"])
+        data.append(x["count"])
+    return JsonResponse(data={"labels": labels, "data": data})

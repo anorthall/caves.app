@@ -103,3 +103,13 @@ def most_duration(qs, limit=10):
             duration, minimum_unit="minutes", format="%.0f"
         )
     return humanised_results.items()
+
+
+def get_vertical_and_horizontal_count(qs):
+    """Get the number of trips with vertical and horizontal distance"""
+    vertical, horizontal = 0, 0
+    for trip in qs:
+        if trip.vert_dist_up or trip.vert_dist_down or trip.aid_dist:
+            vertical += 1
+        else:
+            horizontal += 1
