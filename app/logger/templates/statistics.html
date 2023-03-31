@@ -93,9 +93,9 @@
                 <th scope="row">
                   Time
                 </th>
-                <td>{{ trip_stats_year0.time }}</th>
-                <td>{{ trip_stats_year1.time }}</th>
-                <td>{{ trip_stats_year2.time }}</th>
+                <td>{{ trip_stats_year0.time }}</td>
+                <td>{{ trip_stats_year1.time }}</td>
+                <td>{{ trip_stats_year2.time }}</td>
                 <td>{{ trip_stats.time }}</td>
               </tr>
             </tbody>
@@ -115,13 +115,26 @@
         <div class="col-12 col-lg-6">
           <h5>Most common caves</h5>
           {% if common_caves %}
-            <ol>
-              {% for cave in common_caves %}
-                <li>
-                  <strong>{{ cave.cave_name }}</strong> &mdash; {{ cave.count }} trip{{ cave.count|pluralize }}
-                </li>
-              {% endfor %}
-            </ol>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Cave</th>
+                    <th scope="col">Trips</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for cave in common_caves %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ cave.cave_name }}</td>
+                      <td>{{ cave.count }} trip{{ cave.count|pluralize }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           {% else %}
             <p>Sorry, no data for this!</p>
           {% endif %}
@@ -130,13 +143,26 @@
         <div class="col-12 col-lg-6">
           <h5>Most common cavers</h5>
           {% if common_cavers %}
-            <ol>
-              {% for caver, count in common_cavers %}
-                <li>
-                  <strong>{{ caver }}</strong> &mdash; {{ count }} trip{{ count|pluralize }}
-                </li>
-              {% endfor %}
-            </ol>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Caver</th>
+                    <th scope="col">Trips</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for caver, count in common_cavers %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ caver }}</td>
+                      <td>{{ count }} trip{{ count|pluralize }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           {% else %}
             <p>Sorry, no data for this!</p>
           {% endif %}
@@ -145,13 +171,26 @@
         <div class="col-12 col-lg-6">
           <h5>Most common trip types</h5>
           {% if common_types %}
-            <ol>
-              {% for type in common_types %}
-                <li>
-                  <strong>{{ type.type }}</strong> &mdash; {{ type.count }} trip{{ type.count|pluralize }}
-                </li>
-              {% endfor %}
-            </ol>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Trips</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for type in common_types %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ type.type }}</td>
+                      <td>{{ type.count }} trip{{ type.count|pluralize }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           {% else %}
             <p>Sorry, no data for this!</p>
           {% endif %}
@@ -160,13 +199,26 @@
         <div class="col-12 col-lg-6">
           <h5>Most common clubs</h5>
           {% if common_clubs %}
-            <ol>
-              {% for club, count in common_clubs %}
-                <li>
-                  <strong>{{ club }}</strong> &mdash; {{ count }} trip{{ count|pluralize }}
-                </li>
-              {% endfor %}
-            </ol>
+            <div class="table-responsive">
+              <table class="table table-borderless table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Club</th>
+                    <th scope="col">Trips</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for club, count in common_clubs %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ club }}</td>
+                      <td>{{ count }} trip{{ count|pluralize }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           {% else %}
             <p>Sorry, no data for this!</p>
           {% endif %}
@@ -188,16 +240,18 @@
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
-                  <th scope="col">#</th>
-                  <th scope="col">Trip</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Duration</th>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Duration</th>
+                  </tr>
                 </thead>
 
                 <tbody>
                   {% for trip, duration in most_duration %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
+                      <th scope="row">{{ forloop.counter }}</th>
                       <td>
                         <a href="{% url 'log:trip_detail' trip.pk %}">
                           {{ trip.cave_name }}
@@ -221,16 +275,18 @@
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
-                  <th scope="col">#</th>
-                  <th scope="col">Trip</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Rope climbed</th>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Rope climbed</th>
+                  </tr>
                 </thead>
 
                 <tbody>
                   {% for trip in most_vert_up %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
+                      <th scope="row">{{ forloop.counter }}</th>
                       <td>
                         <a href="{% url 'log:trip_detail' trip.pk %}">
                           {{ trip.cave_name }}
@@ -252,16 +308,18 @@
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
-                  <th scope="col">#</th>
-                  <th scope="col">Trip</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Rope descended</th>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Rope descended</th>
+                  </tr>
                 </thead>
 
                 <tbody>
                   {% for trip in most_vert_down %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
+                      <th scope="row">{{ forloop.counter }}</th>
                       <td>
                         <a href="{% url 'log:trip_detail' trip.pk %}">
                           {{ trip.cave_name }}
@@ -283,16 +341,18 @@
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
-                  <th scope="col">#</th>
-                  <th scope="col">Trip</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Surveyed</th>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Surveyed</th>
+                  </tr>
                 </thead>
 
                 <tbody>
                   {% for trip in most_surveyed %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
+                      <th scope="row">{{ forloop.counter }}</th>
                       <td>
                         <a href="{% url 'log:trip_detail' trip.pk %}">
                           {{ trip.cave_name }}
@@ -314,16 +374,18 @@
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
-                  <th scope="col">#</th>
-                  <th scope="col">Trip</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Resurveyed</th>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Resurveyed</th>
+                  </tr>
                 </thead>
 
                 <tbody>
                   {% for trip in most_resurveyed %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
+                      <th scope="row">{{ forloop.counter }}</th>
                       <td>
                         <a href="{% url 'log:trip_detail' trip.pk %}">
                           {{ trip.cave_name }}
@@ -345,16 +407,18 @@
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
-                  <th scope="col">#</th>
-                  <th scope="col">Trip</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Aid climbed</th>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Aid climbed</th>
+                  </tr>
                 </thead>
 
                 <tbody>
                   {% for trip in most_aid %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
+                      <th scope="row">{{ forloop.counter }}</th>
                       <td>
                         <a href="{% url 'log:trip_detail' trip.pk %}">
                           {{ trip.cave_name }}
@@ -376,16 +440,18 @@
             <div class="table-responsive">
               <table class="table table-borderless table-hover table-sm">
                 <thead>
-                  <th scope="col">#</th>
-                  <th scope="col">Trip</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Horizontal distance</th>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Horizontal distance</th>
+                  </tr>
                 </thead>
 
                 <tbody>
                   {% for trip in most_horizontal %}
                     <tr>
-                      <td>{{ forloop.counter }}</td>
+                      <th scope="row">{{ forloop.counter }}</th>
                       <td>
                         <a href="{% url 'log:trip_detail' trip.pk %}">
                           {{ trip.cave_name }}
