@@ -5,149 +5,148 @@
 {% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
 {% block main %}
 
-<div class="container">
-  <div class="row border-bottom border-3 border-primary mt-4">
-    {% if user.profile_page_title %}
-      <h1 class="display-5">{{ user.profile_page_title }}</h1>
-    {% else %}
-      <h1 class="display-5">{{ user.name }}'s trips</h1>
+<div class="row border-bottom border-3 border-primary mt-4">
+  {% if user.profile_page_title %}
+    <h1 class="display-5">{{ user.profile_page_title }}</h1>
+  {% else %}
+    <h1 class="display-5">{{ user.name }}'s trips</h1>
+  {% endif %}
+</div>
+
+<div class="row mt-3">
+  <div class="col">
+    {% if user.bio %}
+      {{ user.bio|markdownify }}
+    {% elif not user.bio and not trips %}
+      This is the public profile of a caves.app user who has not added any trips or a bio yet.
     {% endif %}
   </div>
+</div>
 
-  <div class="row mt-3">
-    <div class="col">
-      {% if user.bio %}
-        {{ user.bio|markdownify }}
-      {% elif not user.bio and not trips %}
-        This is the public profile of a caves.app user who has not added any trips or a bio yet.
-      {% endif %}
-    </div>
-  </div>
-
-  {% if trips %}
-    {% if user.show_statistics %}
-      <div class="row mt-4">
-        <div class="col">
-          <h3 class="fs-2 mb-0">Statistics</h3>
-          <table class="table">
-            <thead>
-              <tr class="border-bottom">
-                <th scope="col"></th>
-                <th scope="col" class="d-none d-lg-table-cell text-center">{{ year1 }}</th>
-                <th scope="col" class="text-center">{{ year2 }}</th>
-                <th scope="col" class="text-center">Total</th>
-              </tr>
-            </thead>
-
-            <tbody class="table-group-divider">
-              <tr>
-                <th scope="row">Rope ascent</th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_up|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats_year2.vert_up|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats.vert_up|distformat:dist_format }}</td>
-              </tr>
-
-              <tr>
-                <th scope="row">Rope descent</th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_down|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats_year2.vert_down|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats.vert_down|distformat:dist_format }}</td>
-              </tr>
-
-              <tr>
-                <th scope="row">Surveyed</th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats.surveyed|distformat:dist_format }}</td>
-              </tr>
-
-              <tr>
-                <th scope="row">Resurveyed</th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
-              </tr>
-
-              <tr>
-                <th scope="row">Horizontal</th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats.horizontal|distformat:dist_format }}</td>
-              </tr>
-
-              <tr>
-                <th scope="row">Aid climbed</th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.aided|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats_year2.aided|distformat:dist_format }}</td>
-                <td class="text-center">{{ trip_stats.aided|distformat:dist_format }}</td>
-              </tr>
-              <tr class="table-group-divider">
-                <th scope="row">Total trips</th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.trips }}</td>
-                <td class="text-center">{{ trip_stats_year2.trips }}</td>
-                <td class="text-center">{{ trip_stats.trips }}</td>
-              </tr>
-
-              <tr>
-                <th scope="row">
-                  Time
-                </th>
-                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.time }}</th>
-                <td class="text-center">{{ trip_stats_year2.time }}</th>
-                <td class="text-center">{{ trip_stats.time }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    {% endif %}
-
+{% if trips %}
+  {% if user.show_statistics %}
     <div class="row mt-4">
-      <h3 class="fs-2">Trip list</h3>
-      <div class="table-responsive">
-        <table class="table table-hover">
+      <div class="col">
+        <h3 class="fs-2 mb-0">Statistics</h3>
+        <table class="table">
           <thead>
-            <tr>
-              <th scope="col" class="d-none d-md-table-cell">#</th>
-              <th scope="col">Date</th>
-              <th scope="col">Cave</th>
-              <th scope="col" class="d-none d-lg-table-cell">Region</th>
-              <th scope="col" class="d-none d-lg-table-cell">Country</th>
-              <th scope="col" class="d-none d-md-table-cell">Duration</th>
-              <th></th>
+            <tr class="border-bottom">
+              <th scope="col"></th>
+              <th scope="col" class="d-none d-lg-table-cell text-center">{{ year1 }}</th>
+              <th scope="col" class="text-center">{{ year2 }}</th>
+              <th scope="col" class="text-center">Total</th>
             </tr>
           </thead>
 
           <tbody class="table-group-divider">
-            {% for trip in trips %}
-              <tr data-href="{% url 'public:trip' trip.user.username trip.pk %}">
-                <td class="d-none d-md-table-cell">{{ forloop.revcounter }}</td>
-                <td>{{ trip.start|date }}</td>
-                <td>
-                  {% if trip.cave_url %}
-                    <a href="{{ trip.cave_url }}">{{ trip.cave_name }}</a>
-                  {% else %}
-                    {{ trip.cave_name }}
-                  {% endif %}
-                </td>
-                <td class="d-none d-lg-table-cell">{{ trip.cave_region }}</td>
-                <td class="d-none d-lg-table-cell">{{ trip.cave_country }}</td>
-                <td class="d-none d-md-table-cell">{{ trip.duration_str }}</td>
-                <td>
-                  {% if trip.report and trip.report.is_public %}
-                    <a class="text-warning" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
-                      <i class="bi bi-card-text"></i>
-                    </a>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
+            <tr>
+              <th scope="row">Rope ascent</th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_up|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats_year2.vert_up|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats.vert_up|distformat:dist_format }}</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Rope descent</th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.vert_down|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats_year2.vert_down|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats.vert_down|distformat:dist_format }}</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Surveyed</th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats.surveyed|distformat:dist_format }}</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Resurveyed</th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Horizontal</th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats.horizontal|distformat:dist_format }}</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Aid climbed</th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.aided|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats_year2.aided|distformat:dist_format }}</td>
+              <td class="text-center">{{ trip_stats.aided|distformat:dist_format }}</td>
+            </tr>
+
+            <tr class="table-group-divider">
+              <th scope="row">Total trips</th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.trips }}</td>
+              <td class="text-center">{{ trip_stats_year2.trips }}</td>
+              <td class="text-center">{{ trip_stats.trips }}</td>
+            </tr>
+
+            <tr>
+              <th scope="row">
+                Time
+              </th>
+              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.time }}</td>
+              <td class="text-center">{{ trip_stats_year2.time }}</td>
+              <td class="text-center">{{ trip_stats.time }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
   {% endif %}
-</div>
+
+  <div class="row mt-4">
+    <h3 class="fs-2">Trip list</h3>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col" class="d-none d-md-table-cell">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">Cave</th>
+            <th scope="col" class="d-none d-lg-table-cell">Region</th>
+            <th scope="col" class="d-none d-lg-table-cell">Country</th>
+            <th scope="col" class="d-none d-md-table-cell">Duration</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody class="table-group-divider">
+          {% for trip in trips %}
+            <tr data-href="{% url 'public:trip' trip.user.username trip.pk %}">
+              <td class="d-none d-md-table-cell">{{ forloop.revcounter }}</td>
+              <td>{{ trip.start|date }}</td>
+              <td>
+                {% if trip.cave_url %}
+                  <a href="{{ trip.cave_url }}">{{ trip.cave_name }}</a>
+                {% else %}
+                  {{ trip.cave_name }}
+                {% endif %}
+              </td>
+              <td class="d-none d-lg-table-cell">{{ trip.cave_region }}</td>
+              <td class="d-none d-lg-table-cell">{{ trip.cave_country }}</td>
+              <td class="d-none d-md-table-cell">{{ trip.duration_str }}</td>
+              <td>
+                {% if trip.report and trip.report.is_public %}
+                  <a class="text-warning" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
+                    <i class="bi bi-card-text"></i>
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endif %}
 
 {% endblock main %}
 
