@@ -76,12 +76,12 @@ def common_caves(qs, limit=10):
 
 
 def common_cavers(qs, limit=10):
-    """Get a list of the most common cavers by hour from a QuerySet"""
+    """Get a list of the most common cavers in a QuerySet, by trip count"""
     return sort_comma_separated_list(qs, "cavers", limit)
 
 
 def common_cavers_by_time(qs, limit=10):
-    """Get a list of the most common cavers in a QuerySet"""
+    """Get a list of the most common cavers in a QuerySet, by time"""
     cavers = {}
     for trip in qs:
         if not trip.cavers:
