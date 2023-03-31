@@ -410,7 +410,7 @@
     </div>
 
     <div class="card-body">
-      <canvas id="stats-over-time" data-url="{% url 'log:charts:stats_over_time' %}"></canvas>
+      <canvas style="min-height: 400px;" id="stats-over-time" data-url="{% url 'log:charts:stats_over_time' %}"></canvas>
     </div>
   </div>
 {% else %}
@@ -473,6 +473,7 @@
             },
             options: {
               responsive: true,
+              maintainAspectRatio: false,
               elements: {
                 point: {
                   pointStyle: false,
