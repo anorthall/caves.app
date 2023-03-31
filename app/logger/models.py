@@ -23,6 +23,8 @@ class Trip(models.Model):
     TRAINING = "Training"
     RESCUE = "Rescue"
     SCIENCE = "Science"
+    HAULING = "Hauling"
+    RIGGING = "Rigging"
     SURFACE = "Surface"
     OTHER = "Other"
     TRIP_TYPES = [
@@ -35,6 +37,8 @@ class Trip(models.Model):
         (TRAINING, TRAINING),
         (RESCUE, RESCUE),
         (SCIENCE, SCIENCE),
+        (HAULING, HAULING),
+        (RIGGING, RIGGING),
         (SURFACE, SURFACE),
         (OTHER, OTHER),
     ]
