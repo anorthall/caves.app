@@ -1,8 +1,8 @@
 from datetime import timedelta as td
-from django.db.models import Count
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.measure import D
+from django.utils import timezone
 from django.http import JsonResponse
 from .models import Trip
 
@@ -114,5 +114,29 @@ def trip_types_time(request):
         result[k] = v.total_seconds() / 60 / 60
         labels.append(k)
         data.append(result[k])
+
+    return JsonResponse(data={"labels": labels, "data": data})
+
+
+@login_required
+def hours_per_month(request):
+    """JSON data for a chart showing hours per month"""
+    qs = Trip.objects.filter(user=request.user)
+    labels = []
+    data = []
+    today = timezone.now()
+    start_date = (today - td(days=(365 * 2))).replace(day=1)
+    cur_date = start_date
+
+    while cur_date <= today:
+        next_date = (cur_date + td(days=32)).replace(day=1)
+        labels.append(cur_date.strftime("%b %y"))
+        month_hours = 0
+        for trip in qs:
+            if trip.start >= cur_date and trip.start < next_date:
+                if trip.duration:
+                    month_hours += trip.duration.total_seconds() / 3600
+        data.append(month_hours)
+        cur_date = next_date
 
     return JsonResponse(data={"labels": labels, "data": data})

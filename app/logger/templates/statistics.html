@@ -489,7 +489,7 @@
             <tbody>
               {% for key, value in averages %}
                 <tr>
-                  <td scope="row">{{ key }}</td>
+                  <td>{{ key }}</td>
                   <td>{{ value }}</td>
                 </tr>
               {% endfor %}
@@ -513,7 +513,7 @@
     </div>
 
     <div class="card-body">
-      <canvas style="min-height: 400px;" id="stats-over-time" data-url="{% url 'log:charts:stats_over_time' %}"></canvas>
+      <canvas style="min-height: 350px;" id="stats-over-time" data-url="{% url 'log:charts:stats_over_time' %}"></canvas>
     </div>
 
     <small class="card-footer text-muted text-center">
@@ -541,6 +541,18 @@
     <small class="card-footer text-muted text-center">
       Click the legend to toggle data
     </small>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-header text-center">
+      Hours per month
+    </div>
+
+    <div class="card-body">
+      <div class="row">
+        <canvas style="min-height: 300px;" id="hours-per-month" data-url="{% url 'log:charts:hours_per_month' %}"></canvas>
+      </div>
+    </div>
   </div>
 
 {% else %}
@@ -682,5 +694,56 @@
         }
       });
     });
+
+    $(function () {
+      var $hoursPerMonthChart = $("#hours-per-month");
+      $.ajax({
+        url: $hoursPerMonthChart.data("url"),
+        success: function (data) {
+
+          var ctx = $hoursPerMonthChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Hours per month',
+                data: data.data,
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.5)',
+                  'rgba(255, 159, 64, 0.5)',
+                  'rgba(255, 205, 86, 0.5)',
+                  'rgba(75, 192, 192, 0.5)',
+                  'rgba(54, 162, 235, 0.5)',
+                  'rgba(153, 102, 255, 0.5)',
+                  'rgba(201, 203, 207, 0.5)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false,
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+
   </script>
 {% endblock footer_scripts %}
