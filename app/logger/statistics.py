@@ -186,26 +186,45 @@ def trip_averages(qs, units):
         results["Rope climbed per trip"],
         results["Rope descended per trip"],
     )
-    total_hours = results["Time underground per trip"].total_seconds() / 3600
+
     total_survey = results["Surveyed per trip"] + results["Resurveyed per trip"]
-    surveyed, resurveyed = results["Surveyed per trip"], results["Resurveyed per trip"]
+    if total_survey:
+        surveyed, resurveyed = (
+            results["Surveyed per trip"],
+            results["Resurveyed per trip"],
+        )
+
+    if results["Time underground per trip"]:
+        total_hours = results["Time underground per trip"].total_seconds() / 3600
+
     for key, value in results.items():  # Divide by number of trips
         if value:
             results[key] = value / qs.count()
 
-    results["Rope climbed per trip*"] = climbed / vert_trips
-    results["Rope descended per trip*"] = descended / vert_trips
-    results["Rope climbed per hour"] = climbed / total_hours
-    results["Rope descended per hour"] = descended / total_hours
-    results["Rope climbed per hour*"] = climbed / vert_hours
-    results["Rope descended per hour*"] = descended / vert_hours
-
-    results["Surveyed per hour"] = surveyed / total_hours
-    results["Resurveyed per hour"] = resurveyed / total_hours
-    results["Surveyed** per hour***"] = total_survey / survey_hours
-
-    results["Surveyed per trip***"] = surveyed / survey_trips
-    results["Surveyed** per trip***"] = total_survey / survey_trips
+    if climbed and total_hours:
+        results["Rope climbed per hour"] = climbed / total_hours
+    if descended and total_hours:
+        results["Rope descended per hour"] = descended / total_hours
+    if vert_hours and climbed:
+        results["Rope climbed per hour*"] = climbed / vert_hours
+    if vert_hours and descended:
+        results["Rope descended per hour*"] = descended / vert_hours
+    if survey_hours and total_survey:
+        results["Surveyed** per hour***"] = total_survey / survey_hours
+    if surveyed and total_hours:
+        results["Surveyed per hour"] = surveyed / total_hours
+    if resurveyed and total_hours:
+        results["Resurveyed per hour"] = resurveyed / total_hours
+    if total_survey and survey_hours:
+        results["Surveyed** per hour***"] = total_survey / survey_hours
+    if vert_trips and climbed:
+        results["Rope climbed per trip*"] = climbed / vert_trips
+    if vert_trips and descended:
+        results["Rope descended per trip*"] = descended / vert_trips
+    if surveyed and survey_trips:
+        results["Surveyed per trip***"] = surveyed / survey_trips
+    if total_survey and survey_trips:
+        results["Surveyed** per trip***"] = total_survey / survey_trips
 
     processed_results = {}
     for key, value in results.items():
