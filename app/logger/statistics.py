@@ -8,6 +8,9 @@ from .models import Trip
 
 def sort_comma_separated_list(qs, value, limit=10):
     """Sort a field that has a comma separated list of values from a QuerySet"""
+    if not bool(qs):
+        return None
+
     values = qs.values(value)
     common = {}
     for v in values:
@@ -68,6 +71,9 @@ def stats_for_user(qs, year=None):
 
 def common_caves(qs, limit=10):
     """Get a list of the most common caves in a QuerySet"""
+    if not bool(qs):
+        return None
+
     return (
         qs.values("cave_name")
         .annotate(count=Count("cave_name"))
@@ -82,6 +88,9 @@ def common_cavers(qs, limit=10):
 
 def common_cavers_by_time(qs, limit=10):
     """Get a list of the most common cavers in a QuerySet, by time"""
+    if not bool(qs):
+        return None
+
     cavers = {}
     for trip in qs:
         if not trip.cavers:
@@ -108,11 +117,17 @@ def common_clubs(qs, limit=10):
 
 def common_types(qs, limit=10):
     """Get a list of the most common types in a QuerySet"""
+    if not bool(qs):
+        return None
+
     return qs.values("type").annotate(count=Count("type")).order_by("-count")[0:limit]
 
 
 def most_duration(qs, limit=10):
     """Get trips with the most duration from a QuerySet"""
+    if not bool(qs):
+        return None
+
     most_duration = {}
     for trip in qs:
         if trip.duration:
@@ -129,6 +144,9 @@ def most_duration(qs, limit=10):
 
 def vertical_and_horizontal_count(qs):
     """Get the number of trips with vertical and horizontal distance"""
+    if not bool(qs):
+        return None
+
     vertical, horizontal = 0, 0
     for trip in qs:
         if trip.vert_dist_up or trip.vert_dist_down or trip.aid_dist:
@@ -140,6 +158,9 @@ def vertical_and_horizontal_count(qs):
 
 def trip_averages(qs, units):
     """Get the average distances in a QuerySet"""
+    if not bool(qs):
+        return None
+
     results = {
         "Rope climbed per trip": Distance(m=0),
         "Rope descended per trip": Distance(m=0),
@@ -239,6 +260,7 @@ def trip_averages(qs, units):
     first_trip = qs.order_by("start").first().start
     last_trip = qs.order_by("-start").first().start
     weeks = (last_trip - first_trip).days / 7
-    processed_results["Trips per week"] = round(qs.count() / weeks, 2)
+    if first_trip.date() != last_trip.date() and weeks != 0:
+        processed_results["Trips per week"] = round(qs.count() / weeks, 2)
 
     return sorted(processed_results.items())

@@ -205,8 +205,17 @@ def user_statistics(request):
     trip_stats_year1 = statistics.stats_for_user(trips, year=prev_year)
     trip_stats_year2 = statistics.stats_for_user(trips, year=this_year)
 
+    # Check if we should show time charts
+    show_time_charts = False
+    ordered = trips.order_by("-start")
+    if (ordered.first().start.date() - ordered.last().start.date()).days > 40:
+        if trips.filter(end__isnull=False):
+            show_time_charts = True
+
     context = {
         "trips": trips,
+        "gte_five_trips": len(trips) >= 5,
+        "show_time_charts": show_time_charts,
         "user": request.user,
         "dist_format": request.user.units,
         "chart_units": chart_units,
