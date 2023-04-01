@@ -207,10 +207,11 @@ def user_statistics(request):
 
     # Check if we should show time charts
     show_time_charts = False
-    ordered = trips.order_by("-start")
-    if (ordered.first().start.date() - ordered.last().start.date()).days > 40:
-        if trips.filter(end__isnull=False):
-            show_time_charts = True
+    if len(trips) >= 2:
+        ordered = trips.order_by("-start")
+        if (ordered.first().start.date() - ordered.last().start.date()).days > 40:
+            if trips.filter(end__isnull=False):
+                show_time_charts = True
 
     context = {
         "trips": trips,
