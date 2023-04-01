@@ -188,12 +188,12 @@ def trip_averages(qs, units):
     )
 
     total_survey = results["Surveyed per trip"] + results["Resurveyed per trip"]
-    if total_survey:
-        surveyed, resurveyed = (
-            results["Surveyed per trip"],
-            results["Resurveyed per trip"],
-        )
+    surveyed, resurveyed = (
+        results["Surveyed per trip"],
+        results["Resurveyed per trip"],
+    )
 
+    total_hours = None
     if results["Time underground per trip"]:
         total_hours = results["Time underground per trip"].total_seconds() / 3600
 
