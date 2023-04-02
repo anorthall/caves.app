@@ -136,25 +136,10 @@
           </tr>
 
           <tr>
-            <th scope="row" class="ps-3">Units</th>
-            <td>
-              {{ user.units }}<br /><br />
-            </td>
+            <th scope="row" class="no-bottom-border ps-3">Units</th>
+            <td class="no-bottom-border">{{ user.units }}</td>
           </tr>
 
-          <tr class="fs-5 bg-secondary bg-gradient">
-            <th class="ps-3 fw-normal" scope="col" colspan="2">Account information</th>
-          </tr>
-
-          <tr>
-            <th scope="row" class="ps-3">Account created</th>
-            <td>{{ user.date_joined|time:"H:i" }} on {{ user.date_joined|date:"l, jS F Y (e)" }}</td>
-          </tr>
-
-          <tr>
-            <th class="no-bottom-border ps-3" scope="row">Last login</th>
-            <td class="no-bottom-border">{{ user.last_login|time:"H:i" }} on {{ user.last_login|date:"l, jS F Y (e)" }}</td>
-          </tr>
         </tbody>
       </table>
     </div>
