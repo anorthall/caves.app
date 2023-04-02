@@ -303,7 +303,7 @@ def admin_tools(request):
 
     context = {
         "users": users,
-        "active_users": active_users.order_by("last_login"),
+        "active_users": active_users.order_by("-last_login"),
         "disabled_users": disabled_users,
         "prune_users": prune_users.order_by("date_joined"),
         "joined_day": joined_day,
