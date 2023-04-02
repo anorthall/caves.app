@@ -1,13 +1,13 @@
 {% extends "base_sidebar.html" %}
 {% load get %}
 {% load distformat %}
+{% load static %}
 {% block title %}Your statistics{% endblock %}
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
 {% block header_scripts %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"
-    integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="{% static "js/jquery-3.6.4.min.js" %}"></script>
 {% endblock%}
 
 {% block main %}

@@ -1,6 +1,7 @@
 {% extends "base_public.html" %}
 {% load distformat %}
 {% load markdownify %}
+{% load static %}
 {% block title %}{{ user.name }}'s trips{% endblock %}
 {% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
 {% block main %}
@@ -152,7 +153,7 @@
 
 {% block footer_scripts %}
 <!-- Clickable table rows -->
-<script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
+<script src="{% static "js/jquery-3.6.4.min.js" %}"></script>
 <script>
   jQuery(document).ready(function($) {
     $('*[data-href]').on('click', function() {
