@@ -22,6 +22,7 @@ from .templatetags.distformat import distformat
 from .models import Trip, TripReport
 from .forms import TripForm, TripReportForm
 from logger import services, statistics
+from core.models import News
 
 
 def index(request):
@@ -59,6 +60,7 @@ def index(request):
         "trip_stats": trip_stats,
         "trip_stats_year": trip_stats_year,
         "dist_format": request.user.units,
+        "news": News.objects.all().order_by("-posted_at")[:3],
     }
     return render(request, "index_registered.html", context)
 

@@ -1,7 +1,14 @@
 from django.contrib import admin
+from .models import News
 
 
 # Set global admin site headers
 admin.site.site_header = "caves.app"
 admin.site.site_title = "caves.app"
 admin.site.index_title = "Administration"
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ("title", "author", "posted_at")
+    ordering = ("-posted_at",)
