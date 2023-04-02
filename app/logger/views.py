@@ -274,14 +274,49 @@ def admin_tools(request):
             except ObjectDoesNotExist:
                 messages.error(request, f"User was not found.")
 
-    # Build user list
-    qs = get_user_model().objects.filter(is_active=True, is_superuser=False)
-    user_list = []
-    for user in qs:
-        user_list.append(user.email)
+    users = get_user_model().objects.all()
+    active_users = users.filter(is_active=True)
+    disabled_users = users.filter(is_active=False)
+    prune_users = disabled_users.filter(
+        date_joined__lt=timezone.now() - timezone.timedelta(days=1)
+    )
+    joined_day = users.filter(
+        date_joined__gt=timezone.now() - timezone.timedelta(days=1)
+    )
+    joined_week = users.filter(
+        date_joined__gt=timezone.now() - timezone.timedelta(days=7)
+    )
+    joined_month = users.filter(
+        date_joined__gt=timezone.now() - timezone.timedelta(days=31)
+    )
+    joined_year = users.filter(
+        date_joined__gt=timezone.now() - timezone.timedelta(days=365)
+    )
 
-    # Build context
-    context = {"user_list": user_list}
+    trips = Trip.objects.all()
+    trips_day = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=1))
+    trips_week = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=7))
+    trips_month = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=31))
+    trips_year = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=365))
+
+    login_user_list = active_users.values_list("email", flat=True)
+
+    context = {
+        "users": users.order_by("last_login"),
+        "active_users": active_users,
+        "disabled_users": disabled_users,
+        "prune_users": prune_users.order_by("date_joined"),
+        "joined_day": joined_day,
+        "joined_week": joined_week,
+        "joined_month": joined_month,
+        "joined_year": joined_year,
+        "trips": trips,
+        "trips_day": trips_day,
+        "trips_week": trips_week,
+        "trips_month": trips_month,
+        "trips_year": trips_year,
+        "login_user_list": login_user_list,
+    }
 
     return render(request, "admin_tools.html", context)
 

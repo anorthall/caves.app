@@ -5,24 +5,197 @@
 {% block main %}
 
 <div class="card">
-  <div class="card-header fs-4">
+  <div class="card-header">
+    Site statistics
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover table-borderless mb-0">
+        <tbody>
+          <tr class="text-bg-secondary">
+            <th scope="col" class="ps-3">Users</th>
+            <th scope="col">Count</th>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Total users</td>
+            <td>{{ users|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Active users</td>
+            <td>{{ active_users|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Inactive users</td>
+            <td>{{ disabled_users|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Users to prune</td>
+            <td>{{ d|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Joined in last day</td>
+            <td>{{ joined_day|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Joined in last week</td>
+            <td>{{ joined_week|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Joined in last month</td>
+            <td>{{ joined_month|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Joined in last year</td>
+            <td>{{ joined_year|length }}</td>
+          </tr>
+
+          <tr class="text-bg-secondary">
+            <th scope="col" class="ps-3">Trips</th>
+            <th scope="col">Count</th>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Total trips</td>
+            <td>{{ trips|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Created in last day</td>
+            <td>{{ trips_day|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Created in last week</td>
+            <td>{{ trips_week|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Created in last month</td>
+            <td>{{ trips_month|length }}</td>
+          </tr>
+
+          <tr>
+            <td class="ps-3">Created in last year</td>
+            <td>{{ trips_year|length }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% if prune_users %}
+  <div class="card mt-4">
+    <div class="card-header">
+      Users to prune
+    </div>
+
+    <div class="card-body">
+      <p>
+        The following users joined more than 24 hours ago and have not verified their email:
+      </p>
+
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Email</th>
+              <th scope="col">Enabled</th>
+              <th scope="col">Trip count</th>
+              <th scope="col">Joined</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for user in prune_users %}
+              <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.is_active }}</td>
+                <td>{{ user.trips|length }}</td>
+                <td>{{ user.date_joined|timesince }} ago</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div class="card mt-4">
+  <div class="card-header">
+    Active users
+  </div>
+
+  <div class="card-body">
+    <p>
+      The following users have verified their email and are active:
+    </p>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Email</th>
+            <th scope="col">Trip count</th>
+            <th scope="col">Joined</th>
+            <th scope="col">Last login</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for user in active_users %}
+            <tr>
+              {% if user.privacy == "Public" %}
+                <td><a href="{% url 'public:user' user.username %}">{{ user.email }}</a></td>
+              {% else %}
+                <td>{{ user.email }}</td>
+              {% endif %}
+              <td>{{ user.trips|length }}</td>
+              <td>{{ user.date_joined|timesince }} ago</td>
+              <td>{{ user.last_login|timesince }} ago</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">
     Login as a user
   </div>
 
   <div class="card-body">
-    <p class="lead">
+    <p>
       Use this form to login as any user, except superusers.
     </p>
 
     <form method="post">
       {% csrf_token %}
-      <select class="form-select" name="login_as" aria-label="Select user">
-        <option selected>Select a user</option>
-        {% for user in user_list %}
-          <option value="{{ user }}">{{ user }}</option>
-        {% endfor %}
-        </select>
-      <button type="submit" name="download" value="download" class="btn btn-lg btn-primary mt-3">Login as user</button>
+      <div class="row g-2">
+        <div class="col">
+          <select class="form-select" name="login_as" aria-label="Select user">
+            <option selected>Select a user</option>
+            {% for user in login_user_list  %}
+              <option value="{{ user }}">{{ user }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col">
+          <button type="submit" name="download" value="download" class="btn btn-primary">Login as user</button>
+        </div>
+      </div>
     </form>
   </div>
 </div>
