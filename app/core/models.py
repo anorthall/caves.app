@@ -14,6 +14,10 @@ class News(models.Model):
         help_text="News items will not appear on the site unless this box is checked.",
     )
 
+    # Metadata
+    added = models.DateTimeField("added on", auto_now_add=True)
+    updated = models.DateTimeField("last updated", auto_now=True)
+
     class Meta:
         verbose_name_plural = "news"
 

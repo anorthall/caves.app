@@ -10,5 +10,6 @@ admin.site.index_title = "Administration"
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ("title", "author", "posted_at")
+    list_display = ("title", "author", "posted_at", "added", "updated")
+    readonly_fields = ("added", "updated")
     ordering = ("-posted_at",)
