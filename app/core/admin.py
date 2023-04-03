@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import News
+from .models import News, FAQ
 
 
 # Set global admin site headers
@@ -13,3 +13,10 @@ class NewsAdmin(admin.ModelAdmin):
     list_display = ("title", "author", "posted_at", "added", "updated")
     readonly_fields = ("added", "updated")
     ordering = ("-posted_at",)
+
+
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ("question", "added", "updated")
+    readonly_fields = ("added", "updated")
+    ordering = ("updated",)

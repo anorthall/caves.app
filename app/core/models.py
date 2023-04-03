@@ -23,3 +23,19 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=100)
+    answer = models.TextField()
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+
+    # Metadata
+    added = models.DateTimeField("added on", auto_now_add=True)
+    updated = models.DateTimeField("last updated", auto_now=True)
+
+    class Meta:
+        verbose_name = "FAQ"
+
+    def __str__(self):
+        return self.question

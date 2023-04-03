@@ -1,0 +1,58 @@
+{% load humanize %}
+{% load static %}
+
+<div class="card">
+  <div class="card-header fs-4">
+    Help with caves.app
+  </div>
+
+  <div class="card-body">
+    <p class="lead">This website is in active development and sometimes things may not go as smoothly as we'd like.</p>
+
+    <p>
+      If you need any help with anything, or if you've encountered a problem with the site, then please do not hesitate to
+      <a href="mailto:admin@caves.app">send me an email</a> and I will get back to you as soon as possible. Equally, any
+      feedback &mdash; positive or negative &mdash; is very welcome.
+    </p>
+
+    <p>There are also certain tasks I can help with, on request:</p>
+
+    <ul>
+      <li>
+        <strong>Import of a large amount of trips</strong> &mdash; if you have a large amount of trip data, perhaps
+        stored in a spreadsheet, I'd be happy to help add it to the site.
+      </li>
+
+      <li>
+        <strong>Bulk editing</strong> &mdash; for example bulk deletions, or changing the formatting of many fields.
+      </li>
+
+      <li>
+        <strong>Account deletion</strong> &mdash; if you no longer wish to use the site.
+      </li>
+    </ul>
+
+    <p class="mb-0">
+      The support email address is: <code>admin@caves.app</code>.
+    </p>
+
+  </div>
+</div>
+
+{% if faqs %}
+  <div class="card mt-4">
+    <div class="card-header">
+      Frequently asked questions
+    </div>
+
+    <div class="card-body">
+      {% for faq in faqs %}
+          <div class="border-bottom border-secondary fs-5 mb-2">
+            {{ faq.question }}
+          </div>
+
+          {{ faq.answer|safe|linebreaks }}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
