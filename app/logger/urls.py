@@ -1,6 +1,5 @@
 from django.urls import path, include
 from . import views
-from . import charts
 
 app_name = "log"
 
@@ -25,7 +24,6 @@ urlpatterns = [
         name="report_delete",
     ),
     path("statistics/", views.user_statistics, name="statistics"),
-    path("about/", views.about, name="about"),
     path("admin-tools/", views.admin_tools, name="admin_tools"),
     path("charts/", include("logger.charts_urls")),
 ]

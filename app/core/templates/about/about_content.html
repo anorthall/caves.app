@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load static %}
 <div class="card">
   <div class="card-header fs-4">
     About caves.app
@@ -24,18 +25,6 @@
 
     <hr class="my-4" />
 
-    <h5>Current and planned features</h5>
-    <p>
-      This website is in active development and not all features are currently implemented. Features which are planned include:
-    </p>
-
-    <ul>
-      <li>The ability to add photos to trips.</li>
-      <li>A friends/social 'timeline' functionality.</li>
-      <li>Search functionality.</li>
-      <li>An equipment tracker.</li>
-    </ul>
-
     <h5 class="mt-4">Contact and support</h5>
     <p>
       If you encounter any issues, however minor, with the website then please do send me an email and let me know. I am keen to get things
@@ -43,10 +32,34 @@
       or feature could be changed or improved. To contact me, simply send an email to <code>admin@caves.app</code>.
     </p>
 
+    <hr class="my-4" />
+
     <h5 class="mt-4">Statistics</h5>
     <p>
       caves.app currently has <strong>{{ user_count|intcomma }}</strong> registered users and <strong>{{ trip_count|intcomma }}</strong> trips
       stored in the database, amounting to <strong>{{ total_duration }}</strong> of underground time!
     </p>
+
+    {% if not registered %}
+      <hr class="my-4" />
+
+      <figure class="figure mb-4">
+        <img class="figure-img img-fluid rounded" src="{% static "img/about/averages.png" %}" alt="Caving statistics on caves.app." />
+        <figcaption class="text-center figure-caption">
+          Just a few of the statistics available on caves.app.
+        </figcaption>
+      </figure>
+
+      <figure class="figure mb-4">
+        <img class="figure-img img-fluid rounded" src="{% static "img/about/chart_demo_1.png" %}" alt="Caving statistics on caves.app." />
+        <figcaption class="text-center figure-caption">
+          Interested in seeing your own caving graphs?
+        </figcaption>
+      </figure>
+
+      <div class="text-center">
+        <a href="{% url "users:register" %}" class="btn btn-lg btn-primary mb-3">Sign up for a free account</a>
+      </div>
+    {% endif %}
   </div>
 </div>
