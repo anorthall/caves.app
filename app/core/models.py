@@ -4,9 +4,15 @@ from django.contrib.auth import get_user_model
 
 class News(models.Model):
     title = models.CharField(max_length=100)
-    posted_at = models.DateTimeField()
+    posted_at = models.DateTimeField(
+        help_text="If this date is in the future, it will not appear on the site until then."
+    )
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
     content = models.TextField()
+    is_published = models.BooleanField(
+        "Publish",
+        help_text="News items will not appear on the site unless this box is checked.",
+    )
 
     class Meta:
         verbose_name_plural = "news"
