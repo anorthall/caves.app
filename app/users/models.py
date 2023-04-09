@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django_countries.fields import CountryField
+from django.utils import timezone as django_tz
 from django.db import models
 from timezone_field import TimeZoneField
 from logger.models import Trip
@@ -145,6 +146,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         help_text="Only enabled users are able to sign in. Users are disabled until their email is verified.",
     )
     date_joined = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(default=django_tz.now)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
@@ -156,7 +158,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = "user"
 
     def __str__(self):
-        return self.email
+        return self.name
 
     def get_full_name(self):
         return self.name

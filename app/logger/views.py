@@ -259,30 +259,34 @@ def admin_tools(request):
     prune_users = disabled_users.filter(
         date_joined__lt=timezone.now() - timezone.timedelta(days=1)
     )
-    joined_day = users.filter(
-        date_joined__gt=timezone.now() - timezone.timedelta(days=1)
-    )
-    joined_week = users.filter(
-        date_joined__gt=timezone.now() - timezone.timedelta(days=7)
-    )
-    joined_month = users.filter(
-        date_joined__gt=timezone.now() - timezone.timedelta(days=31)
-    )
     joined_year = users.filter(
         date_joined__gt=timezone.now() - timezone.timedelta(days=365)
     )
+    joined_month = joined_year.filter(
+        date_joined__gt=timezone.now() - timezone.timedelta(days=31)
+    )
+    joined_week = joined_month.filter(
+        date_joined__gt=timezone.now() - timezone.timedelta(days=7)
+    )
+    joined_day = joined_week.filter(
+        date_joined__gt=timezone.now() - timezone.timedelta(days=1)
+    )
 
     trips = Trip.objects.all()
-    trips_day = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=1))
-    trips_week = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=7))
-    trips_month = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=31))
     trips_year = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=365))
+    trips_month = trips_year.filter(
+        added__gt=timezone.now() - timezone.timedelta(days=31)
+    )
+    trips_week = trips_month.filter(
+        added__gt=timezone.now() - timezone.timedelta(days=7)
+    )
+    trips_day = trips_week.filter(added__gt=timezone.now() - timezone.timedelta(days=1))
 
     login_user_list = active_users.values_list("email", flat=True)
 
     context = {
         "users": users,
-        "active_users": active_users.order_by("-last_login"),
+        "active_users": active_users.order_by("-last_seen"),
         "disabled_users": disabled_users,
         "prune_users": prune_users.order_by("date_joined"),
         "joined_day": joined_day,

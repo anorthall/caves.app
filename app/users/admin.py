@@ -17,12 +17,14 @@ class CavingUserAdmin(BaseUserAdmin):
         "privacy",
         "date_joined",
         "last_login",
+        "last_seen",
         "is_active",
     )
     list_filter = (
         "is_active",
         "privacy",
         "last_login",
+        "last_seen",
     )
     fieldsets = (
         (
@@ -58,12 +60,14 @@ class CavingUserAdmin(BaseUserAdmin):
             },
         ),
         ("Settings", {"fields": ("units", "timezone")}),
-        ("Permissions", {"fields": ("user_permissions",)}),
+        # ("Permissions", {"fields": ("user_permissions",)}),
         (
             "Authentication",
-            {"fields": ("is_active", "is_superuser", "password")},
+            {"fields": ("last_login", "last_seen", "is_active", "is_superuser")},
         ),
     )
+
+    readonly_fields = ("last_login", "last_seen")
 
     add_fieldsets = (
         (

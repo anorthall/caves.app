@@ -148,7 +148,7 @@
             <th scope="col">Email</th>
             <th scope="col">Trip count</th>
             <th scope="col">Joined</th>
-            <th scope="col">Last login</th>
+            <th scope="col">Last seen</th>
           </tr>
         </thead>
 
@@ -162,7 +162,7 @@
               {% endif %}
               <td>{{ user.trips|length }}</td>
               <td>{{ user.date_joined|timesince }} ago</td>
-              <td>{{ user.last_login|timesince }} ago</td>
+              <td>{{ user.last_seen|timesince }} ago</td>
             </tr>
           {% endfor %}
         </tbody>
