@@ -102,12 +102,14 @@ class TripTestCase(TestCase):
         trip = Trip.objects.get(cave_name="Test Cave 1")
         self.assertEqual(trip.duration_str, "2 hours")
 
-        trip = Trip.objects.get(cave_name="Test Cave 1")  # Cached, grab again
+        trip = Trip.objects.get(cave_name="Test Cave 1")
         trip.end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
+        trip.save()
         self.assertEqual(trip.duration_str, "1 day, 1 hour and 1 minute")
 
-        trip = Trip.objects.get(cave_name="Test Cave 1")  # Cached, grab again
+        trip = Trip.objects.get(cave_name="Test Cave 1")
         trip.end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
+        trip.save()
         self.assertEqual(trip.duration_str, "2 days, 2 hours and 2 minutes")
 
     def test_has_distances_property(self):

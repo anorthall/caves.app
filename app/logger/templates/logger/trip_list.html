@@ -18,10 +18,55 @@
           <thead>
             <tr>
               <th class="d-none d-sm-block ps-1 text-center" scope="col">#</th>
-              <th scope="col">Date</th>
-              <th scope="col">Cave</th>
-              <th class="d-none d-xl-table-cell" scope="col">Duration</th>
-              <th class="d-none d-lg-table-cell" scope="col">Trip type</th>
+
+              <th scope="col">
+                Date
+                <small>
+                  <a href="?sort=start" class="text-decoration-none">
+                    <i class="bi bi-sort-up"></i>
+                  </a>
+                  <a href="?sort=-start" class="text-decoration-none">
+                    <i class="bi bi-sort-down"></i>
+                  </a>
+                </small>
+              </th>
+
+              <th scope="col">
+                Cave
+                <small>
+                  <a href="?sort=cave_name" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-up"></i>
+                  </a>
+                  <a href="?sort=-cave_name" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-down"></i>
+                  </a>
+                </small>
+              </th>
+
+              <th class="d-none d-xl-table-cell" scope="col">
+                Duration
+                <small>
+                  <a href="?sort=duration" class="text-decoration-none">
+                    <i class="bi bi-sort-up"></i>
+                  </a>
+                  <a href="?sort=-duration" class="text-decoration-none">
+                    <i class="bi bi-sort-down"></i>
+                  </a>
+                </small>
+              </th>
+
+              <th class="d-none d-lg-table-cell" scope="col">
+                Trip type
+                <small>
+                  <a href="?sort=type" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-up"></i>
+                  </a>
+                  <a href="?sort=-type" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-down"></i>
+                  </a>
+                </small>
+              </th>
+
               <th class="d-none d-sm-table-cell" scope="col"></th>
             </tr>
           </thead>

@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from distance import DistanceField, DistanceUnitField
 from django.utils.functional import cached_property
 from django.utils.html import escape
+from django.utils import timezone
 from django.urls import reverse
 from .validators import *
 from tinymce.models import HTMLField
@@ -79,6 +80,8 @@ class Trip(models.Model):
     # Trip details
     start = models.DateTimeField("start time")
     end = models.DateTimeField("end time", blank=True, null=True)
+    duration = models.DurationField(blank=True, null=True)
+    duration_str = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(
         max_length=15,
         choices=TRIP_TYPES,
@@ -188,6 +191,32 @@ class Trip(models.Model):
         """Return the name of the cave visited."""
         return self.cave_name
 
+    def set_duration(self):
+        """Sets the trip duration"""
+        if self.end:
+            self.duration = self.end - self.start
+        else:
+            self.duration = None
+        return self.duration
+
+    def set_duration_str(self):
+        """Sets the human english expression of the duration"""
+        td = None
+        if self.end:
+            td = self.end - self.start
+
+        if td:
+            self.duration_str = humanize.precisedelta(td, minimum_unit="minutes")
+        else:
+            self.duration_str = None
+        return self.duration_str
+
+    def save(self, *args, **kwargs):
+        """Set the duration and duration_str fields"""
+        self.set_duration()
+        self.set_duration_str()
+        return super().save(*args, **kwargs)
+
     def clean(self):
         """Check that the start is before the end"""
         # Check self.start exists - may have been removed by form validation
@@ -200,22 +229,6 @@ class Trip(models.Model):
 
     def get_absolute_url(self):
         return reverse("log:trip_detail", kwargs={"pk": self.pk})
-
-    @cached_property
-    def duration(self):
-        """Return a the trip duration or None"""
-        if not self.end:
-            return None
-        return self.end - self.start
-
-    @cached_property
-    def duration_str(self):
-        """Return a human english expression of the duration"""
-        td = self.duration
-        if td is None:
-            return ""
-
-        return humanize.precisedelta(td, minimum_unit="minutes")
 
     @property
     def has_distances(self):

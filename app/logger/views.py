@@ -310,11 +310,22 @@ class TripListView(LoginRequiredMixin, ListView):
     model = Trip
     template_name_suffix = "_list"
     paginate_by = 100
+    ordering = ("-start", "pk")
 
     def get_queryset(self):
         """Only allow the user to update trips they created"""
-        qs = Trip.objects.filter(user=self.request.user).order_by("-start", "pk")
-        return qs.select_related("report")
+        qs = Trip.objects.filter(user=self.request.user).select_related("report")
+        return qs.order_by(*self.get_ordering())
+
+    def get_ordering(self):
+        """Allow sorting of the trip list table"""
+        ordering = self.request.GET.get("sort", "")
+        allowed_ordering = ["start", "cave_name", "duration", "type"]
+        print(ordering)
+        if ordering.replace("-", "") in allowed_ordering:
+            print(ordering)
+            return (ordering, "pk")
+        return self.ordering
 
     def get_context_data(self):
         """Add the trip 'index' dict to prevent many DB queries"""
