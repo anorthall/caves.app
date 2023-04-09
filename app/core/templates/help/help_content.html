@@ -1,5 +1,6 @@
 {% load humanize %}
 {% load static %}
+{% load markdownify %}
 
 <div class="card">
   <div class="card-header fs-4">
@@ -34,7 +35,7 @@
             {{ faq.question }}
           </div>
 
-          {{ faq.answer|safe|linebreaks }}
+          {{ faq.answer|markdownify }}
       {% endfor %}
     </div>
   </div>

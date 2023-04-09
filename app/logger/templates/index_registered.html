@@ -1,6 +1,7 @@
 {% extends "base_sidebar.html" %}
 {% load get %}
 {% load distformat %}
+{% load markdownify %}
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
@@ -109,7 +110,7 @@
                   &middot; {{ item.posted_at|timesince }} ago
                 </small>
               </div>
-              <p>{{ item.content|safe|linebreaks }}</p>
+              <p>{{ item.content|markdownify }}</p>
             </div>
           {% endfor %}
         </div>
