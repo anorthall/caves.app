@@ -256,7 +256,7 @@
                     </thead>
 
                     <tbody>
-                      {% for trip, duration in most_duration %}
+                      {% for trip in most_duration %}
                         <tr>
                           <th scope="row">{{ forloop.counter }}</th>
                           <td>
@@ -265,7 +265,7 @@
                             </a>
                           </td>
                           <td>{{ trip.start|date }}</td>
-                          <td>{{ duration }}</td>
+                          <td>{{ trip.duration_str }}</td>
                         </tr>
                       {% endfor %}
                       </tbody>

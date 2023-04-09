@@ -210,7 +210,7 @@ def user_statistics(request):
         "common_cavers": statistics.common_cavers(trips),
         "common_cavers_by_time": statistics.common_cavers_by_time(trips),
         "common_clubs": statistics.common_clubs(trips),
-        "most_duration": statistics.most_duration(trips),
+        "most_duration": trips.filter(vert_dist_up__gt=0).order_by("-duration")[0:10],
         "averages": statistics.trip_averages(trips, request.user.units),
         "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
             0:10
