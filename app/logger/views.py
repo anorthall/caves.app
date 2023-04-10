@@ -328,9 +328,12 @@ class TripListView(LoginRequiredMixin, ListView):
         return self.ordering
 
     def get_context_data(self):
-        """Add the trip 'index' dict to prevent many DB queries"""
+        """Add the trip 'index' dict to prevent many DB queries, as well as GET parameters"""
         context = super().get_context_data()
         context["trip_index"] = services.trip_index(self.request.user)
+        parameters = self.request.GET.copy()
+        parameters = parameters.pop("page", True) and parameters.urlencode()
+        context["get_parameters"] = parameters
         return context
 
 
