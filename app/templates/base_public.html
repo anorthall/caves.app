@@ -2,6 +2,14 @@
 
 {% block body %}
 <main class="flex-shrink-0 mb-4">
+  {% if debug %}
+    <div class="container">
+      <div class="alert alert-warning mt-4">
+        You are using the development version of caves.app.
+      </div>
+    </div>
+  {% endif %}
+
   <div class="container">
       {% block main %}{% endblock%}
     </div>

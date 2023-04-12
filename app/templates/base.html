@@ -5,6 +5,14 @@
 {% include "navbar.html" %}
 
 <main class="flex-shrink-0 mb-4">
+  {% if debug %}
+    <div class="container">
+      <div class="alert alert-warning">
+        You are using a development version of caves.app.
+      </div>
+    </div>
+  {% endif %}
+
   {% include "messages.html" %}
 
   <!-- Content start -->
