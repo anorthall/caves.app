@@ -140,7 +140,7 @@ class PublicViewsIntegrationTests(TestCase):
         # Test that the statistics are shown
         self.assertContains(response, "Total trips")
         self.assertContains(response, "Rope ascent")
-        self.assertContains(response, "Aid climbed")
+        self.assertContains(response, "Rope descent")
 
         # Test that the statistics are not shown if diabled
         self.user.show_statistics = False
@@ -157,7 +157,7 @@ class PublicViewsIntegrationTests(TestCase):
         # Test that the statistics are not shown
         self.assertNotContains(response, "Total trips")
         self.assertNotContains(response, "Rope ascent")
-        self.assertNotContains(response, "Aid climbed")
+        self.assertNotContains(response, "Rope descent")
 
     def test_custom_profile_page_title(self):
         """Test that the user profile page uses the custom title if set"""

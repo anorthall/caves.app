@@ -55,37 +55,45 @@
                 <td>{{ trip_stats.vert_down|distformat:dist_format }}</td>
               </tr>
 
-              <tr>
-                <th scope="row">Surveyed</th>
-                <td>{{ trip_stats_year0.surveyed|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
-                <td>{{ trip_stats.surveyed|distformat:dist_format }}</td>
-              </tr>
+              {% if trip_stats.surveyed %}
+                <tr>
+                  <th scope="row">Surveyed</th>
+                  <td>{{ trip_stats_year0.surveyed|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
+                  <td>{{ trip_stats.surveyed|distformat:dist_format }}</td>
+                </tr>
+              {% endif %}
 
-              <tr>
-                <th scope="row">Resurveyed</th>
-                <td>{{ trip_stats_year0.resurveyed|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
-                <td>{{ trip_stats.resurveyed|distformat:dist_format }}</td>
-              </tr>
+              {% if trip_stats.resurveyed %}
+                <tr>
+                  <th scope="row">Resurveyed</th>
+                  <td>{{ trip_stats_year0.resurveyed|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
+                  <td>{{ trip_stats.resurveyed|distformat:dist_format }}</td>
+                </tr>
+              {% endif %}
 
-              <tr>
-                <th scope="row">Horizontal</th>
-                <td>{{ trip_stats_year0.horizontal|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
-                <td>{{ trip_stats.horizontal|distformat:dist_format }}</td>
-              </tr>
+              {% if trip_stats.horizontal %}
+                <tr>
+                  <th scope="row">Horizontal</th>
+                  <td>{{ trip_stats_year0.horizontal|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
+                  <td>{{ trip_stats.horizontal|distformat:dist_format }}</td>
+                </tr>
+              {% endif %}
 
-              <tr>
-                <th scope="row">Aid climbed</th>
-                <td>{{ trip_stats_year0.aided|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year1.aided|distformat:dist_format }}</td>
-                <td>{{ trip_stats_year2.aided|distformat:dist_format }}</td>
-                <td>{{ trip_stats.aided|distformat:dist_format }}</td>
-              </tr>
+              {% if trip_stats.aided %}
+                <tr>
+                  <th scope="row">Aid climbed</th>
+                  <td>{{ trip_stats_year0.aided|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year1.aided|distformat:dist_format }}</td>
+                  <td>{{ trip_stats_year2.aided|distformat:dist_format }}</td>
+                  <td>{{ trip_stats.aided|distformat:dist_format }}</td>
+                </tr>
+              {% endif %}
 
               <tr class="border-top">
                 <th scope="row">Total trips</th>

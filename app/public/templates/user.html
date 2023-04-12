@@ -54,33 +54,41 @@
               <td class="text-center">{{ trip_stats.vert_down|distformat:dist_format }}</td>
             </tr>
 
-            <tr>
-              <th scope="row">Surveyed</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.surveyed|distformat:dist_format }}</td>
-            </tr>
+            {% if trip_stats.surveyed %}
+              <tr>
+                <th scope="row">Surveyed</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.surveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.surveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.surveyed|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
 
-            <tr>
-              <th scope="row">Resurveyed</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
-            </tr>
+            {% if trip_stats.resurveyed %}
+              <tr>
+                <th scope="row">Resurveyed</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.resurveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.resurveyed|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
 
-            <tr>
-              <th scope="row">Horizontal</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.horizontal|distformat:dist_format }}</td>
-            </tr>
+            {% if trip_stats.horizontal %}
+              <tr>
+                <th scope="row">Horizontal</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.horizontal|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.horizontal|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.horizontal|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
 
-            <tr>
-              <th scope="row">Aid climbed</th>
-              <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.aided|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats_year2.aided|distformat:dist_format }}</td>
-              <td class="text-center">{{ trip_stats.aided|distformat:dist_format }}</td>
-            </tr>
+            {% if trip_stats.aided %}
+              <tr>
+                <th scope="row">Aid climbed</th>
+                <td class="d-none d-lg-table-cell text-center">{{ trip_stats_year1.aided|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats_year2.aided|distformat:dist_format }}</td>
+                <td class="text-center">{{ trip_stats.aided|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
 
             <tr class="table-group-divider">
               <th scope="row">Total trips</th>

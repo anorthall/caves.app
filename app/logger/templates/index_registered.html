@@ -35,7 +35,7 @@
         Statistics
       </div>
 
-      <div class="card-body px-0">
+      <div class="card-body px-0 d-flex align-items-center">
         <table class="statistics-table table table-sm table-borderless m-0">
           <thead>
             <tr class="border-bottom">
@@ -58,23 +58,37 @@
               <td class="text-center pe-3">{{ trip_stats.vert_down|distformat:dist_format }}</td>
             </tr>
 
-            <tr>
-              <th scope="row" class="ps-3">Surveyed</th>
-              <td class="text-center">{{ trip_stats_year.surveyed|distformat:dist_format }}</td>
-              <td class="text-center pe-3">{{ trip_stats.surveyed|distformat:dist_format }}</td>
-            </tr>
+            {% if trip_stats.surveyed %}
+              <tr>
+                <th scope="row" class="ps-3">Surveyed</th>
+                <td class="text-center">{{ trip_stats_year.surveyed|distformat:dist_format }}</td>
+                <td class="text-center pe-3">{{ trip_stats.surveyed|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
 
-            <tr>
-              <th scope="row" class="ps-3">Resurveyed</th>
-              <td class="text-center">{{ trip_stats_year.resurveyed|distformat:dist_format }}</td>
-              <td class="text-center pe-3">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
-            </tr>
+            {% if trip_stats.resurveyed %}
+              <tr>
+                <th scope="row" class="ps-3">Resurveyed</th>
+                <td class="text-center">{{ trip_stats_year.resurveyed|distformat:dist_format }}</td>
+                <td class="text-center pe-3">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
 
-            <tr>
-              <th scope="row" class="ps-3">Horizontal</th>
-              <td class="text-center">{{ trip_stats_year.horizontal|distformat:dist_format }}</td>
-              <td class="text-center pe-3">{{ trip_stats.horizontal|distformat:dist_format }}</td>
-            </tr>
+            {% if trip_stats.horizontal %}
+              <tr>
+                <th scope="row" class="ps-3">Horizontal</th>
+                <td class="text-center">{{ trip_stats_year.horizontal|distformat:dist_format }}</td>
+                <td class="text-center pe-3">{{ trip_stats.horizontal|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
+
+            {% if trip_stats.aided %}
+              <tr>
+                <th scope="row" class="ps-3">Aid climbed</th>
+                <td class="text-center">{{ trip_stats_year.aided|distformat:dist_format }}</td>
+                <td class="text-center pe-3">{{ trip_stats.aided|distformat:dist_format }}</td>
+              </tr>
+            {% endif %}
 
             <tr class="border-top">
               <th scope="row" class="ps-3 fw-bold">Total trips</th>
