@@ -81,6 +81,7 @@ class TripAdmin(admin.ModelAdmin):
                     "vert_dist_down",
                     "vert_dist_up",
                     "surveyed_dist",
+                    "resurveyed_dist",
                     "aid_dist",
                 ),
             },
