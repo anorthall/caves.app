@@ -235,7 +235,7 @@ class Trip(models.Model):
         """Return True if at least one distance measurement is recorded"""
         if self.horizontal_dist or self.vert_dist_down or self.vert_dist_up:
             return True
-        elif self.aid_dist or self.surveyed_dist:
+        elif self.aid_dist or self.surveyed_dist or self.resurveyed_dist:
             return True
 
     @property
