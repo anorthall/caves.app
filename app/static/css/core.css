@@ -4,7 +4,7 @@ body {
 }
 
 main {
-  padding-top: 100px;
+  padding-top: 85px;
 }
 
 .alert {
@@ -58,5 +58,5 @@ main {
 }
 
 h1.page-title {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
