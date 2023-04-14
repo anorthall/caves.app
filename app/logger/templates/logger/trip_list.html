@@ -53,6 +53,30 @@
             </small>
           </th>
 
+          <th class="d-none d-xl-table-cell" scope="col">
+            Up
+            <small>
+              <a href="?sort=vert_dist_up" class="text-decoration-none">
+                <i class="bi bi-sort-up"></i>
+              </a>
+              <a href="?sort=-vert_dist_up" class="text-decoration-none">
+                <i class="bi bi-sort-down"></i>
+              </a>
+            </small>
+          </th>
+
+          <th class="d-none d-xl-table-cell" scope="col">
+            Down
+            <small>
+              <a href="?sort=vert_dist_down" class="text-decoration-none">
+                <i class="bi bi-sort-up"></i>
+              </a>
+              <a href="?sort=-vert_dist_down" class="text-decoration-none">
+                <i class="bi bi-sort-down"></i>
+              </a>
+            </small>
+          </th>
+
           <th class="d-none d-lg-table-cell" scope="col">
             Trip type
             <small>
@@ -86,6 +110,10 @@
             </td>
 
             <td class="d-none d-xl-table-cell">{{ trip.duration_str }}</td>
+
+            <td class="d-none d-xl-table-cell">{{ trip.vert_dist_up }}</td>
+
+            <td class="d-none d-xl-table-cell">{{ trip.vert_dist_down }}</td>
 
             <td class="d-none d-lg-table-cell">{{ trip.type }}</td>
 

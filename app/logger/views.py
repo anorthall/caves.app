@@ -320,7 +320,14 @@ class TripListView(LoginRequiredMixin, ListView):
     def get_ordering(self):
         """Allow sorting of the trip list table"""
         ordering = self.request.GET.get("sort", "")
-        allowed_ordering = ["start", "cave_name", "duration", "type"]
+        allowed_ordering = [
+            "start",
+            "cave_name",
+            "duration",
+            "type",
+            "vert_dist_up",
+            "vert_dist_down",
+        ]
         print(ordering)
         if ordering.replace("-", "") in allowed_ordering:
             print(ordering)
