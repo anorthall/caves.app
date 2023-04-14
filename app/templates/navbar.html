@@ -1,9 +1,9 @@
 {% load active_link_tags %}
 <header>
   {% if "/u/" in request.path %}
-    <nav class="navbar fixed-top navbar-expand-lg bg-secondary navbar-light" aria-label="navbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-secondary" aria-label="navbar">
   {% else %}
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary shadow" aria-label="navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow" aria-label="navbar">
   {% endif %}
     <div class="container d-flex">
       <a class="navbar-brand fs-3 fw-bolder align-self-middle" href="/">caves.app</a>

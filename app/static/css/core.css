@@ -3,10 +3,6 @@ body {
   overflow-y:scroll;
 }
 
-main {
-  padding-top: 85px;
-}
-
 .alert {
   text-align: center
 }
