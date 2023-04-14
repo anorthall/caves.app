@@ -1,10 +1,6 @@
 {% load active_link_tags %}
 <header>
-  {% if "/u/" in request.path %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-secondary" aria-label="navbar">
-  {% else %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary" aria-label="navbar">
-  {% endif %}
     <div class="container d-flex">
       <a class="navbar-brand fs-3 fw-bolder align-self-middle" href="/">caves.app</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
@@ -21,7 +17,7 @@
             </li>
 
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle {% active_link 'log:trip_list || log:trip_delete || log:trip_update || log:trip_detail || log:export || log:statistics || public:trip || log:report_detail || log:report_update || log:report_delete || public:report || log:report_create' %}" href="#" role="button" data-bs-toggle="dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="bi bi-card-list"></i>&nbsp; Trips
               </a>
 
@@ -47,7 +43,7 @@
             </li>
 
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle {% active_link 'users:profile || users:update || users:password || users:email' %}" href="#" role="button" data-bs-toggle="dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="bi bi-person-circle"></i>&nbsp; Account
               </a>
               <ul class="dropdown-menu navbar-dropdown bg-light p-0">
