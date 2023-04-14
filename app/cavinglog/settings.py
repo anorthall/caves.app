@@ -195,49 +195,6 @@ if not DEBUG and os.environ.get("SENTRY_KEY", None):
         send_default_pii=True,
     )
 
-# Jazzmin
-JAZZMIN_SETTINGS = {
-    "site_title": "caves.app",
-    "site_header": "caves.app",
-    "site_brand": "caves.app",
-    "copyright": "Andrew Northall",
-    "search_model": ["logger.Trip", "users.CavingUser"],
-    "show_sidebar": True,
-    "navigation_expanded": True,
-    "hide_apps": ["auth"],
-    "order_with_respect_to": [
-        "logger",
-        "users",
-        "mailer",
-        "mailer.message",
-        "mailer.messagelog",
-        "mailer.dontsendentry",
-    ],
-    "default_icon_parents": "fas fa-chevron-circle-right",
-    "default_icon_children": "fas fa-circle",
-    "changeform_format": "single",
-    "topmenu_links": [
-        {"name": "Main Site", "url": "log:index"},
-        {
-            "name": "Analytics",
-            "url": "https://stats.caver.dev/caves.app",
-            "new_window": True,
-        },
-        {
-            "name": "GitHub",
-            "url": "https://github.com/anorthall/caves.app",
-            "new_window": True,
-        },
-    ],
-    "icons": {
-        "logger.trip": "fas fa-hard-hat",
-        "users.cavinguser": "fas fa-users",
-        "mailer.message": "fas fa-envelope",
-        "mailer.messagelog": "fas fa-list",
-        "mailer.dontsendentry": "fas fa-ban",
-    },
-}
-
 # Markdownify
 MARKDOWNIFY = {
     "default": {

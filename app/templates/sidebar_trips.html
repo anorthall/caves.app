@@ -1,63 +1,54 @@
 {% load active_link_tags %}
-<div class="card mt-4">
-  <div class="card-header text-center">
-    Logger
+<div class="card">
+  <div class="card-header text-muted">
+    Trip options
   </div>
 
   <nav class="nav nav-pills flex-column m-2">
-    {% if trip %}
-      <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
-        <i class="bi bi-info-circle"></i>&nbsp; View this trip
-      </a>
+    <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+      <i class="bi bi-info-circle"></i>&nbsp; View trip
+    </a>
 
-      <a class="nav-link {% active_link 'log:trip_update' pk=trip.pk %}" href="{% url 'log:trip_update' pk=trip.pk %}">
-        <i class="bi bi-pencil"></i>&nbsp; Edit this trip
-      </a>
+    <a class="nav-link {% active_link 'log:trip_update' pk=trip.pk %}" href="{% url 'log:trip_update' pk=trip.pk %}">
+      <i class="bi bi-pencil"></i>&nbsp; Edit trip
+    </a>
 
-      <a class="nav-link {% active_link 'log:trip_delete' pk=trip.pk %}" href="{% url 'log:trip_delete' pk=trip.pk %}">
-        <i class="bi bi-x-lg"></i>&nbsp; Delete this trip
-      </a>
+    <a class="nav-link {% active_link 'log:trip_delete' pk=trip.pk %}" href="{% url 'log:trip_delete' pk=trip.pk %}">
+      <i class="bi bi-x-lg"></i>&nbsp; Delete trip
+    </a>
 
-      {% if trip.is_public %}
-        <a class="nav-link" href="{% url 'public:trip' username=trip.user.username pk=trip.pk %}">
-          <i class="bi bi-globe"></i>&nbsp; View public page
-        </a>
-      {% endif %}
-
-      {% if trip.report %}
-        <hr class="m-2">
-        <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
-          <i class="bi bi-card-text"></i>&nbsp; View trip report
-        </a>
-
-        <a class="nav-link {% active_link 'log:report_update' pk=trip.report.pk %}" href="{% url 'log:report_update' pk=trip.report.pk %}">
-          <i class="bi bi-pencil"></i>&nbsp; Edit trip report
-        </a>
-
-        <a class="nav-link {% active_link 'log:report_delete' pk=trip.report.pk %}" href="{% url 'log:report_delete' pk=trip.report.pk %}">
-          <i class="bi bi-x-lg"></i>&nbsp; Delete trip report
-        </a>
-
-        {% if trip.report.is_public %}
-          <a class="nav-link" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
-            <i class="bi bi-globe"></i>&nbsp; View public report
-          </a>
-        {% endif %}
-      {% else %}
-        <hr class="m-2">
-        <a class="nav-link {% active_link 'log:report_create' pk=trip.pk %}" href="{% url 'log:report_create' pk=trip.pk %}">
-          <i class="bi bi-card-text"></i>&nbsp; Add trip report
-        </a>
-      {% endif %}
+    {% if trip.report %}
       <hr class="m-2">
+      <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+        <i class="bi bi-card-text"></i>&nbsp; View trip report
+      </a>
+
+      <a class="nav-link {% active_link 'log:report_update' pk=trip.report.pk %}" href="{% url 'log:report_update' pk=trip.report.pk %}">
+        <i class="bi bi-pencil"></i>&nbsp; Edit trip report
+      </a>
+
+      <a class="nav-link {% active_link 'log:report_delete' pk=trip.report.pk %}" href="{% url 'log:report_delete' pk=trip.report.pk %}">
+        <i class="bi bi-x-lg"></i>&nbsp; Delete trip report
+      </a>
+    {% else %}
+      <hr class="m-2">
+      <a class="nav-link {% active_link 'log:report_create' pk=trip.pk %}" href="{% url 'log:report_create' pk=trip.pk %}">
+        <i class="bi bi-card-text"></i>&nbsp; Add trip report
+      </a>
     {% endif %}
 
-    <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
-      <i class="bi bi-plus-lg"></i>&nbsp; Add a trip
-    </a>
-
-    <a class="nav-link {% active_link 'log:export' %}" href="{% url 'log:export' %}">
-      <i class="bi bi-download"></i>&nbsp; Export trips
-    </a>
+    {% if trip.report.is_public or trip.is_public %}
+      <hr class="m-2">
+    {% endif %}
+    {% if trip.is_public %}
+      <a class="nav-link" href="{% url 'public:trip' username=trip.user.username pk=trip.pk %}">
+        <i class="bi bi-globe"></i>&nbsp; View public trip
+      </a>
+    {% endif %}
+    {% if trip.report.is_public %}
+      <a class="nav-link" href="{% url 'public:report' username=user.username slug=trip.report.slug %}">
+        <i class="bi bi-globe"></i>&nbsp; View public report
+      </a>
+    {% endif %}
   </nav>
 </div>

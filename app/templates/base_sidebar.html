@@ -2,29 +2,15 @@
 {% load active_link_tags %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-3">
   <div class="row g-0 g-lg-3">
-    <div class="col col-lg-9">
+    <div class="col-12 col-lg-9">
       {% block main %}{% endblock %}
     </div>
 
-    <div class="col-lg-3 offcanvas-lg offcanvas-end" id="sidebarOffcanvas">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title">caves.app</h5>
-        <button type="button" class="float-end btn-close" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas"></button>
-      </div>
-
-      <div class="offcanvas-body sidebar">
-        <nav class="w-100 mb-3">
-          {% include "sidebar_core.html" %}
-          {% block sidebar %}{% endblock %}
-
-          {% if request.user.is_staff %}
-            {% include "sidebar_admin.html" %}
-          {% endif %}
-        </nav>
-      </div>
-    </div>
+    <nav class="col-12 col-lg-3 mt-4 mt-lg-3">
+      {% block sidebar %}{% endblock %}
+    </nav>
   </div>
 </div>
 {% endblock content %}

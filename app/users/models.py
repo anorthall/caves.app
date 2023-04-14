@@ -7,7 +7,7 @@ from django_countries.fields import CountryField
 from django.utils import timezone as django_tz
 from django.db import models
 from timezone_field import TimeZoneField
-from logger.models import Trip
+from logger.models import Trip, TripReport
 
 
 class CavingUserManager(BaseUserManager):
@@ -172,6 +172,10 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     @property
     def trips(self):
         return Trip.objects.filter(user=self)
+
+    @property
+    def reports(self):
+        return TripReport.objects.filter(user=self)
 
     @property
     def has_trips(self):

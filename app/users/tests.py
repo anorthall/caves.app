@@ -336,9 +336,6 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(
             response, "Public statistics are disabled as your profile is private."
         )
-        self.assertContains(response, "Change password")
-        self.assertContains(response, "Change email")
-        self.assertContains(response, "Edit profile")
 
     def test_submit_updates_to_profile(self):
         """Test submitting updates to a user's profile"""

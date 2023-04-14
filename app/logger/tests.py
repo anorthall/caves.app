@@ -399,7 +399,6 @@ class TripIntegrationTests(TestCase):
         response = self.client.get(f"/trip/delete/{self.trip.pk}/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Cave")
-        self.assertContains(response, "Delete trip?")
         self.assertContains(response, "Are you sure you want to delete the above trip?")
 
     def test_csv_export(self):

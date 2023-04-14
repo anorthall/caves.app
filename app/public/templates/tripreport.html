@@ -1,10 +1,10 @@
-{% extends "base_public.html" %}
+{% extends "base_full_width.html" %}
 {% block title %}{{ report.title }}{% endblock %}
 {% block description %}A report for a trip to {{ report.trip.cave_name }} by {{ user.name }} on caves.app.{% endblock %}
 {% block main %}
 
 <div class="container">
-  <div class="row border-bottom border-3 border-primary mt-4">
+  <div class="row border-bottom border-2 border-primary">
     <h1 class="fs-1 trip-header">{{ report.title }}</h1>
     <small class="text-muted mb-1" style="margin-left: 4px;">
       {% if user_is_public %}

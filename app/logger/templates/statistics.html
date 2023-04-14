@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_full_width.html" %}
 {% load get %}
 {% load distformat %}
 {% load static %}
@@ -11,6 +11,10 @@
 {% endblock%}
 
 {% block main %}
+
+<h1 class="page-title">
+  Trip statistics
+</h1>
 
 {% if trips %}
   {% if not gte_five_trips %}

@@ -1,42 +1,31 @@
 {% load humanize %}
 {% load static %}
 {% load markdownify %}
+<h1 class="page-title">
+  Help with caves.app
+</h1>
 
-<div class="card">
-  <div class="card-header fs-4">
-    Help with caves.app
-  </div>
+<p class="lead">Sometimes things may not go as smoothly as we'd like.</p>
 
-  <div class="card-body">
-    <p class="lead">Sometimes things may not go as smoothly as we'd like.</p>
+<p>
+  If you need any help with anything, or if you've encountered a problem with the site, then please do not hesitate to
+  <a href="mailto:admin@caves.app">send me an email</a> and I will get back to you as soon as possible. Equally, any
+  feedback &mdash; positive or negative &mdash; is very welcome.
+</p>
 
-    <p>
-      If you need any help with anything, or if you've encountered a problem with the site, then please do not hesitate to
-      <a href="mailto:admin@caves.app">send me an email</a> and I will get back to you as soon as possible. Equally, any
-      feedback &mdash; positive or negative &mdash; is very welcome.
-    </p>
-
-    <p class="mb-0">
-      The support email address is: <code>admin@caves.app</code>.
-    </p>
-
-  </div>
-</div>
+<p class="mb-0">
+  The support email address is: <code>admin@caves.app</code>.
+</p>
 
 {% if faqs %}
-  <div class="card mt-4">
-    <div class="card-header">
-      Frequently asked questions
-    </div>
+  <h3 class="page-title mt-5 mb-3">
+    Frequently asked questions
+  </h3>
 
-    <div class="card-body">
-      {% for faq in faqs %}
-          <div class="border-bottom border-secondary fs-5 mb-2">
-            {{ faq.question }}
-          </div>
-
-          {{ faq.answer|markdownify }}
-      {% endfor %}
+  {% for faq in faqs %}
+    <div class="border-bottom border-secondary fs-5 mb-2">
+      {{ faq.question }}
     </div>
-  </div>
+    {{ faq.answer|markdownify }}
+  {% endfor %}
 {% endif %}

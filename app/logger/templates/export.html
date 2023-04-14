@@ -1,34 +1,28 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_full_width.html" %}
 {% load get %}
 {% block title %}Export your trips{% endblock %}
 {% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
+<h1 class="page-title">
+  Export your trips
+</h1>
 
-<div class="card">
-  <div class="card-header fs-4">
-    Export your trips
+<p>
+  This utility allows you to download your trips to your computer so you can make your own backups or process the
+  data yourself.
+</p>
+
+<p>
+  Click the button below to export all of your recorded trip data as a
+  <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV file</a>.
+  This file can be opened in any spreadsheet application such as Microsoft Excel, Google Sheets, or OpenOffice.
+</p>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="text-center">
+    <button type="submit" name="download" value="download" class="btn btn-lg btn-primary w-100 mt-3">Export trips</button>
   </div>
-
-  <div class="card-body">
-    <p>
-      This utility allows you to download your trips to your computer so you can make your own backups or process the
-      data yourself.
-    </p>
-
-    <p>
-      Click the button below to export all of your recorded trip data as a
-      <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV file</a>.
-      This file can be opened in any spreadsheet application such as Microsoft Excel, Google Sheets, or OpenOffice.
-    </p>
-
-    <form method="post">
-      {% csrf_token %}
-      <div class="text-center">
-        <button type="submit" name="download" value="download" class="btn btn-lg btn-primary w-100 mt-3">Export trips</button>
-      </div>
-    </form>
-  </div>
-</div>
-
+</form>
 {% endblock main %}

@@ -1,22 +1,14 @@
-{% extends "base_public.html" %}
+{% extends "base_full_width.html" %}
 {% block title %}Trip to {{ trip.cave_name }}{% endblock %}
 {% block description %}{{ trip.user.name }}'s trip to {{ trip.cave_name }} on caves.app.{% endblock %}
 {% block main %}
-
 <div class="container">
-  <div class="row border-bottom border-3 border-primary mt-4">
+  <div class="row border-bottom border-2 border-primary">
     <h1 class="fs-1 trip-header">Trip to {{ trip.cave_name }}</h1>
     <small class="text-muted mb-1" style="margin-left: 4px;">
       {{ trip.start|date }} &middot; {{ trip.duration_str }}
     </small>
   </div>
-
-  {% if trip.report and trip.report.is_public %}
-    <div class="alert alert-primary fs-5 mx-auto my-3">
-      Would you like to view the <a class="text-white" href="{% url 'public:report' user.username trip.report.slug %}">trip report</a>
-      for this trip?
-    </div>
-  {% endif %}
 
   <!-- Data blocks -->
   <div class="row g-2 mt-3">
@@ -174,6 +166,19 @@
     </div>
   {% endif %}
 
+  {% if trip.report and trip.report.is_public %}
+    <hr />
+
+    <!-- Trip report -->
+    <div class="row g-2 mb-3">
+      <div class="col-12">
+        <small class="text-muted">Trip report</small><br />
+        Would you like to view the <a href="{% url 'public:report' user.username trip.report.slug %}">trip report</a>
+        for this trip?
+      </div>
+    </div>
+  {% endif %}
+
   {% if trip.notes and trip.user.private_notes is False %}
     <hr />
 
@@ -200,5 +205,4 @@
     </div>
   {% endif %}
 </div>
-
 {% endblock main %}

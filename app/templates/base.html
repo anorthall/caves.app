@@ -27,11 +27,20 @@
   <div class="container">
     <span class="float-start">
       {% block footer_left %}
-      Copyright &copy; 2023 <a class="text-decoration-none text-white" href="https://northall.me.uk/">Andrew Northall</a>
+        <span class="d-none d-md-block">
+          Copyright &copy; 2023 <a class="text-decoration-none text-white" href="https://northall.me.uk/">Andrew Northall</a>
+        </span>
+
+        <span class="d-md-none">
+          &copy; 2023 <a class="text-decoration-none text-white" href="https://northall.me.uk/">Andrew Northall</a>
+        </span>
       {% endblock %}
     </span>
-    <span class="d-none d-lg-block float-end">
+    <span class="float-end">
       {% block footer_right %}
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'core:about' %}" class="text-decoration-none text-white">About</a>
+        {% endif %}
       {% endblock %}
     </span>
   </div>

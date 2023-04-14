@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_full_width.html" %}
 {% load get %}
 {% load distformat %}
 {% load markdownify %}
@@ -18,7 +18,7 @@
         <p class="lead">Hello! Do you want to...</p>
 
         <div class="row mx-auto">
-          <div class="col-md-8 col-sm-10 col-lg-12 mx-auto d-flex flex-column">
+          <div class="col-md-8 mx-auto d-flex flex-column">
             <a class="btn btn-secondary m-1" href="{% url 'log:trip_create' %}">Add a trip</a>
             <a class="btn btn-secondary m-1" href="{% url 'log:trip_list' %}">View your trips</a>
             <a class="btn btn-secondary m-1" href="{% url 'users:profile' %}">View your profile</a>

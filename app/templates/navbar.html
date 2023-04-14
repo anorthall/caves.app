@@ -1,23 +1,143 @@
-{% if no_nav %}
-{% else %}
+{% load active_link_tags %}
 <header>
-  <nav class="navbar navbar-dark bg-primary shadow mb-4" aria-label="navbar">
-    <div class="container">
-      {% if request.user.is_authenticated %}
-        <div class="float-start">
-          <a class="navbar-brand fs-3 fw-bolder" href="/">caves.app</a>
-        </div>
+  {% if "/u/" in request.path %}
+    <nav class="navbar fixed-top navbar-expand-lg bg-secondary navbar-light" aria-label="navbar">
+  {% else %}
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary shadow" aria-label="navbar">
+  {% endif %}
+    <div class="container d-flex">
+      <a class="navbar-brand fs-3 fw-bolder align-self-middle" href="/">caves.app</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <div class="float-end">
-          <button class="btn btn-lg btn-primary opacity-100 border-0 d-lg-none"
-            type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
-            <i class="bi bi-list"></i>
-          </button>
-        </div>
-      {% else %}
-        <a class="navbar-brand fs-3 fw-bolder mx-auto" href="/">caves.app</a>
-      {% endif %}
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto">
+          {% if request.user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
+                <i class="bi bi-plus-circle"></i>&nbsp; Add
+              </a>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle {% active_link 'log:trip_list || log:trip_delete || log:trip_update || log:trip_detail || log:export || log:statistics || public:trip || log:report_detail || log:report_update || log:report_delete || public:report || log:report_create' %}" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-card-list"></i>&nbsp; Trips
+              </a>
+
+              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:trip_list' %}" href="{% url 'log:trip_list' %}">
+                    <i class="bi bi-list"></i>&nbsp; Trip list
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:statistics' %}" href="{% url 'log:statistics' %}">
+                    <i class="bi bi-bar-chart-line-fill"></i>&nbsp; Statistics
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:export' %}" href="{% url 'log:export' %}">
+                    <i class="bi bi-download"></i>&nbsp; Export to CSV
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle {% active_link 'users:profile || users:update || users:password || users:email' %}" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-person-circle"></i>&nbsp; Account
+              </a>
+              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+                {% if request.user.is_public %}
+                  <li>
+                    <a class="dropdown-item fw-normal text-dark" href="{% url 'public:user' request.user.username %}">
+                      <i class="bi bi-globe"></i>&nbsp; Public profile
+                    </a>
+                  </li>
+
+                  <hr class="dropdown-divider" />
+                {% endif %}
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:profile' %}" href="{% url 'users:profile' %}">
+                    <i class="bi bi-person-circle"></i>&nbsp; Account details
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:password' %}" href="{% url 'users:password' %}">
+                    <i class="bi bi-key"></i>&nbsp; Change password
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:email' %}" href="{% url 'users:email' %}">
+                    <i class="bi bi-envelope-at"></i>&nbsp; Change email
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:update' %}" href="{% url 'users:update' %}">
+                    <i class="bi bi-gear"></i>&nbsp; Settings
+                  </a>
+                </li>
+
+                <hr class="dropdown-divider" />
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:logout' %}" href="{% url 'users:logout' %}">
+                    <i class="bi bi-pencil-square"></i>&nbsp; Sign out
+                  </a>
+                </li>
+              </ul>
+            </li>
+          {% else %}
+            {% include "navbar_unregistered.html" %}
+          {% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link {% active_link 'core:help' %}" href="{% url 'core:help' %}">
+              <i class="bi bi-question-circle"></i>&nbsp; Help
+            </a>
+          </li>
+
+          {% if request.user.is_superuser %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle {% active_link 'log:admin_tools' %}" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-gear"></i>&nbsp; Admin
+              </a>
+              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+                <li>
+                  <a class="dropdown-item fw-normal text-dark" href="{% url 'admin:index' %}">
+                    <i class="bi bi-gear"></i>&nbsp; Admin
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:admin_tools' %}" href="{% url 'log:admin_tools' %}">
+                    <i class="bi bi-tools"></i>&nbsp; Tools
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark" href="https://github.com/anorthall/caves.app">
+                    <i class="bi bi-github"></i>&nbsp; GitHub
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark" href="https://stats.caver.dev/caves.app">
+                    <i class="bi bi-graph-up"></i>&nbsp; Analytics
+                  </a>
+                </li>
+              </ul>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
     </div>
   </nav>
 </header>
-{% endif %}
