@@ -4,8 +4,8 @@
 {% block main %}
 
 <div class="container">
-  <div class="row border-bottom border-2 border-primary">
-    <h1 class="fs-1 trip-header">{{ report.title }}</h1>
+  <div class="row page-title">
+    <h1 class="trip-header">{{ report.title }}</h1>
     <small class="text-muted mb-1" style="margin-left: 4px;">
       {% if user_is_public %}
         by <a class="text-muted" href="{% url 'public:user' user.username %}">{{ user.name }}</a> &middot;

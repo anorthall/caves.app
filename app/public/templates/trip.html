@@ -3,8 +3,8 @@
 {% block description %}{{ trip.user.name }}'s trip to {{ trip.cave_name }} on caves.app.{% endblock %}
 {% block main %}
 <div class="container">
-  <div class="row border-bottom border-2 border-primary">
-    <h1 class="fs-1 trip-header">Trip to {{ trip.cave_name }}</h1>
+  <div class="row page-title">
+    <h1 class="trip-header">{{ trip.cave_name }}</h1>
     <small class="text-muted mb-1" style="margin-left: 4px;">
       {{ trip.start|date }} &middot; {{ trip.duration_str }}
     </small>

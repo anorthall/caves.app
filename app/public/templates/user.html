@@ -6,13 +6,11 @@
 {% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
 {% block main %}
 
-<div class="row border-bottom border-2 border-primary">
-  {% if user.profile_page_title %}
-    <h1 class="display-5">{{ user.profile_page_title }}</h1>
-  {% else %}
-    <h1 class="display-5">{{ user.name }}'s trips</h1>
-  {% endif %}
-</div>
+{% if user.profile_page_title %}
+  <h1 class="page-title">{{ user.profile_page_title }}</h1>
+{% else %}
+  <h1 class="page-title">{{ user.name }}'s trips</h1>
+{% endif %}
 
 <div class="row mt-3">
   <div class="col">
