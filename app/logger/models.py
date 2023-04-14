@@ -88,17 +88,19 @@ class Trip(models.Model):
         default=SPORT,
     )
     cavers = models.CharField(
-        max_length=250, blank=True, help_text="A list of cavers that were on this trip."
+        max_length=250,
+        blank=True,
+        help_text="A comma-separated list of cavers that were on this trip.",
     )
     clubs = models.CharField(
         max_length=100,
         blank=True,
-        help_text="A list of any caving clubs associated with this trip.",
+        help_text="A comma-separated list of any caving clubs associated with this trip.",
     )
     expedition = models.CharField(
         max_length=100,
         blank=True,
-        help_text="A list of any expeditions associated with this trip.",
+        help_text="A comma-separated list of any expeditions associated with this trip.",
     )
 
     # Internal metadata
