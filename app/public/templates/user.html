@@ -131,10 +131,9 @@
               <td class="d-none d-md-table-cell">{{ forloop.revcounter }}</td>
               <td>{{ trip.start|date }}</td>
               <td>
+                {{ trip.cave_name }}
                 {% if trip.cave_url %}
-                  <a href="{{ trip.cave_url }}">{{ trip.cave_name }}</a>
-                {% else %}
-                  {{ trip.cave_name }}
+                  <a class="d-none d-md-inline" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
                 {% endif %}
               </td>
               <td class="d-none d-lg-table-cell">{{ trip.cave_region }}</td>
