@@ -101,7 +101,7 @@
               <a class="nav-link dropdown-toggle {% active_link 'log:admin_tools' %}" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="bi bi-gear"></i>&nbsp; Admin
               </a>
-              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
                 <li>
                   <a class="dropdown-item fw-normal text-dark" href="{% url 'admin:index' %}">
                     <i class="bi bi-gear"></i>&nbsp; Admin
@@ -128,6 +128,8 @@
               </ul>
             </li>
           {% endif %}
+
+          {% include "notifications.html" %}
         </ul>
       </div>
     </div>

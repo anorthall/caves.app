@@ -155,15 +155,3 @@
 {% endif %}
 
 {% endblock main %}
-
-{% block footer_scripts %}
-<!-- Clickable table rows -->
-<script src="{% static "js/jquery-3.6.4.min.js" %}"></script>
-<script>
-  jQuery(document).ready(function($) {
-    $('*[data-href]').on('click', function() {
-        window.location = $(this).data("href");
-    });
-  });
-</script>
-{% endblock footer_scripts %}

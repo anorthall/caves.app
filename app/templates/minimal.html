@@ -34,6 +34,19 @@
     <!-- Footer scripts start -->
     <!-- Bootstrap v5.2.3 JS -->
     <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
+
+    <!-- jQuery v3.6.4 JS -->
+    <script src="{% static "js/jquery-3.6.4.min.js" %}"></script>
+
+    <!-- Clickable elements with data-href -->
+    <script>
+      jQuery(document).ready(function($) {
+        $('*[data-href]').on('click', function() {
+            window.location = $(this).data("href");
+        });
+      });
+    </script>
+
     {% block footer_scripts %}{% endblock %}
     <!-- Footer scripts end -->
 

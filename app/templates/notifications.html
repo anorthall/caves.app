@@ -1,0 +1,28 @@
+{% if notifications.list %}
+  <li class="nav-item dropdown">
+    <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+      {% if notifications.unread %}
+        <i class="bi bi-bell"></i>
+        {{ notifications.unread }}
+      {% else %}
+        <i class="bi bi-bell"></i>
+      {% endif %}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
+      {% for notification in notifications.list %}
+        {% if forloop.counter > 1 %}
+          <hr class="dropdown-divider">
+        {% endif %}
+        <li>
+          <div data-href="{% url 'social:notification' pk=notification.pk %}" class="dropdown-item text-dark my-0">
+            <span{% if not notification.read %} class="fw-bold{% endif %}">{{ notification.message }}</span>
+            <br />
+            <small class="text-muted">
+              {{ notification.added|timesince }} ago
+            </small>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </li>
+{% endif %}
