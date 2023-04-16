@@ -20,9 +20,10 @@ from django.views.generic import (
 
 from .templatetags.distformat import distformat
 from .models import Trip, TripReport
-from .forms import TripForm, TripReportForm
+from .forms import TripForm, TripReportForm, AllUserNotificationForm
 from logger import services, statistics
 from core.models import News
+from social.models import Notification
 
 
 def index(request):
@@ -238,7 +239,7 @@ def admin_tools(request):
         raise Http404
 
     if request.POST:
-        if request.POST["login_as"]:
+        if request.POST.get("login_as", False):
             try:
                 user = get_user_model().objects.get(email=request.POST["login_as"])
                 if user.is_superuser:
@@ -252,6 +253,16 @@ def admin_tools(request):
 
             except ObjectDoesNotExist:
                 messages.error(request, f"User was not found.")
+        elif request.POST.get("notify", False):
+            form = AllUserNotificationForm(request.POST)
+            if form.is_valid():
+                for user in get_user_model().objects.all():
+                    Notification.objects.create(
+                        user=user,
+                        message=form.cleaned_data["message"],
+                        url=form.cleaned_data["url"],
+                    )
+                messages.success(request, "Notifications sent.")
 
     users = get_user_model().objects.all()
     active_users = users.filter(is_active=True)
@@ -299,6 +310,7 @@ def admin_tools(request):
         "trips_month": trips_month,
         "trips_year": trips_year,
         "login_user_list": login_user_list,
+        "notify_form": AllUserNotificationForm(),
     }
 
     return render(request, "admin_tools.html", context)

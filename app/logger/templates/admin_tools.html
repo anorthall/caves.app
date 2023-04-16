@@ -193,9 +193,27 @@
           </select>
         </div>
         <div class="col">
-          <button type="submit" name="download" value="download" class="btn btn-primary">Login as user</button>
+          <button type="submit" class="btn btn-primary">Login as user</button>
         </div>
       </div>
+    </form>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">
+    Send notification to all users
+  </div>
+
+  <div class="card-body">
+    <p>
+      Use this form to send a notification to all users.
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+      {{ notify_form }}
+      <button type="submit" name="notify" value="notify" class="btn btn-primary">Send notification</button>
     </form>
   </div>
 </div>

@@ -2,6 +2,7 @@ from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from datetime import timedelta
+from social.models import Notification
 from .models import Trip, TripReport
 
 
@@ -88,3 +89,13 @@ class TripForm(forms.ModelForm):
                     "end",
                     "The trip is unrealistically long in duration (over 60 days).",
                 )
+
+
+class AllUserNotificationForm(forms.ModelForm):
+    """Form to send a notification to all users"""
+
+    template_name = "forms/bs5_form.html"
+
+    class Meta:
+        model = Notification
+        fields = ["message", "url"]
