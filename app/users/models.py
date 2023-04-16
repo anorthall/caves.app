@@ -139,6 +139,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         help_text="Check this box to prevent your trip notes being displayed on your public profile (if enabled).",
     )
 
+    # Social
+    friends = models.ManyToManyField("self", blank=True)
+
     # is_active determines if a user can log in or not
     is_active = models.BooleanField(
         "Enabled user",
