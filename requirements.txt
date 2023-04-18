@@ -8,6 +8,8 @@ django-mailer==2.2
 django-distance-field==1.2.5
 django-markdownify==0.9.3
 django-tinymce==3.6.1
+django-crispy-forms==2.0
+crispy-bootstrap5==0.7
 django_debug_toolbar
 itsdangerous==2.1.2
 humanize==4.6.0

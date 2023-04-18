@@ -161,7 +161,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = "user"
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.username})"
 
     def get_full_name(self):
         return self.name
@@ -169,8 +169,22 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.name
 
-    def clean(self):
+    def save(self, *args, **kwargs):
+        # Ensure username is lowercase
         self.username = self.username.lower()
+
+        # Ensure user cannot add themselves as a friend
+        # self._state.adding is True when the object is being created
+        if self._state.adding is False and self in self.friends.all():
+            self.friends.remove(self)
+
+        super().save(*args, **kwargs)
+
+    def notify(self, message, url):
+        """Send a notification to this user"""
+        from social.models import Notification
+
+        return Notification.objects.create(user=self, message=message, url=url)
 
     @property
     def trips(self):

@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import CavingUser
@@ -59,6 +58,7 @@ class CavingUserAdmin(BaseUserAdmin):
                 )
             },
         ),
+        ("Friends", {"fields": ("friends",)}),
         ("Settings", {"fields": ("units", "timezone")}),
         # ("Permissions", {"fields": ("user_permissions",)}),
         (

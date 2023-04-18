@@ -56,3 +56,8 @@ body {
 h1.page-title {
   margin-bottom: 20px;
 }
+
+/* Hide crispy forms asterisk */
+.asteriskField {
+  display: none !important;
+}

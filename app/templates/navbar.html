@@ -1,6 +1,6 @@
 {% load active_link_tags %}
 <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" aria-label="navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container d-flex">
       <a class="navbar-brand fs-3 fw-bolder align-self-middle" href="/">caves.app</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
@@ -62,6 +62,12 @@
                 </li>
 
                 <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'social:friends' %}" href="{% url 'social:friends' %}">
+                    <i class="bi bi-people"></i>&nbsp; Friends
+                  </a>
+                </li>
+
+                <li>
                   <a class="dropdown-item fw-normal text-dark {% active_link 'users:password' %}" href="{% url 'users:password' %}">
                     <i class="bi bi-key"></i>&nbsp; Change password
                   </a>
@@ -70,6 +76,12 @@
                 <li>
                   <a class="dropdown-item fw-normal text-dark {% active_link 'users:email' %}" href="{% url 'users:email' %}">
                     <i class="bi bi-envelope-at"></i>&nbsp; Change email
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'core:help' %}" href="{% url 'core:help' %}">
+                    <i class="bi bi-question-circle"></i>&nbsp; Help
                   </a>
                 </li>
 
@@ -89,12 +101,6 @@
           {% else %}
             {% include "navbar_unregistered.html" %}
           {% endif %}
-
-          <li class="nav-item">
-            <a class="nav-link {% active_link 'core:help' %}" href="{% url 'core:help' %}">
-              <i class="bi bi-question-circle"></i>&nbsp; Help
-            </a>
-          </li>
 
           {% if request.user.is_superuser %}
             <li class="nav-item dropdown">

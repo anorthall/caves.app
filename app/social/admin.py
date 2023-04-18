@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Notification
+from .models import Notification, FriendRequest
 
 
 @admin.register(Notification)
@@ -9,3 +9,12 @@ class NotificationAdmin(admin.ModelAdmin):
     search_fields = ["user", "message"]
     readonly_fields = ["added"]
     fieldsets = ((None, {"fields": ("user", "message", "url", "read", "added")}),)
+
+
+@admin.register(FriendRequest)
+class FriendRequestAdmin(admin.ModelAdmin):
+    list_display = ["user_from", "user_to", "created"]
+    list_filter = ["user_from", "user_to"]
+    search_fields = ["user_from", "user_to"]
+    readonly_fields = ["created"]
+    fieldsets = ((None, {"fields": ("user_from", "user_to", "created")}),)

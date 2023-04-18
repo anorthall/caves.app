@@ -12,10 +12,3 @@
   <button class="mt-3 w-100 btn btn-lg btn-secondary" type="submit" name="addanother" value="addanother">Save and add another</button>
 </form>
 {% endblock main %}
-
-{% block footer_scripts %}
-<script>
-  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-</script>
-{% endblock footer_scripts %}

@@ -80,6 +80,8 @@ INSTALLED_APPS = [
     "tinymce",
     "active_link",
     "mailer",
+    "crispy_forms",
+    "crispy_bootstrap5",
     "markdownify.apps.MarkdownifyConfig",
     "debug_toolbar",
 ]
@@ -245,3 +247,7 @@ TINYMCE_DEFAULT_CONFIG = {
     "removed_menuitems": "newdocument spellchecker help",
     "height": "500",
 }
+
+# Crispy forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

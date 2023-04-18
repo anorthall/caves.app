@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from distance import DistanceField, DistanceUnitField
 from django.utils.functional import cached_property
 from django.utils.html import escape
-from django.utils import timezone
 from django.urls import reverse
 from .validators import *
 from tinymce.models import HTMLField
@@ -336,7 +335,11 @@ class Trip(models.Model):
 
 class TripReport(models.Model):
     class Meta:
-        unique_together = ("user", "slug")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "slug"], name="unique_slug_per_user"
+            )
+        ]
 
     # Relationships
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
