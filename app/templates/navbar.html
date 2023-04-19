@@ -44,7 +44,7 @@
 
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <i class="bi bi-person-circle"></i>&nbsp; Account
+                <i class="bi bi-people"></i>&nbsp; Social
               </a>
               <ul class="dropdown-menu navbar-dropdown bg-light p-0">
                 {% if request.user.is_public %}
@@ -56,14 +56,28 @@
                 {% endif %}
 
                 <li>
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'social:friends' %}" href="{% url 'social:friends' %}">
+                    <i class="bi bi-people"></i>&nbsp; Friends
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-person-circle"></i>&nbsp; Account
+              </a>
+              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+                <li>
                   <a class="dropdown-item fw-normal text-dark {% active_link 'users:profile' %}" href="{% url 'users:profile' %}">
-                    <i class="bi bi-person-circle"></i>&nbsp; Account details
+                    <i class="bi bi-person-circle"></i>&nbsp; View account
                   </a>
                 </li>
 
+
                 <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'social:friends' %}" href="{% url 'social:friends' %}">
-                    <i class="bi bi-people"></i>&nbsp; Friends
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:update' %}" href="{% url 'users:update' %}">
+                    <i class="bi bi-gear"></i>&nbsp; Account settings
                   </a>
                 </li>
 
@@ -82,12 +96,6 @@
                 <li>
                   <a class="dropdown-item fw-normal text-dark {% active_link 'core:help' %}" href="{% url 'core:help' %}">
                     <i class="bi bi-question-circle"></i>&nbsp; Help
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:update' %}" href="{% url 'users:update' %}">
-                    <i class="bi bi-gear"></i>&nbsp; Settings
                   </a>
                 </li>
 
