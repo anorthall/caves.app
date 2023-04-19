@@ -2,9 +2,12 @@ from django import forms
 from django.contrib import auth
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from .models import CavingUser
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+
+from .models import CavingUser, UserProfile, UserSettings
 from .verify import verify_token
+
+User = auth.get_user_model()
 
 
 class PasswordChangeForm(auth.forms.PasswordChangeForm):
@@ -50,7 +53,7 @@ class VerifyEmailForm(forms.Form):
         user_pk, email = verify_token(verify_code)
         # Check we have a user with the decoded email
         try:
-            user = auth.get_user_model().objects.get(pk=user_pk)
+            user = User.objects.get(pk=user_pk)
         except ObjectDoesNotExist:
             raise ValidationError(
                 "Email verification code is not valid or has expired."
@@ -79,7 +82,7 @@ class ResendVerifyEmailForm(forms.Form):
         # Set self.user only if the email belongs to an inactive account
         email = self.cleaned_data["email"]
         try:
-            user = auth.get_user_model().objects.get(email__exact=email)
+            user = User.objects.get(email__exact=email)
         except ObjectDoesNotExist:
             return email
 
@@ -90,20 +93,28 @@ class ResendVerifyEmailForm(forms.Form):
 
 class UserCreationForm(forms.ModelForm):
     template_name = "forms/bs5_form.html"
+    name = forms.CharField(
+        label="Name",
+        max_length=40,
+        required=True,
+        help_text="Your name as you would like it publicly displayed.",
+    )
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,
         help_text="Your password can't be too similar to your other personal information, must contain at least 8 characters, cannot be entirely numeric and must not be a commonly used password.",
+        required=True,
     )
     password2 = forms.CharField(
         label="Confirm password",
         widget=forms.PasswordInput,
         help_text="Enter the same password as before, for verification.",
+        required=True,
     )
 
     class Meta:
         model = CavingUser
-        fields = ("name", "email", "username")
+        fields = ("email", "username")
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -126,8 +137,12 @@ class UserCreationForm(forms.ModelForm):
         # Save the provided password in hashed format
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+
         if commit:
             user.save()
+            user.profile.name = self.cleaned_data["name"]
+            user.profile.save()
+
         return user
 
 
@@ -138,20 +153,14 @@ class UserAdminChangeForm(forms.ModelForm):
         model = CavingUser
         fields = (
             "email",
-            "name",
-            "location",
-            "country",
-            "clubs",
-            "bio",
-            "timezone",
-            "units",
+            "username",
             "is_active",
             "password",
         )
 
 
 class UserChangeForm(forms.ModelForm):
-    template_name = "forms/profile_form.html"
+    template_name = "forms/user_change_form.html"
     email = forms.EmailField(
         disabled=True,
         help_text="Use the change email page to update your email address.",
@@ -161,18 +170,36 @@ class UserChangeForm(forms.ModelForm):
         model = CavingUser
         fields = (
             "email",
-            "name",
             "username",
+        )
+
+
+class ProfileChangeForm(forms.ModelForm):
+    template_name = "forms/profile_change_form.html"
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            "name",
             "location",
             "country",
             "clubs",
-            "profile_page_title",
-            "show_statistics",
-            "private_notes",
+            "page_title",
             "bio",
-            "timezone",
-            "units",
+            "show_statistics",
+        )
+
+
+class SettingsChangeForm(forms.ModelForm):
+    template_name = "forms/settings_change_form.html"
+
+    class Meta:
+        model = UserSettings
+        fields = (
             "privacy",
+            "private_notes",
+            "units",
+            "timezone",
         )
 
 
@@ -205,6 +232,6 @@ class UserChangeEmailForm(forms.Form):
     def clean_email(self):
         """Check if the email is already in use"""
         email = self.cleaned_data["email"]
-        if auth.get_user_model().objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             raise ValidationError("That email is already in use.")
         return email

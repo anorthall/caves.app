@@ -1,9 +1,12 @@
 import humanize
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.utils import timezone
 from logger.models import Trip
+
 from .models import FAQ
+
+User = get_user_model()
 
 
 def about(request):
@@ -19,7 +22,7 @@ def about(request):
 
     context = {
         "trip_count": Trip.objects.all().count(),
-        "user_count": get_user_model().objects.all().count(),
+        "user_count": User.objects.all().count(),
         "total_duration": total_duration,
         "registered": request.user.is_authenticated,
     }

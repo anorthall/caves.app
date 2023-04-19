@@ -1,0 +1,90 @@
+{% load widget_tweaks %}
+
+<!-- Hidden fields -->
+{% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+{% endfor %}
+
+<div class="row mb-3 px-2 g-3">
+  <!-- Privacy -->
+  <div class="col-12">
+    <label class="form-label" for="{{ form.privacy.auto_id }}">
+      Privacy
+    </label>
+    {% if form.is_bound %}
+      {% if form.privacy.errors %}
+        {% render_field form.privacy class="form-select is-invalid" %}
+        {% for e in form.privacy.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.privacy class="form-select is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.privacy class="form-select" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.privacy.help_text }}
+    </div>
+  </div>
+
+  <!-- Units -->
+  <div class="col-12">
+    <label class="form-label" for="{{ form.units.auto_id }}">
+      Units
+    </label>
+    {% if form.is_bound %}
+      {% if form.units.errors %}
+        {% render_field form.units class="form-select is-invalid" %}
+        {% for e in form.units.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.units class="form-select is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.units class="form-select" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.units.help_text }}
+    </div>
+  </div>
+
+  <!-- Timezone -->
+  <div class="col-12">
+    <label class="form-label" for="{{ form.timezone.auto_id }}">
+      Timezone
+    </label>
+    {% if form.is_bound %}
+      {% if form.timezone.errors %}
+        {% render_field form.timezone class="form-select is-invalid" %}
+        {% for e in form.timezone.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.timezone class="form-select is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.timezone class="form-select" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.timezone.help_text }}
+    </div>
+  </div>
+
+  <!-- Private notes checkbox -->
+  <div class="col-12">
+    <div class="form-check">
+      {% if form.is_bound %}
+        {% if form.private_notes.errors %}
+          {% render_field form.private_notes class="form-check-input is-invalid" %}
+          {% for e in form.private_notes.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        {% else %}
+          {% render_field form.private_notes class="form-check-input is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field form.private_notes class="form-check-input" %}
+      {% endif %}
+      <label class="form-check-label" for="{{ form.private_notes.auto_id }}">
+        Keep notes private
+      </label>
+    </div>
+    <div class="form-text">
+      {{ form.private_notes.help_text }}
+    </div>
+  </div>
+</div>

@@ -3,11 +3,11 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django_countries.fields import CountryField
-from django.utils import timezone as django_tz
 from django.db import models
-from timezone_field import TimeZoneField
+from django.utils import timezone as django_tz
+from django_countries.fields import CountryField
 from logger.models import Trip, TripReport
+from timezone_field import TimeZoneField
 
 
 class CavingUserManager(BaseUserManager):
@@ -22,14 +22,18 @@ class CavingUserManager(BaseUserManager):
         if not name:
             raise ValueError("Users must have a name")
 
+        # Create user and save
         user = self.model(
             email=self.normalize_email(email),
             username=username.lower(),
-            name=name,
         )
-
         user.set_password(password)
         user.save(using=self._db)
+
+        # Set name after save to allow for profile creation, as the UserProfile
+        # and UserSettings models are created on CavingUser.save().
+        user.profile.name = name
+        user.profile.save()
         return user
 
     def create_superuser(self, email, username, name, password=None):
@@ -63,85 +67,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         help_text="A unique identifier that will be part of the web address for your logbook.",
     )
 
-    # Personal information
-    name = models.CharField(
-        max_length=30,
-        help_text="Your name as you would like it to appear on your public profile.",
-    )
-    location = models.CharField(max_length=50, blank=True)
-    country = CountryField(blank=True)
-    bio = models.TextField(
-        "biography",
-        blank=True,
-        help_text="Information about you that will be displayed on your public profile.",
-    )
-    clubs = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text="A list of caving clubs or organisations that you are a member of.",
-    )
-
-    # Unit settings
-    METRIC = "Metric"
-    IMPERIAL = "Imperial"
-    UNIT_CHOICES = [
-        (METRIC, METRIC),
-        (IMPERIAL, IMPERIAL),
-    ]
-    units = models.CharField(
-        "Distance units",
-        max_length=10,
-        default=METRIC,
-        choices=UNIT_CHOICES,
-        help_text="Preferred units of distance.",
-    )
-
-    # Privacy
-    PUBLIC = "Public"
-    FRIENDS = "Friends"
-    PRIVATE = "Private"
-    PRIVACY_CHOICES = [
-        (PUBLIC, "Anyone"),
-        (FRIENDS, "Only my friends"),
-        (PRIVATE, "Only me"),
-    ]
-    privacy = models.CharField(
-        "Profile privacy",
-        max_length=10,
-        choices=PRIVACY_CHOICES,
-        default=PRIVATE,
-        help_text="Who can view your profile?",
-    )
-
-    # Timezone settings
-    timezone = TimeZoneField(
-        default="Europe/London",
-        choices_display="WITH_GMT_OFFSET",
-        help_text="Timezone to enter and display dates and times in.",
-    )
-
-    # Profile settings
-    profile_page_title = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text="A title to display on your profile page (if enabled). If left blank it will use your full name.",
-    )
-
-    show_statistics = models.BooleanField(
-        "Show statistics",
-        default=True,
-        help_text="Check this box to show a statistics table on your public profile (if enabled).",
-    )
-
-    private_notes = models.BooleanField(
-        "Keep notes private",
-        default=True,
-        help_text="Check this box to prevent your trip notes being displayed on your public profile (if enabled).",
-    )
-
-    # Social
-    friends = models.ManyToManyField("self", blank=True)
-
     # is_active determines if a user can log in or not
     is_active = models.BooleanField(
         "Enabled user",
@@ -153,7 +78,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "name"]
+    REQUIRED_FIELDS = ["username"]
 
     objects = CavingUserManager()
 
@@ -170,21 +95,29 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         return self.name
 
     def save(self, *args, **kwargs):
+        """Perform validation checks and ensure Profile and Settings exist"""
         # Ensure username is lowercase
         self.username = self.username.lower()
 
-        # Ensure user cannot add themselves as a friend
-        # self._state.adding is True when the object is being created
-        if self._state.adding is False and self in self.friends.all():
-            self.friends.remove(self)
-
+        # Save before ensuring that the user has a profile and settings model.
+        # When a new user is created, this code will create the Profile and
+        # Settings models.
         super().save(*args, **kwargs)
+        if not hasattr(self, "profile"):
+            UserProfile.objects.create(user=self)
+
+        if not hasattr(self, "settings"):
+            UserSettings.objects.create(user=self)
 
     def notify(self, message, url):
         """Send a notification to this user"""
         from social.models import Notification
 
         return Notification.objects.create(user=self, message=message, url=url)
+
+    @property
+    def name(self):
+        return self.profile.name
 
     @property
     def trips(self):
@@ -200,16 +133,144 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_private(self):
-        if self.privacy == self.PUBLIC:
+        if self.settings.privacy == self.settings.PUBLIC:
             return False
         return True
 
     @property
     def is_public(self):
-        if self.privacy == self.PUBLIC:
+        if self.settings.privacy == self.settings.PUBLIC:
             return True
         return False
 
     @property
     def is_staff(self):
         return self.is_superuser
+
+
+class UserProfile(models.Model):
+    """Additional information about a user that is not related to authentication."""
+
+    user = models.OneToOneField(
+        CavingUser, on_delete=models.CASCADE, related_name="profile", primary_key=True
+    )
+
+    # Personal information
+    name = models.CharField(
+        max_length=40,
+        help_text="Your name as you would like it to appear on your public profile.",
+        default="Caver",
+    )
+
+    # Avatar
+    avatar = models.ImageField(
+        upload_to="avatars/",
+        blank=True,
+        help_text="A profile picture to display on your public profile.",
+    )
+
+    # Location information
+    location = models.CharField(max_length=50, blank=True)
+    country = CountryField(blank=True)
+
+    # Biography
+    bio = models.TextField(
+        "biography",
+        blank=True,
+        help_text="Information about you that will be displayed on your public profile.",
+    )
+
+    # Caving clubs
+    clubs = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="A list of caving clubs or organisations that you are a member of.",
+    )
+
+    # Profile settings
+    page_title = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="A title to display on your profile page (if enabled). If left blank it will use your full name.",
+    )
+
+    show_statistics = models.BooleanField(
+        "Show statistics",
+        default=True,
+        help_text="Check this box to show a statistics table on your public profile (if enabled).",
+    )
+
+    # Social
+    friends = models.ManyToManyField(CavingUser, blank=True)
+
+    def __str__(self):
+        return f"Profile for {self.user}"
+
+    def save(self, *args, **kwargs):
+        """Ensure user cannot add themselves as a friend"""
+        # self._state.adding is True when the object is being created
+        if self._state.adding is False and self in self.friends.all():
+            self.friends.remove(self)
+
+        return super().save(*args, **kwargs)
+
+
+class UserSettings(models.Model):
+    """Settings for a user that are not related to authentication."""
+
+    user = models.OneToOneField(
+        CavingUser, on_delete=models.CASCADE, related_name="settings", primary_key=True
+    )
+
+    # Distance unit settings
+    METRIC = "Metric"
+    IMPERIAL = "Imperial"
+    UNIT_CHOICES = [
+        (METRIC, METRIC),
+        (IMPERIAL, IMPERIAL),
+    ]
+
+    units = models.CharField(
+        "Distance units",
+        max_length=10,
+        default=METRIC,
+        choices=UNIT_CHOICES,
+        help_text="Preferred units of distance.",
+    )
+
+    # Privacy settings
+    PUBLIC = "Public"
+    FRIENDS = "Friends"
+    PRIVATE = "Private"
+    PRIVACY_CHOICES = [
+        (PUBLIC, "Anyone"),
+        (FRIENDS, "Only my friends"),
+        (PRIVATE, "Only me"),
+    ]
+
+    privacy = models.CharField(
+        "Profile privacy",
+        max_length=10,
+        choices=PRIVACY_CHOICES,
+        default=PRIVATE,
+        help_text="Who can view your profile?",
+    )
+
+    private_notes = models.BooleanField(
+        "Keep notes private",
+        default=True,
+        help_text="Check this box to prevent your trip notes being displayed on your public profile (if enabled).",
+    )
+
+    # Timezone settings
+    timezone = TimeZoneField(
+        default="Europe/London",
+        choices_display="WITH_GMT_OFFSET",
+        help_text="Timezone to enter and display dates and times in.",
+    )
+
+    class Meta:
+        verbose_name_plural = "user settings"
+
+    def __str__(self):
+        return f"Settings for {self.user}"

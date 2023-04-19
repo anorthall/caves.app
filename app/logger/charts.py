@@ -1,14 +1,16 @@
 from datetime import timedelta as td
-from django.contrib.auth import get_user_model
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.measure import D
-from django.utils import timezone
 from django.http import JsonResponse
+from django.utils import timezone
+from users.models import UserSettings
+
 from .models import Trip
 
 
 def _use_units(value, units):
-    if units == get_user_model().IMPERIAL:
+    if units == UserSettings.IMPERIAL:
         return value.ft
     else:
         return value.m
@@ -54,10 +56,10 @@ def stats_over_time(request):
         accum_surveyed += week_surveyed
         accum_resurveyed += week_resurveyed
         duration.append(accum_duration)
-        vert_up.append(_use_units(accum_vert_up, request.user.units))
-        vert_down.append(_use_units(accum_vert_down, request.user.units))
-        surveyed.append(_use_units(accum_surveyed, request.user.units))
-        resurveyed.append(_use_units(accum_resurveyed, request.user.units))
+        vert_up.append(_use_units(accum_vert_up, request.user.settings.units))
+        vert_down.append(_use_units(accum_vert_down, request.user.settings.units))
+        surveyed.append(_use_units(accum_surveyed, request.user.settings.units))
+        resurveyed.append(_use_units(accum_resurveyed, request.user.settings.units))
         cur_date += td(days=7)
 
     data = {

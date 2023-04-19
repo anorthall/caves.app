@@ -1,8 +1,9 @@
 import humanize
+from django.contrib.gis.measure import D, Distance
 from django.db.models import Count
-from django.contrib.auth import get_user_model
-from django.contrib.gis.measure import Distance, D
 from django.utils import timezone
+from users.models import UserSettings
+
 from .models import Trip
 
 
@@ -232,7 +233,7 @@ def trip_averages(qs, units):
                     value, minimum_unit="minutes", format="%.0f"
                 )
             elif type(value) == Distance:
-                if units == get_user_model().IMPERIAL:
+                if units == UserSettings.IMPERIAL:
                     processed_results[key] = f"{round(value.ft, 2)}ft"
                 else:
                     processed_results[key] = f"{round(value.m, 2)}m"

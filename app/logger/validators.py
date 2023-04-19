@@ -1,5 +1,5 @@
-from django.core.exceptions import ValidationError
 from django.contrib.gis.measure import Distance
+from django.core.exceptions import ValidationError
 
 
 def above_zero_dist_validator(distance):

@@ -179,7 +179,7 @@
     </div>
   {% endif %}
 
-  {% if trip.notes and trip.user.private_notes is False %}
+  {% if trip.notes and trip.user.settings.private_notes is False %}
     <hr />
 
     <!-- Notes -->

@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import CavingUser
-from .forms import UserCreationForm, UserAdminChangeForm
+
+from .forms import UserAdminChangeForm, UserCreationForm
+from .models import CavingUser, UserProfile, UserSettings
 
 
+@admin.register(CavingUser)
 class CavingUserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
     add_form = UserCreationForm
@@ -11,9 +13,6 @@ class CavingUserAdmin(BaseUserAdmin):
     list_display = (
         "email",
         "username",
-        "name",
-        "location",
-        "privacy",
         "date_joined",
         "last_login",
         "last_seen",
@@ -21,45 +20,19 @@ class CavingUserAdmin(BaseUserAdmin):
     )
     list_filter = (
         "is_active",
-        "privacy",
         "last_login",
         "last_seen",
     )
     fieldsets = (
         (
-            "Contact details",
+            "Account details",
             {
                 "fields": (
-                    "name",
-                    "username",
                     "email",
+                    "username",
                 )
             },
         ),
-        (
-            "Personal details",
-            {
-                "fields": (
-                    "location",
-                    "country",
-                    "clubs",
-                )
-            },
-        ),
-        (
-            "Profile settings",
-            {
-                "fields": (
-                    "privacy",
-                    "profile_page_title",
-                    "bio",
-                    "show_statistics",
-                    "private_notes",
-                )
-            },
-        ),
-        ("Friends", {"fields": ("friends",)}),
-        ("Settings", {"fields": ("units", "timezone")}),
         # ("Permissions", {"fields": ("user_permissions",)}),
         (
             "Authentication",
@@ -96,4 +69,11 @@ class CavingUserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 
-admin.site.register(CavingUser, CavingUserAdmin)
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    readonly_fields = ("user",)
+
+
+@admin.register(UserSettings)
+class UserSettingsAdmin(admin.ModelAdmin):
+    readonly_fields = ("user",)

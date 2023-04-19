@@ -1,9 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.utils.timezone import timedelta
-from django.http import Http404
-from django.contrib.auth import get_user_model
 from logger import statistics
 from logger.models import Trip, TripReport
 
@@ -11,7 +11,7 @@ from logger.models import Trip, TripReport
 def user(request, username):
     """View the public profile for a user."""
     user = get_object_or_404(get_user_model(), username=username)
-    if not user.privacy == get_user_model().PUBLIC:
+    if not user.settings.privacy == user.settings.PUBLIC:
         raise Http404  # No public profile allowed
 
     # Get the QuerySets.
@@ -33,7 +33,7 @@ def user(request, username):
     context = {
         "user": user,
         "trips": public_trips.order_by("-start", "pk"),
-        "dist_format": user.units,
+        "dist_format": user.settings.units,
         "year1": prev_year,
         "year2": this_year,
         "trip_stats": trip_stats,

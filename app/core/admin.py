@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import News, FAQ
 
+from .models import FAQ, News
 
 # Set global admin site headers
 admin.site.site_header = "caves.app"

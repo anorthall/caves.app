@@ -1,13 +1,17 @@
 import logging
-from django.test import TestCase, Client
-from django.db.utils import IntegrityError
-from django.contrib.gis.measure import D
+
 from django.contrib.auth import get_user_model
+from django.contrib.gis.measure import D
+from django.db.utils import IntegrityError
+from django.test import Client, TestCase
 from django.utils import timezone
-from django.utils.timezone import localtime as lt
 from django.utils.timezone import datetime as dt
+from django.utils.timezone import localtime as lt
 from logger import services, statistics
+
 from .models import Trip, TripReport
+
+User = get_user_model()
 
 
 class TripTestCase(TestCase):
@@ -18,13 +22,13 @@ class TripTestCase(TestCase):
         logger.setLevel(logging.ERROR)
 
         # Test user to enable trip creation
-        user = get_user_model().objects.create_user(
+        user = User.objects.create_user(
             email="test@test.com",
             username="testusername",
             password="password",
             name="Firstname",
         )
-        user.privacy = get_user_model().PRIVATE
+        user.settings.privacy = user.settings.PRIVATE
         user.is_active = True
         user.save()
 
@@ -194,7 +198,7 @@ class TripTestCase(TestCase):
 
     def test_trip_index(self):
         """Test the Trip.trip_index class method"""
-        user = get_user_model().objects.get(username="testusername")
+        user = User.objects.get(username="testusername")
         trip_index = services.trip_index(user)
         self.assertEqual(len(trip_index), 6)
         for trip in Trip.objects.all():
@@ -202,7 +206,7 @@ class TripTestCase(TestCase):
 
     def test_stats_for_user(self):
         """Test the stats_for_user method from the statistics module"""
-        user = get_user_model().objects.get(username="testusername")
+        user = User.objects.get(username="testusername")
         self.assertEqual(user.trips.count(), 6)
         stats = statistics.stats_for_user(user.trips)
         self.assertEqual(stats["trips"], 6)
@@ -216,7 +220,7 @@ class TripTestCase(TestCase):
 
     def test_surface_trips_are_not_counted_towards_stats(self):
         """Test that surface trips are not counted towards stats"""
-        user = get_user_model().objects.get(username="testusername")
+        user = User.objects.get(username="testusername")
         Trip.objects.create(
             user=user,
             cave_name="Surface Trip",
@@ -242,7 +246,7 @@ class TripTestCase(TestCase):
 
     def test_stats_for_user_with_no_trips(self):
         """Test the Trip.stats_for_user class method with no trips"""
-        user = get_user_model().objects.create_user(
+        user = User.objects.create_user(
             email="test_no_trips@test.com",
             username="testusername2",
             password="testpassword",
@@ -281,7 +285,7 @@ class TripIntegrationTests(TestCase):
         self.client = Client()
 
         # Create a user
-        self.superuser = get_user_model().objects.create_superuser(
+        self.superuser = User.objects.create_superuser(
             email="super@user.app",
             username="superuser",
             password="testpassword",
@@ -291,7 +295,7 @@ class TripIntegrationTests(TestCase):
         self.superuser.save()
 
         # Create an enabled user
-        self.enabled = get_user_model().objects.create_user(
+        self.enabled = User.objects.create_user(
             email="enabled@user.app",
             username="enabled",
             password="testpassword",
@@ -301,7 +305,7 @@ class TripIntegrationTests(TestCase):
         self.enabled.save()
 
         # Create a disabled user
-        self.disabled = get_user_model().objects.create_user(
+        self.disabled = User.objects.create_user(
             email="disabled@user.app",
             username="disabled",
             password="testpassword",
@@ -390,7 +394,7 @@ class TripIntegrationTests(TestCase):
         )
         self.assertContains(
             response,
-            "<strong>" + str(get_user_model().objects.all().count()) + "</strong>",
+            "<strong>" + str(User.objects.all().count()) + "</strong>",
         )
 
     def test_trip_delete_view(self):
@@ -435,7 +439,8 @@ class TripIntegrationTests(TestCase):
         )
 
         # Check the CSV file
-        import csv, io
+        import csv
+        import io
 
         csv_data = response.content.decode("utf-8")
         reader = csv.reader(io.StringIO(csv_data))
@@ -609,7 +614,7 @@ class TripReportTestCase(TestCase):
         self.previous_level = logger.getEffectiveLevel()
         logger.setLevel(logging.ERROR)
 
-        self.user = get_user_model().objects.create_user(
+        self.user = User.objects.create_user(
             email="test@user.app",
             username="username",
             password="password",
@@ -643,7 +648,7 @@ class TripReportTestCase(TestCase):
 
         # Create another user, trip, and trip report with the same slug
         # This code running without exception is considered a 'pass'.
-        user2 = get_user_model().objects.create_user(
+        user2 = User.objects.create_user(
             email="test2@users.app",
             username="username2",
             password="password2",
@@ -683,8 +688,8 @@ class TripReportTestCase(TestCase):
     def test_report_privacy(self):
         """Test the TripReport.is_private and TripReport.is_public methods"""
         # Test default privacy when the trip is set to default and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.DEFAULT
         self.trip.save()
 
@@ -705,8 +710,8 @@ class TripReportTestCase(TestCase):
         self.assertFalse(report.is_public)
 
         # Test default privacy when the trip is set to default and the user is public
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
 
         self.assertEqual(report.privacy, TripReport.DEFAULT)
         self.assertTrue(self.user.is_public)
@@ -715,8 +720,8 @@ class TripReportTestCase(TestCase):
         self.assertTrue(report.is_public)
 
         # Test default privacy when the trip is set to public and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.PUBLIC
         self.trip.save()
 
@@ -727,8 +732,8 @@ class TripReportTestCase(TestCase):
         self.assertTrue(report.is_public)
 
         # Test default privacy when the trip is private and the user is public
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
         self.trip.privacy = Trip.PRIVATE
         self.trip.save()
 
@@ -739,8 +744,8 @@ class TripReportTestCase(TestCase):
         self.assertFalse(report.is_public)
 
         # Test public privacy when the trip is set to default and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.DEFAULT
         self.trip.save()
         report.privacy = TripReport.PUBLIC
@@ -753,8 +758,8 @@ class TripReportTestCase(TestCase):
         self.assertTrue(report.is_public)
 
         # Test public privacy when the trip is set to default and the user is public
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
         self.trip.privacy = Trip.DEFAULT
         self.trip.save()
 
@@ -765,8 +770,8 @@ class TripReportTestCase(TestCase):
         self.assertTrue(report.is_public)
 
         # Test public privacy when the trip is set to public and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.PUBLIC
         self.trip.save()
 
@@ -777,8 +782,8 @@ class TripReportTestCase(TestCase):
         self.assertTrue(report.is_public)
 
         # Test public privacy when the trip is private and the user is public
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
         self.trip.privacy = Trip.PRIVATE
         self.trip.save()
 
@@ -789,8 +794,8 @@ class TripReportTestCase(TestCase):
         self.assertTrue(report.is_public)
 
         # Test public privacy when the trip is private and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.PRIVATE
         self.trip.save()
 
@@ -801,8 +806,8 @@ class TripReportTestCase(TestCase):
         self.assertTrue(report.is_public)
 
         # Test private privacy when the trip is set to default and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.DEFAULT
         self.trip.save()
         report.privacy = TripReport.PRIVATE
@@ -815,8 +820,8 @@ class TripReportTestCase(TestCase):
         self.assertFalse(report.is_public)
 
         # Test private privacy when the trip is set to default and the user is public
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
         self.trip.privacy = Trip.DEFAULT
         self.trip.save()
 
@@ -827,8 +832,8 @@ class TripReportTestCase(TestCase):
         self.assertFalse(report.is_public)
 
         # Test private privacy when the trip is set to public and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.PUBLIC
         self.trip.save()
 
@@ -839,8 +844,8 @@ class TripReportTestCase(TestCase):
         self.assertFalse(report.is_public)
 
         # Test private privacy when the trip is private and the user is public
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
         self.trip.privacy = Trip.PRIVATE
         self.trip.save()
 
@@ -851,8 +856,8 @@ class TripReportTestCase(TestCase):
         self.assertFalse(report.is_public)
 
         # Test private privacy when the trip is private and the user is private
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         self.trip.privacy = Trip.PRIVATE
         self.trip.save()
 
@@ -925,7 +930,7 @@ class TripReportTestCase(TestCase):
         self.assertContains(response, "The slug must be unique.")
 
         # Create a new user, trip, and report and test the slug is allowed
-        user = get_user_model().objects.create_user(
+        user = User.objects.create_user(
             email="new@user.app",
             password="password",
             username="newuser",
@@ -978,7 +983,7 @@ class TripReportTestCase(TestCase):
     def test_users_cannot_view_or_edit_a_trip_report_for_other_users(self):
         """Test users cannot view or edit a trip report which does not belong to them."""
         # Create a new user
-        user = get_user_model().objects.create_user(
+        user = User.objects.create_user(
             email="new@user.app",
             password="password",
             username="testuser",

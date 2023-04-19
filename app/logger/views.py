@@ -1,29 +1,33 @@
 import csv
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.utils import timezone
-from django.utils.timezone import localtime as lt
-from django.http import HttpResponse, Http404
-from django.core.exceptions import ObjectDoesNotExist
+
+from core.models import News
 from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.utils.timezone import localtime as lt
 from django.views.generic import (
-    UpdateView,
-    DetailView,
     CreateView,
     DeleteView,
+    DetailView,
     ListView,
+    UpdateView,
 )
-
-from .templatetags.distformat import distformat
-from .models import Trip, TripReport
-from .forms import TripForm, TripReportForm, AllUserNotificationForm
 from logger import services, statistics
-from core.models import News
 from social.models import Notification
+from users.models import UserSettings
+
+from .forms import AllUserNotificationForm, TripForm, TripReportForm
+from .models import Trip, TripReport
+from .templatetags.distformat import distformat
+
+User = get_user_model()
 
 
 def index(request):
@@ -60,7 +64,7 @@ def index(request):
         "trip_count": trip_count,
         "trip_stats": trip_stats,
         "trip_stats_year": trip_stats_year,
-        "dist_format": request.user.units,
+        "dist_format": request.user.settings.units,
         "news": News.objects.filter(
             is_published=True, posted_at__lte=timezone.now()
         ).order_by("-posted_at")[:3],
@@ -120,7 +124,7 @@ def export(request):
     )
 
     # Content
-    units = request.user.units  # Distance units
+    units = request.user.settings.units  # Distance units
     tf = "%Y-%m-%d %H:%M"  # Time format to use
     x = 1
     for t in qs:
@@ -173,7 +177,7 @@ def user_statistics(request):
     """Show statistics for a user."""
     trips = request.user.trips
     chart_units = "m"
-    if request.user.units == get_user_model().IMPERIAL:
+    if request.user.settings.units == UserSettings.IMPERIAL:
         chart_units = "ft"
 
     # Generate stats for trips/distances by year
@@ -198,7 +202,7 @@ def user_statistics(request):
         "gte_five_trips": len(trips) >= 5,
         "show_time_charts": show_time_charts,
         "user": request.user,
-        "dist_format": request.user.units,
+        "dist_format": request.user.settings.units,
         "chart_units": chart_units,
         "year0": prev_year_2,
         "year1": prev_year,
@@ -212,7 +216,7 @@ def user_statistics(request):
         "common_cavers_by_time": statistics.common_cavers_by_time(trips),
         "common_clubs": statistics.common_clubs(trips),
         "most_duration": trips.exclude(duration=None).order_by("-duration")[0:10],
-        "averages": statistics.trip_averages(trips, request.user.units),
+        "averages": statistics.trip_averages(trips, request.user.settings.units),
         "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
             0:10
         ],
@@ -241,7 +245,7 @@ def admin_tools(request):
     if request.POST:
         if request.POST.get("login_as", False):
             try:
-                user = get_user_model().objects.get(email=request.POST["login_as"])
+                user = User.objects.get(email=request.POST["login_as"])
                 if user.is_superuser:
                     messages.error(
                         request, "Cannot login as a superuser via this page."
@@ -256,7 +260,7 @@ def admin_tools(request):
         elif request.POST.get("notify", False):
             form = AllUserNotificationForm(request.POST)
             if form.is_valid():
-                for user in get_user_model().objects.all():
+                for user in User.objects.all():
                     Notification.objects.create(
                         user=user,
                         message=form.cleaned_data["message"],
@@ -264,7 +268,7 @@ def admin_tools(request):
                     )
                 messages.success(request, "Notifications sent.")
 
-    users = get_user_model().objects.all()
+    users = User.objects.all()
     active_users = users.filter(is_active=True)
     disabled_users = users.filter(is_active=False)
     prune_users = disabled_users.filter(
@@ -405,7 +409,7 @@ class TripCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         """Set the cave_country field to the user's country"""
         initial = super(TripCreateView, self).get_initial()
         initial = initial.copy()
-        initial["cave_country"] = self.request.user.country.name
+        initial["cave_country"] = self.request.user.profile.country.name
         return initial
 
     def get_success_url(self):

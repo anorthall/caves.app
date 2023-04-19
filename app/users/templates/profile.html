@@ -22,7 +22,7 @@
           </div>
 
           <div class="col">
-            {{ user.name }}
+            {{ user.profile.name }}
           </div>
         </div>
 
@@ -52,7 +52,7 @@
           </div>
 
           <div class="col">
-            {% if user.location %}{{ user.location }}{% else %}Not recorded{% endif %}
+            {% if user.profile.location %}{{ user.profile.location }}{% else %}Not recorded{% endif %}
           </div>
         </div>
 
@@ -62,7 +62,7 @@
           </div>
 
           <div class="col">
-            {% if user.country %}{{ user.country.name }}{% else %}Not recorded{% endif %}
+            {% if user.profile.country %}{{ user.profile.country.name }}{% else %}Not recorded{% endif %}
           </div>
         </div>
 
@@ -72,7 +72,7 @@
           </div>
 
           <div class="col">
-            {% if user.clubs %}{{ user.clubs }}{% else %}Not recorded{% endif %}
+            {% if user.profile.clubs %}{{ user.profile.clubs }}{% else %}Not recorded{% endif %}
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@
           </div>
 
           <div class="col">
-            {{ user.timezone }}
+            {{ user.settings.timezone }}
           </div>
         </div>
 
@@ -102,7 +102,7 @@
           </div>
 
           <div class="col">
-            {{ user.units }}
+            {{ user.settings.units }}
           </div>
         </div>
 
@@ -162,7 +162,7 @@
           </div>
 
           <div class="col">
-            {{ user.privacy }}
+            {{ user.settings.privacy }}
           </div>
         </div>
 
@@ -172,10 +172,10 @@
           </div>
 
           <div class="col">
-            {% if user.profile_page_title %}
-              {{ user.profile_page_title }}
+            {% if user.profile.page_title %}
+              {{ user.profile.page_title }}
             {% else %}
-              {{ user.name }}'s trips
+              {{ user.profile.name }}'s trips
             {% endif %}
           </div>
         </div>
@@ -203,7 +203,7 @@
             {% if user.is_private %}
               Public statistics are disabled as your profile is private.
             {% else %}
-              Statistics are {% if not user.show_statistics %}not {% endif %}shown on your profile page.
+              Statistics are {% if not user.profile.show_statistics %}not {% endif %}shown on your profile page.
             {% endif %}
           </div>
         </div>
@@ -215,9 +215,9 @@
 
           <div class="col">
             {% if user.is_private %}
-              If you select a trip to be public, the notes will be {% if user.private_notes %}hidden{% else %}shown{% endif %}.
+              If you select a trip to be public, the notes will be {% if user.settings.private_notes %}hidden{% else %}shown{% endif %}.
             {% else %}
-              {% if user.private_notes %}
+              {% if user.settings.private_notes %}
                 Your trip notes are hidden.
               {% else %}
                 Your trip notes are public, unless the trip is set to private.
@@ -232,8 +232,8 @@
           </div>
 
           <div class="col">
-            {% if user.bio %}
-              {{ user.bio|markdownify }}<br />
+            {% if user.profile.bio %}
+              {{ user.profile.bio|markdownify }}<br />
             {% else %}
               Not recorded
             {% endif %}

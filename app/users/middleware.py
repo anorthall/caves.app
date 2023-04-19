@@ -1,5 +1,6 @@
-from django.utils import timezone
 from zoneinfo import ZoneInfoNotFoundError
+
+from django.utils import timezone
 
 
 class TimezoneMiddleware:
@@ -13,7 +14,7 @@ class TimezoneMiddleware:
         """
         if request.user.is_authenticated:
             try:
-                tz = request.user.timezone
+                tz = request.user.settings.timezone
                 timezone.activate(tz)
             except ZoneInfoNotFoundError:
                 timezone.deactivate()

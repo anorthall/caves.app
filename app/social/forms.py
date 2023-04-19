@@ -1,13 +1,12 @@
-from django import forms
-from django.db.models import Q
-from django.core.exceptions import ValidationError
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Div
 from crispy_bootstrap5.bootstrap5 import FloatingField
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Layout, Submit
+from django import forms
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.urls import reverse
 from social.models import FriendRequest
-
 
 User = get_user_model()
 
@@ -56,7 +55,7 @@ class AddFriendForm(forms.Form):
         if user == self.request.user:
             raise ValidationError("You cannot add yourself as a friend.")
 
-        if user in self.request.user.friends.all():
+        if user in self.request.user.profile.friends.all():
             raise ValidationError(f"{user.name} is already your friend.")
 
         sent_req = Q(user_from=self.request.user, user_to=user)

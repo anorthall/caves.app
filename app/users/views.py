@@ -1,27 +1,30 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy, reverse
 from django.conf import settings
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from .verify import generate_token
-from .forms import (
-    UserCreationForm,
-    UserChangeForm,
-    PasswordChangeForm,
-    VerifyEmailForm,
-    UserChangeEmailForm,
-    ResendVerifyEmailForm,
-    PasswordResetForm,
-    SetPasswordForm,
-)
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView
+
 from .emails import (
-    send_verify_email,
-    send_email_change_verification,
     send_email_change_notification,
+    send_email_change_verification,
+    send_verify_email,
 )
+from .forms import (
+    PasswordChangeForm,
+    PasswordResetForm,
+    ProfileChangeForm,
+    ResendVerifyEmailForm,
+    SetPasswordForm,
+    SettingsChangeForm,
+    UserChangeEmailForm,
+    UserChangeForm,
+    UserCreationForm,
+    VerifyEmailForm,
+)
+from .verify import generate_token
 
 
 class PasswordResetView(SuccessMessageMixin, auth.views.PasswordResetView):
@@ -94,27 +97,52 @@ def logout(request):
     return redirect("log:index")
 
 
-@login_required
-def update(request):
-    """Update the user profile."""
-    if request.method == "POST":
-        form = UserChangeForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(
-                request, f"Your details have been updated, {request.user.name}."
-            )
-            return redirect("users:profile")
-    else:
-        form = UserChangeForm(instance=request.user)
-
-    return render(request, "profile_update.html", {"form": form})
-
-
-@login_required
-def profile(request):
+class UserProfileView(LoginRequiredMixin, TemplateView):
     """View the user profile."""
-    return render(request, "profile.html", {"user": request.user})
+
+    template_name = "profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.request.user
+        return context
+
+
+class UpdateProfileView(LoginRequiredMixin, TemplateView):
+    """Update the user profile."""
+
+    template_name = "profile_update.html"
+
+    def get_context_data(self, **kwargs):
+        u = self.request.user
+        context = super().get_context_data(**kwargs)
+        context["user_form"] = UserChangeForm(instance=u)
+        context["settings_form"] = SettingsChangeForm(instance=u.settings)
+        context["profile_form"] = ProfileChangeForm(instance=u.profile)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        u = request.user
+        user_form = UserChangeForm(request.POST, instance=u)
+        settings_form = SettingsChangeForm(request.POST, instance=u.settings)
+        profile_form = ProfileChangeForm(request.POST, instance=u.profile)
+
+        if (
+            user_form.is_valid()
+            and settings_form.is_valid()
+            and profile_form.is_valid()
+        ):
+            user_form.save()
+            settings_form.save()
+            profile_form.save()
+            messages.success(request, "Your profile has been updated.")
+            return redirect("users:profile")
+
+        context = self.get_context_data(*args, **kwargs)
+        context["user_form"] = user_form
+        context["settings_form"] = settings_form
+        context["profile_form"] = profile_form
+        return render(request, self.template_name, context)
 
 
 def register(request):

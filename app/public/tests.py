@@ -1,8 +1,10 @@
-from django.test import TestCase, Client
-from django.utils import timezone
-from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
+from django.urls import reverse
+from django.utils import timezone
 from logger.models import Trip, TripReport
+
+User = get_user_model()
 
 
 class PublicViewsIntegrationTests(TestCase):
@@ -17,16 +19,20 @@ class PublicViewsIntegrationTests(TestCase):
         self.client = Client()
 
         # Create a test user
-        self.user = get_user_model().objects.create_user(
+        self.user = User.objects.create_user(
             email="test@user.app",
             password="password",
             username="testuser",
             name="Test",
         )
-        self.user.bio = "This is my bio."
         self.user.is_active = True
-        self.user.privacy = get_user_model().PUBLIC
         self.user.save()
+
+        self.user.profile.bio = "This is my bio."
+        self.user.profile.save()
+
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
 
         # Iterate and create several trips belonging to the user
         for i in range(1, 11):
@@ -51,12 +57,12 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_public_user_profile_accessible(self):
         """Test that the user profile page loads"""
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.name)
-        self.assertContains(response, self.user.bio)
+        self.assertContains(response, self.user.profile.name)
+        self.assertContains(response, self.user.profile.bio)
 
         # Test that the user's trips are listed
         for trip in self.user.trip_set.all():
@@ -64,15 +70,15 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_user_profile_private(self):
         """Test that the user profile page is not accessible if the user is private"""
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 404)
 
     def test_default_privacy_trip_not_accessible_for_private_user(self):
         """Test that a trip belonging to a private user is not accessible"""
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         trip = self.user.trip_set.first()
         trip.privacy = Trip.DEFAULT
         trip.save()
@@ -81,8 +87,8 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_public_trip_for_private_user_is_accessible(self):
         """Test that a public trip belonging to a private user is accessible"""
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         trip = self.user.trip_set.first()
         trip.privacy = Trip.PUBLIC
         trip.save()
@@ -92,9 +98,9 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_private_trip_for_public_user_is_not_accessible(self):
         """Test that a private trip belonging to a public user is not accessible"""
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
-        trip = self.user.trip_set.first()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.profile.save()
+        trip = self.user.trips.first()
         trip.privacy = Trip.PRIVATE
         trip.save()
         response = self.client.get(f"/u/{self.user.username}/{trip.pk}/")
@@ -110,10 +116,14 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_user_profile_without_bio_or_trips(self):
         """Test that the user profile page loads if the user has no bio or trips"""
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.bio = ""
-        self.user.save()
-        self.user.trip_set.all().delete()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
+
+        self.user.profile.bio = ""
+        self.user.profile.save()
+
+        self.user.trips.delete()
+
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.name)
@@ -124,17 +134,20 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_show_statistics_user_setting(self):
         """Test that the user profile page shows statistics if the user has the setting enabled"""
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.show_statistics = True
-        self.user.profile_page_title = ""
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
+
+        self.user.profile.page_title = ""
+        self.user.profile.show_statistics = True
+        self.user.profile.save()
+
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.name)
-        self.assertContains(response, self.user.bio)
+        self.assertContains(response, self.user.profile.name)
+        self.assertContains(response, self.user.profile.bio)
 
         # Test that the user's trips are listed
-        for trip in self.user.trip_set.all():
+        for trip in self.user.trips:
             self.assertContains(response, trip.cave_name)
 
         # Test that the statistics are shown
@@ -143,12 +156,13 @@ class PublicViewsIntegrationTests(TestCase):
         self.assertContains(response, "Rope descent")
 
         # Test that the statistics are not shown if diabled
-        self.user.show_statistics = False
-        self.user.save()
+        self.user.profile.show_statistics = False
+        self.user.profile.save()
+
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.name)
-        self.assertContains(response, self.user.bio)
+        self.assertContains(response, self.user.profile.name)
+        self.assertContains(response, self.user.profile.bio)
 
         # Test that the user's trips are listed
         for trip in self.user.trip_set.all():
@@ -161,13 +175,15 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_custom_profile_page_title(self):
         """Test that the user profile page uses the custom title if set"""
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
-        self.user.profile_page_title = "This is my custom title"
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
+
+        self.user.profile.page_title = "This is my custom title"
+        self.user.profile.save()
+
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.profile_page_title)
+        self.assertContains(response, self.user.profile.page_title)
 
     def test_private_notes(self):
         """Test that notes are not shown on public trip pages if the user has notes set to private"""
@@ -177,16 +193,16 @@ class PublicViewsIntegrationTests(TestCase):
         trip.save()
 
         # Test that the notes are not shown if the user has notes set to private
-        self.user.private_notes = True
-        self.user.save()
+        self.user.settings.private_notes = True
+        self.user.settings.save()
         response = self.client.get(f"/u/{self.user.username}/{trip.pk}/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
         self.assertNotContains(response, trip.notes)
 
         # Test that the notes are shown if the user has notes set to public
-        self.user.private_notes = False
-        self.user.save()
+        self.user.settings.private_notes = False
+        self.user.settings.save()
         response = self.client.get(f"/u/{self.user.username}/{trip.pk}/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
@@ -194,24 +210,26 @@ class PublicViewsIntegrationTests(TestCase):
 
     def test_statistics_show_in_correct_units_for_user(self):
         """Test that the statistics on the user profile page are shown in the correct units"""
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.show_statistics = True
-        self.user.profile_page_title = "Testing statistics unit function"
-        self.user.units = get_user_model().METRIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.units = self.user.settings.METRIC
+        self.user.settings.save()
+
+        self.user.profile.show_statistics = True
+        self.user.profile.page_title = "Testing statistics unit function"
+        self.user.profile.save()
 
         # Test that the statistics are shown in the correct metric units
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.profile_page_title)
+        self.assertContains(response, self.user.profile.page_title)
         self.assertContains(response, "1000m")
 
         # Test that the statistics are shown in the correct imperial units
-        self.user.units = get_user_model().IMPERIAL
-        self.user.save()
+        self.user.settings.units = self.user.settings.IMPERIAL
+        self.user.settings.save()
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.profile_page_title)
+        self.assertContains(response, self.user.profile.page_title)
         self.assertContains(response, "3281ft")
 
     def test_public_trip_report_view(self):
@@ -219,8 +237,8 @@ class PublicViewsIntegrationTests(TestCase):
         trip = self.user.trip_set.first()
         trip.privacy = Trip.PUBLIC
         trip.save()
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
 
         # Create a trip report
         trip_report = TripReport.objects.create(
@@ -253,8 +271,8 @@ class PublicViewsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
         # Make the user and trip private and check the links do not appear
-        self.user.privacy = get_user_model().PRIVATE
-        self.user.save()
+        self.user.settings.privacy = self.user.settings.PRIVATE
+        self.user.settings.save()
         trip.privacy = Trip.PRIVATE
         trip.save()
         trip_report.privacy = TripReport.PUBLIC
@@ -276,8 +294,9 @@ class PublicViewsIntegrationTests(TestCase):
         trip = self.user.trip_set.first()
         trip.privacy = Trip.PUBLIC
         trip.save()
-        self.user.privacy = get_user_model().PUBLIC
-        self.user.save()
+
+        self.user.settings.privacy = self.user.settings.PUBLIC
+        self.user.settings.save()
 
         # Create a trip report
         trip_report = TripReport.objects.create(

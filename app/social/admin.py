@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Notification, FriendRequest
+
+from .models import FriendRequest, Notification
 
 
 @admin.register(Notification)

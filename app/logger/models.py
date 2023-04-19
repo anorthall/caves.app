@@ -1,13 +1,14 @@
 import humanize
-from django.db import models
+from distance import DistanceField, DistanceUnitField
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from distance import DistanceField, DistanceUnitField
+from django.db import models
+from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.html import escape
-from django.urls import reverse
-from .validators import *
 from tinymce.models import HTMLField
+
+from .validators import *
 
 
 class Trip(models.Model):

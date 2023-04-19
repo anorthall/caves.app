@@ -1,15 +1,15 @@
-from django.shortcuts import get_object_or_404, redirect
-from django.db.models import Q
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
+from django.db.models import Q
 from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView, View
 
 from .forms import AddFriendForm
-from .models import Notification, FriendRequest
+from .models import FriendRequest, Notification
 
 User = get_user_model()
 
@@ -34,7 +34,7 @@ class FriendListView(LoginRequiredMixin, TemplateView):
     def get(self, request):
         """Display the friend list, friend requests, and add friend form"""
         context = {
-            "friends_list": self.request.user.friends.all(),
+            "friends_list": self.request.user.profile.friends.all(),
             "friend_requests": FriendRequest.objects.filter(
                 Q(user_from=request.user) | Q(user_to=request.user)
             ).order_by("user_from"),
@@ -100,8 +100,8 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
         """Handle requests to accept friend requests"""
         f_req = get_object_or_404(FriendRequest, pk=pk)
         if f_req.user_to == request.user:
-            f_req.user_from.friends.add(f_req.user_to)
-            f_req.user_to.friends.add(f_req.user_from)
+            f_req.user_from.profile.friends.add(f_req.user_to)
+            f_req.user_to.profile.friends.add(f_req.user_from)
             f_req.delete()
 
             f_req.user_from.notify(
@@ -120,9 +120,9 @@ class FriendRemoveView(LoginRequiredMixin, View):
     def get(self, request, username):
         """Handle requests to remove friends"""
         user = get_object_or_404(User, username=username)
-        if user in request.user.friends.all():
-            request.user.friends.remove(user)
-            user.friends.remove(request.user)
+        if user in request.user.profile.friends.all():
+            request.user.profile.friends.remove(user)
+            user.profile.friends.remove(request.user)
             messages.success(request, f"You are no longer friends with {user}.")
         else:
             raise Http404

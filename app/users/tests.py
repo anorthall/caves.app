@@ -1,8 +1,11 @@
-from django.test import TestCase, Client
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.test import Client, TestCase
+from django.utils import timezone
+
 from .models import Trip
+
+User = get_user_model()
 
 
 class UserTestCase(TestCase):
@@ -15,7 +18,7 @@ class UserTestCase(TestCase):
         logger.setLevel(logging.ERROR)
 
         # Test user to enable trip creation
-        user = get_user_model().objects.create_user(
+        user = User.objects.create_user(
             email="user@caves.app",
             username="username",
             password="password",
@@ -33,24 +36,24 @@ class UserTestCase(TestCase):
 
     def test_user_privacy(self):
         """Test CavingUser.is_public and CavingUser.is_private"""
-        user = get_user_model().objects.get(email="user@caves.app")
+        user = User.objects.get(email="user@caves.app")
 
         # Test where Privacy is Private
-        user.privacy = get_user_model().PRIVATE
-        self.assertEqual(user.privacy, get_user_model().PRIVATE)
+        user.settings.privacy = user.settings.PRIVATE
+        self.assertEqual(user.settings.privacy, user.settings.PRIVATE)
         self.assertTrue(user.is_private)
         self.assertFalse(user.is_public)
 
         # Test where Privacy is Public
-        user.privacy = get_user_model().PUBLIC
-        self.assertEqual(user.privacy, get_user_model().PUBLIC)
+        user.settings.privacy = user.settings.PUBLIC
+        self.assertEqual(user.settings.privacy, user.settings.PUBLIC)
         self.assertFalse(user.is_private)
         self.assertTrue(user.is_public)
 
     def test_has_trips_property(self):
         """Test CavingUser.has_trips property"""
         # Test with no trips
-        user = get_user_model().objects.get(email="user@caves.app")
+        user = User.objects.get(email="user@caves.app")
         self.assertFalse(user.has_trips)
 
         # Test with trips
@@ -64,7 +67,7 @@ class UserTestCase(TestCase):
     def test_is_staff_property(self):
         """Test CavingUser.is_staff property"""
         # Test when not a superuser
-        user = get_user_model().objects.get(email="user@caves.app")
+        user = User.objects.get(email="user@caves.app")
         self.assertFalse(user.is_staff)
 
         # Test when a superuser
@@ -75,7 +78,7 @@ class UserTestCase(TestCase):
 
 class UserIntegrationTestCase(TestCase):
     def setUp(self):
-        self.enabled = get_user_model().objects.create_user(
+        self.enabled = User.objects.create_user(
             email="enabled@user.app",
             username="testuser",
             password="password",
@@ -84,7 +87,7 @@ class UserIntegrationTestCase(TestCase):
         self.enabled.is_active = True
         self.enabled.save()
 
-        self.disabled = get_user_model().objects.create_user(
+        self.disabled = User.objects.create_user(
             email="disabled@user.app",
             username="testuser2",
             password="password",
@@ -93,7 +96,7 @@ class UserIntegrationTestCase(TestCase):
         self.disabled.is_active = False
         self.disabled.save()
 
-        self.superuser = get_user_model().objects.create_superuser(
+        self.superuser = User.objects.create_superuser(
             email="super@user.app",
             username="testuser3",
             password="password",
@@ -194,7 +197,7 @@ class UserIntegrationTestCase(TestCase):
         verify_code = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
 
         # Load the user
-        user = get_user_model().objects.get(email="test_register@user.app")
+        user = User.objects.get(email="test_register@user.app")
         self.assertFalse(user.is_active)
         self.assertEquals(user.name, "Test")
         self.assertEquals(user.username, "testregistration")
@@ -328,7 +331,7 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, user.name)
         self.assertContains(response, user.email)
         self.assertContains(response, user.username)
-        self.assertContains(response, user.privacy)
+        self.assertContains(response, user.settings.privacy)
         self.assertContains(response, "Europe/London")
         self.assertContains(
             response, "If you select a trip to be public, the notes will be hidden."
@@ -358,20 +361,20 @@ class UserIntegrationTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Your details have been updated")
+        self.assertContains(response, "Your profile has been updated.")
 
         # Check the user details have been updated
         user.refresh_from_db()
         from zoneinfo import ZoneInfo
 
-        self.assertEqual(user.name, "New")
+        self.assertEqual(user.profile.name, "New")
         self.assertEqual(user.username, "newusername")
-        self.assertEqual(user.location, "Testing New Location")
-        self.assertEqual(user.privacy, user.PUBLIC)
-        self.assertEqual(user.timezone, ZoneInfo("US/Central"))
-        self.assertEqual(user.units, user.IMPERIAL)
-        self.assertTrue(user.show_statistics)
-        self.assertEqual(user.bio, "This is a bio for testing.")
+        self.assertEqual(user.profile.location, "Testing New Location")
+        self.assertEqual(user.settings.privacy, user.settings.PUBLIC)
+        self.assertEqual(user.settings.timezone, ZoneInfo("US/Central"))
+        self.assertEqual(user.settings.units, user.settings.IMPERIAL)
+        self.assertTrue(user.profile.show_statistics)
+        self.assertEqual(user.profile.bio, "This is a bio for testing.")
 
     def test_change_user_password(self):
         """Test changing a user's password"""

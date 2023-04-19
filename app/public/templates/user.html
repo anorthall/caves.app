@@ -6,24 +6,24 @@
 {% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
 {% block main %}
 
-{% if user.profile_page_title %}
-  <h1 class="page-title">{{ user.profile_page_title }}</h1>
+{% if user.profile.page_title %}
+  <h1 class="page-title">{{ user.profile.page_title }}</h1>
 {% else %}
   <h1 class="page-title">{{ user.name }}'s trips</h1>
 {% endif %}
 
 <div class="row mt-3">
   <div class="col">
-    {% if user.bio %}
-      {{ user.bio|markdownify }}
-    {% elif not user.bio and not trips %}
+    {% if user.profile.bio %}
+      {{ user.profile.bio|markdownify }}
+    {% elif not user.profile.bio and not trips %}
       This is the public profile of a caves.app user who has not added any trips or a bio yet.
     {% endif %}
   </div>
 </div>
 
 {% if trips %}
-  {% if user.show_statistics %}
+  {% if user.profile.show_statistics %}
     <div class="row mt-4">
       <div class="col">
         <h3 class="fs-2 mb-0">Statistics</h3>

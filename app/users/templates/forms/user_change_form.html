@@ -1,0 +1,50 @@
+{% load widget_tweaks %}
+
+<!-- Hidden fields -->
+{% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+{% endfor %}
+
+<!-- Email -->
+<div class="row mb-3 px-2 g-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.email.auto_id }}">
+      Email
+    </label>
+    {% if form.is_bound %}
+      {% if form.email.errors %}
+        {% render_field form.email class="form-control is-invalid" %}
+        {% for e in form.email.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.email class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.email class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.email.help_text }}
+    </div>
+  </div>
+</div>
+
+<!-- Username -->
+<div class="row mb-3 px-2 g-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.username.auto_id }}">
+      Username
+    </label>
+    {% if form.is_bound %}
+      {% if form.username.errors %}
+        {% render_field form.username class="form-control is-invalid" %}
+        {% for e in form.username.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.username class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.username class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.username.help_text }}
+    </div>
+  </div>
+</div>
