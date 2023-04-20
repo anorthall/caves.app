@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from social.models import FriendRequest, Notification
 
 from .forms import UserAdminChangeForm, UserCreationForm
-from .models import CavingUser, UserProfile, UserSettings
+from .models import CavingUser, FriendRequest, Notification, UserProfile, UserSettings
 
 
 class NotificationInline(admin.TabularInline):

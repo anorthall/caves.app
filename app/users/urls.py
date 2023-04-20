@@ -20,4 +20,22 @@ urlpatterns = [
     path("verify/", views.verify_new_account, name="verify-new-account"),
     path("verify/email/", views.verify_email_change, name="verify-email-change"),
     path("verify/resend/", views.resend_verify_email, name="verify-resend"),
+    path("friends/", views.FriendListView.as_view(), name="friends"),
+    path(
+        "friends/remove/<slug:username>/",
+        views.FriendRemoveView.as_view(),
+        name="friend_remove",
+    ),
+    path("friends/add/", views.FriendAddView.as_view(), name="friend_add"),
+    path(
+        "friends/request/delete/<int:pk>/",
+        views.FriendRequestDeleteView.as_view(),
+        name="friend_request_delete",
+    ),
+    path(
+        "friends/request/accept/<int:pk>/",
+        views.FriendRequestAcceptView.as_view(),
+        name="friend_request_accept",
+    ),
+    path("n/<int:pk>/", views.notification_redirect, name="notification"),
 ]

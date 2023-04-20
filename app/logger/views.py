@@ -21,8 +21,7 @@ from django.views.generic import (
     UpdateView,
 )
 from logger import services, statistics
-from social.models import Notification
-from users.models import UserSettings
+from users.models import Notification, UserSettings
 
 from .forms import AllUserNotificationForm, TripForm, TripReportForm
 from .models import Trip, TripReport
