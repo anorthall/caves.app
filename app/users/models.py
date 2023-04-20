@@ -115,6 +115,10 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
         return Notification.objects.create(user=self, message=message, url=url)
 
+    def can_view(self, object):
+        """Calls the is_viewable_by() method on the specified object"""
+        return object.is_viewable_by(self)
+
     @property
     def name(self):
         return self.profile.name
@@ -194,12 +198,6 @@ class UserProfile(models.Model):
         help_text="A title to display on your profile page (if enabled). If left blank it will use your full name.",
     )
 
-    show_statistics = models.BooleanField(
-        "Show statistics",
-        default=True,
-        help_text="Check this box to show a statistics table on your public profile (if enabled).",
-    )
-
     # Social
     friends = models.ManyToManyField(CavingUser, blank=True)
 
@@ -213,6 +211,22 @@ class UserProfile(models.Model):
             self.friends.remove(self)
 
         return super().save(*args, **kwargs)
+
+    def is_viewable_by(self, user_viewing):
+        """Returns whether or not user_viewing can view this profile"""
+        user_settings = self.user.settings
+        privacy = user_settings.privacy
+        if user_viewing == self.user:
+            return True
+
+        if privacy == user_settings.PUBLIC:
+            return True
+
+        if privacy == user_settings.FRIENDS:
+            if user_viewing in self.friends.all():
+                return True
+
+        return False
 
 
 class UserSettings(models.Model):
@@ -260,6 +274,12 @@ class UserSettings(models.Model):
         "Keep notes private",
         default=True,
         help_text="Check this box to prevent your trip notes being displayed on your public profile (if enabled).",
+    )
+
+    show_statistics = models.BooleanField(
+        "Show statistics",
+        default=True,
+        help_text="Check this box to show a statistics table on your public profile (if enabled).",
     )
 
     # Timezone settings

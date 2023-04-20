@@ -186,7 +186,6 @@ class ProfileChangeForm(forms.ModelForm):
             "clubs",
             "page_title",
             "bio",
-            "show_statistics",
         )
 
 
@@ -200,6 +199,7 @@ class SettingsChangeForm(forms.ModelForm):
             "private_notes",
             "units",
             "timezone",
+            "show_statistics",
         )
 
 

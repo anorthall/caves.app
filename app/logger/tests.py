@@ -67,7 +67,7 @@ class TripTestCase(TestCase):
             privacy=Trip.DEFAULT,
         )
 
-        # Create a trip to test tidbits
+        # With distances
         Trip.objects.create(
             user=user,
             cave_name="Test Cave 6",
@@ -148,45 +148,6 @@ class TripTestCase(TestCase):
         """Test the Trip.get_absolute_url method"""
         trip = Trip.objects.get(cave_name="Test Cave 1")
         self.assertEqual(trip.get_absolute_url(), f"/trip/{trip.pk}/")
-
-    def test_tidbits(self):
-        """Test the Trip.tidbits property"""
-        trip = Trip.objects.get(cave_name="Test Cave 6")
-        tidbits = trip.tidbits
-
-        expected_keys = [
-            "Descended",
-            "Climbed",
-            "Distance",
-            "Surveyed",
-            "Resurveyed",
-            "Aided",
-            "Duration",
-        ]
-
-        self.assertEqual(len(tidbits), len(expected_keys))
-        from django.utils.html import escape
-
-        for k, v in tidbits:
-            self.assertIn(k, expected_keys)
-            if k == "Clubs":
-                self.assertEqual(v, escape(trip.clubs))
-            elif k == "Duration":
-                self.assertEqual(v, escape(trip.duration_str))
-            elif k == "Expedition":
-                self.assertEqual(v, escape(trip.expedition))
-            elif k == "Distance":
-                self.assertEqual(v, escape(trip.horizontal_dist))
-            elif k == "Climbed":
-                self.assertEqual(v, escape(trip.vert_dist_up))
-            elif k == "Descended":
-                self.assertEqual(v, escape(trip.vert_dist_down))
-            elif k == "Surveyed":
-                self.assertEqual(v, escape(trip.surveyed_dist))
-            elif k == "Resurveyed":
-                self.assertEqual(v, escape(trip.resurveyed_dist))
-            elif k == "Aided":
-                self.assertEqual(v, escape(trip.aid_dist))
 
     def test_trip_number_property(self):
         """Test the Trip.number property"""
@@ -371,19 +332,6 @@ class TripIntegrationTests(TestCase):
         self.client.login(email="enabled@user.app", password="testpassword")
         response = self.client.get(f"/trip/{self.trip.pk}/")
         self.assertEqual(response.status_code, 404)
-
-    def test_superuser_can_access_other_users_trips(self):
-        """Test that a superuser can access other users trips"""
-        self.client.login(email="super@user.app", password="testpassword")
-        trip = Trip.objects.create(
-            user=self.enabled, cave_name="Test Superuser", start=timezone.now()
-        )
-        response = self.client.get(f"/trip/{trip.pk}/")
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Test Superuser")
-        self.assertContains(
-            response, "Viewing a trip that belongs to " + self.enabled.email
-        )
 
     def test_about_page(self):
         """Test the about page"""

@@ -21,7 +21,7 @@
                 <i class="bi bi-card-list"></i>&nbsp; Trips
               </a>
 
-              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
                 <li>
                   <a class="dropdown-item fw-normal text-dark {% active_link 'log:trip_list' %}" href="{% url 'log:trip_list' %}">
                     <i class="bi bi-list"></i>&nbsp; Trip list
@@ -46,7 +46,7 @@
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="bi bi-people"></i>&nbsp; Social
               </a>
-              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
                 {% if request.user.is_public %}
                   <li>
                     <a class="dropdown-item fw-normal text-dark" href="{% url 'public:user' request.user.username %}">
@@ -67,7 +67,7 @@
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="bi bi-person-circle"></i>&nbsp; Account
               </a>
-              <ul class="dropdown-menu navbar-dropdown bg-light p-0">
+              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
                 <li>
                   <a class="dropdown-item fw-normal text-dark {% active_link 'users:profile' %}" href="{% url 'users:profile' %}">
                     <i class="bi bi-person-circle"></i>&nbsp; View account

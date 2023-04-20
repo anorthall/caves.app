@@ -65,9 +65,33 @@
       {{ form.timezone.help_text }}
     </div>
   </div>
+</div>
+
+<div class="row mb-3 px-2 g-3">
+  <!-- Statistics checkbox -->
+  <div class="col-12 col-md-6">
+    <div class="form-check">
+      {% if form.is_bound %}
+        {% if form.show_statistics.errors %}
+          {% render_field form.show_statistics class="form-check-input is-invalid" %}
+          {% for e in form.show_statistics.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        {% else %}
+          {% render_field form.show_statistics class="form-check-input is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field form.show_statistics class="form-check-input" %}
+      {% endif %}
+      <label class="form-check-label" for="{{ form.show_statistics.auto_id }}">
+        Show statistics on profile
+      </label>
+    </div>
+    <div class="form-text">
+      {{ form.show_statistics.help_text }}
+    </div>
+  </div>
 
   <!-- Private notes checkbox -->
-  <div class="col-12">
+  <div class="col-12 col-md-6">
     <div class="form-check">
       {% if form.is_bound %}
         {% if form.private_notes.errors %}

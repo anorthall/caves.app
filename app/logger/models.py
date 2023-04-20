@@ -232,6 +232,44 @@ class Trip(models.Model):
     def get_absolute_url(self):
         return reverse("log:trip_detail", kwargs={"pk": self.pk})
 
+    def sanitise(self, user_viewing):
+        """
+        Returns a privacy aware sanitised trip
+
+        user_viewing is the CavingUser viewing the trip
+
+        None will be returned if the user is not permitted to view the trip
+
+        Otherwise, if a user is permitted to view the trip with restrictions,
+        such as without the trip notes, a modified version of the Trip object
+        will be returned.
+        """
+        if self.is_viewable_by(user_viewing):
+            if self.user.settings.private_notes is True:
+                if not user_viewing == self.user:
+                    self.notes = None
+
+            return self
+
+        return None
+
+    def is_viewable_by(self, user_viewing):
+        """Returns whether or not user_viewing can view this trip"""
+        if user_viewing == self.user:
+            return True
+
+        if self.privacy == self.PUBLIC:
+            return True
+
+        if self.privacy == self.FRIENDS:
+            if user_viewing in self.user.profile.friends.all():
+                return True
+
+        if self.privacy == self.DEFAULT:
+            return self.user.profile.is_viewable_by(user_viewing)
+
+        return False
+
     @property
     def has_distances(self):
         """Return True if at least one distance measurement is recorded"""
@@ -266,52 +304,6 @@ class Trip(models.Model):
         qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
-
-    @cached_property
-    def tidbits(self):
-        """Return a dict of tidbits of information for small cards"""
-        data = []
-        if self.cave_region and self.cave_country:
-            data.append(("Location", f"{self.cave_region} / {self.cave_country}"))
-
-        data.extend(
-            [  # Fields eligible for inclusion
-                ("Clubs", self.clubs),
-                ("Expedition", self.expedition),
-                ("Duration", self.duration_str),
-                ("Distance", self.horizontal_dist),
-                ("Climbed", self.vert_dist_up),
-                ("Descended", self.vert_dist_down),
-                ("Surveyed", self.surveyed_dist),
-                ("Resurveyed", self.resurveyed_dist),
-                ("Aided", self.aid_dist),
-            ]
-        )
-
-        # Remove empty values and escape HTML
-        valid_data = []
-        for k, v in data:
-            if v:
-                valid_data.append((k, escape(v)))
-
-        return valid_data
-
-    @cached_property
-    def html_tidbits(self):
-        """Return usable HTML from get_tidbits()"""
-        if not self.tidbits:
-            return None
-        span = '<span class="text-muted">'
-
-        if len(self.tidbits) == 1:  # Return just the one
-            return f"{span}{self.tidbits[0][0]}</span> {self.tidbits[0][1]}"
-
-        html = ""
-        for k, v in self.tidbits:
-            new = f" {span}{k}</span> {v}"
-            html = html + new
-
-        return html
 
     @cached_property
     def next_trip(self):
@@ -387,6 +379,23 @@ class TripReport(models.Model):
 
     def get_absolute_url(self):
         return reverse("log:report_detail", kwargs={"pk": self.pk})
+
+    def is_viewable_by(self, user_viewing):
+        """Returns whether or not user_viewing can view this report"""
+        if user_viewing == self.user:
+            return True
+
+        if self.privacy == self.PUBLIC:
+            return True
+
+        if self.privacy == self.FRIENDS:
+            if user_viewing in self.user.profile.friends.all():
+                return True
+
+        if self.privacy == self.DEFAULT:
+            return self.trip.is_viewable_by(user_viewing)
+
+        return False
 
     @property
     def is_private(self):

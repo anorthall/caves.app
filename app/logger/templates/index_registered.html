@@ -1,150 +1,17 @@
 {% extends "base_full_width.html" %}
-{% load get %}
-{% load distformat %}
-{% load markdownify %}
-{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
-{% if recent_trips %}
 
-<div class="row g-4">
-  <div class="col-12 col-lg-6">
-    <div class="card h-100">
-      <div class="card-header text-muted">
-        Welcome, {{ request.user.name }}!
-      </div>
-
-      <div class="card-body text-center">
-        <p class="lead">Hello! Do you want to...</p>
-
-        <div class="row mx-auto">
-          <div class="col-md-8 mx-auto d-flex flex-column">
-            <a class="btn btn-secondary m-1" href="{% url 'log:trip_create' %}">Add a trip</a>
-            <a class="btn btn-secondary m-1" href="{% url 'log:trip_list' %}">View your trips</a>
-            <a class="btn btn-secondary m-1" href="{% url 'users:profile' %}">View your profile</a>
-            <a class="btn btn-secondary m-1" href="{% url 'users:update' %}">Update your profile</a>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="row">
+  <div class="col-12 col-xl-9">
+    {% for trip in trips %}
+      {% include "trip_card.html" %}
+    {% endfor %}
   </div>
 
-  <div class="col-12 col-lg-6">
-    <div class="card h-100">
-      <div class="card-header text-muted">
-        Statistics
-      </div>
-
-      <div class="card-body px-0 d-flex align-items-center">
-        <table class="statistics-table table table-sm table-borderless m-0">
-          <thead>
-            <tr class="border-bottom">
-              <th scope="col" class="ps-3 fw-bold">Distance</th>
-              <th scope="col" class="text-center fw-bold">{% now "Y" %}</th>
-              <th scope="col" class="text-center fw-bold pe-3">Total</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr>
-              <th scope="row" class="ps-3">Rope ascent</th>
-              <td class="text-center">{{ trip_stats_year.vert_up|distformat:dist_format }}</td>
-              <td class="text-center pe-3">{{ trip_stats.vert_up|distformat:dist_format }}</td>
-            </tr>
-
-            <tr>
-              <th scope="row" class="ps-3">Rope descent</th>
-              <td class="text-center">{{ trip_stats_year.vert_down|distformat:dist_format }}</td>
-              <td class="text-center pe-3">{{ trip_stats.vert_down|distformat:dist_format }}</td>
-            </tr>
-
-            {% if trip_stats.surveyed %}
-              <tr>
-                <th scope="row" class="ps-3">Surveyed</th>
-                <td class="text-center">{{ trip_stats_year.surveyed|distformat:dist_format }}</td>
-                <td class="text-center pe-3">{{ trip_stats.surveyed|distformat:dist_format }}</td>
-              </tr>
-            {% endif %}
-
-            {% if trip_stats.resurveyed %}
-              <tr>
-                <th scope="row" class="ps-3">Resurveyed</th>
-                <td class="text-center">{{ trip_stats_year.resurveyed|distformat:dist_format }}</td>
-                <td class="text-center pe-3">{{ trip_stats.resurveyed|distformat:dist_format }}</td>
-              </tr>
-            {% endif %}
-
-            {% if trip_stats.horizontal %}
-              <tr>
-                <th scope="row" class="ps-3">Horizontal</th>
-                <td class="text-center">{{ trip_stats_year.horizontal|distformat:dist_format }}</td>
-                <td class="text-center pe-3">{{ trip_stats.horizontal|distformat:dist_format }}</td>
-              </tr>
-            {% endif %}
-
-            {% if trip_stats.aided %}
-              <tr>
-                <th scope="row" class="ps-3">Aid climbed</th>
-                <td class="text-center">{{ trip_stats_year.aided|distformat:dist_format }}</td>
-                <td class="text-center pe-3">{{ trip_stats.aided|distformat:dist_format }}</td>
-              </tr>
-            {% endif %}
-
-            <tr class="border-top">
-              <th scope="row" class="ps-3 fw-bold">Total trips</th>
-              <td class="text-center">{{ trip_stats_year.trips }}</td>
-              <td class="text-center pe-3">{{ trip_stats.trips }}</td>
-            </tr>
-
-            <tr class="">
-              <th scope="row" class="ps-3 fw-bold">Total time</th>
-              <td class="text-center">{{ trip_stats_year.time }}</td>
-              <td class="text-center pe-3">{{ trip_stats.time }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <div class="col-12 col-xl-3">
+    {% include "news.html" %}
   </div>
-
-  {% if news %}
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header text-muted">
-          caves.app news
-        </div>
-
-        <div class="card-body">
-          {% for item in news %}
-            <div class="mb-3">
-              <div class="d-flex flex-column border-bottom border-secondary mb-2">
-                <strong class="fs-5">{{ item.title }}</strong>
-                <small class="text-muted">
-                  <i class="bi bi-person"></i> {{ item.author.name }}
-                  &middot; {{ item.posted_at|timesince }} ago
-                </small>
-              </div>
-              <p>{{ item.content|markdownify }}</p>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  {% endif %}
 </div>
-
-<hr class="my-4" />
-
-<div class="row g-4">
-  {% for trip in recent_trips %}
-    <div class="col-12 col-xl-4 flex-fill flex-column">
-      {% include "trip_card_small.html" %}
-    </div>
-  {% endfor %}
-</div>
-
-{% else %}
-  {% include "index_new_user.html" %}
-{% endif %}
 
 {% endblock main %}

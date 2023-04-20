@@ -373,7 +373,7 @@ class UserIntegrationTestCase(TestCase):
         self.assertEqual(user.settings.privacy, user.settings.PUBLIC)
         self.assertEqual(user.settings.timezone, ZoneInfo("US/Central"))
         self.assertEqual(user.settings.units, user.settings.IMPERIAL)
-        self.assertTrue(user.profile.show_statistics)
+        self.assertTrue(user.settings.show_statistics)
         self.assertEqual(user.profile.bio, "This is a bio for testing.")
 
     def test_change_user_password(self):

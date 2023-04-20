@@ -177,10 +177,10 @@ def verify_new_account(request):
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
             verified_user = form.user
-            verified_user.email = form.email  # Set the user's email
-            verified_user.is_active = True  # Set the user to be active
-            verified_user.save()  # Save the user
-            auth.login(request, verified_user)  # Log the user in
+            verified_user.email = form.email
+            verified_user.is_active = True
+            verified_user.save()
+            auth.login(request, verified_user)
             messages.success(
                 request,
                 f"Welcome, {verified_user.name}. Your registration has been completed and your email address verified!",

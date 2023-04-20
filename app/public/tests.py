@@ -138,8 +138,9 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.settings.save()
 
         self.user.profile.page_title = ""
-        self.user.profile.show_statistics = True
         self.user.profile.save()
+        self.user.settings.show_statistics = True
+        self.user.settings.save()
 
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
@@ -156,8 +157,8 @@ class PublicViewsIntegrationTests(TestCase):
         self.assertContains(response, "Rope descent")
 
         # Test that the statistics are not shown if diabled
-        self.user.profile.show_statistics = False
-        self.user.profile.save()
+        self.user.settings.show_statistics = False
+        self.user.settings.save()
 
         response = self.client.get(f"/u/{self.user.username}/")
         self.assertEqual(response.status_code, 200)
@@ -214,7 +215,9 @@ class PublicViewsIntegrationTests(TestCase):
         self.user.settings.units = self.user.settings.METRIC
         self.user.settings.save()
 
-        self.user.profile.show_statistics = True
+        self.user.settings.show_statistics = True
+        self.user.settings.save()
+
         self.user.profile.page_title = "Testing statistics unit function"
         self.user.profile.save()
 

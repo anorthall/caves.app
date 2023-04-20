@@ -1,9 +1,3 @@
-{% if request.user.is_superuser and trip.user != request.user %}
-  <div class="alert alert-danger">
-    <strong>Warning:</strong> Viewing a trip that belongs to {{ trip.user.email }}.
-  </div>
-{% endif %}
-
 <!-- Cave name -->
 <div class="row mt-1">
   <div class="col">

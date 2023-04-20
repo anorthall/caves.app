@@ -203,7 +203,7 @@
             {% if user.is_private %}
               Public statistics are disabled as your profile is private.
             {% else %}
-              Statistics are {% if not user.profile.show_statistics %}not {% endif %}shown on your profile page.
+              Statistics are {% if not user.settings.show_statistics %}not {% endif %}shown on your profile page.
             {% endif %}
           </div>
         </div>

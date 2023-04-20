@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -32,44 +33,39 @@ User = get_user_model()
 
 def index(request):
     """
-    Index page for the entire website
+    Index page for the website.
 
-    Unregistered users will be shown a static welcome page
+    Unregistered users will be shown a static welcome page.
 
     Registered users will be shown an interface to add/manage
     recent caving trips.
+
+    Newly registered users will be shown a help page.
     """
     if not request.user.is_authenticated:
         return render(request, "index_unregistered.html")
 
-    # Get most recent trips
-    qs = request.user.trips
-    recent_trips = qs.order_by("-start", "pk")[:6]
-    trip_count = qs.count()
-    recent_trip_count = recent_trips.count()
+    news = News.objects.filter(is_published=True, posted_at__lte=timezone.now())
+    news = news.prefetch_related("author__profile").order_by("-posted_at")[:3]
+    context = {"news": news}
 
-    # Only display 3 or 6 trips
-    if recent_trip_count < 3:
-        # Display welcome text until the user has created three trips
-        recent_trips = None
-    elif recent_trip_count == 4 or recent_trip_count == 5:
-        recent_trips = recent_trips[:3]  # Display only three trips
+    friends = request.user.profile.friends.all()
+    trips = Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
+    trips = trips.prefetch_related("user__settings", "user__profile__friends")
+    trips = trips.order_by("-start")[:30]
 
-    # Distance stats
-    trip_stats = statistics.stats_for_user(qs)
-    trip_stats_year = statistics.stats_for_user(qs, year=timezone.now().year)
+    # Remove trips that the user does not have permission to view.
+    privacy_aware_trips = []
+    for trip in trips:
+        sanitised_trip = trip.sanitise(request.user)
+        if sanitised_trip:
+            privacy_aware_trips.append(sanitised_trip)
+    context["trips"] = privacy_aware_trips
 
-    context = {
-        "recent_trips": recent_trips,
-        "trip_count": trip_count,
-        "trip_stats": trip_stats,
-        "trip_stats_year": trip_stats_year,
-        "dist_format": request.user.settings.units,
-        "news": News.objects.filter(
-            is_published=True, posted_at__lte=timezone.now()
-        ).order_by("-posted_at")[:3],
-    }
-    return render(request, "index_registered.html", context)
+    if len(privacy_aware_trips) == 0:
+        return render(request, "index_new_user.html", context)
+    else:
+        return render(request, "index_registered.html", context)
 
 
 @login_required
