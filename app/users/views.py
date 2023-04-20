@@ -315,7 +315,7 @@ class FriendAddView(LoginRequiredMixin, View):
             )
             user.notify(
                 f"{request.user.username} sent you a friend request",
-                reverse("social:friends"),
+                reverse("users:friends"),
             )
             messages.success(request, f"Friend request sent to {user}.")
         else:
@@ -330,7 +330,7 @@ class FriendAddView(LoginRequiredMixin, View):
                     request, "Unable to add friend. Are the details correct?"
                 )
 
-        return redirect("social:friends")
+        return redirect("users:friends")
 
 
 class FriendRequestDeleteView(LoginRequiredMixin, View):
@@ -347,7 +347,7 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
             )
         else:
             raise Http404
-        return redirect("social:friends")
+        return redirect("users:friends")
 
 
 class FriendRequestAcceptView(LoginRequiredMixin, View):
@@ -363,12 +363,12 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
 
             f_req.user_from.notify(
                 f"{f_req.user_to.username} accepted your friend request",
-                reverse("social:friends"),
+                reverse("users:friends"),
             )
             messages.success(request, f"You are now friends with {f_req.user_from}.")
         else:
             raise Http404
-        return redirect("social:friends")
+        return redirect("users:friends")
 
 
 class FriendRemoveView(LoginRequiredMixin, View):
@@ -383,4 +383,4 @@ class FriendRemoveView(LoginRequiredMixin, View):
             messages.success(request, f"You are no longer friends with {user}.")
         else:
             raise Http404
-        return redirect("social:friends")
+        return redirect("users:friends")

@@ -156,7 +156,7 @@
           {% for user in active_users %}
             <tr>
               {% if user.privacy == "Public" %}
-                <td><a href="{% url 'public:user' user.username %}">{{ user.email }}</a></td>
+                <td>{{ user.email }}</td>
               {% else %}
                 <td>{{ user.email }}</td>
               {% endif %}

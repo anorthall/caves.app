@@ -10,8 +10,6 @@ from django_countries.fields import CountryField
 from logger.models import Trip, TripReport
 from timezone_field import TimeZoneField
 
-User = get_user_model()
-
 
 class CavingUserManager(BaseUserManager):
     def create_user(self, email, username, name, password=None):
@@ -153,6 +151,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_superuser
+
+
+User = get_user_model()
 
 
 class UserProfile(models.Model):

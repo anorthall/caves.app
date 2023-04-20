@@ -258,7 +258,7 @@ class AddFriendForm(forms.Form):
         self.helper.form_method = "post"
         self.helper.form_class = "mt-3"
         self.helper.form_show_errors = False
-        self.helper.form_action = reverse("social:friend_add")
+        self.helper.form_action = reverse("users:friend_add")
         self.helper.layout = Layout(
             Div(
                 Div(

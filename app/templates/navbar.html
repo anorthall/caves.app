@@ -47,16 +47,8 @@
                 <i class="bi bi-people"></i>&nbsp; Social
               </a>
               <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
-                {% if request.user.is_public %}
-                  <li>
-                    <a class="dropdown-item fw-normal text-dark" href="{% url 'public:user' request.user.username %}">
-                      <i class="bi bi-globe"></i>&nbsp; Public profile
-                    </a>
-                  </li>
-                {% endif %}
-
                 <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'social:friends' %}" href="{% url 'social:friends' %}">
+                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
                     <i class="bi bi-people"></i>&nbsp; Friends
                   </a>
                 </li>

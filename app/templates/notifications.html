@@ -11,7 +11,7 @@
           <hr class="dropdown-divider">
         {% endif %}
         <li>
-          <div data-href="{% url 'social:notification' pk=notification.pk %}" class="dropdown-item text-dark my-0">
+          <div data-href="{% url 'users:notification' pk=notification.pk %}" class="dropdown-item text-dark my-0">
             <span{% if not notification.read %} class="fw-bold{% endif %}">{{ notification.message }}</span>
             <br />
             <small class="text-muted">
