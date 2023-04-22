@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
@@ -164,6 +165,7 @@ class UserProfile(models.Model):
         max_length=25,
         help_text="Your name as you would like it to appear on your public profile.",
         default="Caver",
+        validators=[MinLengthValidator(3)],
     )
 
     # Avatar

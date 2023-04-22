@@ -8,6 +8,7 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("u/<username>/", views.UserProfile.as_view(), name="user"),
     path("trip/<int:pk>/", views.TripDetail.as_view(), name="trip_detail"),
+    path("trip/<int:pk>/like", views.TripLike.as_view(), name="trip_like"),
     path("trip/edit/<int:pk>/", views.TripUpdate.as_view(), name="trip_update"),
     path("trip/delete/<int:pk>/", views.TripDelete.as_view(), name="trip_delete"),
     path("trip/add/", views.TripCreate.as_view(), name="trip_create"),
@@ -20,6 +21,10 @@ urlpatterns = [
         "report/delete/<int:pk>/",
         views.ReportDelete.as_view(),
         name="report_delete",
+    ),
+    path("comment/add/", views.AddComment.as_view(), name="comment_add"),
+    path(
+        "comment/delete/<int:pk>/", views.DeleteComment.as_view(), name="comment_delete"
     ),
     path("statistics/", views.user_statistics, name="statistics"),
     path("admin-tools/", views.admin_tools, name="admin_tools"),

@@ -60,6 +60,10 @@ h1.page-title {
   margin-bottom: 1rem;
 }
 
+.comment-display > p {
+  margin-bottom: 0;
+}
+
 /* Hide crispy forms asterisk */
 .asteriskField {
   display: none !important;

@@ -239,7 +239,20 @@ MARKDOWNIFY = {
         "LINKIFY_TEXT": {
             "PARSE_URLS": True,
         },
-    }
+    },
+    "comment": {
+        "WHITELIST_TAGS": [
+            "a",
+            "strong",
+            "blockquote",
+            "em",
+            "i",
+            "b",
+        ],
+        "LINKIFY_TEXT": {
+            "PARSE_URLS": True,
+        },
+    },
 }
 
 # TinyMCE configuration

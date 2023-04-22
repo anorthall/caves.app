@@ -18,8 +18,8 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView, V
 from logger import statistics
 from users.models import Notification, UserSettings
 
-from .forms import AllUserNotificationForm, TripForm, TripReportForm
-from .models import Trip, TripReport
+from .forms import AddCommentForm, AllUserNotificationForm, TripForm, TripReportForm
+from .models import Comment, Trip, TripReport
 from .templatetags.distformat import distformat
 
 User = get_user_model()
@@ -62,6 +62,13 @@ class TripContextMixin:
         context["trip"] = trip
         context["report"] = report
         context["user"] = user
+
+        # Comment form
+        initial = {
+            "pk": self.get_object().pk,
+            "type": self.get_object().__class__.__name__.lower(),
+        }
+        context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
         return context
 
 
@@ -438,7 +445,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return Trip.objects.filter(user=self.request.user)
 
 
-class TripDetail(LoginRequiredMixin, TripContextMixin, DetailView):
+class TripDetail(TripContextMixin, DetailView):
     """View the details of a trip."""
 
     model = Trip
@@ -551,7 +558,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return kwargs
 
 
-class ReportDetail(LoginRequiredMixin, TripContextMixin, DetailView):
+class ReportDetail(TripContextMixin, DetailView):
     """View the details of a trip report."""
 
     model = TripReport
@@ -601,3 +608,58 @@ class ReportDelete(LoginRequiredMixin, View):
         else:
             raise Http404
         return redirect("log:trip_detail", pk=trip.pk)
+
+
+class AddComment(LoginRequiredMixin, View):
+    def post(self, request):
+        form = AddCommentForm(self.request, request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.save()
+            if form.object.user != request.user:
+                form.object.user.notify(
+                    f"{request.user} commented on your {form.type_str}",
+                    form.object.get_absolute_url(),
+                )
+            messages.success(
+                request,
+                "Your comment has been added.",
+            )
+        else:
+            if form.errors["content"]:
+                for error in form.errors["content"]:
+                    messages.error(request, error)
+            else:
+                messages.error(
+                    request,
+                    "There was an error adding your comment. Please try again.",
+                )
+        return redirect(form.object.get_absolute_url())
+
+
+class DeleteComment(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        if comment.author == request.user or request.user.is_superuser:
+            comment.delete()
+            messages.success(
+                request,
+                "The comment has been deleted.",
+            )
+        else:
+            raise Http404
+        return redirect(comment.content_object.get_absolute_url())
+
+
+class TripLike(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        trip = get_object_or_404(Trip, pk=pk)
+        if not trip.is_viewable_by(request.user):
+            raise Http404
+
+        if request.user in trip.likes.all():
+            trip.likes.remove(request.user)
+        else:
+            trip.likes.add(request.user)
+
+        return redirect(trip.get_absolute_url())

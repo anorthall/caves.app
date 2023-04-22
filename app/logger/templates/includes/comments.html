@@ -1,0 +1,60 @@
+{% load user %}
+{% load crispy_forms_tags %}
+{% load markdownify %}
+<div class="card">
+  <div class="card-header">
+    Comments
+  </div>
+
+  <div class="card-body">
+    {% if object.comments.count > 0 %}
+      {% for comment in object.comments.all %}
+        {% if forloop.counter > 1 %}<hr class="my-4">{% endif %}
+
+        <div class="m-0 comment-display">
+          {{ comment.content|markdownify:"comment" }}
+          <p class="text-muted mt-1">
+            <small class="ms-2">
+              &mdash; by {% user comment.author %}, {{ comment.added|timesince }} ago
+              {% if request.user.is_authenticated %}
+                {% if request.user == comment.author or request.user.is_superuser %}
+                  <a class="float-end link-danger" data-bs-toggle="modal" data-bs-target="#deleteComment{{ forloop.counter }}">
+                    delete
+                  </a>
+                {% endif %}
+              {% endif %}
+            </small>
+          </p>
+        </div>
+
+        <div class="modal fade" id="deleteComment{{ forloop.counter }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5">Delete comment</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you wish to delete this comment?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{% url 'log:comment_delete' comment.pk %}">
+                  <button type="button" class="btn btn-danger">Delete comment</button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="lead">There are no comments yet &mdash; why not be the first?</p>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+      <hr class="my-4">
+      <h3>Add a comment</h3>
+      {% crispy add_comment_form %}
+    {% endif %}
+  </div>
+</div>

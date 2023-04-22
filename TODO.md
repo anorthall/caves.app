@@ -1,6 +1,8 @@
 # Social TODO
 
 ## Features
+- [ ] Add trip comments
+- [ ] Add trip likes
 - [/] Add timeline feature to homepage
 - [ ] Add clubs and expeditions to the trip detail view
 - [ ] Fix sorting of surface trips
