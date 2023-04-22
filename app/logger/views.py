@@ -651,7 +651,7 @@ class DeleteComment(LoginRequiredMixin, View):
         return redirect(comment.content_object.get_absolute_url())
 
 
-class TripLike(LoginRequiredMixin, View):
+class TripLikeToggle(LoginRequiredMixin, View):
     def get(self, request, pk):
         trip = get_object_or_404(Trip, pk=pk)
         if not trip.is_viewable_by(request.user):
