@@ -19,7 +19,7 @@
 
     <ol>
       <li class="mb-2">
-        <a href="{% url 'users:update' %}">Fill out your user profile!</a> Some settings are important for the functionality
+        <a href="{% url 'users:account_update' %}">Fill out your user profile!</a> Some settings are important for the functionality
         of the site &mdash; such as the timezone that will be used to enter/display trips and which distance units to use.
       </li>
 
@@ -48,7 +48,7 @@
   </div>
 
   <div class="col-12 col-lg-4">
-    {% include "news.html" %}
+    {% include "includes/news.html" %}
   </div>
 </div>
 

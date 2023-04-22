@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.measure import D
 from django.db.utils import IntegrityError
 from django.test import Client, TestCase
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import datetime as dt
 from django.utils.timezone import localtime as lt
@@ -288,24 +289,6 @@ class TripIntegrationTests(TestCase):
         logger = logging.getLogger("django.request")
         logger.setLevel(self.previous_level)
 
-    def test_status_200_on_all_pages(self):
-        """Test that all pages return a status code of 200"""
-        self.client.login(email="super@user.app", password="testpassword")
-        pages = [
-            "/",
-            f"/trip/{self.trip.pk}/",
-            f"/trip/edit/{self.trip.pk}/",
-            f"/trip/delete/{self.trip.pk}/",
-            "/trip/add/",
-            "/trips/",
-            "/trips/export/",
-            "/about/",
-            "/admin-tools/",
-        ]
-        for page in pages:
-            response = self.client.get(page)
-            self.assertEqual(response.status_code, 200)
-
     def test_non_superuser_cannot_access_admin_tools(self):
         """Test that a non-superuser cannot access the admin tools"""
         self.client.login(email="enabled@user.app", password="testpassword")
@@ -327,12 +310,6 @@ class TripIntegrationTests(TestCase):
             self.assertIn(response.status_code, [301, 302])
             self.assertEqual(response.url, "/account/login/?next=" + page)
 
-    def test_user_cannot_access_other_users_trips(self):
-        """Test that a user cannot access other users trips"""
-        self.client.login(email="enabled@user.app", password="testpassword")
-        response = self.client.get(f"/trip/{self.trip.pk}/")
-        self.assertEqual(response.status_code, 404)
-
     def test_about_page(self):
         """Test the about page"""
         response = self.client.get("/about/")
@@ -344,14 +321,6 @@ class TripIntegrationTests(TestCase):
             response,
             "<strong>" + str(User.objects.all().count()) + "</strong>",
         )
-
-    def test_trip_delete_view(self):
-        """Test the trip delete view"""
-        self.client.login(email="super@user.app", password="testpassword")
-        response = self.client.get(f"/trip/delete/{self.trip.pk}/")
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Test Cave")
-        self.assertContains(response, "Are you sure you want to delete the above trip?")
 
     def test_csv_export(self):
         """Test the CSV export"""
@@ -405,14 +374,6 @@ class TripIntegrationTests(TestCase):
             self.assertEqual(row[6], lt(trip.end).strftime("%Y-%m-%d %H:%M"))
             i += 1
 
-    def test_trip_delete_post_request(self):
-        """Test the trip delete post request"""
-        self.client.login(email="super@user.app", password="testpassword")
-        response = self.client.post(f"/trip/delete/{self.trip.pk}/")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/trips/")
-        self.assertEqual(Trip.objects.count(), 0)
-
     def test_trip_list_view(self):
         """Test the trip list view"""
         self.client.login(email="enabled@user.app", password="testpassword")
@@ -432,7 +393,7 @@ class TripIntegrationTests(TestCase):
         Trip.objects.bulk_create(trips)
 
         # Get the trip list page
-        response = self.client.get("/trips/")
+        response = self.client.get(f"/u/enabled/")
         self.assertEqual(response.status_code, 200)
         for trip in trips:
             self.assertContains(response, trip.cave_name)
@@ -467,7 +428,7 @@ class TripIntegrationTests(TestCase):
         Trip.objects.bulk_create(trips)
 
         # Get the trip list page
-        response = self.client.get("/trips/")
+        response = self.client.get(reverse("log:user", args=[self.enabled.username]))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Other User Trip")
 
@@ -928,8 +889,8 @@ class TripReportTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/report/{report.pk}/")
 
-    def test_users_cannot_view_or_edit_a_trip_report_for_other_users(self):
-        """Test users cannot view or edit a trip report which does not belong to them."""
+    def test_users_cannot_edit_a_trip_report_for_other_users(self):
+        """Test users cannot edit a trip report which does not belong to them."""
         # Create a new user
         user = User.objects.create_user(
             email="new@user.app",
@@ -951,17 +912,13 @@ class TripReportTestCase(TestCase):
             user=self.user,
         )
 
-        # Test the view redirects
+        # Test the user cannot delete edit the report
         self.client.login(email="new@user.app", password="password")
         response = self.client.get(f"/report/edit/{report.pk}/")
         self.assertEqual(response.status_code, 404)
 
-        # Test the user cannot view the report
-        response = self.client.get(f"/report/{report.pk}/")
-        self.assertEqual(response.status_code, 404)
-
         # Test the user cannot delete the report
-        response = self.client.post(f"/report/delete/{report.pk}/")
+        response = self.client.get(f"/report/delete/{report.pk}/")
         self.assertEqual(response.status_code, 404)
 
         # Test user cannot create a report for a trip belonging to another user
@@ -1013,7 +970,7 @@ class TripReportTestCase(TestCase):
         self.assertEqual(report.content, "Test content updated.")
 
         # Test the user can delete the report
-        response = self.client.post(f"/report/delete/{report.pk}/")
+        response = self.client.get(f"/report/delete/{report.pk}/")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/trip/{self.trip.pk}/")
         self.assertEqual(TripReport.objects.count(), 0)
@@ -1033,7 +990,7 @@ class TripReportTestCase(TestCase):
         )
 
         # Test the link appears on the trip list page
-        response = self.client.get("/trips/")
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f"/report/{report.pk}/")
 

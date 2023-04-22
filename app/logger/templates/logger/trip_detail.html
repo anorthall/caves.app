@@ -1,36 +1,147 @@
 {% extends "base_sidebar.html" %}
-{% block title %}View trip{% endblock %}
-{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
+{% block title %}{{ trip.cave_name }}{% endblock %}
+{% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
 <div class="card">
-  <div class="card-header">
-    <div class="row text-muted">
-      <div class="col-12 col-lg-9">
-        <!-- Large title -->
-        <span class="d-none d-lg-block">
-          <i class="bi bi-clock-history"></i> &nbsp; Trip at {{ trip.start|time:"H:i" }} on {{ trip.start|date:"l, jS M Y" }}
-        </span>
-
-        <!-- Small title -->
-        <span class="d-lg-none">
-          <small>
-            <i class="bi bi-clock-history"></i> &nbsp; {{ trip.start|time:"H:i" }} on {{ trip.start|date:"l, jS M Y" }}
-          </small>
-        </span>
-      </div>
-
-      <!-- Trip number only displayed above -lg -->
-      <div class="col text-end d-none d-lg-block">
-        Trip 	&#35;{{ trip.number }}
-      </div>
-    </div>
+  <div class="card-header mb-2">
+    {% include "includes/trip_header.html" %}
   </div>
 
   <div class="card-body pt-2">
-    {% include "trip_table.html" %}
+    <!-- Data blocks -->
+    <div class="row row-cols-2 row-cols-md-3 g-3">
+      <!-- Start time-->
+      <div class="col">
+        <small class="text-muted">Date/time entered</small><br />
+        {{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}
+      </div>
 
-    {% if trip.prev_trip is not None or trip.next_trip is not None %}
+      {% if trip.end %}
+        <!-- Duration -->
+        <div class="col">
+          <small class="text-muted">Trip duration</small><br />
+          {{ trip.duration_str }}
+        </div>
+
+        <!-- End time -->
+        <div class="col">
+          <small class="text-muted">Date/time exited</small><br />
+          {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if trip.has_distances %}
+      <hr />
+
+      <div class="row row-cols-2 row-cols-md-3 g-3">
+        {% if trip.horizontal_dist %}
+          <!-- Horizontal dist -->
+          <div class="col">
+            <small class="text-muted">Horizontal distance</small><br />
+            {{ trip.horizontal_dist }}
+          </div>
+        {% endif %}
+
+        {% if trip.vert_dist_down %}
+          <!-- Vertical distance descended -->
+          <div class="col">
+            <small class="text-muted">Distance descended</small><br />
+            {{ trip.vert_dist_down }}
+          </div>
+        {% endif %}
+
+        {% if trip.vert_dist_up %}
+          <!-- Vertical distance ascended -->
+          <div class="col">
+            <small class="text-muted">Distance ascended</small><br />
+            {{ trip.vert_dist_up }}
+          </div>
+        {% endif %}
+
+        {% if trip.surveyed_dist %}
+          <!-- Surveyed distance -->
+          <div class="col">
+            <small class="text-muted">Surveyed distance</small><br />
+            {{ trip.surveyed_dist }}
+          </div>
+        {% endif %}
+
+        {% if trip.resurveyed_dist %}
+          <!-- Resurveyed distance -->
+          <div class="col">
+            <small class="text-muted">Resurveyed distance</small><br />
+            {{ trip.resurveyed_dist }}
+          </div>
+        {% endif %}
+
+        {% if trip.aid_dist %}
+          <!-- Aid climbing distance -->
+          <div class="col">
+            <small class="text-muted">Aid climbing distance</small><br />
+            {{ trip.aid_dist }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if trip.cavers or trip.clubs or trip.expedition %}
+      <hr />
+      <div class="row g-3">
+        {% if trip.cavers %}
+          <!-- Cavers -->
+          <div class="col-12">
+            <small class="text-muted">Cavers on trip</small><br />
+            {{ trip.cavers }}
+          </div>
+        {% endif %}
+
+        {% if trip.clubs %}
+          <!-- Clubs -->
+          <div class="col-6 col-lg-4">
+            <small class="text-muted">Clubs</small><br />
+            {{ trip.clubs }}
+          </div>
+        {% endif %}
+
+        {% if trip.expedition %}
+          <!-- Expedition -->
+          <div class="col-6 col-lg-4">
+            <small class="text-muted">Expedition</small><br />
+            {{ trip.expedition }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if trip.notes %}
+      <hr />
+
+      <!-- Notes -->
+      <div class="row g-3">
+        <div class="col notes-display">
+          <small class="text-muted">Notes</small><br />
+          {{ trip.notes|linebreaks }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if trip.cave_url %}
+      <hr />
+
+      <!-- External Resources -->
+      <div class="row g-3">
+        <div class="col">
+          <small class="text-muted">External resources</small>
+          <ol class="mb-0">
+            {% if trip.cave_url %}<li><a href="{{ trip.cave_url }}">Website for {{ trip.cave_name }}</a></li>{% endif %}
+          </ol>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if request.user == trip.user and trip.prev_trip is not None or trip.next_trip is not None %}
       <div class="row mt-4">
         <div class="col-6">
           {% if trip.prev_trip %}
@@ -46,17 +157,16 @@
     {% endif %}
   </div>
 
-
   <div class="card-footer">
     <div class="row text-muted">
       <div class="col-12 col-lg-6 text-start">
         <small>
-          Created: {{ trip.added|date:"jS M Y" }}
+          Created: {{ trip.added|timesince }} ago
         </small>
       </div>
       <div class="col text-end d-none d-lg-block">
         <small>
-          Updated: {{ trip.updated|date:"jS M Y" }}
+          Updated: {{ trip.updated|timesince }} ago
         </small>
       </div>
     </div>

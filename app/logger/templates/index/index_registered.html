@@ -5,12 +5,12 @@
 <div class="row">
   <div class="col-12 col-xl-9">
     {% for trip in trips %}
-      {% include "trip_card.html" %}
+      <p>Trip to {{ trip.cave_name }} by {{ trip.user }}</p>
     {% endfor %}
   </div>
 
   <div class="col-12 col-xl-3">
-    {% include "news.html" %}
+    {% include "includes/news.html" %}
   </div>
 </div>
 

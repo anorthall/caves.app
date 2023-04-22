@@ -19,8 +19,12 @@ DATETIME_FORMAT = "H:i Y-m-d"
 DATE_FORMAT = "Y-m-d"
 TIME_FORMAT = "H:i"
 
-# Site root URL with protocol
+# Site root URL with protocol and without a trailing slash
 SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
+
+# Media files
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_URL = "/media/"
 
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
@@ -128,6 +132,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.notifications",
+                "core.context_processors.site_root",
             ],
         },
     },

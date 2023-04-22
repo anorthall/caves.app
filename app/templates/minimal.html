@@ -18,11 +18,16 @@
     <!-- Bootstrap Icons v1.10.3 -->
     <link rel="stylesheet" href="{% static "bootstrap-icons/bootstrap-icons.css" %}">
 
-    <!-- HTMX  -->
-    <script src="{% static "js/htmx.min.js" %}"></script>
+    {% comment %}
+      Not yet implemented
+      <!-- HTMX  -->
+      <script src="{% static "js/htmx.min.js" %}"></script>
+    {% endcomment %}
 
-    <!-- Plausible Analytics -->
-    <script defer data-domain="caves.app" src="https://stats.caver.dev/js/plausible.js"></script>
+    {% if not debug %}
+      <!-- Plausible Analytics -->
+      <script defer data-domain="caves.app" src="https://stats.caver.dev/js/plausible.js"></script>
+    {% endif %}
 
     {% block header_scripts %}{% endblock %}
   </head>

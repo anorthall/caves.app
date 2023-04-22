@@ -1,13 +1,10 @@
-{% extends "base_full_width.html" %}
+{% extends "base_sidebar.html" %}
 {% load crispy_forms_tags %}
+{% load user %}
 {% block title %}Your friends{% endblock %}
+{% block sidebar %}{% include "includes/sidebar_users.html" %}{% endblock %}
 
 {% block main %}
-
-<h1 class="page-title">
-  Friends
-</h1>
-
 {% if friends_list %}
   <div class="card mb-4">
     <div class="card-header">
@@ -21,6 +18,7 @@
             <tr>
               <th>Name</th>
               <th>Username</th>
+              <th>Last seen</th>
               <th></th>
             </tr>
           </thead>
@@ -28,11 +26,17 @@
             {% for friend in friends_list %}
               <tr>
                 <td>
-                  <a href="#">
-                    {{ friend.name }}
-                  </a>
+                  {% user friend %}
                 </td>
-                <td>{{ friend.username }}</td>
+
+                <td>
+                  {{ friend.username }}
+                </td>
+
+                <td>
+                  {{ friend.last_seen|timesince }} ago
+                </td>
+
                 <td class="text-end">
                   <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeFriendModal{{ forloop.counter }}">
                     <i class="bi bi-x-lg"></i>
@@ -70,9 +74,7 @@
                   <td>You</td>
                 {% else %}
                   <td>
-                    <a href="#">
-                      {{ friend_request.user_from.name }} ({{ friend_request.user_from.username }})
-                    </a>
+                    {% user friend_request.user_from show_username=True %}
                   </td>
                 {% endif %}
 
@@ -80,9 +82,7 @@
                   <td>You</td>
                 {% else %}
                   <td>
-                    <a href="#">
-                      {{ friend_request.user_to.name }} ({{ friend_request.user_to.username }})
-                    </a>
+                    {% user friend_request.user_to show_username=True %}
                   </td>
                 {% endif %}
 
@@ -127,10 +127,10 @@
         <div class="modal-body">
           {% if friend_request.user_from == request.user %}
             Are you sure you wish to delete a friend request that you sent to
-            {{ friend_request.user_to }}?
+            {% user friend_request.user_to %}?
           {% else %}
             Are you sure you wish to delete a friend request that you received from
-            {{ friend_request.user_from }}?
+            {% user friend_request.user_from %}?
           {% endif %}
           They will not be notified of this action.
         </div>
@@ -153,7 +153,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            Are you sure you wish to accept the friend request from {{ friend_request.user_from }}?
+            Are you sure you wish to accept the friend request from {% user friend_request.user_from %}?
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -176,7 +176,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          Are you sure you wish to remove {{ friend }} as a friend? You will have
+          Are you sure you wish to remove {% user friend %} as a friend? You will have
           to request to be their friend again if you change your mind.
         </div>
         <div class="modal-footer">

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 
 from .models import FAQ, News
@@ -6,6 +7,9 @@ from .models import FAQ, News
 admin.site.site_header = "caves.app"
 admin.site.site_title = "caves.app"
 admin.site.index_title = "Administration"
+if settings.DEBUG:
+    admin.site.site_header = "caves.app dev"
+    admin.site.site_title = "caves.app dev"
 
 
 @admin.register(News)

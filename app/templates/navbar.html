@@ -2,7 +2,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container d-flex">
-      <a class="navbar-brand fs-3 fw-bolder align-self-middle" href="/">caves.app</a>
+      <a class="navbar-brand fs-3 fw-bolder align-self-middle" href="/">{% if debug %}dev-{% endif %}caves.app</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -16,87 +16,28 @@
               </a>
             </li>
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <li class="nav-item">
+              <a class="nav-link {% active_link 'log:user' username=request.user.username %}" href="{% url 'log:user' username=request.user.username %}">
                 <i class="bi bi-card-list"></i>&nbsp; Trips
               </a>
-
-              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:trip_list' %}" href="{% url 'log:trip_list' %}">
-                    <i class="bi bi-list"></i>&nbsp; Trip list
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:statistics' %}" href="{% url 'log:statistics' %}">
-                    <i class="bi bi-bar-chart-line-fill"></i>&nbsp; Statistics
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:export' %}" href="{% url 'log:export' %}">
-                    <i class="bi bi-download"></i>&nbsp; Export to CSV
-                  </a>
-                </li>
-              </ul>
             </li>
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <i class="bi bi-people"></i>&nbsp; Social
+            <li class="nav-item">
+              <a class="nav-link {% active_link 'log:statistics' %}" href="{% url 'log:statistics' %}">
+                <i class="bi bi-bar-chart"></i>&nbsp; Statistics
               </a>
-              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
-                    <i class="bi bi-people"></i>&nbsp; Friends
-                  </a>
-                </li>
-              </ul>
             </li>
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <li class="nav-item">
+              <a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
+                <i class="bi bi-people"></i>&nbsp; Friends
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link {% active_link 'users:account' %}" href="{% url 'users:account' %}">
                 <i class="bi bi-person-circle"></i>&nbsp; Account
               </a>
-              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:profile' %}" href="{% url 'users:profile' %}">
-                    <i class="bi bi-person-circle"></i>&nbsp; View account
-                  </a>
-                </li>
-
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:update' %}" href="{% url 'users:update' %}">
-                    <i class="bi bi-gear"></i>&nbsp; Account settings
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:password' %}" href="{% url 'users:password' %}">
-                    <i class="bi bi-key"></i>&nbsp; Change password
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:email' %}" href="{% url 'users:email' %}">
-                    <i class="bi bi-envelope-at"></i>&nbsp; Change email
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'core:help' %}" href="{% url 'core:help' %}">
-                    <i class="bi bi-question-circle"></i>&nbsp; Help
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'users:logout' %}" href="{% url 'users:logout' %}">
-                    <i class="bi bi-pencil-square"></i>&nbsp; Sign out
-                  </a>
-                </li>
-              </ul>
             </li>
           {% else %}
             {% include "navbar_unregistered.html" %}

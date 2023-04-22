@@ -1,22 +1,38 @@
 {% extends "base_full_width.html" %}
 {% load get %}
 {% load static %}
-{% block title %}List of trips{% endblock %}
-{% block description %}A list of your caving trips.{% endblock %}
-{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
+{% load markdownify %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block description %}{{ user.profile.name }}'s trips on caves.app.{% endblock %}
 
 {% block main %}
-<h1 class="page-title">
-  Your trips
-</h1>
+<div class="row page-title mb-3">
+  <div class="col-auto">
+    <h1>{{ page_title }}</h1>
+  </div>
 
-{% if object_list %}
-  <div class="table-responsive">
+  <div class="col d-none d-md-flex justify-content-end align-items-center">
+    <small class="text-muted float-right">
+      @{{ user.username }}
+    </small>
+  </div>
+</div>
+
+{% if user.profile.bio %}
+  {{ user.profile.bio|markdownify }}
+{% elif not user.profile.bio and not trips %}
+  {% if request.user == user %}
+    <p>Once you add some trips, or a biography in your profile, they will appear here!</p>
+  {% else %}
+    <p>This is the profile of a caves.app user who has not added any trips or a bio yet.</p>
+  {% endif %}
+{% endif %}
+
+{% if trips %}
+  <div class="table-responsive mt-4">
     <table class="table table-hover table-striped mb-0">
-      <thead>
+      <thead class="border-top">
         <tr>
-          <th class="d-none d-sm-block ps-1 text-center" scope="col">#</th>
-
           <th scope="col">
             Date
             <small>
@@ -41,7 +57,7 @@
             </small>
           </th>
 
-          <th class="d-none d-xl-table-cell" scope="col">
+          <th class="d-none d-md-table-cell" scope="col">
             Duration
             <small>
               <a href="?sort=duration" class="text-decoration-none">
@@ -53,7 +69,7 @@
             </small>
           </th>
 
-          <th class="d-none d-xl-table-cell" scope="col">
+          <th class="d-none d-lg-table-cell" scope="col">
             Up
             <small>
               <a href="?sort=vert_dist_up" class="text-decoration-none">
@@ -65,7 +81,7 @@
             </small>
           </th>
 
-          <th class="d-none d-xl-table-cell" scope="col">
+          <th class="d-none d-lg-table-cell" scope="col">
             Down
             <small>
               <a href="?sort=vert_dist_down" class="text-decoration-none">
@@ -89,17 +105,14 @@
             </small>
           </th>
 
-          <th class="d-none d-sm-table-cell" scope="col"></th>
+          <th></th>
         </tr>
       </thead>
 
       <tbody>
-        {% for trip in object_list %}
+        {% for trip in trips %}
           <tr data-href="{% url 'log:trip_detail' pk=trip.pk %}">
-            <th class="d-none d-sm-block ps-1 text-center" scope="row">{{ trip_index|get:trip.pk }}</th>
-
             <td>{{ trip.start|date:"j M y" }}</td>
-
 
             <td>
               {{ trip.cave_name }}
@@ -109,22 +122,27 @@
               {% endif %}
             </td>
 
-            <td class="d-none d-xl-table-cell">{{ trip.duration_str }}</td>
-
-            <td class="d-none d-xl-table-cell">{{ trip.vert_dist_up }}</td>
-
-            <td class="d-none d-xl-table-cell">{{ trip.vert_dist_down }}</td>
-
-            <td class="d-none d-lg-table-cell">{{ trip.type }}</td>
-
-            <td class="text-end pe-2 d-none d-sm-table-cell">
-              {% if trip.report %}
-                <a class="text-warning" href="{% url 'log:report_detail' pk=trip.report.pk %}"><i class="bi bi-card-text"></i></a>
-                &nbsp;
+            <td class="d-none d-md-table-cell">
+              {% if trip.duration_str %}
+                {{ trip.duration_str }}
               {% endif %}
-              <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>
-              &nbsp;
-              <a class="text-danger" href="{% url 'log:trip_delete' pk=trip.pk %}"><i class="bi bi-x-lg"></i></a>
+            </td>
+
+            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up }}</td>
+
+            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_down }}</td>
+
+            <td class="d-none d-lg-table-cell">
+              {{ trip.type }}
+            </td>
+
+            <td class="d-none d-md-table-cell text-end">
+              {% if trip.report %}
+                <a class="text-warning" href="{% url 'log:report_detail' pk=trip.report.pk %}"><i class="bi bi-card-text"></i></a>&nbsp;
+              {% endif %}
+              {% if request.user == user %}
+                <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>&nbsp;
+              {% endif %}
             </td>
           </tr>
         {% endfor %}

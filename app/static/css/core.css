@@ -8,10 +8,14 @@ body {
 }
 
 /* Trip display */
-.trip-header {
-  line-height: 1 !important;
-  letter-spacing: 0 !important;
-  white-space: normal;
+.cave-name {
+  font-weight: 400;
+  margin-bottom: 0;
+  font-size: 1.6rem !important;
+}
+
+.cave-name-lg {
+  font-size: 1.8rem !important;
 }
 
 .notes-display p:last-child {
@@ -23,8 +27,8 @@ body {
   font-weight: normal;
 }
 
-/* JavaScript clickable table rows */
-[data-href] {
+/* Clickable JS elements */
+[data-href], [data-bs-toggle] {
   cursor: pointer;
 }
 
@@ -48,13 +52,12 @@ body {
 
 /* Text */
 .page-title {
-  border-bottom: 2px solid #008cba !important;
-  padding-bottom: 7px;
-  margin-bottom: 10px;
+  margin-bottom: 0.5rem;
 }
 
 h1.page-title {
-  margin-bottom: 20px;
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 /* Hide crispy forms asterisk */

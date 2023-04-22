@@ -87,13 +87,13 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = "user"
 
     def __str__(self):
-        return f"{self.name} ({self.username})"
+        return self.profile.name
 
     def get_full_name(self):
-        return self.name
+        return self.profile.name
 
     def get_short_name(self):
-        return self.name
+        return self.profile.name
 
     def save(self, *args, **kwargs):
         """Perform validation checks and ensure Profile and Settings exist"""
@@ -115,10 +115,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         from users.models import Notification
 
         return Notification.objects.create(user=self, message=message, url=url)
-
-    def can_view(self, object):
-        """Calls the is_viewable_by() method on the specified object"""
-        return object.is_viewable_by(self)
 
     @property
     def name(self):
@@ -165,7 +161,7 @@ class UserProfile(models.Model):
 
     # Personal information
     name = models.CharField(
-        max_length=40,
+        max_length=25,
         help_text="Your name as you would like it to appear on your public profile.",
         default="Caver",
     )

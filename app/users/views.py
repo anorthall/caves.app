@@ -53,7 +53,7 @@ class PasswordResetConfirmView(
     SuccessMessageMixin, auth.views.PasswordResetConfirmView
 ):
     template_name = "password_reset_confirm.html"
-    success_url = reverse_lazy("users:profile")
+    success_url = reverse_lazy("users:account")
     form_class = SetPasswordForm
     post_reset_login = True
     success_message = "Your password has been updated and you are signed in."
@@ -65,7 +65,7 @@ class PasswordChangeView(
     """Presents a password change form."""
 
     template_name = "password_change.html"
-    success_url = reverse_lazy("users:profile")
+    success_url = reverse_lazy("users:account")
     form_class = PasswordChangeForm
     success_message = "Your password has been updated."
 
@@ -104,10 +104,10 @@ def logout(request):
     return redirect("log:index")
 
 
-class UserProfileView(LoginRequiredMixin, TemplateView):
-    """View the user profile."""
+class Account(LoginRequiredMixin, TemplateView):
+    """View the user's account details."""
 
-    template_name = "profile.html"
+    template_name = "account.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -115,10 +115,10 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class UpdateProfileView(LoginRequiredMixin, TemplateView):
-    """Update the user profile."""
+class AccountUpdate(LoginRequiredMixin, TemplateView):
+    """Update the user's account and settings."""
 
-    template_name = "profile_update.html"
+    template_name = "account_update.html"
 
     def get_context_data(self, **kwargs):
         u = self.request.user
@@ -132,7 +132,9 @@ class UpdateProfileView(LoginRequiredMixin, TemplateView):
         u = request.user
         user_form = UserChangeForm(request.POST, instance=u)
         settings_form = SettingsChangeForm(request.POST, instance=u.settings)
-        profile_form = ProfileChangeForm(request.POST, instance=u.profile)
+        profile_form = ProfileChangeForm(
+            request.POST, instance=u.profile, files=request.FILES
+        )
 
         if (
             user_form.is_valid()
@@ -143,7 +145,7 @@ class UpdateProfileView(LoginRequiredMixin, TemplateView):
             settings_form.save()
             profile_form.save()
             messages.success(request, "Your profile has been updated.")
-            return redirect("users:profile")
+            return redirect("users:account")
 
         context = self.get_context_data(*args, **kwargs)
         context["user_form"] = user_form
@@ -155,7 +157,7 @@ class UpdateProfileView(LoginRequiredMixin, TemplateView):
 def register(request):
     """Register a user."""
     if request.user.is_authenticated:
-        return redirect("users:profile")  # Already registered
+        return redirect("users:account")  # Already registered
 
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -235,7 +237,7 @@ def verify_email_change(request):
                 request,
                 f"Your new email address, {form.email}, has been verified.",
             )
-            return redirect("users:profile")
+            return redirect("users:account")
     else:
         form = VerifyEmailForm()
 
@@ -290,12 +292,18 @@ class FriendListView(LoginRequiredMixin, TemplateView):
 
     def get(self, request):
         """Display the friend list, friend requests, and add friend form"""
+        if self.request.GET.get("u", None):
+            initial = {"user": self.request.GET["u"]}
+            form = AddFriendForm(request, initial=initial)
+        else:
+            form = AddFriendForm(request)
+
         context = {
             "friends_list": self.request.user.profile.friends.all(),
             "friend_requests": FriendRequest.objects.filter(
                 Q(user_from=request.user) | Q(user_to=request.user)
             ).order_by("user_from"),
-            "add_friend_form": AddFriendForm(self.request),
+            "add_friend_form": form,
         }
 
         return self.render_to_response(context)
