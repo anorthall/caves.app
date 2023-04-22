@@ -3,6 +3,11 @@ from django.contrib import auth, messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import (
+    PasswordChangeView,
+    PasswordResetConfirmView,
+    PasswordResetView,
+)
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.http import Http404
@@ -34,7 +39,7 @@ from .verify import generate_token
 User = get_user_model()
 
 
-class PasswordResetView(SuccessMessageMixin, auth.views.PasswordResetView):
+class PasswordResetView(SuccessMessageMixin, PasswordResetView):
     template_name = "password_reset.html"
     email_template_name = "emails/email_password_reset.html"
     html_email_template_name = "emails/email_html_password_reset.html"
@@ -49,9 +54,7 @@ class PasswordResetView(SuccessMessageMixin, auth.views.PasswordResetView):
     }
 
 
-class PasswordResetConfirmView(
-    SuccessMessageMixin, auth.views.PasswordResetConfirmView
-):
+class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
     template_name = "password_reset_confirm.html"
     success_url = reverse_lazy("users:account")
     form_class = SetPasswordForm
@@ -59,11 +62,7 @@ class PasswordResetConfirmView(
     success_message = "Your password has been updated and you are signed in."
 
 
-class PasswordChangeView(
-    LoginRequiredMixin, SuccessMessageMixin, auth.views.PasswordChangeView
-):
-    """Presents a password change form."""
-
+class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
     template_name = "password_change.html"
     success_url = reverse_lazy("users:account")
     form_class = PasswordChangeForm
@@ -71,7 +70,6 @@ class PasswordChangeView(
 
 
 def login(request):
-    """Log in the user."""
     context = {}
     if request.method == "POST":
         username = request.POST.get("email", None)
@@ -87,7 +85,7 @@ def login(request):
             )
             context = {
                 "login_has_failed": True,  # Displays reset password link
-                "no_form_error_alert": True,  # Silences default form error
+                "no_form_error_alert": True,  # Silences messages.html
             }
 
     if request.user.is_authenticated:
@@ -98,7 +96,6 @@ def login(request):
 
 
 def logout(request):
-    """Log out the user."""
     auth.logout(request)
     messages.info(request, "You have been signed out.")
     return redirect("log:index")
@@ -155,7 +152,6 @@ class AccountUpdate(LoginRequiredMixin, TemplateView):
 
 
 def register(request):
-    """Register a user."""
     if request.user.is_authenticated:
         return redirect("users:account")  # Already registered
 
@@ -178,7 +174,7 @@ def register(request):
 
 
 def verify_new_account(request):
-    """Verify a new registration."""
+    """Verify the email address of a new account"""
     if request.user.is_authenticated:
         return redirect("log:index")
 
@@ -202,7 +198,7 @@ def verify_new_account(request):
 
 
 def resend_verify_email(request):
-    """Resend a registration verification email."""
+    """Resend a verification email for a new account"""
     if request.user.is_authenticated:
         return redirect("log:index")
 
@@ -225,8 +221,8 @@ def resend_verify_email(request):
 
 
 def verify_email_change(request):
-    """Verify an email change code."""
-    if "verify_code" in request.GET:
+    """Verify an email change code for a registered user"""
+    if "verify_code" in request.GET:  # TODO: Why is this line here?
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
             verified_user = form.user
@@ -246,7 +242,7 @@ def verify_email_change(request):
 
 @login_required
 def update_email(request):
-    """Send an email change code."""
+    """Send an email to confirm a change of email address for a registered user"""
     if request.method == "POST":
         form = UserChangeEmailForm(request.user, request.POST)
         if form.is_valid():
@@ -275,23 +271,20 @@ def update_email(request):
 
 @login_required
 def notification_redirect(request, pk):
-    """Redirect to the URL of a notification."""
+    """Redirect to the URL of a notification"""
     notification = get_object_or_404(Notification, pk=pk)
-    if notification.user == request.user:
-        notification.read = True
-        notification.save()
-        return redirect(notification.url)
-    else:
+    if not notification.user == request.user:
         return redirect("log:index")
+
+    notification.read = True
+    notification.save()
+    return redirect(notification.url)
 
 
 class FriendListView(LoginRequiredMixin, TemplateView):
-    """A view for viewing, adding, and removing friends."""
-
     template_name = "friends.html"
 
     def get(self, request):
-        """Display the friend list, friend requests, and add friend form"""
         if self.request.GET.get("u", None):
             initial = {"user": self.request.GET["u"]}
             form = AddFriendForm(request, initial=initial)
@@ -310,11 +303,9 @@ class FriendListView(LoginRequiredMixin, TemplateView):
 
 
 class FriendAddView(LoginRequiredMixin, View):
-    """A view to send friend requests"""
-
     def post(self, request):
-        """Handle requests to send friend requests"""
         form = AddFriendForm(request, request.POST)
+
         if form.is_valid():
             user = form.cleaned_data["user"]
             FriendRequest.objects.create(
@@ -342,10 +333,7 @@ class FriendAddView(LoginRequiredMixin, View):
 
 
 class FriendRequestDeleteView(LoginRequiredMixin, View):
-    """A view for deleting a friend request"""
-
     def get(self, request, pk):
-        """Handle requests to delete friend requests"""
         f_req = get_object_or_404(FriendRequest, pk=pk)
         if f_req.user_to == request.user or f_req.user_from == request.user:
             f_req.delete()
@@ -359,36 +347,29 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
 
 
 class FriendRequestAcceptView(LoginRequiredMixin, View):
-    """A view for accepting a friend request"""
-
     def get(self, request, pk):
-        """Handle requests to accept friend requests"""
         f_req = get_object_or_404(FriendRequest, pk=pk)
-        if f_req.user_to == request.user:
-            f_req.user_from.profile.friends.add(f_req.user_to)
-            f_req.user_to.profile.friends.add(f_req.user_from)
-            f_req.delete()
-
-            f_req.user_from.notify(
-                f"{f_req.user_to.username} accepted your friend request",
-                reverse("users:friends"),
-            )
-            messages.success(request, f"You are now friends with {f_req.user_from}.")
-        else:
+        if not f_req.user_to == request.user:
             raise Http404
+
+        f_req.user_from.profile.friends.add(f_req.user_to)
+        f_req.user_to.profile.friends.add(f_req.user_from)
+        f_req.delete()
+        f_req.user_from.notify(
+            f"{f_req.user_to.username} accepted your friend request",
+            reverse("users:friends"),
+        )
+        messages.success(request, f"You are now friends with {f_req.user_from}.")
         return redirect("users:friends")
 
 
 class FriendRemoveView(LoginRequiredMixin, View):
-    """A view for removing a friend"""
-
     def get(self, request, username):
-        """Handle requests to remove friends"""
         user = get_object_or_404(User, username=username)
-        if user in request.user.profile.friends.all():
-            request.user.profile.friends.remove(user)
-            user.profile.friends.remove(request.user)
-            messages.success(request, f"You are no longer friends with {user}.")
-        else:
+        if not user in request.user.profile.friends.all():
             raise Http404
+
+        request.user.profile.friends.remove(user)
+        user.profile.friends.remove(request.user)
+        messages.success(request, f"You are no longer friends with {user}.")
         return redirect("users:friends")
