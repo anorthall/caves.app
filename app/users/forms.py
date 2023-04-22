@@ -276,13 +276,16 @@ class AddFriendForm(forms.Form):
     def clean_user(self):
         """Validate the user field and convert it to a User object"""
         user = self.cleaned_data["user"].strip().lower()
+
         try:
             user = User.objects.get(username=user)
         except User.DoesNotExist:
-            try:
-                user = User.objects.get(email=user)
-            except User.DoesNotExist:
-                raise ValidationError("User not found.")
+            pass
+
+        try:
+            user = User.objects.get(email=user)
+        except User.DoesNotExist:
+            raise ValidationError("User not found.")
 
         if user == self.request.user:
             raise ValidationError("You cannot add yourself as a friend.")
