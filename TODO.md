@@ -1,8 +1,7 @@
 # Social TODO
 
 ## Features
-- [ ] Add trip comments
-- [ ] Add trip likes
+- [/] Add trip likes
 - [/] Add timeline feature to homepage
 - [ ] Add clubs and expeditions to the trip detail view
 - [ ] Fix sorting of surface trips
@@ -14,6 +13,7 @@
 - [ ] Add all tests listed below
 - [ ] Define separate requirements.txt files for development and production
 - [ ] Add profile picture support
+- [X] Add trip comments
 - [X] Remove 'Public' module and integrate all Trip/Report/Trip List displays into one view
 - [X] Change Trip and Trip Report delete links into a Bootstrap modal
 - [X] Add sidebar to Account pages
@@ -79,13 +79,11 @@
 - [ ] Test that a user can view their own trips
     - [ ] Test that the sidebar appears
     - [ ] Test that notes always appear regardless of private_notes setting
-    - [ ] Test that next/previous trip links appear
 
 - [ ] Test that a user can view other user's trips
     - [ ] Test that the sidebar appears
     - [ ] Test all privacy settings: private, friends, public, default
     - [ ] Test that private_notes setting works
-    - [ ] Test that next/previous trip links do not appear
 
 - [ ] Test the trip create form
     - [ ] Test that the sidebar appears
