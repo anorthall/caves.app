@@ -1,7 +1,8 @@
 # Social TODO
 
 ## Features
-- [ ] Add display of users that liked a trip
+- [ ] Add full display of users that liked a trip
+- [ ] Fix liked trips queries (too many!)
 - [ ] Fix sorting of surface trips
 - [ ] Change export function to use django-import-export
 - [ ] Improve notification display (stylistic changes - fixed width, scrollable, images)
