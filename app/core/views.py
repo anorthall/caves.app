@@ -10,8 +10,6 @@ User = get_user_model()
 
 
 def about(request):
-    """About page, rendering differently depending on whether the user is logged in or not."""
-
     total_duration = timezone.timedelta(0)
     for trip in Trip.objects.all():
         if trip.duration:
@@ -36,7 +34,6 @@ def about(request):
 
 
 def help(request):
-    """Help page, rendering differently depending on whether the user is logged in or not."""
     context = {"faqs": FAQ.objects.all().order_by("updated")}
 
     # Unregistered/unauthenticated users

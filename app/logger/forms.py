@@ -86,7 +86,8 @@ class TripForm(forms.ModelForm):
             if end == start:
                 self.add_error(
                     "end",
-                    "The start and end time must not be the same. If you do not know the end time, leave it blank.",
+                    "The start and end time must not be the same. If you "
+                    "do not know the end time, leave it blank.",
                 )
             elif start > end:
                 self.add_error(

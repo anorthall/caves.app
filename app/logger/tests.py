@@ -393,7 +393,7 @@ class TripIntegrationTests(TestCase):
         Trip.objects.bulk_create(trips)
 
         # Get the trip list page
-        response = self.client.get(f"/u/enabled/")
+        response = self.client.get("/u/enabled/")
         self.assertEqual(response.status_code, 200)
         for trip in trips:
             self.assertContains(response, trip.cave_name)
@@ -871,7 +871,9 @@ class TripReportTestCase(TestCase):
         self.assertEqual(TripReport.objects.last().title, "Test Report as new user")
 
     def test_trip_report_create_view_redirects_if_a_report_already_exists(self):
-        """Test the trip report create view redirects if a report already exists for that trip."""
+        """
+        Test the trip report create view redirects if a report already exists
+        """
         # Create a report
         report = TripReport.objects.create(
             title="Test Report",
@@ -1014,7 +1016,7 @@ class TripReportTestCase(TestCase):
         self.assertContains(response, f"/report/{report.pk}/")
 
     def test_add_trip_report_appears_when_no_report_added(self):
-        """Test the add trip report link appears on the trip detail page when no report has been added."""
+        """Test the add trip report link appears on the trip detail"""
         # Test the link appears on the trip detail page
         self.client.login(email="test@user.app", password="password")
         response = self.client.get(f"/trip/{self.trip.pk}/")
@@ -1022,7 +1024,7 @@ class TripReportTestCase(TestCase):
         self.assertContains(response, f"/report/add/{self.trip.pk}/")
 
     def test_add_trip_report_does_not_appear_when_report_added(self):
-        """Test the add trip report link does not appear on the trip detail page when a report has been added."""
+        """Test the add trip report link does not appear on the detail page"""
         self.client.login(email="test@user.app", password="password")
         # Create a trip report
         TripReport.objects.create(
@@ -1041,7 +1043,7 @@ class TripReportTestCase(TestCase):
         self.assertNotContains(response, f"/report/add/{self.trip.pk}/")
 
     def test_view_and_edit_trip_report_links_appear_when_a_report_has_been_added(self):
-        """Test the view and edit trip report links appear on the trip detail page when a report has been added."""
+        """Test the view and edit trip report links appear on the trip detail"""
         self.client.login(email="test@user.app", password="password")
         # Create a trip report
         report = TripReport.objects.create(

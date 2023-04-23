@@ -27,7 +27,7 @@ def sort_comma_separated_list(qs, value, limit=10):
     return sorted(common.items(), key=lambda x: x[1], reverse=True)[0:limit]
 
 
-def stats_for_user(qs, year=None):
+def stats_for_user(qs, year=None):  # noqa C901
     """Get statistics of trips within a QuerySet, optionally by year"""
     if year:
         qs = qs.filter(start__year=year)
@@ -138,7 +138,7 @@ def vertical_and_horizontal_count(qs):
     return vertical, horizontal
 
 
-def trip_averages(qs, units):
+def trip_averages(qs, units):  # noqa C901
     """Get the average distances in a QuerySet"""
     if not bool(qs):
         return None

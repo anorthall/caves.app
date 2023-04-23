@@ -6,9 +6,7 @@ User = get_user_model()
 
 class News(models.Model):
     title = models.CharField(max_length=100)
-    posted_at = models.DateTimeField(
-        help_text="If this date is in the future, it will not appear on the site until then."
-    )
+    posted_at = models.DateTimeField()
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     content = models.TextField(help_text="Markdown is supported.")
     is_published = models.BooleanField(

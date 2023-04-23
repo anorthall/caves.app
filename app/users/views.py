@@ -188,7 +188,8 @@ def verify_new_account(request):
             auth.login(request, verified_user)
             messages.success(
                 request,
-                f"Welcome, {verified_user.name}. Your registration has been completed and your email address verified!",
+                f"Welcome, {verified_user.name}. Your registration has been completed "
+                "and your email address verified!",
             )
             return redirect("log:index")
     else:
@@ -213,7 +214,8 @@ def resend_verify_email(request):
             send_verify_email(user.email, user.name, verify_url, verify_code)
         messages.info(
             request,
-            "If the provided email matched an account then the verification email has been resent. Please wait a few minutes and then check your email.",
+            "If the provided email matched an account then the verification email "
+            "has been resent. Please wait a few minutes and then check your email.",
         )
     else:
         form = ResendVerifyEmailForm()
@@ -260,7 +262,8 @@ def update_email(request):
 
             messages.info(
                 request,
-                "Please follow the instructions sent to your new email address within 24 hours to complete the change.",
+                "Please follow the instructions sent to your new email address within "
+                "24 hours to complete the change.",
             )
             return redirect("users:verify-email-change")
     else:
@@ -361,7 +364,8 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
             f_req.delete()
             messages.success(
                 request,
-                f"Friend request between {f_req.user_to} and {f_req.user_from} deleted.",
+                f"Friend request between {f_req.user_to} and {f_req.user_from} "
+                "deleted.",
             )
         else:
             raise Http404
@@ -388,7 +392,7 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
 class FriendRemoveView(LoginRequiredMixin, View):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        if not user in request.user.profile.friends.all():
+        if user not in request.user.profile.friends.all():
             raise Http404
 
         request.user.profile.friends.remove(user)

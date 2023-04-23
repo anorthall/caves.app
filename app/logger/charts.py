@@ -17,7 +17,7 @@ def _use_units(value, units):
 
 
 @login_required
-def stats_over_time(request):
+def stats_over_time(request):  # noqa C901
     """JSON data for a chart showing stats over time"""
     qs = Trip.objects.filter(user=request.user).order_by("start")
     labels, duration, vert_down, vert_up, surveyed, resurveyed = [], [], [], [], [], []

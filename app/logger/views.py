@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -59,8 +59,8 @@ class TripContextMixin:
         if not user == self.request.user:
             context["can_view_profile"] = user.profile.is_viewable_by(self.request.user)
 
-            if not self.request.user in user.profile.friends.all():
-                # TODO: Make this privacy aware, when friend request privacy is implemented
+            if self.request.user not in user.profile.friends.all():
+                # TODO: Make this privacy aware, when request privacy is implemented
                 context["can_add_friend"] = True
 
             if report:
@@ -103,9 +103,13 @@ def index(request):
 
     friends = request.user.profile.friends.all()
 
-    trips = Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
-    trips = trips.select_related("user", "user__profile", "user__settings")
-    trips = trips.prefetch_related("comments").order_by("-start")[:40]
+    trips = (
+        Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
+        .select_related("user", "user__profile", "user__settings")
+        .prefetch_related("comments")
+        .annotate(likes_count=Count("likes"), comments_count=Count("comments"))
+        .order_by("-start")[:40]
+    )
 
     # Remove trips that the user does not have permission to view.
     privacy_aware_trips = [x for x in trips if x.is_viewable_by(request.user)]
@@ -281,7 +285,7 @@ def user_statistics(request):
     return render(request, "statistics.html", context)
 
 
-def admin_tools(request):
+def admin_tools(request):  # noqa: C901
     """Tools for website administrators."""
     if not request.user.is_superuser:
         raise Http404
@@ -300,7 +304,7 @@ def admin_tools(request):
                     return redirect("log:index")
 
             except ObjectDoesNotExist:
-                messages.error(request, f"User was not found.")
+                messages.error(request, "User was not found.")
         elif request.POST.get("notify", False):
             form = AllUserNotificationForm(request.POST)
             if form.is_valid():
@@ -451,8 +455,9 @@ class TripDetail(TripContextMixin, DetailView):
 
     def get_queryset(self):
         qs = Trip.objects.filter(pk=self.kwargs["pk"]).select_related("user")
-        qs = qs.prefetch_related("comments", "comments__author__profile")
-        qs = qs.prefetch_related("comments__author__settings")
+        qs = qs.prefetch_related(
+            "comments", "comments__author__profile", "comments__author__settings"
+        ).annotate(comments_count=Count("comments"), likes_count=Count("likes"))
         return qs
 
     def get_object(self, *args, **kwargs):
@@ -548,9 +553,12 @@ class ReportDetail(TripContextMixin, DetailView):
     model = TripReport
 
     def get_queryset(self):
-        qs = TripReport.objects.all().select_related("user")
-        qs = qs.prefetch_related("comments", "comments__author__profile")
-        qs = qs.prefetch_related("comments__author__settings")
+        qs = (
+            TripReport.objects.all()
+            .select_related("user")
+            .prefetch_related("comments", "comments__author__profile")
+            .prefetch_related("comments__author__settings")
+        )
         return qs
 
 

@@ -66,14 +66,16 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     username = models.SlugField(
         max_length=30,
         unique=True,
-        help_text="A unique identifier that will be part of the web address for your logbook.",
+        help_text="A unique identifier that will be part of the web "
+        "address for your logbook.",
     )
 
     # is_active determines if a user can log in or not
     is_active = models.BooleanField(
         "Enabled user",
         default=False,
-        help_text="Only enabled users are able to sign in. Users are disabled until their email is verified.",
+        help_text="Only enabled users are able to sign in. Users are "
+        "disabled until their email is verified.",
     )
     date_joined = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(default=django_tz.now)
@@ -183,7 +185,8 @@ class UserProfile(models.Model):
     bio = models.TextField(
         "biography",
         blank=True,
-        help_text="Information about you that will be displayed on your public profile.",
+        help_text="Information about you that will be displayed on "
+        "your public profile.",
     )
 
     # Caving clubs
@@ -197,7 +200,8 @@ class UserProfile(models.Model):
     page_title = models.CharField(
         max_length=50,
         blank=True,
-        help_text="A title to display on your profile page (if enabled). If left blank it will use your full name.",
+        help_text="A title to display on your profile page (if enabled). "
+        "If left blank it will use your full name.",
     )
 
     # Social
@@ -275,13 +279,15 @@ class UserSettings(models.Model):
     private_notes = models.BooleanField(
         "Keep notes private",
         default=True,
-        help_text="Check this box to prevent your trip notes being displayed on your public profile (if enabled).",
+        help_text="Check this box to prevent your trip notes being "
+        "displayed on your public profile (if enabled).",
     )
 
     show_statistics = models.BooleanField(
         "Show statistics",
         default=True,
-        help_text="Check this box to show a statistics table on your public profile (if enabled).",
+        help_text="Check this box to show a statistics table on your "
+        "public profile (if enabled).",
     )
 
     # Timezone settings

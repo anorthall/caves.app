@@ -9,7 +9,11 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 from tinymce.models import HTMLField
 
-from .validators import *
+from .validators import (
+    above_zero_dist_validator,
+    horizontal_dist_validator,
+    vertical_dist_validator,
+)
 
 
 class Comment(models.Model):
@@ -99,7 +103,8 @@ class Trip(models.Model):
     cave_url = models.URLField(
         "cave website",
         blank=True,
-        help_text="A website, such as a Wikipedia page, giving more information on this cave.",
+        help_text="A website, such as a Wikipedia page, "
+        "giving more information on this cave.",
     )
 
     # Trip details
@@ -120,12 +125,14 @@ class Trip(models.Model):
     clubs = models.CharField(
         max_length=100,
         blank=True,
-        help_text="A comma-separated list of any caving clubs associated with this trip.",
+        help_text="A comma-separated list of any caving "
+        "clubs associated with this trip.",
     )
     expedition = models.CharField(
         max_length=100,
         blank=True,
-        help_text="A comma-separated list of any expeditions associated with this trip.",
+        help_text="A comma-separated list of any expeditions "
+        "associated with this trip.",
     )
 
     # Internal metadata
@@ -247,7 +254,8 @@ class Trip(models.Model):
     def clean(self):
         """Check that the start is before the end"""
         # Check self.start exists - may have been removed by form validation
-        # If it does not exist 'for real', the form/low level model validation will catch it.
+        # If it does not exist 'for real', the form/low level model validation
+        # will catch it.
         if self.start and self.end:
             if self.start > self.end:
                 raise ValidationError(
@@ -361,7 +369,8 @@ class TripReport(models.Model):
     )
     slug = models.SlugField(
         max_length=100,
-        help_text="A unique identifier for the URL of the report. No spaces or special characters allowed.",
+        help_text="A unique identifier for the URL of the report. "
+        "No spaces or special characters allowed.",
     )
     content = HTMLField()
 
@@ -421,5 +430,5 @@ class TripReport(models.Model):
 
     @property
     def is_public(self):
-        if self.is_private == False:
+        if self.is_private is False:
             return True
