@@ -13,7 +13,7 @@ crispy-bootstrap5==0.7
 django_debug_toolbar
 itsdangerous==2.1.2
 humanize==4.6.0
-psycopg2==2.9.5
+psycopg2==2.9.6
 gunicorn==20.1.0
 Pillow==9.5.0
 coverage
