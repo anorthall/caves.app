@@ -51,5 +51,11 @@ class NewsAdmin(admin.ModelAdmin):
 @admin.register(FAQ)
 class FAQAdmin(admin.ModelAdmin):
     list_display = ("question", "added", "updated")
-    readonly_fields = ("added", "updated")
+    readonly_fields = ("added", "updated", "author")
     ordering = ("updated",)
+
+    def save_model(self, request, obj, form, change):
+        """Set the author to the current user if it is a new FAQ item"""
+        if obj.author is None:
+            obj.author = request.user
+        super().save_model(request, obj, form, change)
