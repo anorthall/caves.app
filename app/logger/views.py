@@ -14,7 +14,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import localtime as lt
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, View
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
+)
 from logger import statistics
 from users.models import Notification, UserSettings
 
@@ -31,18 +38,18 @@ class TripContextMixin:
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
-        if isinstance(self.get_object(), TripReport):
-            report = self.get_object()
+        if isinstance(self.object, TripReport):
+            report = self.object
             trip = report.trip
             context["is_report"] = True  # For includes/trip_header.html
-        elif isinstance(self.get_object(), Trip):
-            trip = self.get_object()
+        elif isinstance(self.object, Trip):
+            trip = self.object
             if hasattr(trip, "report"):
                 report = trip.report
             else:
                 report = None
-        elif not self.get_object():
-            # Django will return Http404 shortly, so we can just:
+        elif not self.object:
+            # Django will return Http404 shortly, so we can just
             return
         else:
             raise TypeError("Object is not a Trip or TripReport")
@@ -65,11 +72,15 @@ class TripContextMixin:
 
         # Comment form
         initial = {
-            "pk": self.get_object().pk,
-            "type": self.get_object().__class__.__name__.lower(),
+            "pk": self.object.pk,
+            "type": self.object.__class__.__name__.lower(),
         }
         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
         return context
+
+    def get_object(self, *args, **kwargs):
+        self.object = super().get_object(*args, **kwargs)
+        return self.object
 
 
 def index(request):
@@ -91,16 +102,13 @@ def index(request):
     context = {"news": news}
 
     friends = request.user.profile.friends.all()
+
     trips = Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
-    trips = trips.prefetch_related("user__settings", "user__profile__friends")
-    trips = trips.order_by("-start")[:30]
+    trips = trips.select_related("user", "user__profile", "user__settings")
+    trips = trips.prefetch_related("comments").order_by("-start")[:40]
 
     # Remove trips that the user does not have permission to view.
-    privacy_aware_trips = []
-    for trip in trips:
-        sanitised_trip = trip.sanitise(request.user)
-        if sanitised_trip:
-            privacy_aware_trips.append(sanitised_trip)
+    privacy_aware_trips = [x for x in trips if x.is_viewable_by(request.user)]
     context["trips"] = privacy_aware_trips
 
     if len(privacy_aware_trips) == 0:
@@ -211,7 +219,6 @@ def export(request):
 
 @login_required
 def user_statistics(request):
-    """Show statistics for a user."""
     trips = request.user.trips
     chart_units = "m"
     if request.user.settings.units == UserSettings.IMPERIAL:
@@ -386,7 +393,6 @@ class UserProfile(ListView):
 
         if not self.user == self.request.user:
             qs = qs.select_related("user__settings", "user__profile")
-            # Check the user can view each trip
             privacy_aware_trips = []
             for trip in qs:
                 if trip.is_viewable_by(self.request.user):
@@ -396,7 +402,6 @@ class UserProfile(ListView):
             return qs
 
     def get_ordering(self):
-        """Allow sorting of the trip list table"""
         allowed_ordering = [
             "start",
             "cave_name",
@@ -413,7 +418,6 @@ class UserProfile(ListView):
         return self.ordering
 
     def get_context_data(self):
-        """Add the trip 'index' dict to prevent many DB queries, as well as GET parameters"""
         context = super().get_context_data()
         context["user"] = self.user
         context["page_title"] = self.get_page_title()
@@ -433,37 +437,33 @@ class UserProfile(ListView):
 
 
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    """Update/edit a trip."""
-
     model = Trip
     form_class = TripForm
     template_name_suffix = "_update_form"
     success_message = "The trip has been updated."
 
     def get_queryset(self):
-        """Only allow the user to update trips they created"""
         return Trip.objects.filter(user=self.request.user)
 
 
 class TripDetail(TripContextMixin, DetailView):
-    """View the details of a trip."""
-
     model = Trip
 
     def get_queryset(self):
-        return Trip.objects.all().select_related("user")
+        qs = Trip.objects.filter(pk=self.kwargs["pk"]).select_related("user")
+        qs = qs.prefetch_related("comments", "comments__author__profile")
+        qs = qs.prefetch_related("comments__author__settings")
+        return qs
 
     def get_object(self, *args, **kwargs):
-        object = super().get_object(*args, **kwargs)
-        if object.user == self.request.user:
-            return object
+        super().get_object(*args, **kwargs)
+        if self.object.user == self.request.user:
+            return self.object
         else:
-            return object.sanitise(self.request.user)
+            return self.object.sanitise(self.request.user)
 
 
 class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    """Create a new trip."""
-
     model = Trip
     form_class = TripForm
     template_name_suffix = "_create_form"
@@ -474,46 +474,37 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     }
 
     def form_valid(self, form):
-        """Set the user to the current user"""
         candidate = form.save(commit=False)
         candidate.user = self.request.user
         candidate.save()
         return super().form_valid(form)
 
     def get_initial(self):
-        """Set the cave_country field to the user's country"""
         initial = super(TripCreate, self).get_initial()
         initial = initial.copy()
         initial["cave_country"] = self.request.user.profile.country.name
         return initial
 
     def get_success_url(self):
-        """If 'addanother' is set, redirect to the form again."""
         if self.request.POST.get("addanother", False):
             return reverse("log:trip_create")
         return super().get_success_url()
 
 
 class TripDelete(LoginRequiredMixin, View):
-    """A view for deleting a trip."""
-
     def get(self, request, pk):
-        """Handle requests to delete friend requests"""
         trip = get_object_or_404(Trip, pk=pk)
-        if trip.user == request.user:
-            trip.delete()
-            messages.success(
-                request,
-                f"The trip to {trip.cave_name} has been deleted.",
-            )
-        else:
+        if not trip.user == request.user:
             raise Http404
+        trip.delete()
+        messages.success(
+            request,
+            f"The trip to {trip.cave_name} has been deleted.",
+        )
         return redirect("log:user", username=request.user.username)
 
 
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    """Create a new trip report."""
-
     model = TripReport
     form_class = TripReportForm
     template_name_suffix = "_create_form"
@@ -523,7 +514,6 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     }
 
     def form_valid(self, form):
-        """Set the user and trip"""
         candidate = form.save(commit=False)
         candidate.user = self.request.user
         candidate.trip = self.get_trip()
@@ -531,20 +521,17 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
-        """Add the trip to the context"""
         context = super().get_context_data(*args, **kwargs)
         context["trip"] = self.get_trip()
         return context
 
     def get_trip(self):
-        """Get the trip object and perform permissions checks"""
         trip = get_object_or_404(Trip, pk=self.kwargs["pk"])
         if not trip.user == self.request.user:
             raise Http404  # Users can only create reports for their own trips
         return trip
 
     def get(self, request, *args, **kwargs):
-        """If the trip report already exists, redirect to the detail view"""
         trip = self.get_trip()
         if trip.has_report:
             return redirect(trip.report.get_absolute_url())
@@ -552,61 +539,53 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().get(self, request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        """Pass the user to the form to validate the slug."""
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
 
 
 class ReportDetail(TripContextMixin, DetailView):
-    """View the details of a trip report."""
-
     model = TripReport
 
     def get_queryset(self):
-        return TripReport.objects.all().select_related("user")
+        qs = TripReport.objects.all().select_related("user")
+        qs = qs.prefetch_related("comments", "comments__author__profile")
+        qs = qs.prefetch_related("comments__author__settings")
+        return qs
 
 
 class ReportUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    """Update/edit a trip report."""
-
     model = TripReport
     form_class = TripReportForm
     template_name_suffix = "_update_form"
     success_message = "The trip report has been updated."
 
     def get_queryset(self):
-        """Only allow the user to update reports they created"""
         return TripReport.objects.filter(user=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
-        """Add the trip to the context"""
         context = super().get_context_data(*args, **kwargs)
         context["trip"] = self.get_object().trip
         return context
 
     def get_form_kwargs(self):
-        """Pass the user to the form to validate the slug."""
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
 
 
 class ReportDelete(LoginRequiredMixin, View):
-    """A view for deleting a trip."""
-
     def get(self, request, pk):
-        """Handle requests to delete friend requests"""
         report = get_object_or_404(TripReport, pk=pk)
-        trip = report.trip
-        if report.user == request.user:
-            report.delete()
-            messages.success(
-                request,
-                f"The trip report for the trip to {trip.cave_name} has been deleted.",
-            )
-        else:
+        if not report.user == request.user:
             raise Http404
+
+        trip = report.trip
+        report.delete()
+        messages.success(
+            request,
+            f"The trip report for the trip to {trip.cave_name} has been deleted.",
+        )
         return redirect("log:trip_detail", pk=trip.pk)
 
 
@@ -651,7 +630,11 @@ class DeleteComment(LoginRequiredMixin, View):
         return redirect(comment.content_object.get_absolute_url())
 
 
-class TripLikeToggle(LoginRequiredMixin, View):
+class TripLikeToggle(LoginRequiredMixin, TemplateView):
+    """HTMX view for toggling a trip like"""
+
+    template_name = "includes/htmx_trip_like.html"
+
     def get(self, request, pk):
         trip = get_object_or_404(Trip, pk=pk)
         if not trip.is_viewable_by(request.user):
@@ -662,4 +645,4 @@ class TripLikeToggle(LoginRequiredMixin, View):
         else:
             trip.likes.add(request.user)
 
-        return redirect(trip.get_absolute_url())
+        return self.render_to_response({"trip": trip})

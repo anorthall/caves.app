@@ -68,3 +68,9 @@ h1.page-title {
 .asteriskField {
   display: none !important;
 }
+
+/* HTMX */
+.htmx-request {
+  opacity: .5;
+  transition: opacity 300ms linear;
+}

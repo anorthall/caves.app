@@ -1,0 +1,8 @@
+{% with trip.likes.count as likes_count %}
+  <span id="like-button">
+    <a class="text-decoration-none text-primary" hx-get="{% url 'log:trip_like' trip.pk %}" hx-target="#like-button" hx-swap="outerHTML" href="#">
+      <i class="bi bi-hand-thumbs-up-fill"></i>
+      <span class="text-dark">{{ likes_count }} like{{ likes_count|pluralize }}</span>
+    </a>
+  </span>
+{% endwith %}

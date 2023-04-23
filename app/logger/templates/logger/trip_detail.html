@@ -141,38 +141,43 @@
       </div>
     {% endif %}
 
-    {% if request.user == trip.user %}
-      {% if trip.prev_trip is not None or trip.next_trip is not None %}
-        <div class="row mt-4">
-          <div class="col-6">
-            {% if trip.prev_trip %}
-              <a class="btn btn-sm btn-secondary" href="{% url 'log:trip_detail' trip.prev_trip.pk %}">Previous trip</a>
-            {% endif %}
+    {% comment %}
+
+      TODO: Considering removing this
+
+      {% if request.user == trip.user %}
+        {% if trip.prev_trip is not None or trip.next_trip is not None %}
+          <div class="row mt-4">
+            <div class="col-6">
+              {% if trip.prev_trip %}
+                <a class="btn btn-sm btn-secondary" href="{% url 'log:trip_detail' trip.prev_trip.pk %}">Previous trip</a>
+              {% endif %}
+            </div>
+            <div class="col-6">
+              {% if trip.next_trip %}
+                <a class="btn btn-sm btn-secondary float-end" href="{% url 'log:trip_detail' trip.next_trip.pk %}">Next trip</a>
+              {% endif %}
+            </div>
           </div>
-          <div class="col-6">
-            {% if trip.next_trip %}
-              <a class="btn btn-sm btn-secondary float-end" href="{% url 'log:trip_detail' trip.next_trip.pk %}">Next trip</a>
-            {% endif %}
-          </div>
-        </div>
+        {% endif %}
       {% endif %}
-    {% endif %}
+    {% endcomment %}
   </div>
 
   <div class="card-footer">
     <span class="float-start">
       {% if request.user.is_authenticated %}
-        <a class="text-decoration-none text-primary" href="{% url 'log:trip_like' trip.pk %}">
-          <i class="bi bi-hand-thumbs-up-fill"></i>
-        </a>
+        {% include "includes/htmx_trip_like.html" %}
       {% else %}
         <i class="bi bi-hand-thumbs-up-fill"></i>
+        {{ trip.likes }} like{{ trip.likes|pluralize }}
       {% endif %}
-      {{ trip.likes.count }} like{{ trip.likes.count|pluralize }}
     </span>
 
     <span class="float-end">
-      <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments.count }} comment{{ trip.comments.count|pluralize }}
+      {% with trip.comments.count as comments_count %}
+        <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ comments_count }} comment{{ comments_count|pluralize }}
+      {% endwith %}
     </span>
   </div>
 </div>

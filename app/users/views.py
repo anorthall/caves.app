@@ -291,11 +291,33 @@ class FriendListView(LoginRequiredMixin, TemplateView):
         else:
             form = AddFriendForm(request)
 
-        context = {
-            "friends_list": self.request.user.profile.friends.all(),
-            "friend_requests": FriendRequest.objects.filter(
+        friend_requests = (
+            FriendRequest.objects.filter(
                 Q(user_from=request.user) | Q(user_to=request.user)
-            ).order_by("user_from"),
+            )
+            .order_by("user_from")
+            .select_related(
+                "user_from",
+                "user_to",
+                "user_from__profile",
+                "user_to__profile",
+                "user_from__settings",
+                "user_to__settings",
+            )
+            .prefetch_related(
+                "user_from__profile__friends",
+                "user_to__profile__friends",
+            )
+        )
+
+        friends = request.user.profile.friends.all().select_related(
+            "profile",
+            "settings",
+        )
+
+        context = {
+            "friends_list": friends,
+            "friend_requests": friend_requests,
             "add_friend_form": form,
         }
 

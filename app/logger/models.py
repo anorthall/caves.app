@@ -258,25 +258,10 @@ class Trip(models.Model):
         return reverse("log:trip_detail", kwargs={"pk": self.pk})
 
     def sanitise(self, user_viewing):
-        """
-        Returns a privacy aware sanitised trip
-
-        user_viewing is the CavingUser viewing the trip
-
-        None will be returned if the user is not permitted to view the trip
-
-        Otherwise, if a user is permitted to view the trip with restrictions,
-        such as without the trip notes, a modified version of the Trip object
-        will be returned.
-        """
-        if self.is_viewable_by(user_viewing):
-            if self.user.settings.private_notes is True:
-                if not user_viewing == self.user:
-                    self.notes = None
-
-            return self
-
-        return None
+        """Sanitise the trip for viewing by another user"""
+        if user_viewing != self.user and self.user.settings.private_notes is True:
+            self.notes = None
+        return self
 
     def is_viewable_by(self, user_viewing):
         """Returns whether or not user_viewing can view this trip"""
