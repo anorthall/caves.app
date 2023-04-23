@@ -216,18 +216,6 @@ class TripTestCase(TestCase):
         self.assertEqual(stats["aided"], D(m=0))
         self.assertEqual(stats["time"], "0")
 
-    def test_next_and_prev_trip_properties(self):
-        """Test the Trip.next_trip and Trip.prev_trip properties"""
-        trip = Trip.objects.get(cave_name="Test Cave 1")
-        self.assertEqual(trip.prev_trip, None)
-        self.assertEqual(trip.next_trip.cave_name, "Test Cave 2")
-        self.assertEqual(trip.next_trip.number, trip.number + 1)
-
-        trip = Trip.objects.get(cave_name="Test Cave 6")
-        self.assertEqual(trip.next_trip, None)
-        self.assertEqual(trip.prev_trip.cave_name, "Test Cave 5")
-        self.assertEqual(trip.prev_trip.number, trip.number - 1)
-
 
 class TripIntegrationTests(TestCase):
     def setUp(self):

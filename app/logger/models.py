@@ -6,7 +6,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
-from django.utils.functional import cached_property
 from tinymce.models import HTMLField
 
 from .validators import (
@@ -288,24 +287,6 @@ class Trip(models.Model):
 
         return False
 
-    @property
-    def has_distances(self):
-        """Return True if at least one distance measurement is recorded"""
-        if self.horizontal_dist or self.vert_dist_down or self.vert_dist_up:
-            return True
-        elif self.aid_dist or self.surveyed_dist or self.resurveyed_dist:
-            return True
-
-    @property
-    def distances(self):
-        """Returns a list of distance fields that hold a value"""
-        distances = {}
-        for field in self._meta.fields:
-            if isinstance(field, DistanceField):
-                if getattr(self, field.name) > D(m=0):
-                    distances[field.verbose_name] = getattr(self, field.name)
-        return distances
-
     def get_liked_str(self, for_user=None, qs=None):
         """Returns a string of the names of the users that liked the trip"""
         friends_liked = []
@@ -350,6 +331,24 @@ class Trip(models.Model):
         return f"Liked by {english_list}"
 
     @property
+    def has_distances(self):
+        """Return True if at least one distance measurement is recorded"""
+        if self.horizontal_dist or self.vert_dist_down or self.vert_dist_up:
+            return True
+        elif self.aid_dist or self.surveyed_dist or self.resurveyed_dist:
+            return True
+
+    @property
+    def distances(self):
+        """Returns a list of distance fields that hold a value"""
+        distances = {}
+        for field in self._meta.fields:
+            if isinstance(field, DistanceField):
+                if getattr(self, field.name) > D(m=0):
+                    distances[field.verbose_name] = getattr(self, field.name)
+        return distances
+
+    @property
     def is_private(self):
         if self.privacy == self.DEFAULT:
             return self.user.is_private
@@ -369,32 +368,12 @@ class Trip(models.Model):
     def has_report(self):
         return hasattr(self, "report") and self.report is not None
 
-    @cached_property
+    @property
     def number(self):
         """Returns the 'index' of the trip by date"""
         qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
-
-    @cached_property
-    def next_trip(self):
-        """Return the next trip for the user ordered by start date"""
-        qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
-        index = list(qs.values_list("pk", flat=True)).index(self.pk)
-        try:
-            return qs[index + 1]
-        except (IndexError, ValueError):
-            return None
-
-    @cached_property
-    def prev_trip(self):
-        """Return the previous trip ordered by start date"""
-        qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
-        index = list(qs.values_list("pk", flat=True)).index(self.pk)
-        try:
-            return qs[index - 1]
-        except (IndexError, ValueError):
-            return None
 
 
 class TripReport(models.Model):

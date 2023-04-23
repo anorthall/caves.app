@@ -100,28 +100,6 @@
         </div>
       </div>
     {% endif %}
-
-    {% comment %}
-
-      TODO: Considering removing this
-
-      {% if request.user == trip.user %}
-        {% if trip.prev_trip is not None or trip.next_trip is not None %}
-          <div class="row mt-4">
-            <div class="col-6">
-              {% if trip.prev_trip %}
-                <a class="btn btn-sm btn-secondary" href="{% url 'log:trip_detail' trip.prev_trip.pk %}">Previous trip</a>
-              {% endif %}
-            </div>
-            <div class="col-6">
-              {% if trip.next_trip %}
-                <a class="btn btn-sm btn-secondary float-end" href="{% url 'log:trip_detail' trip.next_trip.pk %}">Next trip</a>
-              {% endif %}
-            </div>
-          </div>
-        {% endif %}
-      {% endif %}
-    {% endcomment %}
   </div>
 
   <div class="card-footer">
