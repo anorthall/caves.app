@@ -1,16 +1,27 @@
-  <span id="like-button{{ trip.pk }}">
-    <a class="text-decoration-none text-primary" hx-get="{% url 'log:trip_like' trip.pk %}" hx-target="#like-button{{ trip.pk }}" hx-swap="outerHTML" href="#">
-      <i class="bi bi-hand-thumbs-up-fill"></i>
-      {% comment %}
-        This code is here to allow us to use a value passed from annotate() when listing
-        many trips, but not have to bother otherwise.
-      {% endcomment %}
-      {% if likes_count is not None %}
-        <span class="text-dark">{{ likes_count }} like{{ likes_count|pluralize }}</span>
-      {% else %}
-        {% with trip.likes.count as likes_count %}
-          <span class="text-dark">{{ likes_count }} like{{ likes_count|pluralize }}</span>
-        {% endwith %}
-      {% endif %}
-    </a>
-  </span>
+{% load user %}
+<span id="like-button{{ trip.pk }}">
+  <a class="text-decoration-none"
+    hx-get="{% url 'log:trip_like' trip.pk %}"
+    hx-target="#like-button{{ trip.pk }}"
+    hx-swap="outerHTML"
+    href="#">
+    {% if request.user in trip.likes.all %}
+      <span class="text-primary">
+        <i class="bi bi-hand-thumbs-up-fill"></i>
+      </span>
+    {% else %}
+      <span class="text-secondary">
+        <i class="bi bi-hand-thumbs-up"></i>
+      </span>
+    {% endif %}
+    {% comment %}
+      This code is here to allow us to use a value passed from annotate() when listing
+      many trips, but not have to bother otherwise.
+    {% endcomment %}
+    {% if likes_count is not None %}
+      <span class="text-dark">{{ likes_count }} like{{ likes_count|pluralize }}</span>
+    {% else %}
+      <span class="text-dark">{{ trip.likes.count }} like{{ trip.likes.count|pluralize }}</span>
+    {% endif %}
+  </a>
+</span>

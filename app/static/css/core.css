@@ -74,3 +74,35 @@ h1.page-title {
   opacity: .5;
   transition: opacity 300ms linear;
 }
+
+/* Notifications */
+.icon-badge-group .icon-badge-container {
+    display: inline-block;
+}
+
+.icon-badge-group .icon-badge-container:first-child {
+  margin-left:0
+}
+
+.icon-badge-container {
+    position:relative;
+}
+
+.icon-badge-icon {
+    font-size: 1rem;
+    position: relative;
+}
+
+.icon-badge {
+    background-color: red;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    width:20px;
+    height:20px;
+    border-radius: 35%;
+    position: absolute;
+    top: -5px;
+    left: 15px;
+}

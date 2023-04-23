@@ -1,9 +1,22 @@
 {% if notifications.list %}
   <li class="nav-item dropdown">
     <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
-      <i class="bi bi-bell"></i>
-      <span class="d-none d-lg-inline">{% if notifications.unread %}{{ notifications.unread }}{% endif %}</span>
-      <span class="d-lg-none">&nbsp;Notifications{% if notifications.unread %} <strong>{{ notifications.unread }}</strong>{% endif %}</span>
+      <span class="d-none d-lg-block icon-badge-container">
+        {% if notifications.unread %}
+          <i class="bi bi-bell-fill icon-badge-icon"></i>
+          <span class="icon-badge d-none d-lg-block">{{ notifications.unread }}</span>
+        {% else %}
+          <i class="bi bi-bell"></i>
+        {% endif %}
+      </span>
+
+      <span class="d-lg-none">
+        <i class="bi bi-bell"></i>&nbsp; Notifications
+        {% if notifications.unread %}
+          ({{ notifications.unread }})
+        {% endif %}
+      </span>
+
     </a>
     <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
       {% for notification in notifications.list %}
