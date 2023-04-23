@@ -343,7 +343,7 @@ class FriendAddView(LoginRequiredMixin, View):
             )
             messages.success(request, f"Friend request sent to {user}.")
         else:
-            if form.errors["user"]:
+            if form.errors.get("user", None):
                 for error in form.errors["user"]:
                     messages.error(request, error)
             elif form.non_field_errors():

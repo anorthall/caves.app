@@ -26,6 +26,11 @@ urlpatterns = [
     path(
         "comment/delete/<int:pk>/", views.DeleteComment.as_view(), name="comment_delete"
     ),
+    path(
+        "comment/htmxtrip/<int:pk>/",
+        views.HTMXTripComment.as_view(),
+        name="comment_htmxtrip",
+    ),
     path("statistics/", views.user_statistics, name="statistics"),
     path("admin-tools/", views.admin_tools, name="admin_tools"),
     path("charts/", include("logger.charts_urls")),

@@ -28,7 +28,7 @@ body {
 }
 
 /* Clickable JS elements */
-[data-href], [data-bs-toggle] {
+[data-href], [data-bs-toggle], [hx-get] {
   cursor: pointer;
 }
 

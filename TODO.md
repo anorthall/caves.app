@@ -1,9 +1,7 @@
 # Social TODO
 
 ## Features
-- [/] Add trip likes
-- [/] Add timeline feature to homepage
-- [ ] Add clubs and expeditions to the trip detail view
+- [ ] Add display of users that liked a trip
 - [ ] Fix sorting of surface trips
 - [ ] Change export function to use django-import-export
 - [ ] Improve notification display (stylistic changes - fixed width, scrollable, images)
@@ -13,6 +11,9 @@
 - [ ] Add all tests listed below
 - [ ] Define separate requirements.txt files for development and production
 - [ ] Add profile picture support
+- [X] Add trip likes
+- [X] Add timeline feature to homepage
+- [X] Add clubs and expeditions to the trip detail view
 - [X] Add trip comments
 - [X] Remove 'Public' module and integrate all Trip/Report/Trip List displays into one view
 - [X] Change Trip and Trip Report delete links into a Bootstrap modal

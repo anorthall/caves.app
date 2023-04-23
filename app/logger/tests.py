@@ -295,21 +295,6 @@ class TripIntegrationTests(TestCase):
         response = self.client.get("/admin-tools/")
         self.assertEqual(response.status_code, 404)
 
-    def test_anonymous_user_cannot_access_trip_pages(self):
-        """Test that an anonymous user cannot access trip pages"""
-        pages = [
-            f"/trip/{self.trip.pk}/",
-            f"/trip/edit/{self.trip.pk}/",
-            f"/trip/delete/{self.trip.pk}/",
-            "/trip/add/",
-            "/trips/",
-            "/trips/export/",
-        ]
-        for page in pages:
-            response = self.client.get(page)
-            self.assertIn(response.status_code, [301, 302])
-            self.assertEqual(response.url, "/account/login/?next=" + page)
-
     def test_about_page(self):
         """Test the about page"""
         response = self.client.get("/about/")

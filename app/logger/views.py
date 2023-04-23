@@ -97,25 +97,31 @@ def index(request):
     if not request.user.is_authenticated:
         return render(request, "index/index_unregistered.html")
 
-    news = News.objects.filter(is_published=True, posted_at__lte=timezone.now())
-    news = news.prefetch_related("author__profile").order_by("-posted_at")[:3]
-    context = {"news": news}
+    context = {}
+
+    news = (
+        News.objects.filter(is_published=True, posted_at__lte=timezone.now())
+        .prefetch_related("author__profile")
+        .order_by("-posted_at")[:3]
+    )
+    context["news"] = news
 
     friends = request.user.profile.friends.all()
-
     trips = (
         Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
         .select_related("user", "user__profile", "user__settings")
         .prefetch_related("comments")
-        .annotate(likes_count=Count("likes"), comments_count=Count("comments"))
-        .order_by("-start")[:40]
+        .annotate(
+            likes_count=Count("likes", distinct=True),
+            comments_count=Count("comments", distinct=True),
+        )
+        .order_by("-added")[:40]  # TODO: Make this configurable
     )
 
     # Remove trips that the user does not have permission to view.
-    privacy_aware_trips = [x for x in trips if x.is_viewable_by(request.user)]
-    context["trips"] = privacy_aware_trips
+    context["trips"] = [x for x in trips if x.is_viewable_by(request.user)]
 
-    if len(privacy_aware_trips) == 0:
+    if len(context["trips"]) == 0:
         return render(request, "index/index_new_user.html", context)
     else:
         return render(request, "index/index_registered.html", context)
@@ -457,7 +463,10 @@ class TripDetail(TripContextMixin, DetailView):
         qs = Trip.objects.filter(pk=self.kwargs["pk"]).select_related("user")
         qs = qs.prefetch_related(
             "comments", "comments__author__profile", "comments__author__settings"
-        ).annotate(comments_count=Count("comments"), likes_count=Count("likes"))
+        ).annotate(
+            comments_count=Count("comments", distinct=True),
+            likes_count=Count("likes", distinct=True),
+        )
         return qs
 
     def get_object(self, *args, **kwargs):
@@ -613,7 +622,7 @@ class AddComment(LoginRequiredMixin, View):
                 "Your comment has been added.",
             )
         else:
-            if form.errors["content"]:
+            if form.errors.get("content", None):
                 for error in form.errors["content"]:
                     messages.error(request, error)
             else:
@@ -622,6 +631,31 @@ class AddComment(LoginRequiredMixin, View):
                     "There was an error adding your comment. Please try again.",
                 )
         return redirect(form.object.get_absolute_url())
+
+
+class HTMXTripComment(LoginRequiredMixin, TemplateView):
+    template_name = "includes/comments.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        trip = get_object_or_404(Trip, pk=self.kwargs["pk"])
+        if not trip.is_viewable_by(self.request.user):
+            raise Http404
+
+        initial = {"pk": trip.pk, "type": "trip"}
+        context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
+        context["display_hide_button"] = True
+        context["object"] = trip
+        return context
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                "comments", "comments__author__profile", "comments__author__settings"
+            )
+        )
 
 
 class DeleteComment(LoginRequiredMixin, View):

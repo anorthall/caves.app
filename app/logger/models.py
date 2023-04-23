@@ -1,5 +1,5 @@
 import humanize
-from distance import DistanceField, DistanceUnitField
+from distance import D, DistanceField, DistanceUnitField
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -295,6 +295,16 @@ class Trip(models.Model):
             return True
         elif self.aid_dist or self.surveyed_dist or self.resurveyed_dist:
             return True
+
+    @property
+    def distances(self):
+        """Returns a list of distance fields that hold a value"""
+        distances = {}
+        for field in self._meta.fields:
+            if isinstance(field, DistanceField):
+                if getattr(self, field.name) > D(m=0):
+                    distances[field.verbose_name] = getattr(self, field.name)
+        return distances
 
     @property
     def is_private(self):

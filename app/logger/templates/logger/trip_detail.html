@@ -1,4 +1,5 @@
 {% extends "base_sidebar.html" %}
+{% load distformat %}
 {% block title %}{{ trip.cave_name }}{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
@@ -32,66 +33,12 @@
       {% endif %}
     </div>
 
-    {% if trip.has_distances %}
-      <hr />
-
-      <div class="row row-cols-2 row-cols-md-3 g-3">
-        {% if trip.horizontal_dist %}
-          <!-- Horizontal dist -->
-          <div class="col">
-            <small class="text-muted">Horizontal distance</small><br />
-            {{ trip.horizontal_dist }}
-          </div>
-        {% endif %}
-
-        {% if trip.vert_dist_down %}
-          <!-- Vertical distance descended -->
-          <div class="col">
-            <small class="text-muted">Distance descended</small><br />
-            {{ trip.vert_dist_down }}
-          </div>
-        {% endif %}
-
-        {% if trip.vert_dist_up %}
-          <!-- Vertical distance ascended -->
-          <div class="col">
-            <small class="text-muted">Distance ascended</small><br />
-            {{ trip.vert_dist_up }}
-          </div>
-        {% endif %}
-
-        {% if trip.surveyed_dist %}
-          <!-- Surveyed distance -->
-          <div class="col">
-            <small class="text-muted">Surveyed distance</small><br />
-            {{ trip.surveyed_dist }}
-          </div>
-        {% endif %}
-
-        {% if trip.resurveyed_dist %}
-          <!-- Resurveyed distance -->
-          <div class="col">
-            <small class="text-muted">Resurveyed distance</small><br />
-            {{ trip.resurveyed_dist }}
-          </div>
-        {% endif %}
-
-        {% if trip.aid_dist %}
-          <!-- Aid climbing distance -->
-          <div class="col">
-            <small class="text-muted">Aid climbing distance</small><br />
-            {{ trip.aid_dist }}
-          </div>
-        {% endif %}
-      </div>
-    {% endif %}
-
     {% if trip.cavers or trip.clubs or trip.expedition %}
       <hr />
       <div class="row g-3">
         {% if trip.cavers %}
           <!-- Cavers -->
-          <div class="col-12">
+          <div class="col-12 col-lg-6 col-xl-4">
             <small class="text-muted">Cavers on trip</small><br />
             {{ trip.cavers }}
           </div>
@@ -99,7 +46,7 @@
 
         {% if trip.clubs %}
           <!-- Clubs -->
-          <div class="col-6 col-lg-4">
+          <div class="col-6 col-xl-4">
             <small class="text-muted">Clubs</small><br />
             {{ trip.clubs }}
           </div>
@@ -107,11 +54,24 @@
 
         {% if trip.expedition %}
           <!-- Expedition -->
-          <div class="col-6 col-lg-4">
+          <div class="col-6 col-xl-4">
             <small class="text-muted">Expedition</small><br />
             {{ trip.expedition }}
           </div>
         {% endif %}
+      </div>
+    {% endif %}
+
+    {% if trip.has_distances %}
+      <hr />
+
+      <div class="row row-cols-2 row-cols-md-3 g-3">
+        {% for name, dist in trip.distances.items %}
+          <div class="col">
+            <small class="text-muted">{{ name|capfirst }}</small><br />
+            {{ dist|distformat:request.user.settings.units }}
+          </div>
+        {% endfor %}
       </div>
     {% endif %}
 
@@ -175,9 +135,7 @@
     </span>
 
     <span class="float-end">
-      {% with trip.comments.count as comments_count %}
-        <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ comments_count }} comment{{ comments_count|pluralize }}
-      {% endwith %}
+        <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
     </span>
   </div>
 </div>
