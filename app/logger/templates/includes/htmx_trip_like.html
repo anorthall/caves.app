@@ -17,11 +17,7 @@
     {% endif %}
 
     <span class="text-dark">
-        {% if liked_str %}
-          {{ liked_str|get:trip.pk }}
-        {% else %}
-          {{ trip.get_liked_str }}
-        {% endif %}
+      {{ liked_str|get:trip.pk }}
     </span>
   </a>
 </span>

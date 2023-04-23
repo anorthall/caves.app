@@ -287,7 +287,7 @@ class Trip(models.Model):
 
         return False
 
-    def get_liked_str(self, for_user=None, qs=None):
+    def get_liked_str(self, for_user=None):
         """Returns a string of the names of the users that liked the trip"""
         friends_liked = []
         others_liked = []

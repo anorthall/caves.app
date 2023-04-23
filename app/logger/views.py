@@ -134,8 +134,7 @@ def index(request):
     # Build the 'liked_str' dictionary
     liked_str_index = {}
     for trip in context["trips"]:
-        print(f"trip: {trip} user_liked {trip.user_liked}")
-        liked_str_index[trip.pk] = trip.get_liked_str(request.user, trips)
+        liked_str_index[trip.pk] = trip.get_liked_str(request.user)
     context["liked_str"] = liked_str_index
 
     return render(request, "index/index_registered.html", context)
@@ -480,6 +479,11 @@ class TripDetail(TripContextMixin, DetailView):
         ).annotate(
             comments_count=Count("comments", distinct=True),
             likes_count=Count("likes", distinct=True),
+            user_liked=Exists(
+                User.objects.filter(
+                    pk=self.request.user.pk, liked_trips=OuterRef("pk")
+                ).only("pk")
+            ),
         )
         return qs
 
@@ -489,6 +493,13 @@ class TripDetail(TripContextMixin, DetailView):
             return self.object
         else:
             return self.object.sanitise(self.request.user)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["liked_str"] = {
+            self.object.pk: self.object.get_liked_str(self.request.user)
+        }
+        return context
 
 
 class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -703,7 +714,14 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
             trip.likes.add(request.user)
             trip.user_liked = True
 
-        return self.render_to_response({"trip": trip})
+        liked_str = {trip.pk: trip.get_liked_str(request.user)}
+
+        context = {
+            "trip": trip,
+            "liked_str": liked_str,
+        }
+
+        return self.render_to_response(context)
 
     def get_queryset(self, request, pk):
         return Trip.objects.filter(pk=pk).annotate(
