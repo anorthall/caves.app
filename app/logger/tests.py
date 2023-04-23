@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import datetime as dt
 from django.utils.timezone import localtime as lt
-from logger import services, statistics
+from logger import statistics
 
 from .models import Trip, TripReport
 
@@ -157,14 +157,6 @@ class TripTestCase(TestCase):
         for trip in qs:
             self.assertEqual(trip.number, x)
             x += 1
-
-    def test_trip_index(self):
-        """Test the Trip.trip_index class method"""
-        user = User.objects.get(username="testusername")
-        trip_index = services.trip_index(user)
-        self.assertEqual(len(trip_index), 6)
-        for trip in Trip.objects.all():
-            self.assertEqual(trip_index[trip.pk], trip.number)
 
     def test_stats_for_user(self):
         """Test the stats_for_user method from the statistics module"""
