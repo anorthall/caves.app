@@ -306,6 +306,49 @@ class Trip(models.Model):
                     distances[field.verbose_name] = getattr(self, field.name)
         return distances
 
+    def get_liked_str(self, for_user=None, qs=None):
+        """Returns a string of the names of the users that liked the trip"""
+        friends_liked = []
+        others_liked = []
+        self_liked = False
+
+        for user in self.likes.all():
+            if for_user and user == for_user:
+                self_liked = True
+            elif user in self.user.profile.friends.all():
+                friends_liked.append(user.profile.name)
+            else:
+                others_liked.append(user.profile.name)
+
+        # Ensure the user's friends are shown first
+        liked_user_names = []
+        liked_user_names.extend(friends_liked)
+        liked_user_names.extend(others_liked)
+        if self_liked:
+            liked_user_names.append("you")
+
+        # No likes
+        if not liked_user_names:
+            return "0 likes"
+
+        # Limit to 2 names
+        if len(liked_user_names) > 2:
+            number_of_others = len(liked_user_names) - 2
+            liked_user_names = liked_user_names[:2]
+            if number_of_others == 1:
+                liked_user_names.append(f"and {number_of_others} other")
+            else:
+                liked_user_names.append(f"and {number_of_others} others")
+
+        # Produce the result
+        if len(liked_user_names) == 1:
+            return f"Liked by {liked_user_names[0]}"
+        elif len(liked_user_names) == 2:
+            return f"Liked by {liked_user_names[0]} and {liked_user_names[1]}"
+
+        english_list = ", ".join(liked_user_names)
+        return f"Liked by {english_list}"
+
     @property
     def is_private(self):
         if self.privacy == self.DEFAULT:

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count, Q
+from django.db.models import Count, Exists, OuterRef, Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -109,22 +109,36 @@ def index(request):
     friends = request.user.profile.friends.all()
     trips = (
         Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
-        .select_related("user", "user__profile", "user__settings")
-        .prefetch_related("comments")
+        .select_related("user__settings")
+        .prefetch_related("comments", "likes")
+        .prefetch_related("user__profile__friends")
         .annotate(
             likes_count=Count("likes", distinct=True),
             comments_count=Count("comments", distinct=True),
+            user_liked=Exists(
+                User.objects.filter(
+                    pk=request.user.pk, liked_trips=OuterRef("pk")
+                ).only("pk")
+            ),
         )
-        .order_by("-added")[:40]  # TODO: Make this configurable
-    )
+    ).order_by("-added")[
+        :25
+    ]  # TODO: Make this configurable
 
     # Remove trips that the user does not have permission to view.
     context["trips"] = [x for x in trips if x.is_viewable_by(request.user)]
 
     if len(context["trips"]) == 0:
         return render(request, "index/index_new_user.html", context)
-    else:
-        return render(request, "index/index_registered.html", context)
+
+    # Build the 'liked_str' dictionary
+    liked_str_index = {}
+    for trip in context["trips"]:
+        print(f"trip: {trip} user_liked {trip.user_liked}")
+        liked_str_index[trip.pk] = trip.get_liked_str(request.user, trips)
+    context["liked_str"] = liked_str_index
+
+    return render(request, "index/index_registered.html", context)
 
 
 @login_required
@@ -678,13 +692,24 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
     template_name = "includes/htmx_trip_like.html"
 
     def get(self, request, pk):
-        trip = get_object_or_404(Trip, pk=pk)
-        if not trip.is_viewable_by(request.user):
+        trip = self.get_queryset(request, pk).first()
+        if not trip or not trip.is_viewable_by(request.user):
             raise Http404
 
-        if request.user in trip.likes.all():
+        if trip.user_liked:
             trip.likes.remove(request.user)
+            trip.user_liked = False
         else:
             trip.likes.add(request.user)
+            trip.user_liked = True
 
         return self.render_to_response({"trip": trip})
+
+    def get_queryset(self, request, pk):
+        return Trip.objects.filter(pk=pk).annotate(
+            user_liked=Exists(
+                User.objects.filter(
+                    pk=request.user.pk, liked_trips=OuterRef("pk")
+                ).only("pk")
+            ),
+        )
