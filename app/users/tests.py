@@ -1,14 +1,16 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.test import Client, TestCase
+from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
+from users.templatetags.user import user as user_templatetag
 
 from .models import Trip
 
 User = get_user_model()
 
 
+@tag("unit", "users", "fast")
 class UserTestCase(TestCase):
     def setUp(self):
         # Reduce log level to avoid 404 error
@@ -77,16 +79,19 @@ class UserTestCase(TestCase):
         self.assertTrue(user.is_staff)
 
 
+@tag("integration", "users", "fast")
 class UserIntegrationTestCase(TestCase):
     def setUp(self):
-        self.enabled = User.objects.create_user(
+        self.client = Client()
+
+        self.user = User.objects.create_user(
             email="enabled@user.app",
             username="testuser",
             password="password",
             name="Firstname",
         )
-        self.enabled.is_active = True
-        self.enabled.save()
+        self.user.is_active = True
+        self.user.save()
 
         self.disabled = User.objects.create_user(
             email="disabled@user.app",
@@ -108,21 +113,21 @@ class UserIntegrationTestCase(TestCase):
 
     def test_user_login(self):
         """Test login for users"""
-        client = Client()
-        response = client.post(
-            "/account/login/", {"email": "enabled@user.app", "password": "password"}
+        response = self.client.post(
+            reverse("users:login"),
+            {"email": "enabled@user.app", "password": "password"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
+        self.assertEqual(response.url, reverse("log:index"))
 
-        response = client.get("/")
+        response = self.client.get(reverse("log:index"))
         self.assertContains(response, "Now logged in as enabled@user.app")
 
     def test_disabled_user_login(self):
         """Test login for disabled users"""
-        client = Client()
-        response = client.post(
-            "/account/login/", {"email": "disabled@user.app", "password": "password"}
+        response = self.client.post(
+            reverse("users:login"),
+            {"email": "disabled@user.app", "password": "password"},
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -131,8 +136,9 @@ class UserIntegrationTestCase(TestCase):
 
     def test_login_with_invalid_post_data(self):
         """Test login with invalid post data"""
-        client = Client()
-        response = client.post("/account/login/", {"invalid-data": "invalid-data"})
+        response = self.client.post(
+            reverse("users:login"), {"invalid-data": "invalid-data"}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "The username and password provided do not match any account"
@@ -140,9 +146,8 @@ class UserIntegrationTestCase(TestCase):
 
     def test_user_registration(self):
         """Test user registration process, including email verification"""
-        client = Client()
-        response = client.post(
-            "/account/register/",
+        response = self.client.post(
+            reverse("users:register"),
             {
                 "name": "Test",
                 "email": "test_register@user.app",
@@ -152,7 +157,7 @@ class UserIntegrationTestCase(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/account/verify/")
+        self.assertEqual(response.url, reverse("users:verify-new-account"))
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject, "Welcome to caves.app - verify your email"
@@ -168,14 +173,16 @@ class UserIntegrationTestCase(TestCase):
         self.assertEquals(user.username, "testregistration")
 
         # Test resending verification email with invalid email
-        response = client.post("/account/verify/resend/", {"email": "blah@blah.blah"})
+        response = self.client.post(
+            reverse("users:verify-resend"), {"email": "blah@blah.blah"}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
         self.assertEqual(len(mail.outbox), 1)
 
         # Test resending verification email with valid email
-        response = client.post(
-            "/account/verify/resend/", {"email": "test_register@user.app"}
+        response = self.client.post(
+            reverse("users:verify-resend"), {"email": "test_register@user.app"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
@@ -185,15 +192,18 @@ class UserIntegrationTestCase(TestCase):
         )
 
         # Test verification with invalid code
-        response = client.get("/account/verify/?verify_code=invalid")
+        response = self.client.get(
+            reverse("users:verify-new-account") + "?verify_code=invalid"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "Email verification code is not valid or has expired"
         )
 
         # Test verification with valid code
-        response = client.get(
-            "/account/verify/?verify_code=" + verify_code, follow=True
+        response = self.client.get(
+            reverse("users:verify-new-account") + "?verify_code=" + verify_code,
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -205,18 +215,18 @@ class UserIntegrationTestCase(TestCase):
         self.assertTrue(user.is_active)
 
         # Test verification pages redirect to index when logged in
-        response = client.get("/account/verify/")
+        response = self.client.get(reverse("users:verify-new-account"))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
+        self.assertEqual(response.url, reverse("log:index"))
 
-        response = client.get("/account/verify/resend/")
+        response = self.client.get(reverse("users:verify-resend"))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
+        self.assertEqual(response.url, reverse("log:index"))
 
         # Test resending verification email now the user is active
-        client.logout()
-        response = client.post(
-            "/account/verify/resend/", {"email": "test_register@user.app"}
+        self.client.logout()
+        response = self.client.post(
+            reverse("users:verify-resend"), {"email": "test_register@user.app"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
@@ -224,9 +234,8 @@ class UserIntegrationTestCase(TestCase):
 
     def test_user_registration_with_invalid_data(self):
         """Test user registration view with invalid data"""
-        client = Client()
-        response = client.post(
-            "/account/register/",
+        response = self.client.post(
+            reverse("users:register"),
             {
                 "name": "Test",
                 "email": "test_register",
@@ -243,13 +252,11 @@ class UserIntegrationTestCase(TestCase):
 
     def test_change_user_email(self):
         """Test changing a user's email address"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
+        self.client.force_login(self.user)
 
         # Submit the change email form
-        response = client.post(
-            "/account/email/",
+        response = self.client.post(
+            reverse("users:email"),
             {"email": "new-email@caves.app", "password": "password"},
             follow=True,
         )
@@ -261,7 +268,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Check for security notification email
         self.assertEqual(mail.outbox[1].subject, "Change of email address requested")
-        self.assertEqual(mail.outbox[1].to, [user.email])
+        self.assertEqual(mail.outbox[1].to, [self.user.email])
 
         # Check for verification code
         self.assertEqual(mail.outbox[0].subject, "Verify your change of email")
@@ -269,34 +276,35 @@ class UserIntegrationTestCase(TestCase):
         verify_url = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
 
         # Test verification with invalid code
-        response = client.get("/account/verify/email/?verify_code=invalid")
+        response = self.client.get(
+            reverse("users:verify-email-change") + "?verify_code=invalid"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "Email verification code is not valid or has expired"
         )
 
         # Test verification with valid code
-        response = client.get(
-            "/account/verify/email/?verify_code=" + verify_url, follow=True
+        response = self.client.get(
+            reverse("users:verify-email-change") + "?verify_code=" + verify_url,
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "Your new email address, new-email@caves.app, has been verified."
         )
-        user.refresh_from_db()
-        self.assertEqual(user.email, "new-email@caves.app")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "new-email@caves.app")
 
     def test_user_profile_page(self):
         """Test user profile page"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
-        response = client.get(reverse("users:account"))
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:account"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, user.name)
-        self.assertContains(response, user.email)
-        self.assertContains(response, user.username)
-        self.assertContains(response, user.settings.privacy)
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, self.user.email)
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.settings.privacy)
         self.assertContains(response, "Europe/London")
         self.assertContains(
             response, "If you select a trip to be public, the notes will be hidden."
@@ -307,11 +315,9 @@ class UserIntegrationTestCase(TestCase):
 
     def test_submit_updates_to_profile(self):
         """Test submitting updates to a user's profile"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
-        response = client.post(
-            "/account/update/",
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:account_update"),
             {
                 "name": "New",
                 "username": "newusername",
@@ -329,25 +335,23 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, "Your profile has been updated.")
 
         # Check the user details have been updated
-        user.refresh_from_db()
+        self.user.refresh_from_db()
         from zoneinfo import ZoneInfo
 
-        self.assertEqual(user.name, "New")
-        self.assertEqual(user.username, "newusername")
-        self.assertEqual(user.profile.location, "Testing New Location")
-        self.assertEqual(user.settings.privacy, user.settings.PUBLIC)
-        self.assertEqual(user.settings.timezone, ZoneInfo("US/Central"))
-        self.assertEqual(user.settings.units, user.settings.IMPERIAL)
-        self.assertTrue(user.settings.show_statistics)
-        self.assertEqual(user.profile.bio, "This is a bio for testing.")
+        self.assertEqual(self.user.name, "New")
+        self.assertEqual(self.user.username, "newusername")
+        self.assertEqual(self.user.profile.location, "Testing New Location")
+        self.assertEqual(self.user.settings.privacy, self.user.settings.PUBLIC)
+        self.assertEqual(self.user.settings.timezone, ZoneInfo("US/Central"))
+        self.assertEqual(self.user.settings.units, self.user.settings.IMPERIAL)
+        self.assertTrue(self.user.settings.show_statistics)
+        self.assertEqual(self.user.profile.bio, "This is a bio for testing.")
 
     def test_change_user_password(self):
         """Test changing a user's password"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
-        response = client.post(
-            "/account/password/",
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:password"),
             {
                 "old_password": "password",
                 "new_password1": "new_password",
@@ -357,5 +361,22 @@ class UserIntegrationTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Your password has been updated.")
-        user.refresh_from_db()
-        self.assertTrue(user.check_password("new_password"))
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("new_password"))
+
+
+@tag("unit", "fast", "users")
+class TemplateTagUnitTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="enabled@user.app",
+            username="enabled",
+            password="testpassword",
+            name="Joe",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+    def test_user_template_tag_with_non_user_object(self):
+        """Test the user template tag raises TypeError when passed a non-user object"""
+        self.assertRaises(TypeError, user_templatetag, None, None)

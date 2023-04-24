@@ -1,8 +1,11 @@
+import zoneinfo
+
+import pytz
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
-from logger.models import Trip
+from logger.models import Comment, Trip, TripReport
 from users.models import FriendRequest
 
 from .models import FAQ, News
@@ -10,7 +13,7 @@ from .models import FAQ, News
 User = get_user_model()
 
 
-@tag("fast", "core", "pageload")
+@tag("fast", "pageload")
 class TestAllPagesLoad(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -21,6 +24,19 @@ class TestAllPagesLoad(TestCase):
         )
         self.user.is_active = True
         self.user.save()
+
+        self.trip = Trip.objects.create(
+            user=self.user, cave_name="Test Trip", start=timezone.now()
+        )
+
+        self.report = TripReport.objects.create(
+            user=self.user,
+            trip=self.trip,
+            title="Test Report",
+            slug="test",
+            content="Test Report Content",
+            pub_date=timezone.now().date(),
+        )
 
         self.client = Client()
 
@@ -203,24 +219,20 @@ class TestAllPagesLoad(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_trip_page_loads(self):
-        """Test that the trip page loads"""
+    def test_trip_detail_page_loads(self):
+        """Test that the trip detail page loads"""
         self.client.force_login(self.user)
-        trip = Trip.objects.create(
-            cave_name="Test Trip", start=timezone.now(), user=self.user
+        response = self.client.get(
+            reverse("log:trip_detail", kwargs={"pk": self.trip.pk})
         )
-        trip.save()
-        response = self.client.get(reverse("log:trip_detail", kwargs={"pk": trip.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_trip_update_page_loads(self):
         """Test that the trip update page loads"""
         self.client.force_login(self.user)
-        trip = Trip.objects.create(
-            cave_name="Test Trip", start=timezone.now(), user=self.user
+        response = self.client.get(
+            reverse("log:trip_update", kwargs={"pk": self.trip.pk})
         )
-        trip.save()
-        response = self.client.get(reverse("log:trip_update", kwargs={"pk": trip.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_trip_list_redirect_page_loads(self):
@@ -238,10 +250,71 @@ class TestAllPagesLoad(TestCase):
         response = self.client.get(reverse("log:export"))
         self.assertEqual(response.status_code, 200)
 
-    # TODO: Add rest of tests for logger.urls
+    def test_admin_tools_page_loads(self):
+        """Test that the admin tools page loads"""
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:admin_tools"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_trip_report_detail_page_loads(self):
+        """Test that the trip report detail page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("log:report_detail", kwargs={"pk": self.report.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_trip_report_update_page_loads(self):
+        """Test that the trip report update page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("log:report_update", kwargs={"pk": self.report.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_htmx_comment_page_loads(self):
+        """Test that the HTMX comment page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("log:comment_htmxtrip", kwargs={"pk": self.trip.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_htmx_comment_page_loads_with_comments(self):
+        """Test that the HTMX comment page loads with comments"""
+        self.client.force_login(self.user)
+        for i in range(10):
+            c = Comment.objects.create(
+                author=self.user, content_object=self.trip, content=f"Test Comment {i}"
+            )
+            c.save()
+
+        response = self.client.get(
+            reverse("log:comment_htmxtrip", kwargs={"pk": self.trip.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_htmx_trip_like_toggle_page_loads(self):
+        """Test that the HTMX trip like toggle page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("log:trip_like", kwargs={"pk": self.trip.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_htmx_trip_like_toggle_page_loads_with_likes(self):
+        """Test that the HTMX trip like toggle page loads with likes"""
+        self.client.force_login(self.user)
+        self.trip.likes.add(self.user)
+        response = self.client.get(
+            reverse("log:trip_like", kwargs={"pk": self.trip.pk})
+        )
+        self.assertEqual(response.status_code, 200)
 
 
-@tag("integration", "admin")
+@tag("integration", "admin", "fast")
 class TestAuthorAutoassignForNewsAndFAQs(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -287,3 +360,42 @@ class TestAuthorAutoassignForNewsAndFAQs(TestCase):
 
         faq = FAQ.objects.get(question="Test Question")
         self.assertEqual(faq.author, self.user)
+
+
+class TestMiddleware(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@caves.app",
+            username="testuser",
+            password="password",
+            name="Test User",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+        self.client = Client()
+
+    @tag("fast", "middleware")
+    def test_timezone_middleware_with_all_timezones(self):
+        """
+        Test that the timezone middleware does not produce any errors
+        when tested with every timezone in pytz and zoneinfo
+        """
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("log:index"))
+        self.assertEqual(response.status_code, 200)
+
+        for tz in pytz.all_timezones:
+            self.user.settings.timezone = tz
+            self.user.settings.save()
+
+            response = self.client.get(reverse("log:index"))
+            self.assertEqual(response.status_code, 200)
+
+        for tz in zoneinfo.available_timezones():
+            self.user.settings.timezone = tz
+            self.user.settings.save()
+
+            response = self.client.get(reverse("log:index"))
+            self.assertEqual(response.status_code, 200)
