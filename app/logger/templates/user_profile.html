@@ -136,7 +136,7 @@
               {{ trip.type }}
             </td>
 
-            <td class="d-none d-md-table-cell text-end">
+            <td class="text-end">
               {% if trip.report %}
                 <a class="text-warning" href="{% url 'log:report_detail' pk=trip.report.pk %}"><i class="bi bi-card-text"></i></a>&nbsp;
               {% endif %}

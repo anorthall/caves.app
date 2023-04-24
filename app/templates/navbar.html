@@ -44,35 +44,16 @@
           {% endif %}
 
           {% if request.user.is_superuser %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle {% active_link 'log:admin_tools' %}" href="#" role="button" data-bs-toggle="dropdown">
+            <li class="nav-item">
+              <a class="nav-link {% active_link 'log:statistics' %}" href="{% url 'admin:index' %}">
                 <i class="bi bi-gear"></i>&nbsp; Admin
               </a>
-              <ul class="dropdown-menu dropdown-menu-end navbar-dropdown bg-light p-0">
-                <li>
-                  <a class="dropdown-item fw-normal text-dark" href="{% url 'admin:index' %}">
-                    <i class="bi bi-gear"></i>&nbsp; Admin
-                  </a>
-                </li>
+            </li>
 
-                <li>
-                  <a class="dropdown-item fw-normal text-dark {% active_link 'log:admin_tools' %}" href="{% url 'log:admin_tools' %}">
-                    <i class="bi bi-tools"></i>&nbsp; Tools
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark" href="https://github.com/anorthall/caves.app">
-                    <i class="bi bi-github"></i>&nbsp; GitHub
-                  </a>
-                </li>
-
-                <li>
-                  <a class="dropdown-item fw-normal text-dark" href="https://stats.caver.dev/caves.app">
-                    <i class="bi bi-graph-up"></i>&nbsp; Analytics
-                  </a>
-                </li>
-              </ul>
+            <li class="nav-item">
+              <a class="nav-link {% active_link 'log:admin_tools' %}" href="{% url 'log:admin_tools' %}">
+                <i class="bi bi-tools"></i>&nbsp; Tools
+              </a>
             </li>
           {% endif %}
 

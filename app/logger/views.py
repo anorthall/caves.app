@@ -322,9 +322,9 @@ def admin_tools(request):  # noqa: C901
                     messages.success(request, f"Now logged in as {user.email}.")
                     login(request, user)
                     return redirect("log:index")
-
             except ObjectDoesNotExist:
                 messages.error(request, "User was not found.")
+
         elif request.POST.get("notify", False):
             form = AllUserNotificationForm(request.POST)
             if form.is_valid():
@@ -336,51 +336,11 @@ def admin_tools(request):  # noqa: C901
                     )
                 messages.success(request, "Notifications sent.")
 
-    users = User.objects.all()
-    active_users = users.filter(is_active=True)
-    disabled_users = users.filter(is_active=False)
-    prune_users = disabled_users.filter(
-        date_joined__lt=timezone.now() - timezone.timedelta(days=1)
+    login_user_list = User.objects.filter(is_active=True).values_list(
+        "email", flat=True
     )
-    joined_year = users.filter(
-        date_joined__gt=timezone.now() - timezone.timedelta(days=365)
-    )
-    joined_month = joined_year.filter(
-        date_joined__gt=timezone.now() - timezone.timedelta(days=31)
-    )
-    joined_week = joined_month.filter(
-        date_joined__gt=timezone.now() - timezone.timedelta(days=7)
-    )
-    joined_day = joined_week.filter(
-        date_joined__gt=timezone.now() - timezone.timedelta(days=1)
-    )
-
-    trips = Trip.objects.all()
-    trips_year = trips.filter(added__gt=timezone.now() - timezone.timedelta(days=365))
-    trips_month = trips_year.filter(
-        added__gt=timezone.now() - timezone.timedelta(days=31)
-    )
-    trips_week = trips_month.filter(
-        added__gt=timezone.now() - timezone.timedelta(days=7)
-    )
-    trips_day = trips_week.filter(added__gt=timezone.now() - timezone.timedelta(days=1))
-
-    login_user_list = active_users.values_list("email", flat=True)
 
     context = {
-        "users": users,
-        "active_users": active_users.order_by("-last_seen"),
-        "disabled_users": disabled_users,
-        "prune_users": prune_users.order_by("date_joined"),
-        "joined_day": joined_day,
-        "joined_week": joined_week,
-        "joined_month": joined_month,
-        "joined_year": joined_year,
-        "trips": trips,
-        "trips_day": trips_day,
-        "trips_week": trips_week,
-        "trips_month": trips_month,
-        "trips_year": trips_year,
         "login_user_list": login_user_list,
         "notify_form": AllUserNotificationForm(),
     }
