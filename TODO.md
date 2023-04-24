@@ -1,10 +1,6 @@
 # Social TODO
 
 ## Features
-- [ ] Change export function to use django-import-export
-- [ ] Add email preferences model
-- [ ] Add email notifications of friend requests
-- [ ] Add all tests listed below
 - [X] Add full display of users that liked a trip
 - [X] Allow users to delete comments on objects they created
 - [X] Fix Distance field sorting bug
