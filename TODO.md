@@ -5,13 +5,14 @@
 - [ ] Fix liked trips queries (too many!)
 - [ ] Fix sorting of surface trips
 - [ ] Change export function to use django-import-export
-- [ ] Add option to disable email and/or username being used to add you as a friend
 - [ ] Add email preferences model
 - [ ] Add email notifications of friend requests
 - [ ] Add all tests listed below
 - [ ] Define separate requirements.txt files for development and production
 - [ ] Add profile picture support
 - [/] Improve notification display (stylistic changes - fixed width, scrollable, images)
+- [X] Add option to disable email and/or username being used to add you as a friend
+- [X] Add option to disable comments
 - [X] Add trip likes
 - [X] Add timeline feature to homepage
 - [X] Add clubs and expeditions to the trip detail view

@@ -105,21 +105,29 @@
 
         <div class="row p-1 border-bottom">
           <div class="col-5 col-md-4">
-            <strong>Trips</strong>
+            <strong>Comments</strong>
           </div>
 
           <div class="col">
-            {{ user.trips|length }}
+            {% if user.settings.allow_comments %}
+              Enabled
+            {% else %}
+              Disabled
+            {% endif %}
           </div>
         </div>
 
         <div class="row p-1 border-bottom">
           <div class="col-5 col-md-4">
-            <strong>Reports</strong>
+            <strong>Friend requests</strong>
           </div>
 
           <div class="col">
-            {{ user.reports|length }}
+            {% if user.settings.allow_friend_email or user.settings.allow_friend_username %}
+              Enabled
+            {% else %}
+              Disabled
+            {% endif %}
           </div>
         </div>
 

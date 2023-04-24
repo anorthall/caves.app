@@ -212,6 +212,9 @@ class SettingsChangeForm(forms.ModelForm):
             "units",
             "timezone",
             "show_statistics",
+            "allow_friend_username",
+            "allow_friend_email",
+            "allow_comments",
         )
 
 
@@ -283,16 +286,21 @@ class AddFriendForm(forms.Form):
     def clean_user(self):
         """Validate the user field and convert it to a User object"""
         user = self.cleaned_data["user"].strip().lower()
+        user_input = user  # For error messages
 
         try:
             user = User.objects.get(username=user)
+            if not user.settings.allow_friend_username:
+                raise User.DoesNotExist
         except User.DoesNotExist:
-            pass
-
-        try:
-            user = User.objects.get(email=user)
-        except User.DoesNotExist:
-            raise ValidationError("User not found.")
+            try:
+                user = User.objects.get(email=user)
+                if not user.settings.allow_friend_email:
+                    raise User.DoesNotExist
+            except User.DoesNotExist:
+                raise ValidationError(
+                    f"Could not find a user with the identifier '{user_input}'."
+                )
 
         if user == self.request.user:
             raise ValidationError("You cannot add yourself as a friend.")

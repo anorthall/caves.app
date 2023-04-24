@@ -168,6 +168,9 @@ class AddCommentForm(forms.Form):
         if not self.object.is_viewable_by(self.request.user):
             raise ValidationError("You are not allowed to comment on that item.")
 
+        if not self.object.user.settings.allow_comments:
+            raise ValidationError("Comments are not allowed on that item.")
+
         return self.cleaned_data
 
     def save(self, commit=True):

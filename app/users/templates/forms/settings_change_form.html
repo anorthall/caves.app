@@ -111,4 +111,70 @@
       {{ form.private_notes.help_text }}
     </div>
   </div>
+
+  <!-- Friend requests by email checkbox -->
+  <div class="col-12 col-md-6">
+    <div class="form-check">
+      {% if form.is_bound %}
+        {% if form.allow_friend_email.errors %}
+          {% render_field form.allow_friend_email class="form-check-input is-invalid" %}
+          {% for e in form.allow_friend_email.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        {% else %}
+          {% render_field form.allow_friend_email class="form-check-input is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field form.allow_friend_email class="form-check-input" %}
+      {% endif %}
+      <label class="form-check-label" for="{{ form.allow_friend_email.auto_id }}">
+        {{ form.allow_friend_email.label }}
+      </label>
+    </div>
+    <div class="form-text">
+      {{ form.allow_friend_email.help_text }}
+    </div>
+  </div>
+
+  <!-- Friend requests by username checkbox -->
+  <div class="col-12 col-md-6">
+    <div class="form-check">
+      {% if form.is_bound %}
+        {% if form.allow_friend_username.errors %}
+          {% render_field form.allow_friend_username class="form-check-input is-invalid" %}
+          {% for e in form.allow_friend_username.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        {% else %}
+          {% render_field form.allow_friend_username class="form-check-input is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field form.allow_friend_username class="form-check-input" %}
+      {% endif %}
+      <label class="form-check-label" for="{{ form.allow_friend_username.auto_id }}">
+        {{ form.allow_friend_username.label }}
+      </label>
+    </div>
+    <div class="form-text">
+      {{ form.allow_friend_username.help_text }}
+    </div>
+  </div>
+
+  <!-- Allow comments checkbox -->
+  <div class="col-12 col-md-6">
+    <div class="form-check">
+      {% if form.is_bound %}
+        {% if form.allow_comments.errors %}
+          {% render_field form.allow_comments class="form-check-input is-invalid" %}
+          {% for e in form.allow_comments.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        {% else %}
+          {% render_field form.allow_comments class="form-check-input is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field form.allow_comments class="form-check-input" %}
+      {% endif %}
+      <label class="form-check-label" for="{{ form.allow_comments.auto_id }}">
+        {{ form.allow_comments.label }}
+      </label>
+    </div>
+    <div class="form-text">
+      {{ form.allow_comments.help_text }}
+    </div>
+  </div>
 </div>

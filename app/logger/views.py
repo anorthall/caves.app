@@ -68,6 +68,7 @@ class TripContextMixin:
 
         context["trip"] = trip
         context["report"] = report
+        # This is the author of the trip/report, not the request user
         context["user"] = user
 
         # Comment form

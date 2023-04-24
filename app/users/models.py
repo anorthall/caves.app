@@ -297,6 +297,31 @@ class UserSettings(models.Model):
         help_text="Timezone to enter and display dates and times in.",
     )
 
+    # Social settings
+    allow_friend_username = models.BooleanField(
+        "Allow friend requests by username",
+        default=True,
+        help_text="If enabled, other users will be able to add you as a "
+        "friend by entering your username. This will not affect your "
+        "ability to add other users as friends.",
+    )
+
+    allow_friend_email = models.BooleanField(
+        "Allow friend requests by email",
+        default=False,
+        help_text="If enabled, other users will be able to add you as a "
+        "friend by entering your email address. This will not affect your "
+        "ability to add other users as friends.",
+    )
+
+    allow_comments = models.BooleanField(
+        "Allow comments on your trips",
+        default=True,
+        help_text="If enabled, other users will be able to comment on your trips "
+        "and trip reports. Disabling this setting will not delete any existing "
+        "comments, but will hide them until it is re-enabled.",
+    )
+
     class Meta:
         verbose_name_plural = "user settings"
 
