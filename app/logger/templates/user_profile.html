@@ -153,11 +153,9 @@
     {% include "paginate_bootstrap.html" %}
   </div>
 {% else %}
-  <div class="card-body">
-    <p class="m-0">
-      You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
-    </p>
-  </div>
+  {% if request.user == user %}
+    You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
+  {% endif %}
 {% endif %}
 
 {% endblock main %}
