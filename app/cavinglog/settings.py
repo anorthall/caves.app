@@ -1,8 +1,10 @@
 """
 caves.app settings
 """
-import os, socket
+import os
+import socket
 from pathlib import Path
+
 from django.contrib.messages import constants as messages
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,8 +19,12 @@ DATETIME_FORMAT = "H:i Y-m-d"
 DATE_FORMAT = "Y-m-d"
 TIME_FORMAT = "H:i"
 
-# Site root URL with protocol
+# Site root URL with protocol and without a trailing slash
 SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
+
+# Media files
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_URL = "/media/"
 
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
@@ -66,7 +72,6 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "logger.apps.LoggerConfig",
-    "public.apps.PublicConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -79,6 +84,8 @@ INSTALLED_APPS = [
     "tinymce",
     "active_link",
     "mailer",
+    "crispy_forms",
+    "crispy_bootstrap5",
     "markdownify.apps.MarkdownifyConfig",
     "debug_toolbar",
 ]
@@ -124,6 +131,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "users.context_processors.notifications",
+                "core.context_processors.site_root",
             ],
         },
     },
@@ -150,7 +159,7 @@ DATABASES = {
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa: E501
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -230,7 +239,20 @@ MARKDOWNIFY = {
         "LINKIFY_TEXT": {
             "PARSE_URLS": True,
         },
-    }
+    },
+    "comment": {
+        "WHITELIST_TAGS": [
+            "a",
+            "strong",
+            "blockquote",
+            "em",
+            "i",
+            "b",
+        ],
+        "LINKIFY_TEXT": {
+            "PARSE_URLS": True,
+        },
+    },
 }
 
 # TinyMCE configuration
@@ -238,8 +260,12 @@ TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
     "resize": "true",
     "menubar": "file edit view insert format tools table help",
-    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment code typography",
-    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table powerpaste advcode help wordcount spellchecker typography",
+    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment code typography",  # noqa E501
+    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table powerpaste advcode help wordcount spellchecker typography",  # noqa E501
     "removed_menuitems": "newdocument spellchecker help",
     "height": "500",
 }
+
+# Crispy forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

@@ -1,0 +1,36 @@
+{% load active_link_tags %}
+<div class="card">
+  <div class="card-header text-muted">
+    Account options
+  </div>
+
+  <nav class="nav nav-pills flex-column m-2">
+    <a class="nav-link {% active_link 'users:account' %}" href="{% url 'users:account' %}">
+      <i class="bi bi-info-circle"></i>&nbsp; View your account
+    </a>
+
+    <a class="nav-link {% active_link 'users:account_update' %}" href="{% url 'users:account_update' %}">
+      <i class="bi bi-pencil-square"></i>&nbsp; Profile &amp; settings
+    </a>
+
+    <a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
+      <i class="bi bi-people"></i>&nbsp; Your friends
+    </a>
+
+    <a class="nav-link {% active_link 'users:password' %}" href="{% url 'users:password' %}">
+      <i class="bi bi-key"></i>&nbsp; Change password
+    </a>
+
+    <a class="nav-link {% active_link 'users:email' %}" href="{% url 'users:email' %}">
+      <i class="bi bi-at"></i>&nbsp; Change email
+    </a>
+
+    <a class="nav-link {% active_link 'log:export' %}" href="{% url 'log:export' %}">
+      <i class="bi bi-file-earmark-text"></i>&nbsp; Export trips
+    </a>
+
+    <a class="nav-link" href="{% url 'users:logout' %}">
+      <i class="bi bi-box-arrow-right"></i>&nbsp; Sign out
+    </a>
+  </nav>
+</div>

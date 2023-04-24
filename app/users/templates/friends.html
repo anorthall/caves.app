@@ -1,0 +1,192 @@
+{% extends "base_sidebar.html" %}
+{% load crispy_forms_tags %}
+{% load user %}
+{% block title %}Your friends{% endblock %}
+{% block sidebar %}{% include "includes/sidebar_users.html" %}{% endblock %}
+
+{% block main %}
+{% if friends_list %}
+  <div class="card mb-4">
+    <div class="card-header">
+      Your friends
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Last seen</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody class="align-middle">
+            {% for friend in friends_list %}
+              <tr>
+                <td>
+                  {% user friend %}
+                </td>
+
+                <td>
+                  {{ friend.username }}
+                </td>
+
+                <td>
+                  {{ friend.last_seen|timesince }} ago
+                </td>
+
+                <td class="text-end">
+                  <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeFriendModal{{ forloop.counter }}">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+              </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% if friend_requests %}
+  <div class="card mb-4">
+    <div class="card-header">
+      Friend requests
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Request from</th>
+              <th>Request to</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody class="align-middle">
+            {% for friend_request in friend_requests %}
+              <tr>
+                {% if friend_request.user_from == request.user %}
+                  <td>You</td>
+                {% else %}
+                  <td>
+                    {% user friend_request.user_from show_username=True %}
+                  </td>
+                {% endif %}
+
+                {% if friend_request.user_to == request.user %}
+                  <td>You</td>
+                {% else %}
+                  <td>
+                    {% user friend_request.user_to show_username=True %}
+                  </td>
+                {% endif %}
+
+                <td class="text-end">
+                  {% if friend_request.user_to == request.user %}
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#acceptReqModal{{ forloop.counter }}">
+                      <i class="bi bi-check-lg"></i>
+                    </button>
+                  {% endif %}
+                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteReqModel{{ forloop.counter }}">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">
+    Add a friend
+  </div>
+
+  <div class="card-body py-0">
+    {% crispy add_friend_form %}
+    <div id="form-errors">{{ form_errors }}</div>
+  </div>
+</div>
+
+{% for friend_request in friend_requests %}
+  <div class="modal fade" id="deleteReqModel{{ forloop.counter }}" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Delete friend request</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          {% if friend_request.user_from == request.user %}
+            Are you sure you wish to delete a friend request that you sent to
+            {% user friend_request.user_to %}?
+          {% else %}
+            Are you sure you wish to delete a friend request that you received from
+            {% user friend_request.user_from %}?
+          {% endif %}
+          They will not be notified of this action.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="{% url "users:friend_request_delete" pk=friend_request.pk %}">
+            <button type="button" class="btn btn-danger">Delete request</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if friend_request.user_to == request.user %}
+    <div class="modal fade" id="acceptReqModal{{ forloop.counter }}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5">Accept friend request</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you wish to accept the friend request from {% user friend_request.user_from %}?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <a href="{% url "users:friend_request_accept" pk=friend_request.pk %}">
+              <button type="button" class="btn btn-success">Add friend</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+
+{% for friend in friends_list %}
+  <div class="modal fade" id="removeFriendModal{{ forloop.counter }}" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Remove friend</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you wish to remove {% user friend %} as a friend? You will have
+          to request to be their friend again if you change your mind.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="{% url "users:friend_remove" username=friend.username %}">
+            <button type="button" class="btn btn-danger">Remove friend</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% endblock main %}

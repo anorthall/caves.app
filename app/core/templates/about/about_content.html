@@ -24,6 +24,8 @@
   <a href="{% url 'core:help' %}">help page</a>.
 </p>
 
+<hr class="my-4">
+
 <h3 class="mt-4 page-title">Statistics</h3>
 <p>
   caves.app currently has <strong>{{ user_count|intcomma }}</strong> registered users and <strong>{{ trip_count|intcomma }}</strong> trips
@@ -31,7 +33,7 @@
 </p>
 
 {% if not registered %}
-  <hr class="my-4" />
+  <hr class="my-4">
 
   <figure class="figure mb-4">
     <img class="figure-img img-fluid rounded" src="{% static "img/about/averages.png" %}" alt="Caving statistics on caves.app." />

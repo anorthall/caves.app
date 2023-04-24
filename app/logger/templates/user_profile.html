@@ -1,0 +1,163 @@
+{% extends "base_full_width.html" %}
+{% load get %}
+{% load distformat %}
+{% load static %}
+{% load markdownify %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
+
+{% block main %}
+<div class="row page-title mb-3">
+  <div class="col-auto">
+    <h1>{{ page_title }}</h1>
+  </div>
+
+  <div class="col d-none d-md-flex justify-content-end align-items-center">
+    <small class="text-muted float-right">
+      @{{ user.username }}
+    </small>
+  </div>
+</div>
+
+{% if user.profile.bio %}
+  {{ user.profile.bio|markdownify }}
+{% elif not user.profile.bio and not trips %}
+  {% if request.user == user %}
+    <p>Once you add some trips, or a biography in your profile, they will appear here!</p>
+  {% else %}
+    <p>This is the profile of a caves.app user who has not added any trips or a bio yet.</p>
+  {% endif %}
+{% endif %}
+
+{% if trips %}
+  <div class="table-responsive mt-4">
+    <table class="table table-hover table-striped mb-0">
+      <thead class="border-top">
+        <tr>
+          <th scope="col">
+            Date
+            <small>
+              <a href="?sort=start" class="text-decoration-none">
+                <i class="bi bi-sort-up"></i>
+              </a>
+              <a href="?sort=-start" class="text-decoration-none">
+                <i class="bi bi-sort-down"></i>
+              </a>
+            </small>
+          </th>
+
+          <th scope="col">
+            Cave
+            <small>
+              <a href="?sort=cave_name" class="text-decoration-none">
+                <i class="bi bi-sort-alpha-up"></i>
+              </a>
+              <a href="?sort=-cave_name" class="text-decoration-none">
+                <i class="bi bi-sort-alpha-down"></i>
+              </a>
+            </small>
+          </th>
+
+          <th class="d-none d-md-table-cell" scope="col">
+            Duration
+            <small>
+              <a href="?sort=duration" class="text-decoration-none">
+                <i class="bi bi-sort-up"></i>
+              </a>
+              <a href="?sort=-duration" class="text-decoration-none">
+                <i class="bi bi-sort-down"></i>
+              </a>
+            </small>
+          </th>
+
+          <th class="d-none d-lg-table-cell" scope="col">
+            Up
+            <small>
+              <a href="?sort=vert_dist_up" class="text-decoration-none">
+                <i class="bi bi-sort-up"></i>
+              </a>
+              <a href="?sort=-vert_dist_up" class="text-decoration-none">
+                <i class="bi bi-sort-down"></i>
+              </a>
+            </small>
+          </th>
+
+          <th class="d-none d-lg-table-cell" scope="col">
+            Down
+            <small>
+              <a href="?sort=vert_dist_down" class="text-decoration-none">
+                <i class="bi bi-sort-up"></i>
+              </a>
+              <a href="?sort=-vert_dist_down" class="text-decoration-none">
+                <i class="bi bi-sort-down"></i>
+              </a>
+            </small>
+          </th>
+
+          <th class="d-none d-lg-table-cell" scope="col">
+            Trip type
+            <small>
+              <a href="?sort=type" class="text-decoration-none">
+                <i class="bi bi-sort-alpha-up"></i>
+              </a>
+              <a href="?sort=-type" class="text-decoration-none">
+                <i class="bi bi-sort-alpha-down"></i>
+              </a>
+            </small>
+          </th>
+
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for trip in trips %}
+          <tr data-href="{% url 'log:trip_detail' pk=trip.pk %}">
+            <td>{{ trip.start|date:"j M y" }}</td>
+
+            <td>
+              {{ trip.cave_name }}
+
+              {% if trip.cave_url %}
+                <a class="d-none d-md-inline" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
+              {% endif %}
+            </td>
+
+            <td class="d-none d-md-table-cell">
+              {% if trip.duration_str %}
+                {{ trip.duration_str }}
+              {% endif %}
+            </td>
+
+            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:dist_format }}</td>
+
+            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_down|distformat:dist_format }}</td>
+
+            <td class="d-none d-lg-table-cell">
+              {{ trip.type }}
+            </td>
+
+            <td class="text-end">
+              {% if trip.report %}
+                <a class="text-warning" href="{% url 'log:report_detail' pk=trip.report.pk %}"><i class="bi bi-card-text"></i></a>&nbsp;
+              {% endif %}
+              {% if request.user == user %}
+                <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>&nbsp;
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% include "paginate_bootstrap.html" %}
+  </div>
+{% else %}
+  <div class="card-body">
+    <p class="m-0">
+      You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
+    </p>
+  </div>
+{% endif %}
+
+{% endblock main %}

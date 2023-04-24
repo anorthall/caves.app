@@ -1,8 +1,50 @@
-from django import forms
-from django.utils import timezone
-from django.core.exceptions import ValidationError
 from datetime import timedelta
-from .models import Trip, TripReport
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django import forms
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.urls import reverse
+from django.utils import timezone
+from logger.templatetags.distformat import distformat
+from users.models import Notification
+
+from .models import Comment, Trip, TripReport
+
+User = get_user_model()
+
+
+class DistanceUnitFormMixin:
+    def __init__(self, *args, **kwargs):
+        """
+        Format all distance units using distformat
+
+        There is a bug(?) in django-distance-field that causes distances
+        to occasionally be rendered as scientific notation. Formatting using
+        distformat fixes this.
+        """
+
+        instance = kwargs.get("instance", None)
+        if not instance:
+            return super().__init__(*args, **kwargs)
+
+        distance_fields = [
+            "horizontal_dist",
+            "vert_dist_down",
+            "vert_dist_up",
+            "surveyed_dist",
+            "resurveyed_dist",
+            "aid_dist",
+        ]
+
+        units = instance.user.settings.units
+        initial = {}
+        for field in distance_fields:
+            initial[field] = distformat(getattr(instance, field), units)
+
+        kwargs.update({"initial": initial})
+        super().__init__(*args, **kwargs)
 
 
 class TripReportForm(forms.ModelForm):
@@ -32,7 +74,7 @@ class TripReportForm(forms.ModelForm):
             return slug
 
 
-class TripForm(forms.ModelForm):
+class TripForm(DistanceUnitFormMixin, forms.ModelForm):
     template_name = "forms/trip_form.html"
 
     class Meta:
@@ -77,7 +119,8 @@ class TripForm(forms.ModelForm):
             if end == start:
                 self.add_error(
                     "end",
-                    "The start and end time must not be the same. If you do not know the end time, leave it blank.",
+                    "The start and end time must not be the same. If you "
+                    "do not know the end time, leave it blank.",
                 )
             elif start > end:
                 self.add_error(
@@ -88,3 +131,89 @@ class TripForm(forms.ModelForm):
                     "end",
                     "The trip is unrealistically long in duration (over 60 days).",
                 )
+
+
+class AllUserNotificationForm(forms.ModelForm):
+    """Form to send a notification to all users"""
+
+    template_name = "forms/bs5_form.html"
+
+    class Meta:
+        model = Notification
+        fields = ["message", "url"]
+
+
+class AddCommentForm(forms.Form):
+    content = forms.CharField(
+        required=True,
+        help_text="Your comment will be visible to anyone who can view this page.",
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    type = forms.CharField(widget=forms.HiddenInput())
+    pk = forms.IntegerField(widget=forms.HiddenInput())
+
+    def __init__(self, request, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.request = request
+
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = ""
+        self.helper.form_show_errors = False
+        self.helper.form_show_labels = False
+        self.helper.form_action = reverse("log:comment_add")
+        self.helper.add_input(Submit("submit", "Add comment"))
+
+    def clean_type(self):
+        type = self.cleaned_data.get("type")
+        if type == "trip":
+            self.type_str = "trip"
+            return Trip
+        elif type == "tripreport":
+            self.type_str = "trip report"
+            return TripReport
+        else:
+            raise ValidationError(
+                "You are not allowed to comment on that type of item."
+            )
+
+    def clean_content(self):
+        content = self.cleaned_data.get("content")
+        if len(content) < 1:
+            raise ValidationError("Your comment must contain some content.")
+        elif len(content) > 2000:
+            raise ValidationError(
+                "Your comment must be less than 2000 characters long."
+            )
+        return content
+
+    def clean(self):
+        cleaned_data = super().clean()
+        type = cleaned_data.get("type")
+        pk = cleaned_data.get("pk")
+
+        if not type or not pk:
+            raise ValidationError("Invalid form data.")
+
+        try:
+            self.object = type.objects.get(pk=pk)
+        except (Trip.DoesNotExist, TripReport.DoesNotExist):
+            raise ValidationError("The item you wish to comment on does not exist.")
+
+        if not self.object.is_viewable_by(self.request.user):
+            raise ValidationError("You are not allowed to comment on that item.")
+
+        if not self.object.user.settings.allow_comments:
+            raise ValidationError("Comments are not allowed on that item.")
+
+        return self.cleaned_data
+
+    def save(self, commit=True):
+        content = self.cleaned_data.get("content")
+        new = Comment.objects.create(
+            content_object=self.object, author=self.request.user, content=content
+        )
+        if commit:
+            new.save()
+        return new

@@ -16,14 +16,18 @@
 </p>
 
 {% if faqs %}
-  <h3 class="page-title mt-5 mb-3">
+  <hr class="my-4">
+
+  <h3 class="page-title mb-3">
     Frequently asked questions
   </h3>
 
   {% for faq in faqs %}
-    <div class="border-bottom border-secondary fs-5 mb-2">
-      {{ faq.question }}
+    <div class="mb-4">
+      <div class="border-bottom border-secondary fs-5 mb-2">
+        {{ faq.question }}
+      </div>
+      {{ faq.answer|markdownify }}
     </div>
-    {{ faq.answer|markdownify }}
   {% endfor %}
 {% endif %}

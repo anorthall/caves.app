@@ -1,11 +1,12 @@
 {% extends "base_sidebar.html" %}
 {% block title %}{{ tripreport.title }}{% endblock %}
-{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
+{% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
+
 
 {% block main %}
 <div class="card">
-  <div class="card-header">
-    {{ tripreport.title }}
+  <div class="card-header mb-2">
+    {% include "includes/trip_header.html" %}
   </div>
 
   <div class="card-body">
@@ -28,4 +29,10 @@
     </div>
   </div>
 </div>
+
+{% with tripreport as object %}
+  <div class="mt-4"></div>
+  {% include "includes/comments.html" %}
+{% endwith %}
+
 {% endblock main %}

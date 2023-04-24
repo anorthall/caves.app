@@ -1,14 +1,15 @@
 import humanize
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.utils import timezone
 from logger.models import Trip
+
 from .models import FAQ
+
+User = get_user_model()
 
 
 def about(request):
-    """About page, rendering differently depending on whether the user is logged in or not."""
-
     total_duration = timezone.timedelta(0)
     for trip in Trip.objects.all():
         if trip.duration:
@@ -19,7 +20,7 @@ def about(request):
 
     context = {
         "trip_count": Trip.objects.all().count(),
-        "user_count": get_user_model().objects.all().count(),
+        "user_count": User.objects.all().count(),
         "total_duration": total_duration,
         "registered": request.user.is_authenticated,
     }
@@ -33,7 +34,6 @@ def about(request):
 
 
 def help(request):
-    """Help page, rendering differently depending on whether the user is logged in or not."""
     context = {"faqs": FAQ.objects.all().order_by("updated")}
 
     # Unregistered/unauthenticated users

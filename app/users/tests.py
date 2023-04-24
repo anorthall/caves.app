@@ -1,11 +1,17 @@
-from django.test import TestCase, Client
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.core import mail
-from .models import Trip
+from django.test import Client, TestCase, tag
+from django.urls import reverse
+from django.utils import timezone
+from logger.models import Trip
+from users.models import FriendRequest
+from users.templatetags.user import user as user_templatetag
+
+User = get_user_model()
 
 
-class UserTestCase(TestCase):
+@tag("unit", "users", "fast")
+class UserUnitTests(TestCase):
     def setUp(self):
         # Reduce log level to avoid 404 error
         import logging
@@ -15,7 +21,7 @@ class UserTestCase(TestCase):
         logger.setLevel(logging.ERROR)
 
         # Test user to enable trip creation
-        user = get_user_model().objects.create_user(
+        user = User.objects.create_user(
             email="user@caves.app",
             username="username",
             password="password",
@@ -23,6 +29,8 @@ class UserTestCase(TestCase):
         )
         user.is_active = True
         user.save()
+
+        self.user = user
 
     def tearDown(self):
         """Reset the log level back to normal"""
@@ -33,24 +41,24 @@ class UserTestCase(TestCase):
 
     def test_user_privacy(self):
         """Test CavingUser.is_public and CavingUser.is_private"""
-        user = get_user_model().objects.get(email="user@caves.app")
+        user = User.objects.get(email="user@caves.app")
 
         # Test where Privacy is Private
-        user.privacy = get_user_model().PRIVATE
-        self.assertEqual(user.privacy, get_user_model().PRIVATE)
+        user.settings.privacy = user.settings.PRIVATE
+        self.assertEqual(user.settings.privacy, user.settings.PRIVATE)
         self.assertTrue(user.is_private)
         self.assertFalse(user.is_public)
 
         # Test where Privacy is Public
-        user.privacy = get_user_model().PUBLIC
-        self.assertEqual(user.privacy, get_user_model().PUBLIC)
+        user.settings.privacy = user.settings.PUBLIC
+        self.assertEqual(user.settings.privacy, user.settings.PUBLIC)
         self.assertFalse(user.is_private)
         self.assertTrue(user.is_public)
 
     def test_has_trips_property(self):
         """Test CavingUser.has_trips property"""
         # Test with no trips
-        user = get_user_model().objects.get(email="user@caves.app")
+        user = User.objects.get(email="user@caves.app")
         self.assertFalse(user.has_trips)
 
         # Test with trips
@@ -64,7 +72,7 @@ class UserTestCase(TestCase):
     def test_is_staff_property(self):
         """Test CavingUser.is_staff property"""
         # Test when not a superuser
-        user = get_user_model().objects.get(email="user@caves.app")
+        user = User.objects.get(email="user@caves.app")
         self.assertFalse(user.is_staff)
 
         # Test when a superuser
@@ -72,19 +80,56 @@ class UserTestCase(TestCase):
         user.save()
         self.assertTrue(user.is_staff)
 
+    def test_create_user_with_no_email(self):
+        """Test the create user function with an empty string for an email"""
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                email="",
+                username="username",
+                name="name",
+            )
 
+    def test_create_user_with_no_username(self):
+        """Test the create user function with an empty string for a username"""
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                email="test@caves.app",
+                username="",
+                name="name",
+            )
+
+    def test_create_user_with_no_name(self):
+        """Test the create user function with an empty string for a name"""
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                email="test@caves.app",
+                username="username",
+                name="",
+            )
+
+    def test_user_cannot_have_self_as_friend(self):
+        """Test that a user cannot have themselves as a friend"""
+        self.user.profile.friends.add(self.user)
+        self.user.profile.save()
+        self.user.profile.refresh_from_db()
+        self.assertEqual(self.user.profile.friends.count(), 0)
+
+
+@tag("integration", "users", "fast")
 class UserIntegrationTestCase(TestCase):
     def setUp(self):
-        self.enabled = get_user_model().objects.create_user(
+        self.client = Client()
+
+        self.user = User.objects.create_user(
             email="enabled@user.app",
             username="testuser",
             password="password",
             name="Firstname",
         )
-        self.enabled.is_active = True
-        self.enabled.save()
+        self.user.is_active = True
+        self.user.save()
 
-        self.disabled = get_user_model().objects.create_user(
+        self.disabled = User.objects.create_user(
             email="disabled@user.app",
             username="testuser2",
             password="password",
@@ -93,7 +138,7 @@ class UserIntegrationTestCase(TestCase):
         self.disabled.is_active = False
         self.disabled.save()
 
-        self.superuser = get_user_model().objects.create_superuser(
+        self.superuser = User.objects.create_superuser(
             email="super@user.app",
             username="testuser3",
             password="password",
@@ -102,59 +147,23 @@ class UserIntegrationTestCase(TestCase):
         self.superuser.is_active = True
         self.superuser.save()
 
-    def test_status_200_on_all_pages(self):
-        """Test all pages return status code 200"""
-        client = Client()
-        client.login(email="super@user.app", password="password")
-
-        # Test pages logged in
-        logged_in_pages = [
-            "/account/update/",
-            "/account/email/",
-            "/account/profile/",
-            "/account/password/",
-        ]
-        for page in logged_in_pages:
-            response = client.get(page)
-            self.assertEqual(response.status_code, 200, msg="Error on page: " + page)
-
-        # Test pages logged out
-        client.logout()
-        logged_out_pages = [
-            "/account/login/",
-            "/account/password/reset/",
-            "/account/password/reset/confirm/abc/abc/",
-            "/account/register/",
-            "/account/verify/",
-            "/account/verify/email/",
-            "/account/verify/resend/",
-        ]
-        for page in logged_out_pages:
-            response = client.get(page)
-            self.assertEqual(response.status_code, 200, msg="Error on page: " + page)
-
-        # Test logout returns 302
-        response = client.get("/account/logout/")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
-
     def test_user_login(self):
         """Test login for users"""
-        client = Client()
-        response = client.post(
-            "/account/login/", {"email": "enabled@user.app", "password": "password"}
+        response = self.client.post(
+            reverse("users:login"),
+            {"email": "enabled@user.app", "password": "password"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
+        self.assertEqual(response.url, reverse("log:index"))
 
-        response = client.get("/")
+        response = self.client.get(reverse("log:index"))
         self.assertContains(response, "Now logged in as enabled@user.app")
 
     def test_disabled_user_login(self):
         """Test login for disabled users"""
-        client = Client()
-        response = client.post(
-            "/account/login/", {"email": "disabled@user.app", "password": "password"}
+        response = self.client.post(
+            reverse("users:login"),
+            {"email": "disabled@user.app", "password": "password"},
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -163,18 +172,35 @@ class UserIntegrationTestCase(TestCase):
 
     def test_login_with_invalid_post_data(self):
         """Test login with invalid post data"""
-        client = Client()
-        response = client.post("/account/login/", {"invalid-data": "invalid-data"})
+        response = self.client.post(
+            reverse("users:login"), {"invalid-data": "invalid-data"}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "The username and password provided do not match any account"
         )
 
+    def test_login_when_already_logged_in(self):
+        """Test login when already logged in"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:login"))
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.get(reverse("users:login"), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"You are logged in as {self.user.email}.")
+
+    def test_user_registration_page_redirects_when_logged_in(self):
+        """Test that the user registration page redirects when already logged in"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:register"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("users:account"))
+
     def test_user_registration(self):
         """Test user registration process, including email verification"""
-        client = Client()
-        response = client.post(
-            "/account/register/",
+        response = self.client.post(
+            reverse("users:register"),
             {
                 "name": "Test",
                 "email": "test_register@user.app",
@@ -184,7 +210,7 @@ class UserIntegrationTestCase(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/account/verify/")
+        self.assertEqual(response.url, reverse("users:verify-new-account"))
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject, "Welcome to caves.app - verify your email"
@@ -194,20 +220,22 @@ class UserIntegrationTestCase(TestCase):
         verify_code = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
 
         # Load the user
-        user = get_user_model().objects.get(email="test_register@user.app")
+        user = User.objects.get(email="test_register@user.app")
         self.assertFalse(user.is_active)
         self.assertEquals(user.name, "Test")
         self.assertEquals(user.username, "testregistration")
 
         # Test resending verification email with invalid email
-        response = client.post("/account/verify/resend/", {"email": "blah@blah.blah"})
+        response = self.client.post(
+            reverse("users:verify-resend"), {"email": "blah@blah.blah"}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
         self.assertEqual(len(mail.outbox), 1)
 
         # Test resending verification email with valid email
-        response = client.post(
-            "/account/verify/resend/", {"email": "test_register@user.app"}
+        response = self.client.post(
+            reverse("users:verify-resend"), {"email": "test_register@user.app"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
@@ -217,15 +245,18 @@ class UserIntegrationTestCase(TestCase):
         )
 
         # Test verification with invalid code
-        response = client.get("/account/verify/?verify_code=invalid")
+        response = self.client.get(
+            reverse("users:verify-new-account") + "?verify_code=invalid"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "Email verification code is not valid or has expired"
         )
 
         # Test verification with valid code
-        response = client.get(
-            "/account/verify/?verify_code=" + verify_code, follow=True
+        response = self.client.get(
+            reverse("users:verify-new-account") + "?verify_code=" + verify_code,
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -237,18 +268,18 @@ class UserIntegrationTestCase(TestCase):
         self.assertTrue(user.is_active)
 
         # Test verification pages redirect to index when logged in
-        response = client.get("/account/verify/")
+        response = self.client.get(reverse("users:verify-new-account"))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
+        self.assertEqual(response.url, reverse("log:index"))
 
-        response = client.get("/account/verify/resend/")
+        response = self.client.get(reverse("users:verify-resend"))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
+        self.assertEqual(response.url, reverse("log:index"))
 
         # Test resending verification email now the user is active
-        client.logout()
-        response = client.post(
-            "/account/verify/resend/", {"email": "test_register@user.app"}
+        self.client.logout()
+        response = self.client.post(
+            reverse("users:verify-resend"), {"email": "test_register@user.app"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
@@ -256,9 +287,8 @@ class UserIntegrationTestCase(TestCase):
 
     def test_user_registration_with_invalid_data(self):
         """Test user registration view with invalid data"""
-        client = Client()
-        response = client.post(
-            "/account/register/",
+        response = self.client.post(
+            reverse("users:register"),
             {
                 "name": "Test",
                 "email": "test_register",
@@ -273,15 +303,33 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, "Enter a valid “slug” consisting of")
         self.assertEqual(len(mail.outbox), 0)
 
+    def test_change_user_email_with_invalid_password(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:email"),
+            {"email": "new-email@caves.app", "password": "invalid"},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The password you have entered is not correct")
+
+    def test_change_user_email_with_email_already_in_use(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:email"),
+            {"email": self.user.email, "password": "password"},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "That email is already in use")
+
     def test_change_user_email(self):
         """Test changing a user's email address"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
+        self.client.force_login(self.user)
 
         # Submit the change email form
-        response = client.post(
-            "/account/email/",
+        response = self.client.post(
+            reverse("users:email"),
             {"email": "new-email@caves.app", "password": "password"},
             follow=True,
         )
@@ -293,7 +341,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Check for security notification email
         self.assertEqual(mail.outbox[1].subject, "Change of email address requested")
-        self.assertEqual(mail.outbox[1].to, [user.email])
+        self.assertEqual(mail.outbox[1].to, [self.user.email])
 
         # Check for verification code
         self.assertEqual(mail.outbox[0].subject, "Verify your change of email")
@@ -301,34 +349,35 @@ class UserIntegrationTestCase(TestCase):
         verify_url = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
 
         # Test verification with invalid code
-        response = client.get("/account/verify/email/?verify_code=invalid")
+        response = self.client.get(
+            reverse("users:verify-email-change") + "?verify_code=invalid"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "Email verification code is not valid or has expired"
         )
 
         # Test verification with valid code
-        response = client.get(
-            "/account/verify/email/?verify_code=" + verify_url, follow=True
+        response = self.client.get(
+            reverse("users:verify-email-change") + "?verify_code=" + verify_url,
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response, "Your new email address, new-email@caves.app, has been verified."
         )
-        user.refresh_from_db()
-        self.assertEqual(user.email, "new-email@caves.app")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "new-email@caves.app")
 
     def test_user_profile_page(self):
         """Test user profile page"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
-        response = client.get("/account/profile/")
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:account"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, user.name)
-        self.assertContains(response, user.email)
-        self.assertContains(response, user.username)
-        self.assertContains(response, user.privacy)
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, self.user.email)
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.settings.privacy)
         self.assertContains(response, "Europe/London")
         self.assertContains(
             response, "If you select a trip to be public, the notes will be hidden."
@@ -339,11 +388,9 @@ class UserIntegrationTestCase(TestCase):
 
     def test_submit_updates_to_profile(self):
         """Test submitting updates to a user's profile"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
-        response = client.post(
-            "/account/update/",
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:account_update"),
             {
                 "name": "New",
                 "username": "newusername",
@@ -358,28 +405,38 @@ class UserIntegrationTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Your details have been updated")
+        self.assertContains(response, "Your profile has been updated.")
 
         # Check the user details have been updated
-        user.refresh_from_db()
+        self.user.refresh_from_db()
         from zoneinfo import ZoneInfo
 
-        self.assertEqual(user.name, "New")
-        self.assertEqual(user.username, "newusername")
-        self.assertEqual(user.location, "Testing New Location")
-        self.assertEqual(user.privacy, user.PUBLIC)
-        self.assertEqual(user.timezone, ZoneInfo("US/Central"))
-        self.assertEqual(user.units, user.IMPERIAL)
-        self.assertTrue(user.show_statistics)
-        self.assertEqual(user.bio, "This is a bio for testing.")
+        self.assertEqual(self.user.name, "New")
+        self.assertEqual(self.user.username, "newusername")
+        self.assertEqual(self.user.profile.location, "Testing New Location")
+        self.assertEqual(self.user.settings.privacy, self.user.settings.PUBLIC)
+        self.assertEqual(self.user.settings.timezone, ZoneInfo("US/Central"))
+        self.assertEqual(self.user.settings.units, self.user.settings.IMPERIAL)
+        self.assertTrue(self.user.settings.show_statistics)
+        self.assertEqual(self.user.profile.bio, "This is a bio for testing.")
+
+    def test_submit_invalid_updates_to_profile(self):
+        """Test submitting invalid updates to a user's profile"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:account_update"),
+            {
+                "username": "spaces in username",
+            },
+            follow=True,
+        )
+        self.assertContains(response, "Enter a valid “slug” consisting of")
 
     def test_change_user_password(self):
         """Test changing a user's password"""
-        client = Client()
-        user = self.enabled
-        client.login(email=user.email, password="password")
-        response = client.post(
-            "/account/password/",
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:password"),
             {
                 "old_password": "password",
                 "new_password1": "new_password",
@@ -389,5 +446,273 @@ class UserIntegrationTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Your password has been updated.")
-        user.refresh_from_db()
-        self.assertTrue(user.check_password("new_password"))
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("new_password"))
+
+    def test_user_distance_settings_are_applied(self):
+        """Test user distance settings are applied to distances on the site"""
+        self.client.force_login(self.user)
+        self.user.settings.units = self.user.settings.IMPERIAL
+        self.user.settings.save()
+
+        trip = Trip.objects.create(
+            user=self.user,
+            cave_name="Test Trip",
+            start=timezone.now(),
+            vert_dist_up="1000m",
+        )
+        trip.save()
+
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "3281ft")
+
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "3281ft")
+
+        # Test metric
+        self.user.settings.units = self.user.settings.METRIC
+        self.user.settings.save()
+
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "1000m")
+
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "1000m")
+
+    def test_notifications_are_displayed(self):
+        """Test notifications are displayed on the user's profile"""
+        self.client.force_login(self.user)
+
+        for i in range(10):
+            self.user.notify(f"Test {i}", "/")
+
+        response = self.client.get(reverse("users:account"))
+        for i in range(1, 5):
+            self.assertNotContains(response, f"Test {i}")
+
+        for i in range(6, 10):
+            self.assertContains(response, f"Test {i}")
+
+    def test_notification_redirect_view(self):
+        """Test the notification redirect view"""
+        self.client.force_login(self.user)
+        pk = self.user.notify("Test", "/test/").pk
+        response = self.client.get(reverse("users:notification", args=[pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/test/")
+
+
+@tag("integration", "fast", "users")
+class FriendsIntegrationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="user@caves.app",
+            username="user",
+            password="password",
+            name="user",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+        self.user2 = User.objects.create_user(
+            email="user2@caves.app",
+            username="user2",
+            password="password",
+            name="user2",
+        )
+        self.user2.is_active = True
+        self.user2.save()
+
+        self.user3 = User.objects.create_user(
+            email="user3@caves.app",
+            username="user3",
+            password="password",
+            name="user3",
+        )
+        self.user3.is_active = True
+        self.user3.save()
+
+    def test_sending_a_friend_request_by_username(self):
+        """Test sending a friend request by username"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+    def test_sending_a_friend_request_by_email(self):
+        """Test sending a friend request by email"""
+        self.client.force_login(self.user)
+        self.user2.settings.allow_friend_email = True
+        self.user2.settings.save()
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+    def test_friend_request_disallowed_by_email(self):
+        """Test sending a friend request by email is disallowed"""
+        self.client.force_login(self.user)
+        self.user2.settings.allow_friend_email = False
+        self.user2.settings.save()
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_friend_request_disallowed_by_username(self):
+        """Test sending a friend request by username is disallowed"""
+        self.client.force_login(self.user)
+        self.user2.settings.allow_friend_username = False
+        self.user2.settings.save()
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_adding_self_as_friend_is_not_permitted(self):
+        """Test adding self as a friend is not permitted"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:friend_add"), {"user": self.user.username}, follow=True
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+        self.assertContains(response, "You cannot add yourself as a friend")
+
+    def test_user_cannot_add_a_friend_they_are_already_friends_with(self):
+        """Test a user cannot add a friend they are already friends with"""
+        self.client.force_login(self.user)
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+        response = self.client.post(
+            reverse("users:friend_add"), {"user": self.user2.username}, follow=True
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+        self.assertContains(response, f"{self.user2.name} is already your friend")
+
+    def test_adding_a_friend_and_accepting_it(self):
+        """Test adding a friend and accepting it"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.force_login(self.user2)
+        self.client.get(
+            reverse(
+                "users:friend_request_accept", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+        self.assertIn(self.user2, self.user.profile.friends.all())
+        self.assertIn(self.user, self.user2.profile.friends.all())
+
+    def test_creating_a_duplicate_friend_request(self):
+        """Test creating a duplicate friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        response = self.client.post(
+            reverse("users:friend_add"), {"user": self.user2.username}, follow=True
+        )
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertContains(response, "A friend request already exists for this user")
+
+    def test_deleting_a_friend_request_as_the_sending_user(self):
+        """Test deleting a friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.get(
+            reverse(
+                "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_deleting_a_friend_request_as_the_receiving_user(self):
+        """Test deleting a friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.force_login(self.user2)
+        self.client.get(
+            reverse(
+                "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_deleting_a_friend_request_as_a_non_involved_user(self):
+        """Test deleting a friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.force_login(self.user3)
+        self.client.get(
+            reverse(
+                "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 1)
+
+    def test_removing_a_friend(self):
+        """Test removing a friend"""
+        self.client.force_login(self.user)
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+        self.client.get(reverse("users:friend_remove", args=[self.user2.username]))
+        self.assertNotIn(self.user2, self.user.profile.friends.all())
+        self.assertNotIn(self.user, self.user2.profile.friends.all())
+
+    def test_friends_page_with_get_parameters_for_user_to_add(self):
+        """Test that the friends page works when a user is specified"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:friends") + "?u=this_is_a_username")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "this_is_a_username")
+
+    def test_friend_remove_view_with_a_user_that_is_not_a_friend(self):
+        """Test that the friend remove view returns a 404 if the user is not a friend"""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("users:friend_remove", args=[self.user2.username])
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_accepting_a_friend_request_that_the_user_is_not_part_of(self):
+        """Test that the friend request accept view returns a 404 if an invalid user"""
+        self.client.force_login(self.user)
+        fr = FriendRequest.objects.create(user_from=self.user2, user_to=self.user3)
+        response = self.client.get(reverse("users:friend_request_accept", args=[fr.pk]))
+        self.assertEqual(response.status_code, 404)
+
+
+@tag("unit", "fast", "users")
+class TemplateTagUnitTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="enabled@user.app",
+            username="enabled",
+            password="testpassword",
+            name="Joe",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+    def test_user_template_tag_with_non_user_object(self):
+        """Test the user template tag raises TypeError when passed a non-user object"""
+        self.assertRaises(TypeError, user_templatetag, None, None)

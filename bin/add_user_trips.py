@@ -16,12 +16,16 @@ UNITS = "m"
 
 BASE_DIR = Path(__file__).resolve().parent
 
-import django, csv, os, humanize
-from django.contrib.gis.measure import D
+import csv
+import os
+from zoneinfo import ZoneInfo
+
+import django
+import humanize
 from django.contrib.auth import get_user_model
+from django.contrib.gis.measure import D
 from django.utils import timezone
 from dotenv import load_dotenv
-from zoneinfo import ZoneInfo
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", APP_NAME)
 load_dotenv(os.path.join(BASE_DIR, DOTENV))
@@ -51,7 +55,8 @@ def convert_dist(dist):
 
 from logger.models import Trip
 
-user = get_user_model().objects.get(email=USER_EMAIL)
+User = get_user_model()
+user = User.objects.get(email=USER_EMAIL)
 with open(os.path.join(BASE_DIR, TRIP_FILE)) as f:
     r = csv.reader(f)
     next(r)  # Skip header

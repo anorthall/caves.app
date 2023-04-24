@@ -18,6 +18,6 @@ def verify_token(token, expiration=86400):
             salt="verify-email",
             max_age=expiration,
         )
-    except:
+    except:  # noqa: E722
         raise ValidationError("Email verification code is not valid or has expired.")
     return user_pk, email

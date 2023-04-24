@@ -1,8 +1,9 @@
 import humanize
+from django.contrib.gis.measure import D, Distance
 from django.db.models import Count
-from django.contrib.auth import get_user_model
-from django.contrib.gis.measure import Distance, D
 from django.utils import timezone
+from users.models import UserSettings
+
 from .models import Trip
 
 
@@ -26,7 +27,7 @@ def sort_comma_separated_list(qs, value, limit=10):
     return sorted(common.items(), key=lambda x: x[1], reverse=True)[0:limit]
 
 
-def stats_for_user(qs, year=None):
+def stats_for_user(qs, year=None):  # noqa C901
     """Get statistics of trips within a QuerySet, optionally by year"""
     if year:
         qs = qs.filter(start__year=year)
@@ -137,7 +138,7 @@ def vertical_and_horizontal_count(qs):
     return vertical, horizontal
 
 
-def trip_averages(qs, units):
+def trip_averages(qs, units):  # noqa C901
     """Get the average distances in a QuerySet"""
     if not bool(qs):
         return None
@@ -232,7 +233,7 @@ def trip_averages(qs, units):
                     value, minimum_unit="minutes", format="%.0f"
                 )
             elif type(value) == Distance:
-                if units == get_user_model().IMPERIAL:
+                if units == UserSettings.IMPERIAL:
                     processed_results[key] = f"{round(value.ft, 2)}ft"
                 else:
                     processed_results[key] = f"{round(value.m, 2)}m"

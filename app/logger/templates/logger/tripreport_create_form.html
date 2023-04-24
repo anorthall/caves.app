@@ -1,6 +1,6 @@
 {% extends "base_sidebar.html" %}
 {% block title %}Add a trip report{% endblock %}
-{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
+{% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 {% block header_scripts %}{{ form.media }}{% endblock %}
 
 {% block main %}
@@ -10,7 +10,7 @@
   </div>
 
   <div class="card-body">
-    {% include "tripreport_help_text.html" %}
+    {% include "includes/tripreport_help_text.html" %}
 
     <form method="post">
       {% csrf_token %}

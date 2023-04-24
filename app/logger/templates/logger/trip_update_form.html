@@ -1,6 +1,6 @@
 {% extends "base_sidebar.html" %}
 {% block title %}Edit trip{% endblock %}
-{% block sidebar %}{% include "sidebar_trips.html" %}{% endblock %}
+{% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
 <div class="card">
@@ -17,10 +17,3 @@
   </div>
 </div>
 {% endblock main %}
-
-{% block footer_scripts %}
-<script>
-  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-</script>
-{% endblock footer_scripts %}

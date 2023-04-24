@@ -8,14 +8,14 @@
             {% for error in form.non_field_errors %}
               {{ error }}
             {% endfor %}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         {% elif no_form_error_alert %}
           {% comment %}Do nothing.{% endcomment %}
         {% else %}
           <div class="alert alert-danger alert-dismissible" role="alert">
             Please correct the error(s) below.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         {% endif %}
       {% endif %}
@@ -23,7 +23,7 @@
       {% for message in messages %}
         <div class="alert {{ message.tags }} alert-dismissible" role="alert">
           {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       {% endfor %}
     </div>
