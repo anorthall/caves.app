@@ -147,8 +147,8 @@ class AddCommentForm(forms.Form):
 
     def clean_content(self):
         content = self.cleaned_data.get("content")
-        if len(content) < 5:
-            raise ValidationError("Your comment must be at least 5 characters long.")
+        if len(content) < 1:
+            raise ValidationError("Your comment must contain some content.")
         elif len(content) > 2000:
             raise ValidationError(
                 "Your comment must be less than 2000 characters long."
