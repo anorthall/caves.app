@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
-from django.test import Client, TestCase
+from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import datetime as dt
@@ -12,6 +12,7 @@ from .models import Trip, TripReport
 User = get_user_model()
 
 
+@tag("core", "fast", "unit")
 class TripModelUnitTests(TestCase):
     def setUp(self):
         """Reduce log level to avoid 404 error"""
@@ -33,7 +34,7 @@ class TripModelUnitTests(TestCase):
         # Trip with a start and end time
         Trip.objects.create(
             user=user,
-            cave_name="Test Cave 1",
+            cave_name="Duration Trip",
             start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
             end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
         )
@@ -41,34 +42,32 @@ class TripModelUnitTests(TestCase):
         # Trip with no end time
         Trip.objects.create(
             user=user,
-            cave_name="Test Cave 2",
+            cave_name="No Duration Trip",
             start=dt.fromisoformat("2010-01-01T13:00:00+00:00"),
         )
 
-        # Create several trips with different privacy settings
-        Trip.objects.create(  # Private
+        Trip.objects.create(
             user=user,
-            cave_name="Test Cave 3",
+            cave_name="Private Trip",
             start=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
             privacy=Trip.PRIVATE,
         )
-        Trip.objects.create(  # Public
+        Trip.objects.create(
             user=user,
-            cave_name="Test Cave 4",
+            cave_name="Public Trip",
             start=dt.fromisoformat("2010-01-01T15:00:00+00:00"),
             privacy=Trip.PUBLIC,
         )
-        Trip.objects.create(  # Default
+        Trip.objects.create(
             user=user,
-            cave_name="Test Cave 5",
+            cave_name="Default Trip",
             start=dt.fromisoformat("2010-01-01T16:00:00+00:00"),
             privacy=Trip.DEFAULT,
         )
 
-        # With distances
         Trip.objects.create(
             user=user,
-            cave_name="Test Cave 6",
+            cave_name="Distances Trip",
             start=dt.fromisoformat("2010-01-01T17:00:00+00:00"),
             end=dt.fromisoformat("2010-01-01T19:00:00+00:00"),
             vert_dist_down="100m",
@@ -89,8 +88,8 @@ class TripModelUnitTests(TestCase):
         Test that trip duration returns a timedelta with the correct value
         Test that trip duration returns None if no end time
         """
-        trip_with_end = Trip.objects.get(cave_name="Test Cave 1")
-        trip_without_end = Trip.objects.get(cave_name="Test Cave 2")
+        trip_with_end = Trip.objects.get(cave_name="Duration Trip")
+        trip_without_end = Trip.objects.get(cave_name="No Duration Trip")
 
         self.assertNotEqual(trip_with_end.end, None)
         self.assertEqual(trip_with_end.duration, timezone.timedelta(hours=2))
@@ -100,32 +99,32 @@ class TripModelUnitTests(TestCase):
 
     def test_trip_duration_str(self):
         """Test that the trip duration string returns the correct value"""
-        trip = Trip.objects.get(cave_name="Test Cave 1")
+        trip = Trip.objects.get(cave_name="Duration Trip")
         self.assertEqual(trip.duration_str, "2 hours")
 
-        trip = Trip.objects.get(cave_name="Test Cave 1")
+        trip = Trip.objects.get(cave_name="Duration Trip")
         trip.end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
         trip.save()
         self.assertEqual(trip.duration_str, "1 day, 1 hour and 1 minute")
 
-        trip = Trip.objects.get(cave_name="Test Cave 1")
+        trip = Trip.objects.get(cave_name="Duration Trip")
         trip.end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
         trip.save()
         self.assertEqual(trip.duration_str, "2 days, 2 hours and 2 minutes")
 
     def test_has_distances_property(self):
         """Test the Trip.has_distances property"""
-        trip = Trip.objects.get(cave_name="Test Cave 6")
+        trip = Trip.objects.get(cave_name="Distances Trip")
         self.assertTrue(trip.has_distances)
 
-        trip = Trip.objects.get(cave_name="Test Cave 1")
+        trip = Trip.objects.get(cave_name="Duration Trip")
         self.assertFalse(trip.has_distances)
 
     def test_trip_is_private_and_is_public(self):
         """Test the Trip.is_private and Trip.is_public functions"""
-        trip_private = Trip.objects.get(cave_name="Test Cave 3")
-        trip_public = Trip.objects.get(cave_name="Test Cave 4")
-        trip_default = Trip.objects.get(cave_name="Test Cave 5")
+        trip_private = Trip.objects.get(cave_name="Private Trip")
+        trip_public = Trip.objects.get(cave_name="Public Trip")
+        trip_default = Trip.objects.get(cave_name="Default Trip")
 
         self.assertTrue(trip_private.is_private)
         self.assertFalse(trip_private.is_public)
@@ -146,16 +145,6 @@ class TripIntegrationTests(TestCase):
 
         self.client = Client()
 
-        # Create a user
-        self.superuser = User.objects.create_superuser(
-            email="super@user.app",
-            username="superuser",
-            password="testpassword",
-            name="Joe",
-        )
-        self.superuser.is_active = True
-        self.superuser.save()
-
         # Create an enabled user
         self.enabled = User.objects.create_user(
             email="enabled@user.app",
@@ -166,19 +155,9 @@ class TripIntegrationTests(TestCase):
         self.enabled.is_active = True
         self.enabled.save()
 
-        # Create a disabled user
-        self.disabled = User.objects.create_user(
-            email="disabled@user.app",
-            username="disabled",
-            password="testpassword",
-            name="Joe",
-        )
-        self.disabled.is_active = False
-        self.disabled.save()
-
-        # Create a trip belonging to the superuser
+        # Create a trip
         self.trip = Trip.objects.create(
-            user=self.superuser,
+            user=self.enabled,
             cave_name="Test Cave",
             start=timezone.now() - timezone.timedelta(days=1),
             end=timezone.now(),
@@ -191,13 +170,13 @@ class TripIntegrationTests(TestCase):
 
     def test_non_superuser_cannot_access_admin_tools(self):
         """Test that a non-superuser cannot access the admin tools"""
-        self.client.login(email="enabled@user.app", password="testpassword")
+        self.client.force_login(self.enabled)
         response = self.client.get(reverse("log:admin_tools"))
         self.assertEqual(response.status_code, 404)
 
     def test_trip_list_view(self):
         """Test the trip list view"""
-        self.client.login(email="enabled@user.app", password="testpassword")
+        self.client.force_login(self.enabled)
 
         # Create 50 trips with randomised names
         from random import random
@@ -220,8 +199,8 @@ class TripIntegrationTests(TestCase):
 
     def test_trip_creation_form(self):
         """Test the trip creation form"""
-        self.client.login(email="enabled@user.app", password="testpassword")
-        response = self.client.get("/trip/add/")
+        self.client.force_login(self.enabled)
+        response = self.client.get(reverse("log:trip_create"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Add a trip")
         self.assertContains(response, "Cave name")
@@ -232,7 +211,7 @@ class TripIntegrationTests(TestCase):
         self.assertContains(response, "Save")
 
         response = self.client.post(
-            "/trip/add/",
+            reverse("log:trip_create"),
             {
                 "cave_name": "Test The Form Cave",
                 "cave_region": "Test Region",
@@ -258,8 +237,8 @@ class TripIntegrationTests(TestCase):
 
     def test_trip_update_form(self):
         """Test the trip update form"""
-        self.client.login(email="super@user.app", password="testpassword")
-        response = self.client.get(f"/trip/edit/{self.trip.pk}/")
+        self.client.force_login(self.enabled)
+        response = self.client.get(reverse("log:trip_update", args=[self.trip.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit trip")
         self.assertContains(response, "Cave name")
@@ -271,7 +250,7 @@ class TripIntegrationTests(TestCase):
         self.assertContains(response, self.trip.cave_name)
 
         response = self.client.post(
-            f"/trip/edit/{self.trip.pk}/",
+            reverse("log:trip_update", args=[self.trip.pk]),
             {
                 "cave_name": "Test The Form Cave",
                 "cave_region": "Test Region",
@@ -294,6 +273,7 @@ class TripIntegrationTests(TestCase):
         self.assertEqual(trip.cavers, "Test Cavers")
         self.assertEqual(trip.notes, "Test Notes")
         self.assertEqual(trip.privacy, Trip.DEFAULT)
+        self.assertEqual(trip.user, self.enabled)
 
 
 class TripReportIntegrationTests(TestCase):
@@ -303,17 +283,18 @@ class TripReportIntegrationTests(TestCase):
         self.previous_level = logger.getEffectiveLevel()
         logger.setLevel(logging.ERROR)
 
-        self.user = User.objects.create_user(
-            email="test@user.app",
-            username="username",
-            password="password",
-            name="Test",
+        # Create an enabled user
+        self.enabled = User.objects.create_user(
+            email="enabled@user.app",
+            username="enabled",
+            password="testpassword",
+            name="Joe",
         )
-        self.user.is_active = True
-        self.user.save()
+        self.enabled.is_active = True
+        self.enabled.save()
 
         self.trip = Trip.objects.create(
-            user=self.user,
+            user=self.enabled,
             cave_name="Test Cave",
             start=timezone.now(),
         )
@@ -326,7 +307,7 @@ class TripReportIntegrationTests(TestCase):
     def test_slug_is_unique_for_user_only(self):
         """Test that the slug is unique for the user only"""
         TripReport.objects.create(
-            user=self.user,
+            user=self.enabled,
             trip=self.trip,
             title="Test Report",
             slug="slug",
@@ -343,7 +324,7 @@ class TripReportIntegrationTests(TestCase):
         )
         trip2 = Trip.objects.create(
             user=user2,
-            cave_name="Test Cave 2",
+            cave_name="No Duration Trip",
             start=timezone.now(),
         )
         TripReport.objects.create(
@@ -358,12 +339,12 @@ class TripReportIntegrationTests(TestCase):
         # Now create a second trip/report for the original user with the same slug
         with self.assertRaises(IntegrityError):
             trip = Trip.objects.create(
-                user=self.user,
+                user=self.enabled,
                 cave_name="Test Cave",
                 start=timezone.now(),
             )
             TripReport.objects.create(
-                user=self.user,
+                user=self.enabled,
                 trip=trip,
                 title="Test Report",
                 slug="slug",
@@ -373,12 +354,12 @@ class TripReportIntegrationTests(TestCase):
 
     def test_trip_report_create_view(self):
         """Test the trip report create view in GET and POST"""
-        self.client.login(email="test@user.app", password="password")
-        response = self.client.get(f"/report/add/{self.trip.pk}/")
+        self.client.force_login(self.enabled)
+        response = self.client.get(reverse("log:report_create", args=[self.trip.pk]))
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(
-            f"/report/add/{self.trip.pk}/",
+            reverse("log:report_create", args=[self.trip.pk]),
             {
                 "title": "Test Report",
                 "pub_date": dt.now().date(),
@@ -388,7 +369,9 @@ class TripReportIntegrationTests(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/report/{self.trip.pk}/")
+        self.assertEqual(
+            response.url, reverse("log:report_detail", args=[self.trip.pk])
+        )
         self.assertEqual(TripReport.objects.count(), 1)
         self.assertEqual(TripReport.objects.get().title, "Test Report")
         self.assertEqual(TripReport.objects.get().content, "Test content.")
@@ -404,13 +387,13 @@ class TripReportIntegrationTests(TestCase):
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
-            user=self.user,
+            user=self.enabled,
         )
 
-        self.client.login(email="test@user.app", password="password")
-        response = self.client.get(f"/report/add/{self.trip.pk}/")
+        self.client.force_login(self.enabled)
+        response = self.client.get(reverse("log:report_create", args=[report.pk]))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/report/{report.pk}/")
+        self.assertEqual(response.url, reverse("log:report_detail", args=[report.pk]))
 
     def test_users_cannot_edit_a_trip_report_for_other_users(self):
         """Test users cannot edit a trip report which does not belong to them."""
@@ -430,17 +413,17 @@ class TripReportIntegrationTests(TestCase):
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
-            user=self.user,
+            user=self.enabled,
         )
 
         self.client.login(email="new@user.app", password="password")
-        response = self.client.get(f"/report/edit/{report.pk}/")
+        response = self.client.get(reverse("log:report_update", args=[report.pk]))
         self.assertEqual(response.status_code, 404)
 
-        response = self.client.get(f"/report/delete/{report.pk}/")
+        response = self.client.get(reverse("log:report_delete", args=[report.pk]))
         self.assertEqual(response.status_code, 404)
 
-        response = self.client.get(f"/report/add/{self.trip.pk}/")
+        response = self.client.get(reverse("log:report_create", args=[self.trip.pk]))
         self.assertEqual(response.status_code, 404)
 
     def test_users_can_view_and_edit_their_own_trip_reports(self):
@@ -452,22 +435,22 @@ class TripReportIntegrationTests(TestCase):
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
-            user=self.user,
+            user=self.enabled,
         )
 
-        self.client.login(email="test@user.app", password="password")
-        response = self.client.get(f"/report/{report.pk}/")
+        self.client.force_login(self.enabled)
+        response = self.client.get(reverse("log:report_detail", args=[report.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Report")
         self.assertContains(response, "Test content.")
 
-        response = self.client.get(f"/report/edit/{report.pk}/")
+        response = self.client.get(reverse("log:report_update", args=[report.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Report")
         self.assertContains(response, "Test content.")
 
         response = self.client.post(
-            f"/report/edit/{report.pk}/",
+            reverse("log:report_update", args=[report.pk]),
             {
                 "title": "Test Report Updated",
                 "pub_date": dt.now().date(),
@@ -477,20 +460,20 @@ class TripReportIntegrationTests(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/report/{report.pk}/")
+        self.assertEqual(response.url, reverse("log:report_detail", args=[report.pk]))
         report.refresh_from_db()
         self.assertEqual(report.title, "Test Report Updated")
         self.assertEqual(report.slug, "test-report-updated")
         self.assertEqual(report.content, "Test content updated.")
 
-        response = self.client.get(f"/report/delete/{report.pk}/")
+        response = self.client.get(reverse("log:report_delete", args=[report.pk]))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/trip/{self.trip.pk}/")
+        self.assertEqual(response.url, reverse("log:trip_detail", args=[self.trip.pk]))
         self.assertEqual(TripReport.objects.count(), 0)
 
     def test_trip_report_link_appears_on_trip_list(self):
         """Test the trip report link appears on the trip list page."""
-        self.client.login(email="test@user.app", password="password")
+        self.client.force_login(self.enabled)
         report = TripReport.objects.create(
             title="Test Report",
             pub_date=dt.now().date(),
@@ -498,16 +481,16 @@ class TripReportIntegrationTests(TestCase):
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
-            user=self.user,
+            user=self.enabled,
         )
 
-        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        response = self.client.get(reverse("log:user", args=[self.enabled.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f"/report/{report.pk}/")
+        self.assertContains(response, reverse("log:report_detail", args=[report.pk]))
 
     def test_trip_report_link_appears_on_trip_detail(self):
         """Test the trip report link appears on the trip detail page"""
-        self.client.login(email="test@user.app", password="password")
+        self.client.force_login(self.enabled)
         report = TripReport.objects.create(
             title="Test Report",
             pub_date=dt.now().date(),
@@ -515,23 +498,23 @@ class TripReportIntegrationTests(TestCase):
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
-            user=self.user,
+            user=self.enabled,
         )
 
-        response = self.client.get(f"/trip/{self.trip.pk}/")
+        response = self.client.get(reverse("log:trip_detail", args=[self.trip.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f"/report/{report.pk}/")
+        self.assertContains(response, reverse("log:report_detail", args=[report.pk]))
 
     def test_add_trip_report_link_appears_when_no_report_has_been_added(self):
         """Test the add trip report link appears on the trip detail page"""
-        self.client.login(email="test@user.app", password="password")
-        response = self.client.get(f"/trip/{self.trip.pk}/")
+        self.client.force_login(self.enabled)
+        response = self.client.get(reverse("log:trip_detail", args=[self.trip.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f"/report/add/{self.trip.pk}/")
+        self.assertContains(response, reverse("log:report_create", args=[self.trip.pk]))
 
     def test_add_trip_report_does_not_appear_when_report_added(self):
         """Test the add trip report link does not appear on the detail page"""
-        self.client.login(email="test@user.app", password="password")
+        self.client.force_login(self.enabled)
         TripReport.objects.create(
             title="Test Report",
             pub_date=dt.now().date(),
@@ -539,16 +522,18 @@ class TripReportIntegrationTests(TestCase):
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
-            user=self.user,
+            user=self.enabled,
         )
 
-        response = self.client.get(f"/trip/{self.trip.pk}/")
+        response = self.client.get(reverse("log:trip_detail", args=[self.trip.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, f"/report/add/{self.trip.pk}/")
+        self.assertNotContains(
+            response, reverse("log:report_create", args=[self.trip.pk])
+        )
 
     def test_view_and_edit_trip_report_links_appear_when_a_report_has_been_added(self):
         """Test the view and edit trip report links appear on the trip detail page"""
-        self.client.login(email="test@user.app", password="password")
+        self.client.force_login(self.enabled)
         report = TripReport.objects.create(
             title="Test Report",
             pub_date=dt.now().date(),
@@ -556,10 +541,10 @@ class TripReportIntegrationTests(TestCase):
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
-            user=self.user,
+            user=self.enabled,
         )
 
-        response = self.client.get(f"/trip/{self.trip.pk}/")
+        response = self.client.get(reverse("log:trip_detail", args=[self.trip.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f"/report/{report.pk}/")
-        self.assertContains(response, f"/report/edit/{report.pk}/")
+        self.assertContains(response, reverse("log:report_detail", args=[report.pk]))
+        self.assertContains(response, reverse("log:report_update", args=[report.pk]))
