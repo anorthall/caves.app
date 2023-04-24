@@ -1,5 +1,6 @@
 {% extends "base_sidebar.html" %}
 {% load distformat %}
+{% load user %}
 {% block title %}{{ trip.cave_name }}{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
@@ -106,6 +107,28 @@
     <span class="float-start">
       {% if request.user.is_authenticated %}
         {% include "includes/htmx_trip_like.html" %}
+        {% if trip.likes_count > 0 %}
+          <span class="ms-1" data-bs-toggle="modal" data-bs-target="#usersThatLikedTrip{{ trip.pk }}"><i class="bi bi-info-circle"></i></span>
+          <div class="modal fade" id="usersThatLikedTrip{{ trip.pk }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5">Users that liked this trip</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  This trip was liked by
+                  {% for user in trip.likes.all %}
+                    {% user user %}{% if forloop.revcounter == 2 %} and {% elif forloop.revcounter > 2 %}, {% endif %}{% if forloop.revcounter == 1 %}.{% endif %}
+                  {% endfor %}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
       {% else %}
         <i class="bi bi-hand-thumbs-up-fill"></i>
         {{ trip.likes }} like{{ trip.likes|pluralize }}
@@ -113,7 +136,7 @@
     </span>
 
     {% if user.settings.allow_comments %}
-      <span class="float-end">
+      <span class="float-end d-none d-md-block">
           <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
       </span>
     {% endif %}

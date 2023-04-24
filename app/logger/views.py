@@ -135,7 +135,7 @@ def index(request):
     # Build the 'liked_str' dictionary
     liked_str_index = {}
     for trip in context["trips"]:
-        liked_str_index[trip.pk] = trip.get_liked_str(request.user)
+        liked_str_index[trip.pk] = trip.get_liked_str(request.user, friends)
     context["liked_str"] = liked_str_index
 
     return render(request, "index/index_registered.html", context)
@@ -448,6 +448,8 @@ class TripDetail(TripContextMixin, DetailView):
             .prefetch_related(
                 "comments",
                 "likes",
+                "likes__settings",
+                "likes__profile",
                 "user__profile__friends",
                 "comments__author__profile",
                 "comments__author__settings",
@@ -473,8 +475,9 @@ class TripDetail(TripContextMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        friends = self.request.user.profile.friends.all()
         context["liked_str"] = {
-            self.object.pk: self.object.get_liked_str(self.request.user)
+            self.object.pk: self.object.get_liked_str(self.request.user, friends)
         }
         return context
 
@@ -677,8 +680,8 @@ class DeleteComment(LoginRequiredMixin, View):
         comment = get_object_or_404(Comment, pk=pk)
         if (
             comment.author == request.user
-            or comment.content_object.user == request.user
-            or request.user.is_superuser
+            or comment.content_object.user == request.user  # noqa: W503
+            or request.user.is_superuser  # noqa: W503
         ):
             comment.delete()
             messages.success(
@@ -707,7 +710,8 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
             trip.likes.add(request.user)
             trip.user_liked = True
 
-        liked_str = {trip.pk: trip.get_liked_str(request.user)}
+        friends = request.user.profile.friends.all()
+        liked_str = {trip.pk: trip.get_liked_str(request.user, friends)}
 
         context = {
             "trip": trip,

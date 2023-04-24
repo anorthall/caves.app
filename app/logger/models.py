@@ -323,7 +323,7 @@ class Trip(models.Model):
         english_list = ", ".join(liked_user_names)
         return f"Liked by {english_list}"
 
-    def get_liked_str(self, for_user=None):
+    def get_liked_str(self, for_user=None, for_user_friends=None):
         """Returns a string of the names of the users that liked the trip"""
         friends_liked = []
         others_liked = []
@@ -332,7 +332,9 @@ class Trip(models.Model):
         for user in self.likes.all():
             if for_user and user == for_user:
                 self_liked = True
-            elif user in self.user.profile.friends.all():
+                continue
+
+            if for_user_friends and user in for_user_friends:
                 friends_liked.append(user.name)
             else:
                 others_liked.append(user.name)
