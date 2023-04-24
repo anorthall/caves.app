@@ -248,6 +248,16 @@ class Trip(models.Model):
         """Set the duration and duration_str fields"""
         self.set_duration()
         self.set_duration_str()
+
+        # Distance fields should be set to None instead of
+        # '0m', '0ft' etc if they are zero. This is because
+        # sorting does not work properly unless they are None.
+        # I suspect this is a bug in django-distance-field?
+        for field in self._meta.fields:
+            if isinstance(field, DistanceField):
+                if getattr(self, field.name) == 0:
+                    setattr(self, field.name, None)
+
         return super().save(*args, **kwargs)
 
     def clean(self):

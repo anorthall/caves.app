@@ -372,8 +372,11 @@ class UserProfile(ListView):
             raise Http404
 
     def get_queryset(self):
-        qs = Trip.objects.filter(user=self.user).select_related("report")
-        qs = qs.order_by(*self.get_ordering())
+        qs = (
+            Trip.objects.filter(user=self.user)
+            .select_related("report")
+            .order_by(*self.get_ordering())
+        )
 
         if not self.user == self.request.user:
             qs = qs.select_related("user__settings", "user__profile")

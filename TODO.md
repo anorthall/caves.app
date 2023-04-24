@@ -2,8 +2,6 @@
 
 ## Features
 - [ ] Add full display of users that liked a trip
-- [ ] Fix liked trips queries (too many!)
-- [ ] Fix sorting of surface trips
 - [ ] Change export function to use django-import-export
 - [ ] Add email preferences model
 - [ ] Add email notifications of friend requests
@@ -11,6 +9,8 @@
 - [ ] Define separate requirements.txt files for development and production
 - [ ] Add profile picture support
 - [/] Improve notification display (stylistic changes - fixed width, scrollable, images)
+- [X] Fix Distance field sorting bug
+- [X] Fix liked trips queries (too many!)
 - [X] Add option to disable email and/or username being used to add you as a friend
 - [X] Add option to disable comments
 - [X] Add trip likes
