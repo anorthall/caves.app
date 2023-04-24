@@ -675,7 +675,11 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
 class DeleteComment(LoginRequiredMixin, View):
     def get(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
-        if comment.author == request.user or request.user.is_superuser:
+        if (
+            comment.author == request.user
+            or comment.content_object.user == request.user
+            or request.user.is_superuser
+        ):
             comment.delete()
             messages.success(
                 request,
