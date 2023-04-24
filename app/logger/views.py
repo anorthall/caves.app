@@ -408,6 +408,7 @@ class UserProfile(ListView):
         context = super().get_context_data()
         context["user"] = self.user
         context["page_title"] = self.get_page_title()
+        context["dist_format"] = self.request.user.settings.units
 
         # GET parameters for pagination and sorting at the same time
         parameters = self.request.GET.copy()

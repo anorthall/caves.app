@@ -1,5 +1,6 @@
 {% extends "base_full_width.html" %}
 {% load get %}
+{% load distformat %}
 {% load static %}
 {% load markdownify %}
 {% block title %}{{ page_title }}{% endblock %}
@@ -128,9 +129,9 @@
               {% endif %}
             </td>
 
-            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up }}</td>
+            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:dist_format }}</td>
 
-            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_down }}</td>
+            <td class="d-none d-lg-table-cell">{{ trip.vert_dist_down|distformat:dist_format }}</td>
 
             <td class="d-none d-lg-table-cell">
               {{ trip.type }}

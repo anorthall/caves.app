@@ -1,10 +1,17 @@
 from django.contrib import admin
+from django.forms import ModelForm
+from logger.forms import DistanceUnitFormMixin
 
 from .models import Trip, TripReport
 
 
+class TripAdminForm(DistanceUnitFormMixin, ModelForm):
+    pass
+
+
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
+    form = TripAdminForm
     search_fields = (
         "cave_name",
         "cave_region",
