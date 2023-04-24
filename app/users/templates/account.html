@@ -19,7 +19,7 @@
           </div>
 
           <div class="col">
-            {{ user.profile.name }}
+            {{ user.name }}
           </div>
         </div>
 
@@ -180,7 +180,7 @@
             {% if user.profile.page_title %}
               {{ user.profile.page_title }}
             {% else %}
-              {{ user.profile.name }}'s trips
+              {{ user.name }}'s trips
             {% endif %}
           </div>
         </div>

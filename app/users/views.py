@@ -127,27 +127,23 @@ class AccountUpdate(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         u = request.user
-        user_form = UserChangeForm(request.POST, instance=u)
-        settings_form = SettingsChangeForm(request.POST, instance=u.settings)
-        profile_form = ProfileChangeForm(
+        u_form = UserChangeForm(request.POST, instance=u)
+        s_form = SettingsChangeForm(request.POST, instance=u.settings)
+        p_form = ProfileChangeForm(
             request.POST, instance=u.profile, files=request.FILES
         )
 
-        if (
-            user_form.is_valid()
-            and settings_form.is_valid()
-            and profile_form.is_valid()
-        ):
-            user_form.save()
-            settings_form.save()
-            profile_form.save()
+        if u_form.is_valid() and s_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            s_form.save()
+            p_form.save()
             messages.success(request, "Your profile has been updated.")
-            return redirect("users:account")
+            return redirect("users:account_update")
 
         context = self.get_context_data(*args, **kwargs)
-        context["user_form"] = user_form
-        context["settings_form"] = settings_form
-        context["profile_form"] = profile_form
+        context["user_form"] = u_form
+        context["settings_form"] = s_form
+        context["profile_form"] = p_form
         return render(request, self.template_name, context)
 
 
@@ -313,9 +309,15 @@ class FriendListView(LoginRequiredMixin, TemplateView):
             )
         )
 
-        friends = request.user.profile.friends.all().select_related(
-            "profile",
-            "settings",
+        friends = (
+            request.user.profile.friends.all()
+            .select_related(
+                "profile",
+                "settings",
+            )
+            .prefetch_related(
+                "profile__friends",
+            )
         )
 
         context = {

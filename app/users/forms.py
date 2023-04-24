@@ -103,12 +103,6 @@ class ResendVerifyEmailForm(forms.Form):
 
 class UserCreationForm(forms.ModelForm):
     template_name = "forms/bs5_form.html"
-    name = forms.CharField(
-        label="Name",
-        max_length=40,
-        required=True,
-        help_text="Your name as you would like it publicly displayed.",
-    )
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,
@@ -126,7 +120,14 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = CavingUser
-        fields = ("email", "username")
+        fields = ("name", "email", "username")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs["autofocus"] = True
+        self.fields["name"].widget.attrs["autocomplete"] = "name"
+        self.fields["email"].widget.attrs["autocomplete"] = "email"
+        self.fields["name"].initial = None
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -152,8 +153,6 @@ class UserCreationForm(forms.ModelForm):
 
         if commit:
             user.save()
-            user.profile.name = self.cleaned_data["name"]
-            user.profile.save()
 
         return user
 
@@ -166,6 +165,7 @@ class UserAdminChangeForm(forms.ModelForm):
         fields = (
             "email",
             "username",
+            "name",
             "is_active",
             "password",
         )
@@ -183,6 +183,7 @@ class UserChangeForm(forms.ModelForm):
         fields = (
             "email",
             "username",
+            "name",
         )
 
 
@@ -192,7 +193,6 @@ class ProfileChangeForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = (
-            "name",
             "location",
             "country",
             "clubs",

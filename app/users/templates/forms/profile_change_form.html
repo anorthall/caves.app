@@ -5,29 +5,8 @@
   {{ hidden_field }}
 {% endfor %}
 
-<div class="row mb-3 px-2 g-3">
-  <div class="col-xl-6">
-    <!-- Name -->
-    <label class="form-label" for="{{ form.name.auto_id }}">
-      Name
-    </label>
-    {% if form.is_bound %}
-      {% if form.name.errors %}
-        {% render_field form.name class="form-control is-invalid" %}
-        {% for e in form.name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
-      {% else %}
-        {% render_field form.name class="form-control is-valid" %}
-      {% endif %}
-    {% else %}
-      {% render_field form.name class="form-control" %}
-    {% endif %}
-    <div class="form-text">
-      {{ form.name.help_text }}
-    </div>
-  </div>
-
-  <div class="col-xl-6">
-    <!-- Location -->
+<div class="row row-cols-1 row-cols-lg-2 mb-3 px-2 g-3">
+  <div class="col">
     <label class="form-label" for="{{ form.location.auto_id }}">
       Location
     </label>
@@ -45,11 +24,8 @@
       {{ form.location.help_text }}
     </div>
   </div>
-</div>
 
-<div class="row mb-3 px-2 g-3">
-  <div class="col-xl-6">
-    <!-- Country -->
+  <div class="col">
     <label class="form-label" for="{{ form.country.auto_id }}">
       Country
     </label>
@@ -67,8 +43,10 @@
       {{ form.country.help_text }}
     </div>
   </div>
+</div>
 
-  <div class="col-xl-6">
+<div class="row mb-3 px-2 g-3">
+  <div class="col">
     <!-- Caving clubs -->
     <label class="form-label" for="{{ form.clubs.auto_id }}">
       Club(s)

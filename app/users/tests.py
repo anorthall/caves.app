@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import Client, TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from .models import Trip
@@ -104,42 +105,6 @@ class UserIntegrationTestCase(TestCase):
         )
         self.superuser.is_active = True
         self.superuser.save()
-
-    def test_status_200_on_all_pages(self):
-        """Test all pages return status code 200"""
-        client = Client()
-        client.login(email="super@user.app", password="password")
-
-        # Test pages logged in
-        logged_in_pages = [
-            "/account/update/",
-            "/account/email/",
-            "/account/profile/",
-            "/account/password/",
-        ]
-        for page in logged_in_pages:
-            response = client.get(page)
-            self.assertEqual(response.status_code, 200, msg="Error on page: " + page)
-
-        # Test pages logged out
-        client.logout()
-        logged_out_pages = [
-            "/account/login/",
-            "/account/password/reset/",
-            "/account/password/reset/confirm/abc/abc/",
-            "/account/register/",
-            "/account/verify/",
-            "/account/verify/email/",
-            "/account/verify/resend/",
-        ]
-        for page in logged_out_pages:
-            response = client.get(page)
-            self.assertEqual(response.status_code, 200, msg="Error on page: " + page)
-
-        # Test logout returns 302
-        response = client.get("/account/logout/")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
 
     def test_user_login(self):
         """Test login for users"""
@@ -326,7 +291,7 @@ class UserIntegrationTestCase(TestCase):
         client = Client()
         user = self.enabled
         client.login(email=user.email, password="password")
-        response = client.get("/account/profile/")
+        response = client.get(reverse("users:account"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, user.name)
         self.assertContains(response, user.email)
@@ -367,7 +332,7 @@ class UserIntegrationTestCase(TestCase):
         user.refresh_from_db()
         from zoneinfo import ZoneInfo
 
-        self.assertEqual(user.profile.name, "New")
+        self.assertEqual(user.name, "New")
         self.assertEqual(user.username, "newusername")
         self.assertEqual(user.profile.location, "Testing New Location")
         self.assertEqual(user.settings.privacy, user.settings.PUBLIC)

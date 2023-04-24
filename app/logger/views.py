@@ -60,8 +60,8 @@ class TripContextMixin:
             context["can_view_profile"] = user.profile.is_viewable_by(self.request.user)
 
             if self.request.user not in user.profile.friends.all():
-                # TODO: Make this privacy aware, when request privacy is implemented
-                context["can_add_friend"] = True
+                if user.settings.friend_allow_username:
+                    context["can_add_friend"] = True
 
             if report:
                 context["can_view_report"] = report.is_viewable_by(self.request.user)
@@ -457,7 +457,7 @@ class UserProfile(ListView):
         if self.user.profile.page_title:
             return self.user.profile.page_title
         else:
-            return f"{self.user.profile.name}'s trips"
+            return f"{self.user.name}'s trips"
 
 
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -474,17 +474,29 @@ class TripDetail(TripContextMixin, DetailView):
     model = Trip
 
     def get_queryset(self):
-        qs = Trip.objects.filter(pk=self.kwargs["pk"]).select_related("user")
-        qs = qs.prefetch_related(
-            "comments", "comments__author__profile", "comments__author__settings"
-        ).annotate(
-            comments_count=Count("comments", distinct=True),
-            likes_count=Count("likes", distinct=True),
-            user_liked=Exists(
-                User.objects.filter(
-                    pk=self.request.user.pk, liked_trips=OuterRef("pk")
-                ).only("pk")
-            ),
+        qs = (
+            Trip.objects.all()
+            .select_related(
+                "user",
+                "user__profile",
+                "user__settings",
+            )
+            .prefetch_related(
+                "comments",
+                "likes",
+                "user__profile__friends",
+                "comments__author__profile",
+                "comments__author__settings",
+            )
+            .annotate(
+                comments_count=Count("comments", distinct=True),
+                likes_count=Count("likes", distinct=True),
+                user_liked=Exists(
+                    User.objects.filter(
+                        pk=self.request.user.pk, liked_trips=OuterRef("pk")
+                    ).only("pk")
+                ),
+            )
         )
         return qs
 
@@ -590,9 +602,21 @@ class ReportDetail(TripContextMixin, DetailView):
     def get_queryset(self):
         qs = (
             TripReport.objects.all()
-            .select_related("user")
-            .prefetch_related("comments", "comments__author__profile")
-            .prefetch_related("comments__author__settings")
+            .select_related(
+                "user",
+                "user__profile",
+                "user__settings",
+            )
+            .prefetch_related(
+                "comments",
+                "likes",
+                "user__profile__friends",
+                "comments__author__profile",
+                "comments__author__settings",
+            )
+            .annotate(
+                likes_count=Count("likes", distinct=True),
+            )
         )
         return qs
 
@@ -664,7 +688,7 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        trip = get_object_or_404(Trip, pk=self.kwargs["pk"])
+        trip = self.get_object()
         if not trip.is_viewable_by(self.request.user):
             raise Http404
 
@@ -674,14 +698,14 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
         context["object"] = trip
         return context
 
-    def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related(
-                "comments", "comments__author__profile", "comments__author__settings"
-            )
+    def get_object(self):
+        trip = Trip.objects.filter(pk=self.kwargs["pk"]).prefetch_related(
+            "comments",
+            "comments__author",
+            "comments__author__settings",
+            "comments__author__profile",
         )
+        return trip.first()
 
 
 class DeleteComment(LoginRequiredMixin, View):
@@ -704,7 +728,7 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
     template_name = "includes/htmx_trip_like.html"
 
     def get(self, request, pk):
-        trip = self.get_queryset(request, pk).first()
+        trip = self.get_object(request, pk)
         if not trip or not trip.is_viewable_by(request.user):
             raise Http404
 
@@ -724,11 +748,15 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)
 
-    def get_queryset(self, request, pk):
-        return Trip.objects.filter(pk=pk).annotate(
-            user_liked=Exists(
-                User.objects.filter(
-                    pk=request.user.pk, liked_trips=OuterRef("pk")
-                ).only("pk")
-            ),
+    def get_object(self, request, pk):
+        return (
+            Trip.objects.filter(pk=pk)
+            .annotate(
+                user_liked=Exists(
+                    User.objects.filter(
+                        pk=request.user.pk, liked_trips=OuterRef("pk")
+                    ).only("pk")
+                )
+            )
+            .first()
         )

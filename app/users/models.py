@@ -28,14 +28,11 @@ class CavingUserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
             username=username.lower(),
+            name=name,
         )
         user.set_password(password)
         user.save(using=self._db)
 
-        # Set name after save to allow for profile creation, as the UserProfile
-        # and UserSettings models are created on CavingUser.save().
-        user.profile.name = name
-        user.profile.save()
         return user
 
     def create_superuser(self, email, username, name, password=None):
@@ -54,7 +51,6 @@ class CavingUserManager(BaseUserManager):
 
 
 class CavingUser(AbstractBaseUser, PermissionsMixin):
-    # Email is used as login username
     email = models.EmailField(
         "email address",
         max_length=255,
@@ -62,7 +58,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         help_text="This will be verified before you can log in.",
     )
 
-    # Username for URLs
     username = models.SlugField(
         max_length=30,
         unique=True,
@@ -70,7 +65,13 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "address for your logbook.",
     )
 
-    # is_active determines if a user can log in or not
+    name = models.CharField(
+        max_length=25,
+        help_text="Your name as you would like it to appear on your public profile.",
+        default="Caver",
+        validators=[MinLengthValidator(3)],
+    )
+
     is_active = models.BooleanField(
         "Enabled user",
         default=False,
@@ -90,13 +91,13 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = "user"
 
     def __str__(self):
-        return self.profile.name
+        return self.name
 
     def get_full_name(self):
-        return self.profile.name
+        return self.name
 
     def get_short_name(self):
-        return self.profile.name
+        return self.name
 
     def save(self, *args, **kwargs):
         """Perform validation checks and ensure Profile and Settings exist"""
@@ -118,10 +119,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         from users.models import Notification
 
         return Notification.objects.create(user=self, message=message, url=url)
-
-    @property
-    def name(self):
-        return self.profile.name
 
     @property
     def trips(self):
@@ -160,14 +157,6 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(
         CavingUser, on_delete=models.CASCADE, related_name="profile", primary_key=True
-    )
-
-    # Personal information
-    name = models.CharField(
-        max_length=25,
-        help_text="Your name as you would like it to appear on your public profile.",
-        default="Caver",
-        validators=[MinLengthValidator(3)],
     )
 
     # Avatar

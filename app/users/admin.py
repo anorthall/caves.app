@@ -42,7 +42,6 @@ class UserProfileInline(admin.StackedInline):
             None,
             {
                 "fields": (
-                    "name",
                     "avatar",
                     "location",
                     "country",
@@ -83,6 +82,7 @@ class CavingUserAdmin(BaseUserAdmin):
     list_display = (
         "email",
         "username",
+        "name",
         "date_joined",
         "last_login",
         "last_seen",
@@ -100,6 +100,7 @@ class CavingUserAdmin(BaseUserAdmin):
                 "fields": (
                     "email",
                     "username",
+                    "name",
                     "last_login",
                     "last_seen",
                     "is_active",
@@ -131,6 +132,7 @@ class CavingUserAdmin(BaseUserAdmin):
     search_fields = (
         "email",
         "username",
+        "name",
     )
     ordering = ("-date_joined",)
     filter_horizontal = ()

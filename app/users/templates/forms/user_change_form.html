@@ -5,8 +5,28 @@
   {{ hidden_field }}
 {% endfor %}
 
-<!-- Email -->
 <div class="row mb-3 px-2 g-3">
+  <div class="col">
+    <label class="form-label" for="{{ form.name.auto_id }}">
+      Name
+    </label>
+    {% if form.is_bound %}
+      {% if form.name.errors %}
+        {% render_field form.name class="form-control is-invalid" %}
+        {% for e in form.name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      {% else %}
+        {% render_field form.name class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field form.name class="form-control" %}
+    {% endif %}
+    <div class="form-text">
+      {{ form.name.help_text }}
+    </div>
+  </div>
+</div>
+
+<div class="row row-cols-1 row-cols-lg-2 mb-3 px-2 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.email.auto_id }}">
       Email
@@ -25,10 +45,7 @@
       {{ form.email.help_text }}
     </div>
   </div>
-</div>
 
-<!-- Username -->
-<div class="row mb-3 px-2 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.username.auto_id }}">
       Username

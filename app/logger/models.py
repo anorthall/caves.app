@@ -323,9 +323,9 @@ class Trip(models.Model):
             if for_user and user == for_user:
                 self_liked = True
             elif user in self.user.profile.friends.all():
-                friends_liked.append(user.profile.name)
+                friends_liked.append(user.name)
             else:
-                others_liked.append(user.profile.name)
+                others_liked.append(user.name)
 
         # Ensure the user's friends are shown first
         liked_user_names = []
