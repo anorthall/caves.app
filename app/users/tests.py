@@ -3,15 +3,15 @@ from django.core import mail
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
+from logger.models import Trip
+from users.models import FriendRequest
 from users.templatetags.user import user as user_templatetag
-
-from .models import Trip
 
 User = get_user_model()
 
 
 @tag("unit", "users", "fast")
-class UserTestCase(TestCase):
+class UserUnitTests(TestCase):
     def setUp(self):
         # Reduce log level to avoid 404 error
         import logging
@@ -29,6 +29,8 @@ class UserTestCase(TestCase):
         )
         user.is_active = True
         user.save()
+
+        self.user = user
 
     def tearDown(self):
         """Reset the log level back to normal"""
@@ -77,6 +79,40 @@ class UserTestCase(TestCase):
         user.is_superuser = True
         user.save()
         self.assertTrue(user.is_staff)
+
+    def test_create_user_with_no_email(self):
+        """Test the create user function with an empty string for an email"""
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                email="",
+                username="username",
+                name="name",
+            )
+
+    def test_create_user_with_no_username(self):
+        """Test the create user function with an empty string for a username"""
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                email="test@caves.app",
+                username="",
+                name="name",
+            )
+
+    def test_create_user_with_no_name(self):
+        """Test the create user function with an empty string for a name"""
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                email="test@caves.app",
+                username="username",
+                name="",
+            )
+
+    def test_user_cannot_have_self_as_friend(self):
+        """Test that a user cannot have themselves as a friend"""
+        self.user.profile.friends.add(self.user)
+        self.user.profile.save()
+        self.user.profile.refresh_from_db()
+        self.assertEqual(self.user.profile.friends.count(), 0)
 
 
 @tag("integration", "users", "fast")
@@ -143,6 +179,23 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(
             response, "The username and password provided do not match any account"
         )
+
+    def test_login_when_already_logged_in(self):
+        """Test login when already logged in"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:login"))
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.get(reverse("users:login"), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"You are logged in as {self.user.email}.")
+
+    def test_user_registration_page_redirects_when_logged_in(self):
+        """Test that the user registration page redirects when already logged in"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:register"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("users:account"))
 
     def test_user_registration(self):
         """Test user registration process, including email verification"""
@@ -250,6 +303,26 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, "Enter a valid “slug” consisting of")
         self.assertEqual(len(mail.outbox), 0)
 
+    def test_change_user_email_with_invalid_password(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:email"),
+            {"email": "new-email@caves.app", "password": "invalid"},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The password you have entered is not correct")
+
+    def test_change_user_email_with_email_already_in_use(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:email"),
+            {"email": self.user.email, "password": "password"},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "That email is already in use")
+
     def test_change_user_email(self):
         """Test changing a user's email address"""
         self.client.force_login(self.user)
@@ -347,6 +420,18 @@ class UserIntegrationTestCase(TestCase):
         self.assertTrue(self.user.settings.show_statistics)
         self.assertEqual(self.user.profile.bio, "This is a bio for testing.")
 
+    def test_submit_invalid_updates_to_profile(self):
+        """Test submitting invalid updates to a user's profile"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:account_update"),
+            {
+                "username": "spaces in username",
+            },
+            follow=True,
+        )
+        self.assertContains(response, "Enter a valid “slug” consisting of")
+
     def test_change_user_password(self):
         """Test changing a user's password"""
         self.client.force_login(self.user)
@@ -363,6 +448,257 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, "Your password has been updated.")
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("new_password"))
+
+    def test_user_distance_settings_are_applied(self):
+        """Test user distance settings are applied to distances on the site"""
+        self.client.force_login(self.user)
+        self.user.settings.units = self.user.settings.IMPERIAL
+        self.user.settings.save()
+
+        trip = Trip.objects.create(
+            user=self.user,
+            cave_name="Test Trip",
+            start=timezone.now(),
+            vert_dist_up="1000m",
+        )
+        trip.save()
+
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "3281ft")
+
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "3281ft")
+
+        # Test metric
+        self.user.settings.units = self.user.settings.METRIC
+        self.user.settings.save()
+
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "1000m")
+
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "1000m")
+
+    def test_notifications_are_displayed(self):
+        """Test notifications are displayed on the user's profile"""
+        self.client.force_login(self.user)
+
+        for i in range(10):
+            self.user.notify(f"Test {i}", "/")
+
+        response = self.client.get(reverse("users:account"))
+        for i in range(1, 5):
+            self.assertNotContains(response, f"Test {i}")
+
+        for i in range(6, 10):
+            self.assertContains(response, f"Test {i}")
+
+    def test_notification_redirect_view(self):
+        """Test the notification redirect view"""
+        self.client.force_login(self.user)
+        pk = self.user.notify("Test", "/test/").pk
+        response = self.client.get(reverse("users:notification", args=[pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/test/")
+
+
+@tag("integration", "fast", "users")
+class FriendsIntegrationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="user@caves.app",
+            username="user",
+            password="password",
+            name="user",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+        self.user2 = User.objects.create_user(
+            email="user2@caves.app",
+            username="user2",
+            password="password",
+            name="user2",
+        )
+        self.user2.is_active = True
+        self.user2.save()
+
+        self.user3 = User.objects.create_user(
+            email="user3@caves.app",
+            username="user3",
+            password="password",
+            name="user3",
+        )
+        self.user3.is_active = True
+        self.user3.save()
+
+    def test_sending_a_friend_request_by_username(self):
+        """Test sending a friend request by username"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+    def test_sending_a_friend_request_by_email(self):
+        """Test sending a friend request by email"""
+        self.client.force_login(self.user)
+        self.user2.settings.allow_friend_email = True
+        self.user2.settings.save()
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+    def test_friend_request_disallowed_by_email(self):
+        """Test sending a friend request by email is disallowed"""
+        self.client.force_login(self.user)
+        self.user2.settings.allow_friend_email = False
+        self.user2.settings.save()
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_friend_request_disallowed_by_username(self):
+        """Test sending a friend request by username is disallowed"""
+        self.client.force_login(self.user)
+        self.user2.settings.allow_friend_username = False
+        self.user2.settings.save()
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_adding_self_as_friend_is_not_permitted(self):
+        """Test adding self as a friend is not permitted"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:friend_add"), {"user": self.user.username}, follow=True
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+        self.assertContains(response, "You cannot add yourself as a friend")
+
+    def test_user_cannot_add_a_friend_they_are_already_friends_with(self):
+        """Test a user cannot add a friend they are already friends with"""
+        self.client.force_login(self.user)
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+        response = self.client.post(
+            reverse("users:friend_add"), {"user": self.user2.username}, follow=True
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+        self.assertContains(response, f"{self.user2.name} is already your friend")
+
+    def test_adding_a_friend_and_accepting_it(self):
+        """Test adding a friend and accepting it"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.force_login(self.user2)
+        self.client.get(
+            reverse(
+                "users:friend_request_accept", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+        self.assertIn(self.user2, self.user.profile.friends.all())
+        self.assertIn(self.user, self.user2.profile.friends.all())
+
+    def test_creating_a_duplicate_friend_request(self):
+        """Test creating a duplicate friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        response = self.client.post(
+            reverse("users:friend_add"), {"user": self.user2.username}, follow=True
+        )
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertContains(response, "A friend request already exists for this user")
+
+    def test_deleting_a_friend_request_as_the_sending_user(self):
+        """Test deleting a friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.get(
+            reverse(
+                "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_deleting_a_friend_request_as_the_receiving_user(self):
+        """Test deleting a friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.force_login(self.user2)
+        self.client.get(
+            reverse(
+                "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 0)
+
+    def test_deleting_a_friend_request_as_a_non_involved_user(self):
+        """Test deleting a friend request"""
+        self.client.force_login(self.user)
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        self.client.force_login(self.user3)
+        self.client.get(
+            reverse(
+                "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertEqual(FriendRequest.objects.count(), 1)
+
+    def test_removing_a_friend(self):
+        """Test removing a friend"""
+        self.client.force_login(self.user)
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+        self.client.get(reverse("users:friend_remove", args=[self.user2.username]))
+        self.assertNotIn(self.user2, self.user.profile.friends.all())
+        self.assertNotIn(self.user, self.user2.profile.friends.all())
+
+    def test_friends_page_with_get_parameters_for_user_to_add(self):
+        """Test that the friends page works when a user is specified"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:friends") + "?u=this_is_a_username")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "this_is_a_username")
+
+    def test_friend_remove_view_with_a_user_that_is_not_a_friend(self):
+        """Test that the friend remove view returns a 404 if the user is not a friend"""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("users:friend_remove", args=[self.user2.username])
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_accepting_a_friend_request_that_the_user_is_not_part_of(self):
+        """Test that the friend request accept view returns a 404 if an invalid user"""
+        self.client.force_login(self.user)
+        fr = FriendRequest.objects.create(user_from=self.user2, user_to=self.user3)
+        response = self.client.get(reverse("users:friend_request_accept", args=[fr.pk]))
+        self.assertEqual(response.status_code, 404)
 
 
 @tag("unit", "fast", "users")

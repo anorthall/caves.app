@@ -193,9 +193,12 @@ class AddCommentForm(forms.Form):
         type = cleaned_data.get("type")
         pk = cleaned_data.get("pk")
 
+        if not type or not pk:
+            raise ValidationError("Invalid form data.")
+
         try:
             self.object = type.objects.get(pk=pk)
-        except AttributeError:
+        except (Trip.DoesNotExist, TripReport.DoesNotExist):
             raise ValidationError("The item you wish to comment on does not exist.")
 
         if not self.object.is_viewable_by(self.request.user):

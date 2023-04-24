@@ -63,7 +63,7 @@
           <i class="bi bi-info-circle"></i>&nbsp; View this trip
         </a>
 
-        {% if can_add_friend %}
+        {% if can_add_friend and request.user.is_authenticated %}
           <a class="nav-link" href="{% url 'users:friends' %}?u={{ user.username }}">
             <i class="bi bi-plus-lg"></i>&nbsp; Add as friend
           </a>

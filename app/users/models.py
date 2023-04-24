@@ -30,7 +30,10 @@ class CavingUserManager(BaseUserManager):
             username=username.lower(),
             name=name,
         )
-        user.set_password(password)
+
+        if password:
+            user.set_password(password)
+
         user.save(using=self._db)
 
         return user
@@ -202,15 +205,16 @@ class UserProfile(models.Model):
     def save(self, *args, **kwargs):
         """Ensure user cannot add themselves as a friend"""
         # self._state.adding is True when the object is being created
-        if self._state.adding is False and self in self.friends.all():
-            self.friends.remove(self)
+        if self._state.adding is False and self.user in self.friends.all():
+            self.friends.remove(self.user)
 
         return super().save(*args, **kwargs)
 
     def is_viewable_by(self, user_viewing):
         """Returns whether or not user_viewing can view this profile"""
         user_settings = self.user.settings
-        privacy = user_settings.privacy
+        privacy = self.user.settings.privacy
+
         if user_viewing == self.user:
             return True
 

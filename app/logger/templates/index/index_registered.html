@@ -87,7 +87,7 @@
           </span>
 
           {% if trip.user.settings.allow_comments %}
-            <span hx-get="{% url 'log:comment_htmxtrip' trip.pk %}" hx-target="#comment{{ forloop.counter }}" class="float-end">
+            <span hx-get="{% url 'log:htmx_trip_comment' trip.pk %}" hx-target="#comment{{ forloop.counter }}" class="float-end">
               <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}<span class="d-none d-md-inline"> comment{{ trip.comments_count|pluralize }}</span>
             </span>
           {% endif %}

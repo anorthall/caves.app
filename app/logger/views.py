@@ -60,7 +60,7 @@ class TripContextMixin:
             context["can_view_profile"] = user.profile.is_viewable_by(self.request.user)
 
             if self.request.user not in user.profile.friends.all():
-                if user.settings.friend_allow_username:
+                if user.settings.allow_friend_username:
                     context["can_add_friend"] = True
 
             if report:
@@ -408,7 +408,10 @@ class UserProfile(ListView):
         context = super().get_context_data()
         context["user"] = self.user
         context["page_title"] = self.get_page_title()
-        context["dist_format"] = self.request.user.settings.units
+        if self.request.user.is_authenticated:
+            context["dist_format"] = self.request.user.settings.units
+        else:
+            context["dist_format"] = UserSettings.METRIC
 
         # GET parameters for pagination and sorting at the same time
         parameters = self.request.GET.copy()
@@ -468,6 +471,9 @@ class TripDetail(TripContextMixin, DetailView):
 
     def get_object(self, *args, **kwargs):
         super().get_object(*args, **kwargs)
+        if not self.object.is_viewable_by(self.request.user):
+            raise Http404
+
         if self.object.user == self.request.user:
             return self.object
         else:
@@ -475,7 +481,12 @@ class TripDetail(TripContextMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        friends = self.request.user.profile.friends.all()
+
+        if self.request.user.is_authenticated:
+            friends = self.request.user.profile.friends.all()
+        else:
+            friends = None
+
         context["liked_str"] = {
             self.object.pk: self.object.get_liked_str(self.request.user, friends)
         }
@@ -566,6 +577,12 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 class ReportDetail(TripContextMixin, DetailView):
     model = TripReport
 
+    def get_object(self):
+        object = super().get_object()
+        if not object.is_viewable_by(self.request.user):
+            raise Http404
+        return object
+
     def get_queryset(self):
         qs = (
             TripReport.objects.all()
@@ -647,7 +664,10 @@ class AddComment(LoginRequiredMixin, View):
                     request,
                     "There was an error adding your comment. Please try again.",
                 )
-        return redirect(form.object.get_absolute_url())
+        if hasattr(form, "object"):
+            return redirect(form.object.get_absolute_url())
+        else:
+            return redirect("log:index")
 
 
 class HTMXTripComment(LoginRequiredMixin, TemplateView):

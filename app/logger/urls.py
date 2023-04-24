@@ -29,7 +29,7 @@ urlpatterns = [
     path(
         "comment/htmxtrip/<int:pk>/",
         views.HTMXTripComment.as_view(),
-        name="comment_htmxtrip",
+        name="htmx_trip_comment",
     ),
     path("statistics/", views.user_statistics, name="statistics"),
     path("admin-tools/", views.admin_tools, name="admin_tools"),

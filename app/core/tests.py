@@ -278,7 +278,7 @@ class TestAllPagesLoad(TestCase):
         """Test that the HTMX comment page loads"""
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("log:comment_htmxtrip", kwargs={"pk": self.trip.pk})
+            reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
         )
         self.assertEqual(response.status_code, 200)
 
@@ -292,7 +292,7 @@ class TestAllPagesLoad(TestCase):
             c.save()
 
         response = self.client.get(
-            reverse("log:comment_htmxtrip", kwargs={"pk": self.trip.pk})
+            reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
         )
         self.assertEqual(response.status_code, 200)
 

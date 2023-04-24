@@ -70,7 +70,11 @@
         {% for name, dist in trip.distances.items %}
           <div class="col">
             <small class="text-muted">{{ name|capfirst }}</small><br />
-            {{ dist|distformat:request.user.settings.units }}
+            {% if request.user.is_authenticated %}
+              {{ dist|distformat:request.user.settings.units }}
+            {% else %}
+              {{ dist }}
+            {% endif %}
           </div>
         {% endfor %}
       </div>
@@ -131,7 +135,7 @@
         {% endif %}
       {% else %}
         <i class="bi bi-hand-thumbs-up-fill"></i>
-        {{ trip.likes }} like{{ trip.likes|pluralize }}
+        {{ trip.likes_count }} like{{ trip.likes_count|pluralize }}
       {% endif %}
     </span>
 

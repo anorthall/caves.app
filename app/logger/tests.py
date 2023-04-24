@@ -5,11 +5,12 @@ from django.contrib.gis.measure import D
 from django.db.utils import IntegrityError
 from django.test import Client, TestCase, tag
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import timezone as tz
 from django.utils.timezone import datetime as dt
-from users.models import UserSettings
+from django.utils.timezone import timedelta as td
+from users.models import Notification, UserSettings
 
-from .models import Trip, TripReport
+from .models import Comment, Trip, TripReport
 from .templatetags import distformat
 
 User = get_user_model()
@@ -30,12 +31,20 @@ class TripModelUnitTests(TestCase):
             password="password",
             name="Firstname",
         )
-        self.user.settings.privacy = self.user.settings.PRIVATE
         self.user.is_active = True
         self.user.save()
 
+        self.user2 = User.objects.create(
+            email="user2@caves.app",
+            username="user2",
+            password="password",
+            name="User 2",
+        )
+        self.user2.is_active = True
+        self.user2.save()
+
         # Trip with a start and end time
-        Trip.objects.create(
+        self.trip = Trip.objects.create(
             user=self.user,
             cave_name="Duration Trip",
             start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
@@ -81,6 +90,14 @@ class TripModelUnitTests(TestCase):
             aid_dist="600m",
         )
 
+        self.report = TripReport.objects.create(
+            trip=self.trip,
+            user=self.trip.user,
+            title="Test Report",
+            pub_date=tz.now(),
+            content="Test Report",
+        )
+
     def tearDown(self):
         """Reset the log level back to normal"""
         logger = logging.getLogger("django.request")
@@ -95,7 +112,7 @@ class TripModelUnitTests(TestCase):
         trip_without_end = Trip.objects.get(cave_name="No Duration Trip")
 
         self.assertNotEqual(trip_with_end.end, None)
-        self.assertEqual(trip_with_end.duration, timezone.timedelta(hours=2))
+        self.assertEqual(trip_with_end.duration, td(hours=2))
 
         self.assertEqual(trip_without_end.end, None)
         self.assertEqual(trip_without_end.duration, None)
@@ -149,7 +166,7 @@ class TripModelUnitTests(TestCase):
             {
                 "cave_name": "Test Validation Cave",
                 "type": Trip.SPORT,
-                "start": timezone.now(),
+                "start": tz.now(),
                 "vert_dist_up": D(m=-100),
                 "vert_dist_down": D(m=10000),
             },
@@ -164,11 +181,99 @@ class TripModelUnitTests(TestCase):
             {
                 "cave_name": "Test Validation Cave",
                 "type": Trip.SPORT,
-                "start": timezone.now(),
+                "start": tz.now(),
                 "horizontal_dist": D(mi=30),
             },
         )
         self.assertContains(response, "Distance is too large")
+
+    def test_trip_is_viewable_by_with_own_user(self):
+        """Test the trip is_viewable_by function"""
+        trip_private = Trip.objects.get(cave_name="Private Trip")
+        trip_public = Trip.objects.get(cave_name="Public Trip")
+        trip_default = Trip.objects.get(cave_name="Default Trip")
+
+        self.assertTrue(trip_private.is_viewable_by(self.user))
+        self.assertTrue(trip_public.is_viewable_by(self.user))
+        self.assertTrue(trip_default.is_viewable_by(self.user))
+
+    def test_trip_is_viewable_by_with_public_user(self):
+        """Test the trip is_viewable_by function with a public user"""
+        trip_private = Trip.objects.get(cave_name="Private Trip")
+        trip_public = Trip.objects.get(cave_name="Public Trip")
+        trip_default = Trip.objects.get(cave_name="Default Trip")
+
+        self.user.settings.privacy = UserSettings.PUBLIC
+        self.user.settings.save()
+        self.assertFalse(trip_private.is_viewable_by(self.user2))
+        self.assertTrue(trip_default.is_viewable_by(self.user2))
+        self.assertTrue(trip_public.is_viewable_by(self.user2))
+
+    def test_trip_is_viewable_by_with_private_user(self):
+        """Test the trip is_viewable_by function with a private user"""
+        trip_private = Trip.objects.get(cave_name="Private Trip")
+        trip_public = Trip.objects.get(cave_name="Public Trip")
+        trip_default = Trip.objects.get(cave_name="Default Trip")
+
+        self.user.settings.privacy = UserSettings.PRIVATE
+        self.user.settings.save()
+        self.assertFalse(trip_private.is_viewable_by(self.user2))
+        self.assertFalse(trip_default.is_viewable_by(self.user2))
+        self.assertTrue(trip_public.is_viewable_by(self.user2))
+
+    def test_trip_is_viewable_by_with_user_that_is_not_a_friend(self):
+        """Test the trip is_viewable_by function with a non-friend user"""
+        trip_private = Trip.objects.get(cave_name="Private Trip")
+        trip_public = Trip.objects.get(cave_name="Public Trip")
+        trip_default = Trip.objects.get(cave_name="Default Trip")
+
+        self.user.settings.privacy = UserSettings.FRIENDS
+        self.user.settings.save()
+        self.assertFalse(trip_private.is_viewable_by(self.user2))
+        self.assertFalse(trip_default.is_viewable_by(self.user2))
+        self.assertTrue(trip_public.is_viewable_by(self.user2))
+
+    def test_trip_is_viewable_by_with_user_that_is_a_friend(self):
+        """Test the trip is_viewable_by function with a friend user"""
+        trip_private = Trip.objects.get(cave_name="Private Trip")
+        trip_public = Trip.objects.get(cave_name="Public Trip")
+        trip_default = Trip.objects.get(cave_name="Default Trip")
+
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+
+        self.user.settings.privacy = UserSettings.FRIENDS
+        self.user.settings.save()
+        self.assertFalse(trip_private.is_viewable_by(self.user2))
+        self.assertTrue(trip_default.is_viewable_by(self.user2))
+        self.assertTrue(trip_public.is_viewable_by(self.user2))
+
+        trip_friends = trip_default
+        trip_friends.privacy = Trip.FRIENDS
+        trip_friends.save()
+        self.assertTrue(trip_friends.is_viewable_by(self.user2))
+
+    def test_trip_report_is_private_and_is_public(self):
+        """Test the trip report is_private and is_public functions"""
+        self.trip.privacy = Trip.PRIVATE
+        self.trip.save()
+
+        self.report.privacy = TripReport.DEFAULT
+        self.report.save()
+
+        self.assertEqual(self.report.trip, self.trip)
+        self.assertTrue(self.report.is_private)
+        self.assertFalse(self.report.is_public)
+
+        self.report.privacy = TripReport.PRIVATE
+        self.report.save()
+        self.assertTrue(self.report.is_private)
+        self.assertFalse(self.report.is_public)
+
+        self.report.privacy = TripReport.PUBLIC
+        self.report.save()
+        self.assertFalse(self.report.is_private)
+        self.assertTrue(self.report.is_public)
 
 
 @tag("logger", "trip", "fast", "integration")
@@ -180,8 +285,6 @@ class TripIntegrationTests(TestCase):
         logger.setLevel(logging.ERROR)
 
         self.client = Client()
-
-        # Create an enabled user
         self.user = User.objects.create_user(
             email="enabled@user.app",
             username="enabled",
@@ -190,13 +293,11 @@ class TripIntegrationTests(TestCase):
         )
         self.user.is_active = True
         self.user.save()
-
-        # Create a trip
         self.trip = Trip.objects.create(
             user=self.user,
             cave_name="Test Cave",
-            start=timezone.now() - timezone.timedelta(days=1),
-            end=timezone.now(),
+            start=tz.now() - td(days=1),
+            end=tz.now(),
         )
 
     def tearDown(self):
@@ -223,7 +324,7 @@ class TripIntegrationTests(TestCase):
                 Trip(
                     user=self.user,
                     cave_name="Test Cave " + str(random()),
-                    start=timezone.now(),
+                    start=tz.now(),
                 )
             )
         Trip.objects.bulk_create(trips)
@@ -254,8 +355,8 @@ class TripIntegrationTests(TestCase):
                 "cave_country": "Test Country",
                 "type": Trip.SPORT,
                 "cavers": "Test Cavers",
-                "start": timezone.now(),
-                "end": timezone.now() + timezone.timedelta(days=1),
+                "start": tz.now(),
+                "end": tz.now() + td(days=1),
                 "privacy": Trip.DEFAULT,
                 "notes": "Test Notes",
             },
@@ -293,8 +394,8 @@ class TripIntegrationTests(TestCase):
                 "cave_country": "Test Country",
                 "type": Trip.SPORT,
                 "cavers": "Test Cavers",
-                "start": timezone.now(),
-                "end": timezone.now() + timezone.timedelta(days=1),
+                "start": tz.now(),
+                "end": tz.now() + td(days=1),
                 "privacy": Trip.DEFAULT,
                 "notes": "Test Notes",
             },
@@ -310,6 +411,36 @@ class TripIntegrationTests(TestCase):
         self.assertEqual(trip.notes, "Test Notes")
         self.assertEqual(trip.privacy, Trip.DEFAULT)
         self.assertEqual(trip.user, self.user)
+
+    def test_trip_delete_view(self):
+        """Test the trip delete view"""
+        self.client.force_login(self.user)
+
+        trip_pk = self.trip.pk
+        success_str = f"The trip to {self.trip.cave_name} has been deleted"
+
+        response = self.client.get(
+            reverse("log:trip_delete", args=[self.trip.pk]), follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, success_str)
+        self.assertFalse(Trip.objects.filter(pk=trip_pk).exists())
+
+    def test_trip_delete_view_as_incorrect_user(self):
+        """Test the trip delete view as an incorrect user"""
+        user2 = User.objects.create_user(
+            email="user2@caves.app",
+            username="user2",
+            password="password",
+            name="User 2",
+        )
+        user2.is_active = True
+        user2.save()
+        self.client.force_login(user2)
+        response = self.client.get(
+            reverse("log:trip_delete", args=[self.trip.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
 
 
 @tag("logger", "tripreport", "fast", "integration")
@@ -333,7 +464,7 @@ class TripReportIntegrationTests(TestCase):
         self.trip = Trip.objects.create(
             user=self.user,
             cave_name="Test Cave",
-            start=timezone.now(),
+            start=tz.now(),
         )
 
     def tearDown(self):
@@ -349,7 +480,7 @@ class TripReportIntegrationTests(TestCase):
             title="Test Report",
             slug="slug",
             content="Test Content",
-            pub_date=timezone.now().date(),
+            pub_date=tz.now().date(),
         )
 
         # Create another user, trip, and trip report with the same slug.
@@ -362,7 +493,7 @@ class TripReportIntegrationTests(TestCase):
         trip2 = Trip.objects.create(
             user=user2,
             cave_name="No Duration Trip",
-            start=timezone.now(),
+            start=tz.now(),
         )
         TripReport.objects.create(
             user=user2,
@@ -370,7 +501,7 @@ class TripReportIntegrationTests(TestCase):
             title="Test Report 2",
             slug="slug",
             content="Test Content 2",
-            pub_date=timezone.now().date(),
+            pub_date=tz.now().date(),
         )
 
         # Now create a second trip/report for the original user with the same slug
@@ -378,7 +509,7 @@ class TripReportIntegrationTests(TestCase):
             trip = Trip.objects.create(
                 user=self.user,
                 cave_name="Test Cave",
-                start=timezone.now(),
+                start=tz.now(),
             )
             TripReport.objects.create(
                 user=self.user,
@@ -386,7 +517,7 @@ class TripReportIntegrationTests(TestCase):
                 title="Test Report",
                 slug="slug",
                 content="Test Content",
-                pub_date=timezone.now().date(),
+                pub_date=tz.now().date(),
             )
 
     def test_trip_report_create_view(self):
@@ -585,6 +716,715 @@ class TripReportIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, reverse("log:report_detail", args=[report.pk]))
         self.assertContains(response, reverse("log:report_update", args=[report.pk]))
+
+
+@tag("integration", "fast", "social")
+class SocialFunctionalityIntegrationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+        self.user = User.objects.create_user(
+            email="user@caves.app",
+            username="user",
+            password="password",
+            name="User Name",
+        )
+        self.user.is_active = True
+        self.user.save()
+        self.user.settings.privacy = UserSettings.PUBLIC
+        self.user.settings.save()
+
+        self.user2 = User.objects.create_user(
+            email="user2@caves.app",
+            username="user2",
+            password="password",
+            name="User 2 Name",
+        )
+        self.user2.is_active = True
+        self.user2.save()
+        self.user2.settings.privacy = UserSettings.PUBLIC
+        self.user2.settings.save()
+
+        for i in range(1, 200):
+            Trip.objects.create(
+                cave_name=f"User1 Cave {i}",
+                start=tz.now() - td(days=i),
+                user=self.user,
+                notes="User1 trip notes",
+            )
+
+        for i in range(1, 200):
+            Trip.objects.create(
+                cave_name=f"User2 Cave {i}",
+                start=tz.now() - td(days=i),
+                user=self.user2,
+                notes="User2 trip notes",
+            )
+
+    def test_user_profile_page_trip_list(self):
+        """Test the trip list on the user profile page"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+
+        # Test pagination and that the correct trips are displayed
+        for i in range(1, 50):
+            self.assertContains(response, f"User1 Cave {i}")
+            self.assertNotContains(response, f"User2 Cave {i}")
+
+        for i in range(51, 100):
+            self.assertNotContains(response, f"User1 Cave {i}")
+            self.assertNotContains(response, f"User2 Cave {i}")
+
+        # Test edit links appear
+        for trip in self.user.trips.order_by("-start")[:50]:
+            self.assertContains(response, reverse("log:trip_update", args=[trip.pk]))
+
+        # Test the next page
+        response = self.client.get(
+            reverse("log:user", args=[self.user.username]) + "?page=2",
+        )
+        self.assertEqual(response.status_code, 200)
+        for i in range(51, 100):
+            self.assertContains(response, f"User1 Cave {i}")
+            self.assertNotContains(response, f"User2 Cave {i}")
+
+    def test_user_profile_page_title(self):
+        """Test the user profile page title"""
+        self.client.force_login(self.user)
+        self.user.profile.page_title = "Test Page Title 123"
+        self.user.profile.save()
+
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Page Title 123")
+
+    def test_user_profile_page_bio(self):
+        """Test the user profile page bio"""
+        self.client.force_login(self.user)
+        self.user.profile.bio = "Test bio 123"
+        self.user.profile.save()
+
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test bio 123")
+
+    def test_private_trips_do_not_appear_on_profile_page_trip_list(self):
+        """Test that private trips do not appear on the user profile page"""
+        for trip in self.user.trips:
+            trip.privacy = Trip.PRIVATE
+            trip.save()
+
+        self.client.force_login(self.user2)
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "User1 Cave")
+
+    def test_friend_only_trips_do_not_appear_on_profile_page_trip_list(self):
+        """Test that friend only trips do not appear on the user profile page"""
+        for trip in self.user.trips:
+            trip.privacy = Trip.FRIENDS
+            trip.save()
+
+        self.client.force_login(self.user2)
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "User1 Cave")
+
+    def test_that_friend_only_trips_appear_to_friends(self):
+        """Test that friend only trips appear on the user profile page to friends"""
+        for trip in self.user.trips:
+            trip.privacy = Trip.FRIENDS
+            trip.save()
+
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+
+        self.client.force_login(self.user2)
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+
+        for trip in self.user.trips.order_by("-start")[:50]:
+            self.assertContains(response, trip.cave_name)
+
+    def test_trip_detail_page_with_various_privacy_settings(self):
+        """Test the trip detail page with various privacy settings"""
+        trip = self.user.trips.first()
+        trip.privacy = Trip.PUBLIC
+        trip.save()
+
+        self.client.force_login(self.user2)
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.cave_name)
+
+        trip.privacy = Trip.FRIENDS
+        trip.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 404)
+
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.cave_name)
+
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 404)
+
+        trip.privacy = Trip.DEFAULT
+        trip.save()
+        self.user.settings.privacy = UserSettings.PRIVATE
+        self.user.settings.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 404)
+
+        self.user.settings.privacy = UserSettings.PUBLIC
+        self.user.settings.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+
+        self.user.settings.privacy = UserSettings.FRIENDS
+        self.user.settings.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertContains(response, trip.cave_name)
+
+        self.user.settings.privacy = UserSettings.PUBLIC
+        self.user.settings.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertContains(response, trip.cave_name)
+
+        self.client.logout()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.cave_name)
+
+        self.user.settings.privacy = UserSettings.FRIENDS
+        self.user.settings.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 404)
+
+        self.user.settings.privacy = UserSettings.PRIVATE
+        self.user.settings.save()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_user_profile_page_with_various_privacy_settings(self):
+        """Test the user profile page with various privacy settings"""
+        self.client.force_login(self.user2)
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+
+        self.user.settings.privacy = UserSettings.PRIVATE
+        self.user.settings.save()
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 404)
+
+        self.user.settings.privacy = UserSettings.FRIENDS
+        self.user.settings.save()
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 404)
+
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+
+        self.user.settings.privacy = UserSettings.PUBLIC
+        self.user.settings.save()
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+
+        self.client.logout()
+        self.user.settings.privacy = UserSettings.PRIVATE
+        self.user.settings.save()
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 404)
+
+        self.user.settings.privacy = UserSettings.FRIENDS
+        self.user.settings.save()
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 404)
+
+        self.user.settings.privacy = UserSettings.PUBLIC
+        self.user.settings.save()
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+
+    def test_sidebar_displays_properly_when_viewing_another_users_trip(self):
+        """Test that the sidebar displays properly when viewing another user's trip"""
+        self.client.force_login(self.user2)
+        trip = Trip.objects.filter(user=self.user).first()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertContains(response, trip.cave_name)
+        self.assertContains(response, f"Trip by {self.user.name}")
+        self.assertContains(response, "View profile")
+        self.assertContains(response, "View this trip")
+        self.assertContains(response, "Add as friend")
+
+        self.assertNotContains(response, reverse("log:trip_update", args=[trip.pk]))
+        self.assertNotContains(response, reverse("log:trip_delete", args=[trip.pk]))
+        self.assertNotContains(response, reverse("log:report_create", args=[trip.pk]))
+
+    def test_add_as_friend_link_does_not_appear_when_disabled(self):
+        """Test that the add as friend link does not appear when disabled"""
+        self.user.settings.allow_friend_username = False
+        self.user.settings.save()
+
+        self.client.force_login(self.user2)
+        trip = Trip.objects.filter(user=self.user).first()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertNotContains(response, "Add as friend")
+        self.assertNotContains(response, reverse("users:friend_add"))
+
+    def test_add_as_friend_link_does_not_appear_when_already_friends(self):
+        """Test that the add as friend link does not appear when already friends"""
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+
+        self.client.force_login(self.user2)
+        trip = Trip.objects.filter(user=self.user).first()
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertNotContains(response, "Add as friend")
+        self.assertNotContains(response, reverse("users:friend_add"))
+
+    def test_comments_appear_on_trip_detail_page(self):
+        """Test that comments appear on the trip detail page"""
+        trip = Trip.objects.filter(user=self.user).first()
+        comment = Comment.objects.create(
+            author=self.user,
+            content_object=trip,
+            content="Test comment",
+        )
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertContains(response, comment.content)
+
+    def test_comments_do_not_appear_on_trip_detail_page_when_disabled(self):
+        """Test that comments do not appear on the trip detail page when disabled"""
+        self.user.settings.allow_comments = False
+        self.user.settings.save()
+
+        trip = Trip.objects.filter(user=self.user).first()
+        comment = Comment.objects.create(
+            author=self.user2,
+            content_object=trip,
+            content="Test comment",
+        )
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertNotContains(response, comment.content)
+
+    def test_comments_appear_on_trip_report_page(self):
+        """Test that comments appear on the trip report page"""
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=Trip.objects.filter(user=self.user).first(),
+            title="Test report",
+            content="Test report content",
+            pub_date=tz.now().date(),
+        )
+        comment = Comment.objects.create(
+            author=self.user,
+            content_object=report,
+            content="Test comment",
+        )
+        response = self.client.get(reverse("log:report_detail", args=[report.pk]))
+        self.assertContains(response, comment.content)
+
+    def test_comments_do_not_appear_on_trip_report_page_when_disabled(self):
+        """Test that comments do not appear on the trip report page when disabled"""
+        self.user.settings.allow_comments = False
+        self.user.settings.save()
+
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=Trip.objects.filter(user=self.user).first(),
+            title="Test report",
+            content="Test report content",
+            pub_date=tz.now().date(),
+        )
+        comment = Comment.objects.create(
+            author=self.user,
+            content_object=report,
+            content="Test comment",
+        )
+        response = self.client.get(reverse("log:report_detail", args=[report.pk]))
+        self.assertNotContains(response, comment.content)
+
+    def test_user_profile_is_linked_on_comments(self):
+        """Test that the user profile is linked on comments"""
+        trip = Trip.objects.filter(user=self.user).first()
+        comment = Comment.objects.create(
+            author=self.user,
+            content_object=trip,
+            content="Test comment",
+        )
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, comment.content)
+        self.assertContains(response, reverse("log:user", args=[self.user.username]))
+
+    def test_user_profile_is_not_linked_on_comments_when_private(self):
+        """Test that the user profile is not linked on comments when private"""
+        self.user.settings.privacy = UserSettings.PRIVATE
+        self.user.settings.save()
+
+        trip = Trip.objects.filter(user=self.user).first()
+        trip.privacy = Trip.PUBLIC
+        trip.save()
+
+        comment = Comment.objects.create(
+            author=self.user,
+            content_object=trip,
+            content="Test comment",
+        )
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, comment.content)
+        self.assertNotContains(response, reverse("log:user", args=[self.user.username]))
+
+    def test_trip_report_link_appears_in_sidebar_for_other_users(self):
+        """Test that the trip report link appears in the sidebar for other users"""
+        trip = Trip.objects.filter(user=self.user).first()
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=trip,
+            title="Test report",
+            content="Test report content",
+            pub_date=tz.now().date(),
+        )
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertContains(response, reverse("log:report_detail", args=[report.pk]))
+
+    def test_trip_report_link_does_not_appear_in_sidebar_when_private(self):
+        """Test that the trip report link does not appear in the sidebar when private"""
+        trip = Trip.objects.filter(user=self.user).first()
+
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=trip,
+            title="Test report",
+            content="Test report content",
+            pub_date=tz.now().date(),
+            privacy=TripReport.PRIVATE,
+        )
+        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        self.assertNotContains(response, reverse("log:report_detail", args=[report.pk]))
+
+    def test_add_comment_via_post_request(self):
+        """Test that a comment can be added via a POST request"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "trip",
+                "pk": trip.pk,
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertContains(response, "Test comment")
+
+    def test_add_comment_via_post_request_to_object_the_user_cannot_view(self):
+        """Test that a comment cannot be added to an object the user cannot view"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user2)
+
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+
+        self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "trip",
+                "pk": trip.pk,
+            },
+        )
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_add_comment_via_post_request_when_not_logged_in(self):
+        """Test that the comment view does not load when not logged in"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "trip",
+                "pk": trip.pk,
+            },
+        )
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_delete_comment(self):
+        """Test that a comment can be deleted"""
+        trip = Trip.objects.filter(user=self.user).first()
+        comment = Comment.objects.create(
+            author=self.user,
+            content_object=trip,
+            content="Test comment",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("log:comment_delete", args=[comment.pk]),
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The comment has been deleted")
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_delete_comment_that_does_not_belong_to_the_user(self):
+        """Test that a comment cannot be deleted if it does not belong to the user"""
+        trip = Trip.objects.filter(user=self.user2).first()
+        comment = Comment.objects.create(
+            author=self.user2,
+            content_object=trip,
+            content="Test comment",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("log:comment_delete", args=[comment.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Comment.objects.count(), 1)
+
+    def test_htmx_like_view_on_an_object_the_user_cannot_view(self):
+        """Test that the HTMX like view respects privacy"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user2)
+
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+
+        response = self.client.get(
+            reverse("log:trip_like", args=[trip.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_htmx_comment_view_on_an_object_the_user_cannot_view(self):
+        """Test that the HTMX comment view respects privacy"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user2)
+
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+
+        response = self.client.get(
+            reverse("log:htmx_trip_comment", args=[trip.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_comments_send_a_notification_when_posted(self):
+        """Test that a notification is sent when a comment is posted"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user2)
+
+        response = self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "trip",
+                "pk": trip.pk,
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        self.client.force_login(self.user)
+        self.assertEqual(Notification.objects.count(), 1)
+        self.assertEqual(Notification.objects.first().user, self.user)
+        self.assertEqual(Notification.objects.first().url, trip.get_absolute_url())
+
+        response = self.client.get(reverse("log:index"))
+        self.assertContains(response, f"{self.user2} commented on your trip")
+
+    def test_notification_redirect_view_as_invalid_user(self):
+        """Test that the notification redirect view returns a 403 for an invalid user"""
+        self.client.force_login(self.user2)
+        notification = self.user.notify("Test notification", "/")
+        response = self.client.get(
+            reverse("users:notification", args=[notification.pk]),
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(notification.read, False)
+        self.assertEqual(response.url, reverse("log:index"))
+
+    def test_adding_comment_to_trip_report(self):
+        """Test that a comment can be added to a trip report"""
+        trip = Trip.objects.filter(user=self.user).first()
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=trip,
+            title="Test report",
+            content="Test report content",
+            pub_date=tz.now().date(),
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "tripreport",
+                "pk": report.pk,
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertContains(response, "Test comment")
+
+    def test_adding_comment_to_invalid_object_type(self):
+        """Test that a comment cannot be added to an invalid object type"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "invalid",
+                "pk": trip.pk,
+            },
+        )
+        self.assertEqual(Comment.objects.count(), 0)
+        self.assertEqual(response.url, reverse("log:index"))
+
+    def test_adding_comment_with_no_content(self):
+        """Test that a comment cannot be added with no content"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user)
+
+        self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "",
+                "type": "trip",
+                "pk": trip.pk,
+            },
+        )
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_adding_comment_with_too_much_content(self):
+        """Test that a comment cannot be added with too much content"""
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user)
+
+        self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "x" * 4000,
+                "type": "trip",
+                "pk": trip.pk,
+            },
+        )
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_adding_comment_on_an_object_that_does_not_exist(self):
+        """Test that a comment cannot be added to an object that does not exist"""
+        self.client.force_login(self.user)
+
+        self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "trip",
+                "pk": 999999999999,
+            },
+        )
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_adding_comment_on_an_object_where_the_user_disallows_comments(self):
+        """Test users cannot comment where the user disallows comments"""
+        self.user.settings.allow_comments = False
+        self.user.settings.save()
+        trip = Trip.objects.filter(user=self.user).first()
+        self.client.force_login(self.user2)
+
+        self.client.post(
+            reverse("log:comment_add"),
+            {
+                "content": "Test comment",
+                "type": "trip",
+                "pk": trip.pk,
+            },
+            follow=True,
+        )
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_trip_report_detail_page_with_various_privacy_settings(self):
+        """Test that the trip report detail page respects privacy settings"""
+        trip = Trip.objects.filter(user=self.user).first()
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=trip,
+            title="Test report",
+            content="Test report content",
+            pub_date=tz.now().date(),
+        )
+        self.client.force_login(self.user2)
+
+        report.privacy = TripReport.PRIVATE
+        report.save()
+        response = self.client.get(
+            reverse("log:report_detail", args=[report.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
+
+        report.privacy = TripReport.FRIENDS
+        report.save()
+        response = self.client.get(
+            reverse("log:report_detail", args=[report.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
+
+        self.user.profile.friends.add(self.user2)
+        self.user2.profile.friends.add(self.user)
+        response = self.client.get(
+            reverse("log:report_detail", args=[report.pk]),
+        )
+        self.assertEqual(response.status_code, 200)
+
+        report.privacy = TripReport.PUBLIC
+        report.save()
+        response = self.client.get(
+            reverse("log:report_detail", args=[report.pk]),
+        )
+        self.assertEqual(response.status_code, 200)
+
+        report.privacy = TripReport.DEFAULT
+        report.save()
+        trip.privacy = Trip.FRIENDS
+        trip.save()
+        response = self.client.get(
+            reverse("log:report_detail", args=[report.pk]),
+        )
+        self.assertEqual(response.status_code, 200)
+
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+        response = self.client.get(
+            reverse("log:report_detail", args=[report.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
+
+        trip.privacy = Trip.PUBLIC
+        trip.save()
+        response = self.client.get(
+            reverse("log:report_detail", args=[report.pk]),
+        )
+        self.assertEqual(response.status_code, 200)
 
 
 @tag("unit", "fast", "logger")
