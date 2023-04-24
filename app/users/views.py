@@ -340,7 +340,7 @@ class FriendAddView(LoginRequiredMixin, View):
                 user_to=user,
             )
             user.notify(
-                f"{request.user.username} sent you a friend request",
+                f"{request.user.name} sent you a friend request",
                 reverse("users:friends"),
             )
             messages.success(request, f"Friend request sent to {user}.")
@@ -384,7 +384,7 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
         f_req.user_to.profile.friends.add(f_req.user_from)
         f_req.delete()
         f_req.user_from.notify(
-            f"{f_req.user_to.username} accepted your friend request",
+            f"{f_req.user_to.name} accepted your friend request",
             reverse("users:friends"),
         )
         messages.success(request, f"You are now friends with {f_req.user_from}.")
