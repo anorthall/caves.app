@@ -287,6 +287,32 @@ class Trip(models.Model):
 
         return False
 
+    def _build_liked_str(self, liked_user_names, self_liked=False, name_limit=2):
+        """Builds the liked string for the trip"""
+        if not liked_user_names:
+            return "0 likes"
+
+        # Limit the number of names
+        if len(liked_user_names) > name_limit:
+            number_of_others = len(liked_user_names) - name_limit
+            liked_user_names = liked_user_names[:name_limit]
+            if number_of_others == 1:
+                if self_liked:
+                    liked_user_names.append("and you")
+                else:
+                    liked_user_names.append("and 1 other")
+            else:
+                liked_user_names.append(f"and {number_of_others} others")
+
+        # Produce the result
+        if len(liked_user_names) == 1:
+            return f"Liked by {liked_user_names[0]}"
+        elif len(liked_user_names) == 2:
+            return f"Liked by {liked_user_names[0]} and {liked_user_names[1]}"
+
+        english_list = ", ".join(liked_user_names)
+        return f"Liked by {english_list}"
+
     def get_liked_str(self, for_user=None):
         """Returns a string of the names of the users that liked the trip"""
         friends_liked = []
@@ -308,27 +334,7 @@ class Trip(models.Model):
         if self_liked:
             liked_user_names.append("you")
 
-        # No likes
-        if not liked_user_names:
-            return "0 likes"
-
-        # Limit to 2 names
-        if len(liked_user_names) > 2:
-            number_of_others = len(liked_user_names) - 2
-            liked_user_names = liked_user_names[:2]
-            if number_of_others == 1:
-                liked_user_names.append(f"and {number_of_others} other")
-            else:
-                liked_user_names.append(f"and {number_of_others} others")
-
-        # Produce the result
-        if len(liked_user_names) == 1:
-            return f"Liked by {liked_user_names[0]}"
-        elif len(liked_user_names) == 2:
-            return f"Liked by {liked_user_names[0]} and {liked_user_names[1]}"
-
-        english_list = ", ".join(liked_user_names)
-        return f"Liked by {english_list}"
+        return self._build_liked_str(liked_user_names, self_liked)
 
     @property
     def has_distances(self):
