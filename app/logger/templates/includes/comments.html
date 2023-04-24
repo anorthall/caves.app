@@ -29,31 +29,34 @@
                     <a class="float-end link-danger" data-bs-toggle="modal" data-bs-target="#deleteComment{{ forloop.counter }}">
                       delete
                     </a>
-
-                    <div class="modal fade" id="deleteComment{{ forloop.counter }}" tabindex="-1">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h1 class="modal-title fs-5">Delete comment</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                          </div>
-                          <div class="modal-body">
-                            Are you sure you wish to delete this comment?
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <a href="{% url 'log:comment_delete' comment.pk %}">
-                              <button type="button" class="btn btn-danger">Delete comment</button>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   {% endif %}
                 {% endif %}
               </small>
             </p>
           </div>
+          {% if request.user.is_authenticated %}
+            {% if request.user == comment.author or request.user == object.user or request.user.is_superuser %}
+              <div class="modal fade" id="deleteComment{{ forloop.counter }}" tabindex="-1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5">Delete comment</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      Are you sure you wish to delete this comment?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <a href="{% url 'log:comment_delete' comment.pk %}">
+                        <button type="button" class="btn btn-danger">Delete comment</button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
         {% endfor %}
       {% else %}
         <p class="lead">There are no comments yet &mdash; why not be the first?</p>
