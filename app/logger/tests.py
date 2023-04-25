@@ -349,9 +349,37 @@ class TripModelUnitTests(TestCase):
         t.resurveyed_dist = "1m"
         self.assertTrue(self.trip.has_distances)
 
+    def test_friends_appear_first_in_liked_str(self):
+        """Test that friends appear first in the liked string"""
+        # Create 10 users
+        users = []
+        for i in range(10):
+            u = User.objects.create_user(
+                email=f"test_user{i}@user.app",
+                username=f"test_user{i}",
+                password="password",
+                name=f"Test User {i}",
+            )
+            users.append(u)
+            self.trip.likes.add(u)
+
+        user4, user5 = users[4], users[5]
+
+        user4.profile.friends.add(self.user)
+        self.user.profile.friends.add(user4)
+
+        user5.profile.friends.add(self.user)
+        self.user.profile.friends.add(user5)
+
+        result = self.trip.get_liked_str(self.user, self.user.profile.friends.all())
+        self.assertEqual(result, "Liked by Test User 4, Test User 5, and 8 others")
+
     def test_trip_number_function(self):
         """Test the Trip model number function"""
         self.assertEqual(self.trip.number, 1)
+        self.trip.start = tz.now()
+        self.trip.save()
+        self.assertEqual(self.trip.number, 6)
 
 
 @tag("logger", "trip", "fast", "integration")
