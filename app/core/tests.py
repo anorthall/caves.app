@@ -399,9 +399,3 @@ class TestMiddleware(TestCase):
 
             response = self.client.get(reverse("log:index"))
             self.assertEqual(response.status_code, 200)
-
-
-class TestGithubActions(TestCase):
-    def test_whether_github_actions_detects_a_fail(self):
-        """Test that Github Actions detects a fail"""
-        self.assertEqual(1, 2)
