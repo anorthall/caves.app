@@ -1,0 +1,51 @@
+name: Run Django Tests
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE: postgres
+      SQL_ENGINE: django.db.backends.postgresql
+      SQL_USER: postgres
+      SQL_PASSWORD: postgres
+      SQL_DATABASE: postgres
+      SQL_HOST: localhost
+      SQL_PORT: 5432
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+      - name: Set up Python 3.11.3
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11.3
+      - name: Run pip install
+        run: |
+          pip install -r requirements.txt
+      - name: Run django tests
+        run: |
+          cd app
+          python manage.py test
+    services:
+      postgres:
+        image: postgres:15.2
+        env:
+          POSTGRES_USER: ${{ env.SQL_USER }}
+          POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
+          POSTGRES_DB: ${{ env.DATABASE }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
