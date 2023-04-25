@@ -41,6 +41,9 @@ jobs:
           coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./app/coverage.xml
     services:
       postgres:
         image: postgres:15.2
