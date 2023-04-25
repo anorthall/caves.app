@@ -20,7 +20,7 @@
   </div>
 </div>
 
-<div class="d-flex d-md-none">
+<div data-href="{% url "log:trip_detail" trip.pk %}" class="d-flex d-md-none">
   <div class="d-flex flex-column align-items-start justify-content-center">
     <h1 class="cave-name">{{ trip.cave_name }}</h1>
 
