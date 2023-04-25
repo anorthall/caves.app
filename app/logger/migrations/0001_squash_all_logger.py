@@ -343,9 +343,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                "unique_together": {("user", "slug")},
-            },
         ),
         migrations.RunPython(
             code=change_tripreport_privacy,
