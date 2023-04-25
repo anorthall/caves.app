@@ -1,4 +1,4 @@
-FROM postgres:15.0-alpine
+FROM postgres:15.2-alpine
 
 # Load test data
 ADD ./etc/dev/dev_db_data.sql /docker-entrypoint-initdb.d

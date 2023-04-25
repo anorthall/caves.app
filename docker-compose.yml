@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   db-dev:
-    image: postgres:15.0-alpine
     build:
       context: .
       dockerfile: ./etc/dev/Dockerfile.dev.db

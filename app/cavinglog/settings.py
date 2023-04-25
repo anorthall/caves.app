@@ -29,10 +29,12 @@ SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
 # WARNING: do not run with debug on in production!
-SECRET_KEY = os.environ.get("SECRET_KEY")
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-secret-key")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "http://127.0.0.1").split(" ")
 DEBUG = int(os.environ.get("DEBUG", default=0))
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(
+    " "
+)
 
 
 ##################

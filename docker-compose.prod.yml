@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:15.0-alpine
+    image: postgres:15.2-alpine
     restart: always
     volumes:
       - ./prod-data/db:/var/lib/postgresql/data
