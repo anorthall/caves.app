@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.measure import D
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import Client, TestCase, tag
 from django.urls import reverse
@@ -274,6 +275,53 @@ class TripModelUnitTests(TestCase):
         self.report.save()
         self.assertFalse(self.report.is_private)
         self.assertTrue(self.report.is_public)
+
+    def test_trip_str(self):
+        """Test the Trip model __str__ function"""
+        self.assertEqual(str(self.trip), self.trip.cave_name)
+
+    def test_trip_report_str(self):
+        """Test the TripReport model __str__ function"""
+        self.assertEqual(str(self.report), self.report.title)
+
+    def test_trip_validates_start_time_before_end_time(self):
+        """Test the Trip model validates start time before end time"""
+        self.trip.start = tz.now() + td(days=1)
+        self.trip.end = tz.now()
+        with self.assertRaises(ValidationError):
+            self.trip.full_clean()
+
+    def test_trip_has_distances_function(self):
+        """Test the Trip model has_distances function"""
+        t = self.trip
+        self.assertFalse(t.has_distances)
+
+        t.horizontal_dist = "1m"
+        self.assertTrue(self.trip.has_distances)
+
+        t.horizontal_dist = "0m"
+        t.vert_dist_up = "1m"
+        self.assertTrue(self.trip.has_distances)
+
+        t.vert_dist_up = "0m"
+        t.vert_dist_down = "1m"
+        self.assertTrue(self.trip.has_distances)
+
+        t.vert_dist_down = "0m"
+        t.aid_dist = "1m"
+        self.assertTrue(self.trip.has_distances)
+
+        t.aid_dist = "0m"
+        t.surveyed_dist = "1m"
+        self.assertTrue(self.trip.has_distances)
+
+        t.surveyed_dist = "0m"
+        t.resurveyed_dist = "1m"
+        self.assertTrue(self.trip.has_distances)
+
+    def test_trip_number_function(self):
+        """Test the Trip model number function"""
+        self.assertEqual(self.trip.number, 1)
 
 
 @tag("logger", "trip", "fast", "integration")

@@ -114,6 +114,56 @@ class UserUnitTests(TestCase):
         self.user.profile.refresh_from_db()
         self.assertEqual(self.user.profile.friends.count(), 0)
 
+    def test_user_settings_str(self):
+        """Test the __str__ method of the UserSettings model"""
+        self.assertEqual(str(self.user.settings), f"Settings for {self.user}")
+
+    def test_user_profile_str(self):
+        """Test the __str__ method of the UserProfile model"""
+        self.assertEqual(str(self.user.profile), f"Profile for {self.user}")
+
+    def test_user_get_short_name_function(self):
+        """Test the get_short_name function of the CavingUser model"""
+        self.assertEqual(self.user.get_short_name(), self.user.name)
+
+    def test_user_get_full_name_function(self):
+        """Test the get_full_name function of the CavingUser model"""
+        self.assertEqual(self.user.get_full_name(), self.user.name)
+
+
+@tag("unit", "users", "fast")
+class SocialUnitTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+        self.user = User.objects.create_user(
+            email="test@user.app",
+            username="test",
+            password="password",
+            name="test",
+        )
+
+        self.user2 = User.objects.create_user(
+            email="test2@user.app",
+            username="test2",
+            password="password",
+            name="test2",
+        )
+
+    def test_friend_request_str(self):
+        """Test the __str__ method of the FriendRequest model"""
+        request = FriendRequest.objects.create(
+            user_from=self.user,
+            user_to=self.user2,
+        )
+        self.assertEqual(str(request), f"{self.user} -> {self.user2}")
+
+    def test_notification_str(self):
+        """Test the __str__ method of the Notification model"""
+        msg = "Notification message"
+        notification = self.user.notify(msg, "/")
+        self.assertEqual(str(notification), msg)
+
 
 @tag("integration", "users", "fast")
 class UserIntegrationTestCase(TestCase):
