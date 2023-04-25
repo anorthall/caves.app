@@ -291,6 +291,36 @@ class TripModelUnitTests(TestCase):
         with self.assertRaises(ValidationError):
             self.trip.full_clean()
 
+    def test_build_liked_str_function(self):
+        """Test the build_liked_str function"""
+        result = self.trip._build_liked_str(["you"], True)
+        self.assertEqual(result, "You liked this")
+
+        result = self.trip._build_liked_str(["Andrew", "you"], True)
+        self.assertEqual(result, "Liked by Andrew, and you")
+
+        result = self.trip._build_liked_str(["Andrew", "Bob", "you"], True)
+        self.assertEqual(result, "Liked by Andrew, Bob, and you")
+
+        result = self.trip._build_liked_str(["Andrew", "Bob", "Charlie"], False)
+        self.assertEqual(result, "Liked by Andrew, Bob, and 1 other")
+
+        result = self.trip._build_liked_str(["Andrew", "Bob", "Charlie", "Dave"], False)
+        self.assertEqual(result, "Liked by Andrew, Bob, and 2 others")
+
+        result = self.trip._build_liked_str(
+            ["Andrew", "Bob", "Charlie", "Dave", "you"], True
+        )
+        self.assertEqual(result, "Liked by Andrew, Bob, and 3 others")
+
+        result = self.trip._build_liked_str(
+            ["Andrew", "Bob", "Charlie", "Dave", "you"], True, 1
+        )
+        self.assertEqual(result, "Liked by Andrew, and 4 others")
+
+        with self.assertRaises(ValueError):
+            result = self.trip._build_liked_str([], True, 0)
+
     def test_trip_has_distances_function(self):
         """Test the Trip model has_distances function"""
         t = self.trip

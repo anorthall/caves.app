@@ -299,6 +299,9 @@ class Trip(models.Model):
 
     def _build_liked_str(self, liked_user_names, self_liked=False, name_limit=2):
         """Builds the liked string for the trip"""
+        if name_limit <= 0:
+            raise ValueError("name_limit must be greater than 0")
+
         if not liked_user_names:
             return "0 likes"
 
@@ -308,20 +311,20 @@ class Trip(models.Model):
             liked_user_names = liked_user_names[:name_limit]
             if number_of_others == 1:
                 if self_liked:
-                    liked_user_names.append("and you")
+                    liked_user_names.append("you")
                 else:
-                    liked_user_names.append("and 1 other")
+                    liked_user_names.append("1 other")
             else:
-                liked_user_names.append(f"and {number_of_others} others")
+                liked_user_names.append(f"{number_of_others} others")
 
-        # Produce the result
         if len(liked_user_names) == 1:
-            return f"Liked by {liked_user_names[0]}"
-        elif len(liked_user_names) == 2:
-            return f"Liked by {liked_user_names[0]} and {liked_user_names[1]}"
-
-        english_list = ", ".join(liked_user_names)
-        return f"Liked by {english_list}"
+            if self_liked:
+                capfirst = liked_user_names[0].capitalize()
+                return f"{capfirst} liked this"
+        else:
+            english_list = ", ".join(liked_user_names[:-1])
+            english_list = english_list + ", and " + liked_user_names[-1]
+            return f"Liked by {english_list}"
 
     def get_liked_str(self, for_user=None, for_user_friends=None):
         """Returns a string of the names of the users that liked the trip"""
