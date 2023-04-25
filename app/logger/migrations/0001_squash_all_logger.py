@@ -471,10 +471,6 @@ class Migration(migrations.Migration):
                 max_length=100,
             ),
         ),
-        migrations.AlterUniqueTogether(
-            name="tripreport",
-            unique_together=set(),
-        ),
         migrations.AddConstraint(
             model_name="tripreport",
             constraint=models.UniqueConstraint(
