@@ -1,4 +1,4 @@
-name: Run Django Tests
+name: Tests
 
 on:
   workflow_call:
@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      - name: Django tests
+      - name: Run Django tests
         working-directory: ./app
         run: |
           coverage run --source=. ./manage.py test -v 2 --noinput
