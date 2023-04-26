@@ -80,21 +80,6 @@ class Trip(models.Model):
         (PRIVATE, "Only me"),
     ]
 
-    # Relationships
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    likes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name="liked_trips"
-    )
-    comments = GenericRelation(Comment)
-
-    # Public visibility
-    privacy = models.CharField(
-        "Who can view this trip?",
-        max_length=10,
-        choices=PRIVACY_CHOICES,
-        default=DEFAULT,
-    )
-
     # Cave details
     cave_name = models.CharField(max_length=100)
     cave_region = models.CharField(max_length=100, blank=True)
@@ -133,12 +118,6 @@ class Trip(models.Model):
         help_text="A comma-separated list of any expeditions "
         "associated with this trip.",
     )
-
-    # Internal metadata
-    added = models.DateTimeField("trip added on", auto_now_add=True)
-    updated = models.DateTimeField("trip last updated", auto_now=True)
-
-    # Distances
     horizontal_dist = DistanceField(
         max_digits=14,
         decimal_places=6,
@@ -217,23 +196,34 @@ class Trip(models.Model):
     )
     aid_dist_units = DistanceUnitField()
 
-    # Notes
+    likes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, blank=True, related_name="liked_trips"
+    )
+    comments = GenericRelation(Comment)
+    privacy = models.CharField(
+        "Who can view this trip?",
+        max_length=10,
+        choices=PRIVACY_CHOICES,
+        default=DEFAULT,
+    )
     notes = models.TextField(blank=True)
+    added = models.DateTimeField("trip added on", auto_now_add=True)
+    updated = models.DateTimeField("trip last updated", auto_now=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
-        """Return the name of the cave visited."""
         return self.cave_name
 
-    def set_duration(self):
-        """Sets the trip duration"""
+    def _set_duration(self):
+        """Store the duration in the database as a timedelta"""
         if self.end:
             self.duration = self.end - self.start
         else:
             self.duration = None
         return self.duration
 
-    def set_duration_str(self):
-        """Sets the human english expression of the duration"""
+    def _set_duration_str(self):
+        """Store the duration in the database as a string"""
         td = None
         if self.end:
             td = self.end - self.start
@@ -245,9 +235,8 @@ class Trip(models.Model):
         return self.duration_str
 
     def save(self, *args, **kwargs):
-        """Set the duration and duration_str fields"""
-        self.set_duration()
-        self.set_duration_str()
+        self._set_duration()
+        self._set_duration_str()
 
         # Distance fields should be set to None instead of
         # '0m', '0ft' etc if they are zero. This is because
@@ -261,7 +250,6 @@ class Trip(models.Model):
         return super().save(*args, **kwargs)
 
     def clean(self):
-        """Check that the start is before the end"""
         # Check self.start exists - may have been removed by form validation
         # If it does not exist 'for real', the form/low level model validation
         # will catch it.
@@ -298,7 +286,7 @@ class Trip(models.Model):
         return False
 
     def _build_liked_str(self, liked_user_names, self_liked=False, name_limit=2):
-        """Builds the liked string for the trip"""
+        """Builds a string from a list of user names"""
         if name_limit <= 0:
             raise ValueError("name_limit must be greater than 0")
 
@@ -353,7 +341,6 @@ class Trip(models.Model):
 
     @property
     def has_distances(self):
-        """Return True if at least one distance measurement is recorded"""
         if self.horizontal_dist or self.vert_dist_down or self.vert_dist_up:
             return True
         elif self.aid_dist or self.surveyed_dist or self.resurveyed_dist:

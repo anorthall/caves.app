@@ -25,9 +25,9 @@ def set_all_duration_fields(apps, schema_editor):  # pragma: no cover
     Trip = apps.get_model("logger", "Trip")
     for trip in Trip.objects.all():
         if not trip.duration:
-            trip.set_duration()
+            trip._set_duration()
         if not trip.duration_str:
-            trip.set_duration_str()
+            trip._set_duration_str()
         trip.save()
 
 
