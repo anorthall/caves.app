@@ -313,6 +313,36 @@ class TestAllPagesLoad(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_hours_per_month_chart_page_loads(self):
+        """Test that the hours per month chart page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:charts:hours_per_month"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_stats_over_time_chart_page_loads(self):
+        """Test that the stats over time chart page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:charts:stats_over_time"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_trip_types_chart_page_loads(self):
+        """Test that the trip types chart page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:charts:trip_types"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_trip_types_over_time_chart_page_loads(self):
+        """Test that the trip types over time chart page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:charts:trip_types_time"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_statistics_page_loads(self):
+        """Test that the statistics page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:statistics"))
+        self.assertEqual(response.status_code, 200)
+
 
 @tag("integration", "admin", "fast")
 class TestAuthorAutoassignForNewsAndFAQs(TestCase):

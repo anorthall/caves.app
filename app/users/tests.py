@@ -3,7 +3,7 @@ from django.core import mail
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
-from logger.models import Trip
+from logger.models import Trip, TripReport
 from users.models import FriendRequest
 from users.templatetags.user import user as user_templatetag
 
@@ -129,6 +129,26 @@ class UserUnitTests(TestCase):
     def test_user_get_full_name_function(self):
         """Test the get_full_name function of the CavingUser model"""
         self.assertEqual(self.user.get_full_name(), self.user.name)
+
+    def test_user_trip_reports_function(self):
+        """Test the reports function of the CavingUser model"""
+        trip = Trip.objects.create(
+            user=self.user,
+            cave_name="Test Cave",
+            start=timezone.now(),
+        )
+
+        trip_report = TripReport.objects.create(
+            user=self.user,
+            trip=trip,
+            title="Test Report",
+            pub_date=timezone.now().date(),
+            slug="test-report",
+            content="Test content",
+        )
+
+        self.assertEqual(self.user.reports.count(), 1)
+        self.assertEqual(self.user.reports.first(), trip_report)
 
 
 @tag("unit", "users", "fast")
@@ -334,6 +354,30 @@ class UserIntegrationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
         self.assertEqual(len(mail.outbox), 2)
+
+    def test_verifying_email_for_a_deleted_user(self):
+        """Test registering a user, then deleting them before they verify their email"""
+        response = self.client.post(
+            reverse("users:register"),
+            {
+                "name": "Test",
+                "email": "test_register@user.app",
+                "username": "testregistration",
+                "password1": "this_is_a_password",
+                "password2": "this_is_a_password",
+            },
+        )
+        verify_code = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
+        user = User.objects.get(email="test_register@user.app")
+        user.delete()
+
+        response = self.client.get(
+            reverse("users:verify-new-account") + "?verify_code=" + verify_code,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "Email verification code is not valid or has expired."
+        )
 
     def test_user_registration_with_invalid_data(self):
         """Test user registration view with invalid data"""

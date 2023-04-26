@@ -7,7 +7,7 @@ from .models import FAQ, News
 admin.site.site_header = "caves.app"
 admin.site.site_title = "caves.app"
 admin.site.index_title = "Administration"
-if settings.DEBUG:
+if settings.DEBUG:  # pragma: no cover
     admin.site.site_header = "caves.app dev"
     admin.site.site_title = "caves.app dev"
 

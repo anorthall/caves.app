@@ -348,10 +348,7 @@ class FriendAddView(LoginRequiredMixin, View):
             if form.errors.get("user", None):
                 for error in form.errors["user"]:
                     messages.error(request, error)
-            elif form.non_field_errors():
-                for error in form.non_field_errors():
-                    messages.error(request, error)
-            else:
+            else:  # pragma: no cover
                 messages.error(
                     request, "Unable to add friend. Are the details correct?"
                 )

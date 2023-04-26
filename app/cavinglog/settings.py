@@ -185,7 +185,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Debug toolbar for Docker
-if DEBUG:
+if DEBUG:  # pragma: no cover
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + [
         "127.0.0.1",
@@ -193,7 +193,7 @@ if DEBUG:
     ]
 
 # Sentry SDK
-if not DEBUG and os.environ.get("SENTRY_KEY", None):
+if not DEBUG and os.environ.get("SENTRY_KEY", None):  # pragma: no cover
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 

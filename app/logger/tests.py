@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.contrib.gis.measure import D
 from django.core.exceptions import ValidationError
@@ -284,6 +285,13 @@ class TripModelUnitTests(TestCase):
         """Test the TripReport model __str__ function"""
         self.assertEqual(str(self.report), self.report.title)
 
+    def test_comment_str(self):
+        """Test the Comment model __str__ function"""
+        c = Comment.objects.create(
+            author=self.user, content_object=self.trip, content="This is a comment"
+        )
+        self.assertEqual(str(c), f"Comment by {c.author} on {c.content_object}")
+
     def test_trip_validates_start_time_before_end_time(self):
         """Test the Trip model validates start time before end time"""
         self.trip.start = tz.now() + td(days=1)
@@ -478,6 +486,87 @@ class TripIntegrationTests(TestCase):
         self.assertEqual(trip.notes, "Test Notes")
         self.assertEqual(trip.privacy, Trip.DEFAULT)
 
+    def test_trip_creation_form_with_invalid_data(self):
+        """Test the trip creation form with invalid data"""
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("log:trip_create"), {})
+        self.assertContains(response, "This field is required.")
+
+        response = self.client.post(
+            reverse("log:trip_create"),
+            {
+                "cave_name": "Test The Form Cave",
+                "start": tz.now(),
+                "end": tz.now() - td(days=1),
+            },
+        )
+        self.assertContains(
+            response, "The trip start time must be before " "the trip end time."
+        )
+
+        response = self.client.post(
+            reverse("log:trip_create"),
+            {
+                "cave_name": "Test The Form Cave",
+                "start": tz.now() - td(days=100),
+                "end": tz.now(),
+            },
+        )
+        self.assertContains(response, "The trip is unrealistically long")
+
+        same_time = tz.now()
+        response = self.client.post(
+            reverse("log:trip_create"),
+            {
+                "cave_name": "Test The Form Cave",
+                "cave_region": "Test Region",
+                "cave_country": "Test Country",
+                "type": Trip.SPORT,
+                "cavers": "Test Cavers",
+                "privacy": Trip.DEFAULT,
+                "notes": "Test Notes",
+                "start": same_time,
+                "end": same_time,
+            },
+        )
+        self.assertContains(response, "The start and end time must not be the same")
+
+        response = self.client.post(
+            reverse("log:trip_create"),
+            {
+                "cave_name": "Test The Form Cave",
+                "cave_region": "Test Region",
+                "cave_country": "Test Country",
+                "type": Trip.SPORT,
+                "cavers": "Test Cavers",
+                "privacy": Trip.DEFAULT,
+                "notes": "Test Notes",
+                "start": tz.now() + td(days=8),
+                "end": tz.now(),
+            },
+        )
+        self.assertContains(
+            response, "Trips must not start more than one week in the future"
+        )
+
+        response = self.client.post(
+            reverse("log:trip_create"),
+            {
+                "cave_name": "Test The Form Cave",
+                "cave_region": "Test Region",
+                "cave_country": "Test Country",
+                "type": Trip.SPORT,
+                "cavers": "Test Cavers",
+                "privacy": Trip.DEFAULT,
+                "notes": "Test Notes",
+                "start": tz.now(),
+                "end": tz.now() + td(days=32),
+            },
+        )
+        self.assertContains(
+            response, "Trips must not end more than 31 days in the future"
+        )
+
     def test_trip_update_form(self):
         """Test the trip update form"""
         self.client.force_login(self.user)
@@ -652,6 +741,37 @@ class TripReportIntegrationTests(TestCase):
         self.assertEqual(TripReport.objects.get().privacy, TripReport.PUBLIC)
         self.assertEqual(TripReport.objects.get().trip, self.trip)
 
+    def test_trip_report_create_view_with_a_duplicate_slug(self):
+        """Test the trip report create view with a duplicate slug"""
+        TripReport.objects.create(
+            title="Test Report",
+            pub_date=dt.now().date(),
+            slug="test-report",
+            content="Test content.",
+            trip=self.trip,
+            user=self.user,
+        )
+
+        trip = Trip.objects.create(
+            user=self.user,
+            cave_name="Test Cave",
+            start=tz.now(),
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("log:report_create", args=[trip.pk]),
+            {
+                "title": "Test Report",
+                "pub_date": dt.now().date(),
+                "slug": "test-report",
+                "content": "Test content.",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The slug must be unique.")
+
     def test_trip_report_create_view_redirects_if_a_report_already_exists(self):
         """Test the trip report create view redirects if a report already exists"""
         report = TripReport.objects.create(
@@ -728,16 +848,17 @@ class TripReportIntegrationTests(TestCase):
             {
                 "title": "Test Report Updated",
                 "pub_date": dt.now().date(),
-                "slug": "test-report-updated",
+                "slug": "test-report",
                 "content": "Test content updated.",
                 "privacy": TripReport.PUBLIC,
             },
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("log:report_detail", args=[report.pk]))
+
         report.refresh_from_db()
         self.assertEqual(report.title, "Test Report Updated")
-        self.assertEqual(report.slug, "test-report-updated")
+        self.assertEqual(report.slug, "test-report")
         self.assertEqual(report.content, "Test content updated.")
 
         response = self.client.get(reverse("log:report_delete", args=[report.pk]))
@@ -1412,14 +1533,16 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip = Trip.objects.filter(user=self.user).first()
         self.client.force_login(self.user)
 
-        self.client.post(
+        response = self.client.post(
             reverse("log:comment_add"),
             {
                 "content": "",
                 "type": "trip",
                 "pk": trip.pk,
             },
+            follow=True,
         )
+        self.assertContains(response, "This field is required.")
         self.assertEqual(Comment.objects.count(), 0)
 
     def test_adding_comment_with_too_much_content(self):
@@ -1560,3 +1683,76 @@ class TemplateTagUnitTests(TestCase):
         """Test the distformat() function with an imperial value"""
         imperial = UserSettings.IMPERIAL
         self.assertEqual(distformat.distformat(D(km=100), format=imperial), "62.14mi")
+
+
+class AdminToolsIntegrationTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            email="admin@admin.app",
+            username="admin",
+            password="admin",
+            name="admin",
+        )
+        self.admin.is_active = True
+        self.admin.is_superuser = True
+        self.admin.save()
+
+        self.user = User.objects.create_user(
+            email="user@user.app",
+            username="user",
+            password="user",
+            name="user",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+        self.client = Client()
+
+    def test_admin_tools_login_as_form(self):
+        """Test the login as form"""
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse("log:admin_tools"),
+            {
+                "login_as": self.user.email,
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        user = auth.get_user(self.client)
+        self.assertEqual(user, self.user)
+        self.assertContains(response, f"Now logged in as {self.user.email}")
+
+    def test_admin_tools_login_as_form_with_a_superuser_account(self):
+        """Test the login as form with a superuser account"""
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse("log:admin_tools"),
+            {
+                "login_as": self.admin.email,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cannot login as a superuser via this page")
+
+    def test_admin_tools_notify_all_users_form(self):
+        """Test the notify all users form"""
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse("log:admin_tools"),
+            {
+                "notify": "notify",
+                "message": "Test message",
+                "url": "https://caves.app/",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Notifications sent.")
+
+        self.assertEqual(Notification.objects.count(), 2)
+        for notification in Notification.objects.all():
+            self.assertEqual(notification.message, "Test message")
+            self.assertEqual(notification.url, "https://caves.app/")

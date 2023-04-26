@@ -20,7 +20,7 @@ def change_tripreport_privacy(apps, schema_editor):
     TripReport.objects.filter(privacy="Only me").update(privacy="Private")
 
 
-def set_all_duration_fields(apps, schema_editor):
+def set_all_duration_fields(apps, schema_editor):  # pragma: no cover
     """Set the duration and duration_str on each trip by calling Trip.save()"""
     Trip = apps.get_model("logger", "Trip")
     for trip in Trip.objects.all():

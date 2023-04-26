@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db import IntegrityError, migrations, models, transaction
 
 
-def copy_settings_data(apps, schema_editor):
+def copy_settings_data(apps, schema_editor):  # pragma: no cover
     CavingUser = apps.get_model("users", "CavingUser")
     UserSettings = apps.get_model("users", "UserSettings")
     for user in CavingUser.objects.all():
@@ -29,7 +29,7 @@ def copy_settings_data(apps, schema_editor):
         settings.save()
 
 
-def copy_profile_data(apps, schema_editor):
+def copy_profile_data(apps, schema_editor):  # pragma: no cover
     CavingUser = apps.get_model("users", "CavingUser")
     UserProfile = apps.get_model("users", "UserProfile")
     for user in CavingUser.objects.all():
@@ -52,7 +52,7 @@ def copy_profile_data(apps, schema_editor):
         profile.save()
 
 
-def copy_show_statistics_setting(apps, schema_editor):
+def copy_show_statistics_setting(apps, schema_editor):  # pragma: no cover
     CavingUser = apps.get_model("users", "CavingUser")
     for user in CavingUser.objects.all():
         settings = user.settings
@@ -60,7 +60,7 @@ def copy_show_statistics_setting(apps, schema_editor):
         settings.save()
 
 
-def copy_profile_name_to_user_name(apps, schema_editor):
+def copy_profile_name_to_user_name(apps, schema_editor):  # pragma: no cover
     CavingUser = apps.get_model("users", "CavingUser")
     for user in CavingUser.objects.all():
         user.name = user.profile.name

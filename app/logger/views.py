@@ -644,8 +644,7 @@ class AddComment(LoginRequiredMixin, View):
     def post(self, request):
         form = AddCommentForm(self.request, request.POST)
         if form.is_valid():
-            comment = form.save(commit=False)
-            comment.save()
+            form.save()
             if form.object.user != request.user:
                 form.object.user.notify(
                     f"{request.user} commented on your {form.type_str}",

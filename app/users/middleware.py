@@ -16,7 +16,7 @@ class TimezoneMiddleware:
             try:
                 tz = request.user.settings.timezone
                 timezone.activate(tz)
-            except ZoneInfoNotFoundError:
+            except ZoneInfoNotFoundError:  # pragma: no cover
                 timezone.deactivate()
 
         return self.get_response(request)

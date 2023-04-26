@@ -145,7 +145,6 @@ class AllUserNotificationForm(forms.ModelForm):
 
 class AddCommentForm(forms.Form):
     content = forms.CharField(
-        required=True,
         help_text="Your comment will be visible to anyone who can view this page.",
         widget=forms.Textarea(attrs={"rows": 4}),
     )
@@ -180,9 +179,7 @@ class AddCommentForm(forms.Form):
 
     def clean_content(self):
         content = self.cleaned_data.get("content")
-        if len(content) < 1:
-            raise ValidationError("Your comment must contain some content.")
-        elif len(content) > 2000:
+        if len(content) > 2000:
             raise ValidationError(
                 "Your comment must be less than 2000 characters long."
             )
