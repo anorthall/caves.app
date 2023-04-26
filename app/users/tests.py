@@ -265,7 +265,7 @@ class UserIntegrationTestCase(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("users:register"))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("users:account"))
+        self.assertEqual(response.url, reverse("users:account_detail"))
 
     def test_user_registration(self):
         """Test user registration process, including email verification"""
@@ -280,7 +280,7 @@ class UserIntegrationTestCase(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("users:verify-new-account"))
+        self.assertEqual(response.url, reverse("users:verify_new_account"))
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject, "Welcome to caves.app - verify your email"
@@ -297,7 +297,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Test resending verification email with invalid email
         response = self.client.post(
-            reverse("users:verify-resend"), {"email": "blah@blah.blah"}
+            reverse("users:verify_resend"), {"email": "blah@blah.blah"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
@@ -305,7 +305,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Test resending verification email with valid email
         response = self.client.post(
-            reverse("users:verify-resend"), {"email": "test_register@user.app"}
+            reverse("users:verify_resend"), {"email": "test_register@user.app"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
@@ -316,7 +316,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Test verification with invalid code
         response = self.client.get(
-            reverse("users:verify-new-account") + "?verify_code=invalid"
+            reverse("users:verify_new_account") + "?verify_code=invalid"
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -325,7 +325,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Test verification with valid code
         response = self.client.get(
-            reverse("users:verify-new-account") + "?verify_code=" + verify_code,
+            reverse("users:verify_new_account") + "?verify_code=" + verify_code,
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -338,18 +338,18 @@ class UserIntegrationTestCase(TestCase):
         self.assertTrue(user.is_active)
 
         # Test verification pages redirect to index when logged in
-        response = self.client.get(reverse("users:verify-new-account"))
+        response = self.client.get(reverse("users:verify_new_account"))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("log:index"))
 
-        response = self.client.get(reverse("users:verify-resend"))
+        response = self.client.get(reverse("users:verify_resend"))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("log:index"))
 
         # Test resending verification email now the user is active
         self.client.logout()
         response = self.client.post(
-            reverse("users:verify-resend"), {"email": "test_register@user.app"}
+            reverse("users:verify_resend"), {"email": "test_register@user.app"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "the verification email has been resent")
@@ -372,7 +372,7 @@ class UserIntegrationTestCase(TestCase):
         user.delete()
 
         response = self.client.get(
-            reverse("users:verify-new-account") + "?verify_code=" + verify_code,
+            reverse("users:verify_new_account") + "?verify_code=" + verify_code,
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -444,7 +444,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Test verification with invalid code
         response = self.client.get(
-            reverse("users:verify-email-change") + "?verify_code=invalid"
+            reverse("users:verify_email_change") + "?verify_code=invalid"
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -453,7 +453,7 @@ class UserIntegrationTestCase(TestCase):
 
         # Test verification with valid code
         response = self.client.get(
-            reverse("users:verify-email-change") + "?verify_code=" + verify_url,
+            reverse("users:verify_email_change") + "?verify_code=" + verify_url,
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -466,7 +466,7 @@ class UserIntegrationTestCase(TestCase):
     def test_user_profile_page(self):
         """Test user profile page"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("users:account"))
+        response = self.client.get(reverse("users:account_detail"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.email)
@@ -530,7 +530,7 @@ class UserIntegrationTestCase(TestCase):
         """Test changing a user's password"""
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("users:password"),
+            reverse("users:password_update"),
             {
                 "old_password": "password",
                 "new_password1": "new_password",
@@ -584,7 +584,7 @@ class UserIntegrationTestCase(TestCase):
         for i in range(10):
             self.user.notify(f"Test {i}", "/")
 
-        response = self.client.get(reverse("users:account"))
+        response = self.client.get(reverse("users:account_detail"))
         for i in range(1, 5):
             self.assertNotContains(response, f"Test {i}")
 

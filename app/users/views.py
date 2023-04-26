@@ -56,7 +56,7 @@ class PasswordResetView(SuccessMessageMixin, PasswordResetView):
 
 class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
     template_name = "password_reset_confirm.html"
-    success_url = reverse_lazy("users:account")
+    success_url = reverse_lazy("users:account_detail")
     form_class = SetPasswordForm
     post_reset_login = True
     success_message = "Your password has been updated and you are signed in."
@@ -64,7 +64,7 @@ class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
 
 class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
     template_name = "password_change.html"
-    success_url = reverse_lazy("users:account")
+    success_url = reverse_lazy("users:account_detail")
     form_class = PasswordChangeForm
     success_message = "Your password has been updated."
 
@@ -149,7 +149,7 @@ class AccountUpdate(LoginRequiredMixin, TemplateView):
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect("users:account")  # Already registered
+        return redirect("users:account_detail")  # Already registered
 
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -158,11 +158,11 @@ def register(request):
 
             # Generate verification token and send email
             verify_code = generate_token(user.pk, user.email)
-            verify_url = settings.SITE_ROOT + reverse("users:verify-new-account")
+            verify_url = settings.SITE_ROOT + reverse("users:verify_new_account")
             send_verify_email(user.email, user.name, verify_url, verify_code)
 
             # Redirect to Verify Email page.
-            return redirect("users:verify-new-account")
+            return redirect("users:verify_new_account")
     else:
         form = UserCreationForm()
 
@@ -206,7 +206,7 @@ def resend_verify_email(request):
             # A valid, unverified user was found. Resend email.
             user = form.user
             verify_code = generate_token(user.pk, user.email)
-            verify_url = settings.SITE_ROOT + reverse("users:verify-new-account")
+            verify_url = settings.SITE_ROOT + reverse("users:verify_new_account")
             send_verify_email(user.email, user.name, verify_url, verify_code)
         messages.info(
             request,
@@ -231,7 +231,7 @@ def verify_email_change(request):
                 request,
                 f"Your new email address, {form.email}, has been verified.",
             )
-            return redirect("users:account")
+            return redirect("users:account_detail")
     else:
         form = VerifyEmailForm()
 
@@ -248,7 +248,7 @@ def update_email(request):
             user = form.user
             new_email = form.cleaned_data["email"]
             verify_code = generate_token(user.pk, new_email)
-            verify_url = settings.SITE_ROOT + reverse("users:verify-email-change")
+            verify_url = settings.SITE_ROOT + reverse("users:verify_email_change")
             send_email_change_verification(
                 new_email, user.name, verify_url, verify_code
             )
@@ -261,7 +261,7 @@ def update_email(request):
                 "Please follow the instructions sent to your new email address within "
                 "24 hours to complete the change.",
             )
-            return redirect("users:verify-email-change")
+            return redirect("users:verify_email_change")
     else:
         form = UserChangeEmailForm(request.user)
 

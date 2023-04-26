@@ -109,24 +109,24 @@ class TestAllPagesLoad(TestCase):
 
     def test_verify_new_account_page_loads(self):
         """Test that the verify new account page loads"""
-        response = self.client.get(reverse("users:verify-new-account"))
+        response = self.client.get(reverse("users:verify_new_account"))
         self.assertEqual(response.status_code, 200)
 
     def test_verify_email_resend_page_loads(self):
         """Test that the verify email resend page loads"""
-        response = self.client.get(reverse("users:verify-resend"))
+        response = self.client.get(reverse("users:verify_resend"))
         self.assertEqual(response.status_code, 200)
 
     def test_password_reset_page_loads(self):
         """Test that the password reset page loads"""
-        response = self.client.get(reverse("users:password-reset"))
+        response = self.client.get(reverse("users:password_reset"))
         self.assertEqual(response.status_code, 200)
 
     def test_password_reset_confirm_page_loads(self):
         """Test that the password reset confirm page loads"""
         response = self.client.get(
             reverse(
-                "users:password-reset-confirm",
+                "users:password_reset_confirm",
                 kwargs={"uidb64": "test", "token": "test"},
             )
         )
@@ -135,7 +135,7 @@ class TestAllPagesLoad(TestCase):
     def test_password_change_page_loads(self):
         """Test that the password change page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("users:password"))
+        response = self.client.get(reverse("users:password_update"))
         self.assertEqual(response.status_code, 200)
 
     def test_email_change_page_loads(self):
@@ -147,13 +147,13 @@ class TestAllPagesLoad(TestCase):
     def test_verify_email_change_page_loads(self):
         """Test that the verify email change page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("users:verify-email-change"))
+        response = self.client.get(reverse("users:verify_email_change"))
         self.assertEqual(response.status_code, 200)
 
     def test_account_page_loads(self):
         """Test that the account page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("users:account"))
+        response = self.client.get(reverse("users:account_detail"))
         self.assertEqual(response.status_code, 200)
 
     def test_account_update_page_loads(self):
