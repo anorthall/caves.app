@@ -69,38 +69,6 @@ class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChange
     success_message = "Your password has been updated."
 
 
-def login(request):
-    context = {}
-    if request.method == "POST":
-        username = request.POST.get("email", None)
-        password = request.POST.get("password", None)
-        user = auth.authenticate(request, username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            messages.success(request, f"Now logged in as {user.email}.")
-            return redirect("log:index")
-        else:
-            messages.error(
-                request, "The username and password provided do not match any account."
-            )
-            context = {
-                "login_has_failed": True,  # Displays reset password link
-                "no_form_error_alert": True,  # Silences messages.html
-            }
-
-    if request.user.is_authenticated:
-        messages.info(request, f"You are logged in as {request.user.email}.")
-        return redirect("log:index")
-
-    return render(request, "login.html", context)
-
-
-def logout(request):
-    auth.logout(request)
-    messages.info(request, "You have been signed out.")
-    return redirect("log:index")
-
-
 class Account(LoginRequiredMixin, TemplateView):
     """View the user's account details."""
 
@@ -145,6 +113,158 @@ class AccountUpdate(LoginRequiredMixin, TemplateView):
         context["settings_form"] = s_form
         context["profile_form"] = p_form
         return render(request, self.template_name, context)
+
+
+class FriendListView(LoginRequiredMixin, TemplateView):
+    template_name = "friends.html"
+
+    def get(self, request):
+        if self.request.GET.get("u", None):
+            initial = {"user": self.request.GET["u"]}
+            form = AddFriendForm(request, initial=initial)
+        else:
+            form = AddFriendForm(request)
+
+        friend_requests = (
+            FriendRequest.objects.filter(
+                Q(user_from=request.user) | Q(user_to=request.user)
+            )
+            .order_by("user_from")
+            .select_related(
+                "user_from",
+                "user_to",
+                "user_from__profile",
+                "user_to__profile",
+                "user_from__settings",
+                "user_to__settings",
+            )
+            .prefetch_related(
+                "user_from__profile__friends",
+                "user_to__profile__friends",
+            )
+        )
+
+        friends = (
+            request.user.profile.friends.all()
+            .select_related(
+                "profile",
+                "settings",
+            )
+            .prefetch_related(
+                "profile__friends",
+            )
+        )
+
+        context = {
+            "friends_list": friends,
+            "friend_requests": friend_requests,
+            "add_friend_form": form,
+        }
+
+        return self.render_to_response(context)
+
+
+class FriendAddView(LoginRequiredMixin, View):
+    def post(self, request):
+        form = AddFriendForm(request, request.POST)
+
+        if form.is_valid():
+            user = form.cleaned_data["user"]
+            FriendRequest.objects.create(
+                user_from=request.user,
+                user_to=user,
+            )
+            user.notify(
+                f"{request.user.name} sent you a friend request",
+                reverse("users:friends"),
+            )
+            messages.success(request, f"Friend request sent to {user}.")
+        else:
+            if form.errors.get("user", None):
+                for error in form.errors["user"]:
+                    messages.error(request, error)
+            else:  # pragma: no cover
+                messages.error(
+                    request, "Unable to add friend. Are the details correct?"
+                )
+
+        return redirect("users:friends")
+
+
+class FriendRequestDeleteView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        f_req = get_object_or_404(FriendRequest, pk=pk)
+        if f_req.user_to == request.user or f_req.user_from == request.user:
+            f_req.delete()
+            messages.success(
+                request,
+                f"Friend request between {f_req.user_to} and {f_req.user_from} "
+                "deleted.",
+            )
+        else:
+            raise Http404
+        return redirect("users:friends")
+
+
+class FriendRequestAcceptView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        f_req = get_object_or_404(FriendRequest, pk=pk)
+        if not f_req.user_to == request.user:
+            raise Http404
+
+        f_req.user_from.profile.friends.add(f_req.user_to)
+        f_req.user_to.profile.friends.add(f_req.user_from)
+        f_req.delete()
+        f_req.user_from.notify(
+            f"{f_req.user_to.name} accepted your friend request",
+            reverse("users:friends"),
+        )
+        messages.success(request, f"You are now friends with {f_req.user_from}.")
+        return redirect("users:friends")
+
+
+class FriendRemoveView(LoginRequiredMixin, View):
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        if user not in request.user.profile.friends.all():
+            raise Http404
+
+        request.user.profile.friends.remove(user)
+        user.profile.friends.remove(request.user)
+        messages.success(request, f"You are no longer friends with {user}.")
+        return redirect("users:friends")
+
+
+def login(request):
+    context = {}
+    if request.method == "POST":
+        username = request.POST.get("email", None)
+        password = request.POST.get("password", None)
+        user = auth.authenticate(request, username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            messages.success(request, f"Now logged in as {user.email}.")
+            return redirect("log:index")
+        else:
+            messages.error(
+                request, "The username and password provided do not match any account."
+            )
+            context = {
+                "login_has_failed": True,  # Displays reset password link
+                "no_form_error_alert": True,  # Silences messages.html
+            }
+
+    if request.user.is_authenticated:
+        messages.info(request, f"You are logged in as {request.user.email}.")
+        return redirect("log:index")
+
+    return render(request, "login.html", context)
+
+
+def logout(request):
+    auth.logout(request)
+    messages.info(request, "You have been signed out.")
+    return redirect("log:index")
 
 
 def register(request):
@@ -278,123 +398,3 @@ def notification_redirect(request, pk):
     notification.read = True
     notification.save()
     return redirect(notification.url)
-
-
-class FriendListView(LoginRequiredMixin, TemplateView):
-    template_name = "friends.html"
-
-    def get(self, request):
-        if self.request.GET.get("u", None):
-            initial = {"user": self.request.GET["u"]}
-            form = AddFriendForm(request, initial=initial)
-        else:
-            form = AddFriendForm(request)
-
-        friend_requests = (
-            FriendRequest.objects.filter(
-                Q(user_from=request.user) | Q(user_to=request.user)
-            )
-            .order_by("user_from")
-            .select_related(
-                "user_from",
-                "user_to",
-                "user_from__profile",
-                "user_to__profile",
-                "user_from__settings",
-                "user_to__settings",
-            )
-            .prefetch_related(
-                "user_from__profile__friends",
-                "user_to__profile__friends",
-            )
-        )
-
-        friends = (
-            request.user.profile.friends.all()
-            .select_related(
-                "profile",
-                "settings",
-            )
-            .prefetch_related(
-                "profile__friends",
-            )
-        )
-
-        context = {
-            "friends_list": friends,
-            "friend_requests": friend_requests,
-            "add_friend_form": form,
-        }
-
-        return self.render_to_response(context)
-
-
-class FriendAddView(LoginRequiredMixin, View):
-    def post(self, request):
-        form = AddFriendForm(request, request.POST)
-
-        if form.is_valid():
-            user = form.cleaned_data["user"]
-            FriendRequest.objects.create(
-                user_from=request.user,
-                user_to=user,
-            )
-            user.notify(
-                f"{request.user.name} sent you a friend request",
-                reverse("users:friends"),
-            )
-            messages.success(request, f"Friend request sent to {user}.")
-        else:
-            if form.errors.get("user", None):
-                for error in form.errors["user"]:
-                    messages.error(request, error)
-            else:  # pragma: no cover
-                messages.error(
-                    request, "Unable to add friend. Are the details correct?"
-                )
-
-        return redirect("users:friends")
-
-
-class FriendRequestDeleteView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        f_req = get_object_or_404(FriendRequest, pk=pk)
-        if f_req.user_to == request.user or f_req.user_from == request.user:
-            f_req.delete()
-            messages.success(
-                request,
-                f"Friend request between {f_req.user_to} and {f_req.user_from} "
-                "deleted.",
-            )
-        else:
-            raise Http404
-        return redirect("users:friends")
-
-
-class FriendRequestAcceptView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        f_req = get_object_or_404(FriendRequest, pk=pk)
-        if not f_req.user_to == request.user:
-            raise Http404
-
-        f_req.user_from.profile.friends.add(f_req.user_to)
-        f_req.user_to.profile.friends.add(f_req.user_from)
-        f_req.delete()
-        f_req.user_from.notify(
-            f"{f_req.user_to.name} accepted your friend request",
-            reverse("users:friends"),
-        )
-        messages.success(request, f"You are now friends with {f_req.user_from}.")
-        return redirect("users:friends")
-
-
-class FriendRemoveView(LoginRequiredMixin, View):
-    def get(self, request, username):
-        user = get_object_or_404(User, username=username)
-        if user not in request.user.profile.friends.all():
-            raise Http404
-
-        request.user.profile.friends.remove(user)
-        user.profile.friends.remove(request.user)
-        messages.success(request, f"You are no longer friends with {user}.")
-        return redirect("users:friends")

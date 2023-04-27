@@ -96,219 +96,6 @@ class Index(TemplateView):
         return liked_str_index
 
 
-@login_required
-def export(request):
-    """Export a user's trips to CSV file"""
-    if not request.POST:  # Display information page
-        return render(request, "export.html")
-
-    # Generate HTTP response and the CSV file
-    qs = Trip.objects.filter(user=request.user).order_by("start", "pk")
-    if not qs:
-        messages.error(request, "You do not have any trips to export.")
-        return redirect("log:export")
-
-    timestamp = timezone.now().strftime("%Y-%m-%d-%H%M")
-    filename = f"{request.user.username}-trips-{timestamp}.csv"
-    response = HttpResponse(
-        content_type="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-    )
-
-    writer = csv.writer(response)
-
-    # Headers
-    tz = timezone.get_current_timezone()
-    writer.writerow(
-        [
-            "Number",
-            "Cave name",
-            "Cave region",
-            "Cave country",
-            "Cave URL",
-            f"Trip start ({tz})",
-            f"Trip end ({tz})",
-            "Duration",
-            "Trip type",
-            "Cavers",
-            "Clubs",
-            "Expedition",
-            "Horizontal distance",
-            "Vertical distance down",
-            "Vertical distance up",
-            "Surveyed distance",
-            "Resurveyed distance",
-            "Aid climbing distance",
-            "Notes",
-            "URL",
-            "Trip report",
-            f"Added on ({tz})",
-            f"Last updated ({tz})",
-        ]
-    )
-
-    # Content
-    units = request.user.settings.units  # Distance units
-    tf = "%Y-%m-%d %H:%M"  # Time format to use
-    x = 1
-    for t in qs:
-        row = [  # Break row into two to process end time
-            x,
-            t.cave_name,
-            t.cave_region,
-            t.cave_country,
-            t.cave_url,
-            lt(t.start).strftime(tf),
-        ]
-
-        # End time may not exist, so check first
-        try:
-            row = row + [lt(t.end).strftime(tf)]
-        except AttributeError:
-            row = row + [t.end]
-
-        trip_report = ""
-        if t.has_report:
-            trip_report = f"{settings.SITE_ROOT}{t.report.get_absolute_url()}"
-
-        row = row + [  # Second half of row
-            t.duration_str,
-            t.type,
-            t.cavers,
-            t.clubs,
-            t.expedition,
-            distformat(t.horizontal_dist, units, simplify=False),
-            distformat(t.vert_dist_down, units, simplify=False),
-            distformat(t.vert_dist_up, units, simplify=False),
-            distformat(t.surveyed_dist, units, simplify=False),
-            distformat(t.resurveyed_dist, units, simplify=False),
-            distformat(t.aid_dist, units, simplify=False),
-            t.notes,
-            f"{settings.SITE_ROOT}{t.get_absolute_url()}",
-            trip_report,
-            lt(t.added).strftime(tf),
-            lt(t.updated).strftime(tf),
-        ]
-
-        writer.writerow(row)  # Finally write the complete row
-        x += 1
-
-    return response  # Return the CSV file as a HttpResponse
-
-
-@login_required
-def user_statistics(request):
-    trips = request.user.trips
-    chart_units = "m"
-    if request.user.settings.units == UserSettings.IMPERIAL:
-        chart_units = "ft"
-
-    # Generate stats for trips/distances by year
-    this_year = timezone.now().year
-    prev_year = (timezone.now() - timezone.timedelta(days=365)).year
-    prev_year_2 = (timezone.now() - timezone.timedelta(days=730)).year
-    trip_stats = statistics.stats_for_user(trips)
-    trip_stats_year0 = statistics.stats_for_user(trips, year=prev_year_2)
-    trip_stats_year1 = statistics.stats_for_user(trips, year=prev_year)
-    trip_stats_year2 = statistics.stats_for_user(trips, year=this_year)
-
-    # Check if we should show time charts
-    show_time_charts = False
-    if len(trips) >= 2:
-        ordered = trips.order_by("-start")
-        if (ordered.first().start.date() - ordered.last().start.date()).days > 40:
-            if trips.filter(end__isnull=False):
-                show_time_charts = True
-
-    context = {
-        "trips": trips,
-        "gte_five_trips": len(trips) >= 5,
-        "show_time_charts": show_time_charts,
-        "user": request.user,
-        "dist_format": request.user.settings.units,
-        "chart_units": chart_units,
-        "year0": prev_year_2,
-        "year1": prev_year,
-        "year2": this_year,
-        "trip_stats": trip_stats,
-        "trip_stats_year0": trip_stats_year0,
-        "trip_stats_year1": trip_stats_year1,
-        "trip_stats_year2": trip_stats_year2,
-        "common_caves": statistics.common_caves(trips),
-        "common_cavers": statistics.common_cavers(trips),
-        "common_cavers_by_time": statistics.common_cavers_by_time(trips),
-        "common_clubs": statistics.common_clubs(trips),
-        "most_duration": trips.exclude(duration=None).order_by("-duration")[0:10],
-        "averages": statistics.trip_averages(trips, request.user.settings.units),
-        "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
-            0:10
-        ],
-        "most_vert_down": trips.filter(vert_dist_down__gt=0).order_by(
-            "-vert_dist_down"
-        )[0:10],
-        "most_surveyed": trips.filter(surveyed_dist__gt=0).order_by("-surveyed_dist")[
-            0:10
-        ],
-        "most_resurveyed": trips.filter(resurveyed_dist__gt=0).order_by(
-            "-resurveyed_dist"
-        )[0:10],
-        "most_aid": trips.filter(aid_dist__gt=0).order_by("-aid_dist")[0:10],
-        "most_horizontal": trips.filter(horizontal_dist__gt=0).order_by(
-            "-horizontal_dist"
-        )[0:10],
-    }
-    return render(request, "statistics.html", context)
-
-
-def admin_tools(request):  # noqa: C901
-    """Tools for website administrators."""
-    if not request.user.is_superuser:
-        raise Http404
-
-    if request.POST:
-        if request.POST.get("login_as", False):
-            try:
-                user = User.objects.get(email=request.POST["login_as"])
-                if user.is_superuser:
-                    messages.error(
-                        request, "Cannot login as a superuser via this page."
-                    )
-                elif user:
-                    messages.success(request, f"Now logged in as {user.email}.")
-                    login(request, user)
-                    return redirect("log:index")
-            except ObjectDoesNotExist:
-                messages.error(request, "User was not found.")
-
-        elif request.POST.get("notify", False):
-            form = AllUserNotificationForm(request.POST)
-            if form.is_valid():
-                for user in User.objects.all():
-                    Notification.objects.create(
-                        user=user,
-                        message=form.cleaned_data["message"],
-                        url=form.cleaned_data["url"],
-                    )
-                messages.success(request, "Notifications sent.")
-
-    login_user_list = User.objects.filter(is_active=True).values_list(
-        "email", flat=True
-    )
-
-    context = {
-        "login_user_list": login_user_list,
-        "notify_form": AllUserNotificationForm(),
-    }
-
-    return render(request, "admin_tools.html", context)
-
-
-@login_required
-def trips_redirect(request):
-    """Redirect from /trips/ to /u/username"""
-    return redirect("log:user", username=request.user.username)
-
-
 class UserProfile(ListView):
     """List all of a user's trips and their profile information"""
 
@@ -706,3 +493,216 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
             )
             .first()
         )
+
+
+@login_required
+def export(request):
+    """Export a user's trips to CSV file"""
+    if not request.POST:  # Display information page
+        return render(request, "export.html")
+
+    # Generate HTTP response and the CSV file
+    qs = Trip.objects.filter(user=request.user).order_by("start", "pk")
+    if not qs:
+        messages.error(request, "You do not have any trips to export.")
+        return redirect("log:export")
+
+    timestamp = timezone.now().strftime("%Y-%m-%d-%H%M")
+    filename = f"{request.user.username}-trips-{timestamp}.csv"
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+    writer = csv.writer(response)
+
+    # Headers
+    tz = timezone.get_current_timezone()
+    writer.writerow(
+        [
+            "Number",
+            "Cave name",
+            "Cave region",
+            "Cave country",
+            "Cave URL",
+            f"Trip start ({tz})",
+            f"Trip end ({tz})",
+            "Duration",
+            "Trip type",
+            "Cavers",
+            "Clubs",
+            "Expedition",
+            "Horizontal distance",
+            "Vertical distance down",
+            "Vertical distance up",
+            "Surveyed distance",
+            "Resurveyed distance",
+            "Aid climbing distance",
+            "Notes",
+            "URL",
+            "Trip report",
+            f"Added on ({tz})",
+            f"Last updated ({tz})",
+        ]
+    )
+
+    # Content
+    units = request.user.settings.units  # Distance units
+    tf = "%Y-%m-%d %H:%M"  # Time format to use
+    x = 1
+    for t in qs:
+        row = [  # Break row into two to process end time
+            x,
+            t.cave_name,
+            t.cave_region,
+            t.cave_country,
+            t.cave_url,
+            lt(t.start).strftime(tf),
+        ]
+
+        # End time may not exist, so check first
+        try:
+            row = row + [lt(t.end).strftime(tf)]
+        except AttributeError:
+            row = row + [t.end]
+
+        trip_report = ""
+        if t.has_report:
+            trip_report = f"{settings.SITE_ROOT}{t.report.get_absolute_url()}"
+
+        row = row + [  # Second half of row
+            t.duration_str,
+            t.type,
+            t.cavers,
+            t.clubs,
+            t.expedition,
+            distformat(t.horizontal_dist, units, simplify=False),
+            distformat(t.vert_dist_down, units, simplify=False),
+            distformat(t.vert_dist_up, units, simplify=False),
+            distformat(t.surveyed_dist, units, simplify=False),
+            distformat(t.resurveyed_dist, units, simplify=False),
+            distformat(t.aid_dist, units, simplify=False),
+            t.notes,
+            f"{settings.SITE_ROOT}{t.get_absolute_url()}",
+            trip_report,
+            lt(t.added).strftime(tf),
+            lt(t.updated).strftime(tf),
+        ]
+
+        writer.writerow(row)  # Finally write the complete row
+        x += 1
+
+    return response  # Return the CSV file as a HttpResponse
+
+
+@login_required
+def user_statistics(request):
+    trips = request.user.trips
+    chart_units = "m"
+    if request.user.settings.units == UserSettings.IMPERIAL:
+        chart_units = "ft"
+
+    # Generate stats for trips/distances by year
+    this_year = timezone.now().year
+    prev_year = (timezone.now() - timezone.timedelta(days=365)).year
+    prev_year_2 = (timezone.now() - timezone.timedelta(days=730)).year
+    trip_stats = statistics.stats_for_user(trips)
+    trip_stats_year0 = statistics.stats_for_user(trips, year=prev_year_2)
+    trip_stats_year1 = statistics.stats_for_user(trips, year=prev_year)
+    trip_stats_year2 = statistics.stats_for_user(trips, year=this_year)
+
+    # Check if we should show time charts
+    show_time_charts = False
+    if len(trips) >= 2:
+        ordered = trips.order_by("-start")
+        if (ordered.first().start.date() - ordered.last().start.date()).days > 40:
+            if trips.filter(end__isnull=False):
+                show_time_charts = True
+
+    context = {
+        "trips": trips,
+        "gte_five_trips": len(trips) >= 5,
+        "show_time_charts": show_time_charts,
+        "user": request.user,
+        "dist_format": request.user.settings.units,
+        "chart_units": chart_units,
+        "year0": prev_year_2,
+        "year1": prev_year,
+        "year2": this_year,
+        "trip_stats": trip_stats,
+        "trip_stats_year0": trip_stats_year0,
+        "trip_stats_year1": trip_stats_year1,
+        "trip_stats_year2": trip_stats_year2,
+        "common_caves": statistics.common_caves(trips),
+        "common_cavers": statistics.common_cavers(trips),
+        "common_cavers_by_time": statistics.common_cavers_by_time(trips),
+        "common_clubs": statistics.common_clubs(trips),
+        "most_duration": trips.exclude(duration=None).order_by("-duration")[0:10],
+        "averages": statistics.trip_averages(trips, request.user.settings.units),
+        "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
+            0:10
+        ],
+        "most_vert_down": trips.filter(vert_dist_down__gt=0).order_by(
+            "-vert_dist_down"
+        )[0:10],
+        "most_surveyed": trips.filter(surveyed_dist__gt=0).order_by("-surveyed_dist")[
+            0:10
+        ],
+        "most_resurveyed": trips.filter(resurveyed_dist__gt=0).order_by(
+            "-resurveyed_dist"
+        )[0:10],
+        "most_aid": trips.filter(aid_dist__gt=0).order_by("-aid_dist")[0:10],
+        "most_horizontal": trips.filter(horizontal_dist__gt=0).order_by(
+            "-horizontal_dist"
+        )[0:10],
+    }
+    return render(request, "statistics.html", context)
+
+
+def admin_tools(request):  # noqa: C901
+    """Tools for website administrators."""
+    if not request.user.is_superuser:
+        raise Http404
+
+    if request.POST:
+        if request.POST.get("login_as", False):
+            try:
+                user = User.objects.get(email=request.POST["login_as"])
+                if user.is_superuser:
+                    messages.error(
+                        request, "Cannot login as a superuser via this page."
+                    )
+                elif user:
+                    messages.success(request, f"Now logged in as {user.email}.")
+                    login(request, user)
+                    return redirect("log:index")
+            except ObjectDoesNotExist:
+                messages.error(request, "User was not found.")
+
+        elif request.POST.get("notify", False):
+            form = AllUserNotificationForm(request.POST)
+            if form.is_valid():
+                for user in User.objects.all():
+                    Notification.objects.create(
+                        user=user,
+                        message=form.cleaned_data["message"],
+                        url=form.cleaned_data["url"],
+                    )
+                messages.success(request, "Notifications sent.")
+
+    login_user_list = User.objects.filter(is_active=True).values_list(
+        "email", flat=True
+    )
+
+    context = {
+        "login_user_list": login_user_list,
+        "notify_form": AllUserNotificationForm(),
+    }
+
+    return render(request, "admin_tools.html", context)
+
+
+@login_required
+def trips_redirect(request):
+    """Redirect from /trips/ to /u/username"""
+    return redirect("log:user", username=request.user.username)
