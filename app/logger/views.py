@@ -111,7 +111,7 @@ class UserProfile(ListView):
         self.user = get_object_or_404(User, username=self.kwargs["username"])
 
         if not self.user.profile.is_viewable_by(self.request.user):
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
 
     def get_queryset(self):
         qs = (
@@ -120,6 +120,8 @@ class UserProfile(ListView):
             .order_by(*self.get_ordering())
         )
 
+        # Sanitise trips to be privacy aware
+        # TODO: This is done in other views - extract to a mixin
         if not self.user == self.request.user:
             qs = qs.select_related("user__settings", "user__profile")
             privacy_aware_trips = []
@@ -214,7 +216,7 @@ class TripDetail(TripContextMixin, DetailView):
     def get_object(self, *args, **kwargs):
         super().get_object(*args, **kwargs)
         if not self.object.is_viewable_by(self.request.user):
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
 
         if self.object.user == self.request.user:
             return self.object
@@ -267,7 +269,7 @@ class TripDelete(LoginRequiredMixin, View):
     def get(self, request, pk):
         trip = get_object_or_404(Trip, pk=pk)
         if not trip.user == request.user:
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
         trip.delete()
         messages.success(
             request,
@@ -300,7 +302,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def get_trip(self):
         trip = get_object_or_404(Trip, pk=self.kwargs["pk"])
         if not trip.user == self.request.user:
-            raise Http404  # Users can only create reports for their own trips
+            raise Http404  # TODO: Use UserPassesTestMixin
         return trip
 
     def get(self, request, *args, **kwargs):
@@ -322,7 +324,7 @@ class ReportDetail(TripContextMixin, DetailView):
     def get_object(self):
         object = super().get_object()
         if not object.is_viewable_by(self.request.user):
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
         return object
 
     def get_queryset(self):
@@ -371,7 +373,7 @@ class ReportDelete(LoginRequiredMixin, View):
     def get(self, request, pk):
         report = get_object_or_404(TripReport, pk=pk)
         if not report.user == request.user:
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
 
         trip = report.trip
         report.delete()
@@ -418,7 +420,7 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(*args, **kwargs)
         trip = self.get_object()
         if not trip.is_viewable_by(self.request.user):
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
 
         initial = {"pk": trip.pk, "type": "trip"}
         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
@@ -450,7 +452,7 @@ class DeleteComment(LoginRequiredMixin, View):
                 "The comment has been deleted.",
             )
         else:
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
         return redirect(comment.content_object.get_absolute_url())
 
 
@@ -462,7 +464,7 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
     def get(self, request, pk):
         trip = self.get_object(request, pk)
         if not trip or not trip.is_viewable_by(request.user):
-            raise Http404
+            raise Http404  # TODO: Use UserPassesTestMixin
 
         if trip.user_liked:
             trip.likes.remove(request.user)
@@ -662,7 +664,7 @@ def user_statistics(request):
 def admin_tools(request):  # noqa: C901
     """Tools for website administrators."""
     if not request.user.is_superuser:
-        raise Http404
+        raise Http404  # TODO: Use UserPassesTestMixin
 
     if request.POST:
         if request.POST.get("login_as", False):
