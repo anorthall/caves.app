@@ -1,44 +1,44 @@
 import humanize
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
 from django.utils import timezone
+from django.views.generic import TemplateView
 from logger.models import Trip
 
+from .generic import AuthStateTemplateMixin
 from .models import FAQ
 
 User = get_user_model()
 
 
-def about(request):
-    total_duration = timezone.timedelta(0)
-    for trip in Trip.objects.all():
-        if trip.duration:
-            total_duration += trip.duration
-    total_duration = humanize.precisedelta(
-        total_duration, minimum_unit="hours", format="%.0f"
-    )
+class About(AuthStateTemplateMixin, TemplateView):
+    template_name = "about/about"
 
-    context = {
-        "trip_count": Trip.objects.all().count(),
-        "user_count": User.objects.all().count(),
-        "total_duration": total_duration,
-        "registered": request.user.is_authenticated,
-    }
+    def get_context_data(self, **kwargs):
+        context = {
+            "trip_count": Trip.objects.all().count(),
+            "user_count": User.objects.all().count(),
+            "total_duration": self._get_duration_of_all_trips(),
+            "registered": self.request.user.is_authenticated,
+        }
 
-    # Unregistered/unauthenticated users
-    if not request.user.is_authenticated:
-        return render(request, "about/about_unregistered.html", context)
+        return context
 
-    # Authenticated users
-    return render(request, "about/about_registered.html", context)
+    def _get_duration_of_all_trips(self):
+        total_duration = timezone.timedelta(0)
+        for trip in Trip.objects.all():
+            if trip.duration:
+                total_duration += trip.duration
+
+        total_duration_str = humanize.precisedelta(
+            total_duration, minimum_unit="hours", format="%.0f"
+        )
+
+        return total_duration_str
 
 
-def help(request):
-    context = {"faqs": FAQ.objects.all().order_by("updated")}
+class Help(AuthStateTemplateMixin, TemplateView):
+    template_name = "help/help"
 
-    # Unregistered/unauthenticated users
-    if not request.user.is_authenticated:
-        return render(request, "help/help_unregistered.html", context)
-
-    # Authenticated users
-    return render(request, "help/help_registered.html", context)
+    def get_context_data(self, **kwargs):
+        context = {"faqs": FAQ.objects.all().order_by("updated")}
+        return context

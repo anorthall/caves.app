@@ -2,16 +2,6 @@ from .forms import AddCommentForm
 from .models import Trip, TripReport
 
 
-class AuthStateTemplateMixin:
-    """Render a different template based on whether or not the user is authenticated"""
-
-    def get_template_names(self):
-        if self.request.user.is_authenticated:
-            return [self.template_name + "_authenticated.html"]
-        else:
-            return [self.template_name + "_anonymous.html"]
-
-
 class TripContextMixin:
     """Mixin to add trip context to Trip and TripReport views."""
 
