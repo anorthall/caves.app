@@ -6,7 +6,7 @@ app_name = "log"
 
 # fmt: off
 urlpatterns = [
-    path("", views.index, name="index"),
+    path("", views.Index.as_view(), name="index"),
     path("u/<username>/", views.UserProfile.as_view(), name="user"),
     path("trips/", views.trips_redirect, name="trip_list"),
     path("trips/export/", views.export, name="export"),

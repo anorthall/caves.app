@@ -26,119 +26,74 @@ from logger import statistics
 from users.models import Notification, UserSettings
 
 from .forms import AddCommentForm, AllUserNotificationForm, TripForm, TripReportForm
+from .generic import TripContextMixin
 from .models import Comment, Trip, TripReport
 from .templatetags.distformat import distformat
 
 User = get_user_model()
 
 
-class TripContextMixin:
-    """Mixin to add trip context to Trip and TripReport views."""
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-
-        if isinstance(self.object, TripReport):
-            report = self.object
-            trip = report.trip
-            context["is_report"] = True  # For includes/trip_header.html
-        elif isinstance(self.object, Trip):
-            trip = self.object
-            if hasattr(trip, "report"):
-                report = trip.report
-            else:
-                report = None
-        elif not self.object:
-            # Django will return Http404 shortly, so we can just
-            return
+class Index(TemplateView):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            context = self.get_authenticated_context(**kwargs)
+            return self.render_to_response(context)
         else:
-            raise TypeError("Object is not a Trip or TripReport")
+            self.template_name = "index/index_unregistered.html"
+            return super().get(request, *args, **kwargs)
 
-        user = trip.user
+    def get_authenticated_context(self, **kwargs):
+        context = {}
+        context["news"] = self._get_news_context()
+        context["trips"] = self._get_trips_context()
+        context["liked_str"] = self._get_liked_str_context(context["trips"])
 
-        if not user == self.request.user:
-            context["can_view_profile"] = user.profile.is_viewable_by(self.request.user)
+        if len(context["trips"]) == 0:
+            self.template_name = "index/index_new_user.html"
+        else:
+            self.template_name = "index/index_registered.html"
 
-            if self.request.user not in user.profile.friends.all():
-                if user.settings.allow_friend_username:
-                    context["can_add_friend"] = True
-
-            if report:
-                context["can_view_report"] = report.is_viewable_by(self.request.user)
-
-        context["trip"] = trip
-        context["report"] = report
-        # This is the author of the trip/report, not the request user
-        context["user"] = user
-
-        # Comment form
-        initial = {
-            "pk": self.object.pk,
-            "type": self.object.__class__.__name__.lower(),
-        }
-        context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
         return context
 
-    def get_object(self, *args, **kwargs):
-        self.object = super().get_object(*args, **kwargs)
-        return self.object
-
-
-def index(request):
-    """
-    Index page for the website.
-
-    Unregistered users will be shown a static welcome page.
-
-    Registered users will be shown an interface to add/manage
-    recent caving trips.
-
-    Newly registered users will be shown a help page.
-    """
-    if not request.user.is_authenticated:
-        return render(request, "index/index_unregistered.html")
-
-    context = {}
-
-    news = (
-        News.objects.filter(is_published=True, posted_at__lte=timezone.now())
-        .prefetch_related("author__profile")
-        .order_by("-posted_at")[:3]
-    )
-    context["news"] = news
-
-    friends = request.user.profile.friends.all()
-    trips = (
-        Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
-        .select_related("user__settings")
-        .prefetch_related("comments", "likes")
-        .prefetch_related("user__profile__friends")
-        .annotate(
-            likes_count=Count("likes", distinct=True),
-            comments_count=Count("comments", distinct=True),
-            user_liked=Exists(
-                User.objects.filter(
-                    pk=request.user.pk, liked_trips=OuterRef("pk")
-                ).only("pk")
-            ),
+    def _get_news_context(self):
+        return (
+            News.objects.filter(is_published=True, posted_at__lte=timezone.now())
+            .prefetch_related("author__profile")
+            .order_by("-posted_at")[:3]
         )
-    ).order_by("-added")[
-        :25
-    ]  # TODO: Make this configurable
 
-    # Remove trips that the user does not have permission to view.
-    context["trips"] = [x for x in trips if x.is_viewable_by(request.user)]
+    def _get_trips_context(self):
+        friends = self.request.user.profile.friends.all()
+        trips = (
+            Trip.objects.filter(Q(user__in=friends) | Q(user=self.request.user))
+            .select_related("user__settings")
+            .prefetch_related("comments", "likes")
+            .prefetch_related("user__profile__friends")
+            .annotate(
+                likes_count=Count("likes", distinct=True),
+                comments_count=Count("comments", distinct=True),
+                user_liked=Exists(
+                    User.objects.filter(
+                        pk=self.request.user.pk, liked_trips=OuterRef("pk")
+                    ).only("pk")
+                ),
+            )
+        ).order_by("-added")[
+            :25
+        ]  # TODO: Make this configurable
 
-    if len(context["trips"]) == 0:
-        return render(request, "index/index_new_user.html", context)
+        # Remove trips that the user does not have permission to view.
+        sanitised_trips = [x for x in trips if x.is_viewable_by(self.request.user)]
 
-    # Build the 'liked_str' dictionary
-    liked_str_index = {}
-    for trip in context["trips"]:
-        liked_str_index[trip.pk] = trip.get_liked_str(request.user, friends)
-    context["liked_str"] = liked_str_index
+        return sanitised_trips
 
-    return render(request, "index/index_registered.html", context)
+    def _get_liked_str_context(self, trips):
+        friends = self.request.user.profile.friends.all()
+        liked_str_index = {}
+        for trip in trips:
+            liked_str_index[trip.pk] = trip.get_liked_str(self.request.user, friends)
+
+        return liked_str_index
 
 
 @login_required
