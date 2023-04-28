@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
 from django.urls import reverse
 
-from .models import CavingUser, FriendRequest, UserProfile, UserSettings
+from .models import FriendRequest
 from .verify import verify_token
 
 User = get_user_model()
@@ -119,7 +119,7 @@ class UserCreationForm(forms.ModelForm):
     )
 
     class Meta:
-        model = CavingUser
+        model = User
         fields = ("name", "email", "username")
 
     def __init__(self, *args, **kwargs):
@@ -161,7 +161,7 @@ class UserAdminChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
 
     class Meta:
-        model = CavingUser
+        model = User
         fields = (
             "email",
             "username",
@@ -179,7 +179,7 @@ class UserChangeForm(forms.ModelForm):
     )
 
     class Meta:
-        model = CavingUser
+        model = User
         fields = (
             "email",
             "username",
@@ -191,7 +191,7 @@ class ProfileChangeForm(forms.ModelForm):
     template_name = "forms/profile_change_form.html"
 
     class Meta:
-        model = UserProfile
+        model = User
         fields = (
             "location",
             "country",
@@ -205,13 +205,13 @@ class SettingsChangeForm(forms.ModelForm):
     template_name = "forms/settings_change_form.html"
 
     class Meta:
-        model = UserSettings
+        model = User
         fields = (
             "privacy",
             "private_notes",
             "units",
             "timezone",
-            "show_statistics",
+            "public_statistics",
             "allow_friend_username",
             "allow_friend_email",
             "allow_comments",
@@ -290,12 +290,12 @@ class AddFriendForm(forms.Form):
 
         try:
             user = User.objects.get(username=user)
-            if not user.settings.allow_friend_username:
+            if not user.allow_friend_username:
                 raise User.DoesNotExist
         except User.DoesNotExist:
             try:
                 user = User.objects.get(email=user)
-                if not user.settings.allow_friend_email:
+                if not user.allow_friend_email:
                     raise User.DoesNotExist
             except User.DoesNotExist:
                 raise ValidationError(
@@ -305,7 +305,7 @@ class AddFriendForm(forms.Form):
         if user == self.request.user:
             raise ValidationError("You cannot add yourself as a friend.")
 
-        if user in self.request.user.profile.friends.all():
+        if user in self.request.user.friends.all():
             raise ValidationError(f"{user.name} is already your friend.")
 
         sent_req = Q(user_from=self.request.user, user_to=user)

@@ -38,7 +38,7 @@ class DistanceUnitFormMixin:
             "aid_dist",
         ]
 
-        units = instance.user.settings.units
+        units = instance.user.units
         initial = {}
         for field in distance_fields:
             initial[field] = distformat(getattr(instance, field), units)
@@ -201,7 +201,7 @@ class AddCommentForm(forms.Form):
         if not self.object.is_viewable_by(self.request.user):
             raise ValidationError("You are not allowed to comment on that item.")
 
-        if not self.object.user.settings.allow_comments:
+        if not self.object.user.allow_comments:
             raise ValidationError("Comments are not allowed on that item.")
 
         return self.cleaned_data

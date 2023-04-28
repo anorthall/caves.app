@@ -76,7 +76,7 @@
               {% for name, distance in trip.distances.items %}
                 <div class="col">
                   <small class="text-muted">{{ name|capfirst }}</small><br />
-                  {{ distance|distformat:request.user.settings.units }}
+                  {{ distance|distformat:request.user.units }}
                 </div>
               {% endfor %}
             </div>
@@ -90,7 +90,7 @@
             {% endwith %}
           </span>
 
-          {% if trip.user.settings.allow_comments %}
+          {% if trip.user.allow_comments %}
             <span hx-get="{% url 'log:htmx_trip_comment' trip.pk %}" hx-target="#comment{{ forloop.counter }}" class="float-end">
               <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}<span class="d-none d-md-inline"> comment{{ trip.comments_count|pluralize }}</span>
             </span>

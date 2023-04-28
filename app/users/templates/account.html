@@ -49,7 +49,7 @@
           </div>
 
           <div class="col">
-            {% if user.profile.location %}{{ user.profile.location }}{% else %}Not recorded{% endif %}
+            {% if user.location %}{{ user.location }}{% else %}Not recorded{% endif %}
           </div>
         </div>
 
@@ -59,7 +59,7 @@
           </div>
 
           <div class="col">
-            {% if user.profile.country %}{{ user.profile.country.name }}{% else %}Not recorded{% endif %}
+            {% if user.country %}{{ user.country.name }}{% else %}Not recorded{% endif %}
           </div>
         </div>
 
@@ -69,7 +69,7 @@
           </div>
 
           <div class="col">
-            {% if user.profile.clubs %}{{ user.profile.clubs }}{% else %}Not recorded{% endif %}
+            {% if user.clubs %}{{ user.clubs }}{% else %}Not recorded{% endif %}
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@
           </div>
 
           <div class="col">
-            {{ user.settings.timezone }}
+            {{ user.timezone }}
           </div>
         </div>
 
@@ -99,7 +99,7 @@
           </div>
 
           <div class="col">
-            {{ user.settings.units }}
+            {{ user.units }}
           </div>
         </div>
 
@@ -109,7 +109,7 @@
           </div>
 
           <div class="col">
-            {% if user.settings.allow_comments %}
+            {% if user.allow_comments %}
               Enabled
             {% else %}
               Disabled
@@ -123,7 +123,7 @@
           </div>
 
           <div class="col">
-            {% if user.settings.allow_friend_email or user.settings.allow_friend_username %}
+            {% if user.allow_friend_email or user.allow_friend_username %}
               Enabled
             {% else %}
               Disabled
@@ -167,7 +167,7 @@
           </div>
 
           <div class="col">
-            {{ user.settings.privacy }}
+            {{ user.privacy }}
           </div>
         </div>
 
@@ -177,8 +177,8 @@
           </div>
 
           <div class="col">
-            {% if user.profile.page_title %}
-              {{ user.profile.page_title }}
+            {% if user.page_title %}
+              {{ user.page_title }}
             {% else %}
               {{ user.name }}'s trips
             {% endif %}
@@ -206,7 +206,7 @@
             {% if user.is_private %}
               Public statistics are disabled as your profile is private.
             {% else %}
-              Statistics are {% if not user.settings.show_statistics %}not {% endif %}shown on your profile page.
+              Statistics are {% if not user.public_statistics %}not {% endif %}shown on your profile page.
             {% endif %}
           </div>
         </div>
@@ -218,9 +218,9 @@
 
           <div class="col">
             {% if user.is_private %}
-              If you select a trip to be public, the notes will be {% if user.settings.private_notes %}hidden{% else %}shown{% endif %}.
+              If you select a trip to be public, the notes will be {% if user.private_notes %}hidden{% else %}shown{% endif %}.
             {% else %}
-              {% if user.settings.private_notes %}
+              {% if user.private_notes %}
                 Your trip notes are hidden.
               {% else %}
                 Your trip notes are public, unless the trip is set to private.
@@ -235,8 +235,8 @@
           </div>
 
           <div class="col">
-            {% if user.profile.bio %}
-              {{ user.profile.bio|markdownify }}<br />
+            {% if user.bio %}
+              {{ user.bio|markdownify }}<br />
             {% else %}
               Not recorded
             {% endif %}

@@ -13,5 +13,5 @@ def user(context, user, show_username=False):
     return {
         "user": user,
         "show_username": show_username,
-        "show_profile_link": user.profile.is_viewable_by(context["request"].user),
+        "show_profile_link": user.is_viewable_by(context["request"].user),
     }

@@ -264,7 +264,7 @@ class Trip(models.Model):
 
     def sanitise(self, user_viewing):
         """Sanitise the trip for viewing by another user"""
-        if user_viewing != self.user and self.user.settings.private_notes is True:
+        if user_viewing != self.user and self.user.private_notes is True:
             self.notes = None
         return self
 
@@ -277,11 +277,11 @@ class Trip(models.Model):
             return True
 
         if self.privacy == self.FRIENDS:
-            if user_viewing in self.user.profile.friends.all():
+            if user_viewing in self.user.friends.all():
                 return True
 
         if self.privacy == self.DEFAULT:
-            return self.user.profile.is_viewable_by(user_viewing)
+            return self.user.is_viewable_by(user_viewing)
 
         return False
 
@@ -452,7 +452,7 @@ class TripReport(models.Model):
             return True
 
         if self.privacy == self.FRIENDS:
-            if user_viewing in self.user.profile.friends.all():
+            if user_viewing in self.user.friends.all():
                 return True
 
         if self.privacy == self.DEFAULT:

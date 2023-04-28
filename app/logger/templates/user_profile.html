@@ -19,9 +19,9 @@
   </div>
 </div>
 
-{% if user.profile.bio %}
-  {{ user.profile.bio|markdownify }}
-{% elif not user.profile.bio and not trips %}
+{% if user.bio %}
+  {{ user.bio|markdownify }}
+{% elif not user.bio and not trips %}
   {% if request.user == user %}
     <p>Once you add some trips, or a biography in your profile, they will appear here!</p>
   {% else %}

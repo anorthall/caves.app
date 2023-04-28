@@ -89,17 +89,15 @@ class AccountUpdate(LoginRequiredMixin, TemplateView):
         u = self.request.user
         context = super().get_context_data(**kwargs)
         context["user_form"] = UserChangeForm(instance=u)
-        context["settings_form"] = SettingsChangeForm(instance=u.settings)
-        context["profile_form"] = ProfileChangeForm(instance=u.profile)
+        context["settings_form"] = SettingsChangeForm(instance=u)
+        context["profile_form"] = ProfileChangeForm(instance=u)
         return context
 
     def post(self, request, *args, **kwargs):
         u = request.user
         u_form = UserChangeForm(request.POST, instance=u)
-        s_form = SettingsChangeForm(request.POST, instance=u.settings)
-        p_form = ProfileChangeForm(
-            request.POST, instance=u.profile, files=request.FILES
-        )
+        s_form = SettingsChangeForm(request.POST, instance=u)
+        p_form = ProfileChangeForm(request.POST, instance=u, files=request.FILES)
 
         if u_form.is_valid() and s_form.is_valid() and p_form.is_valid():
             u_form.save()
@@ -133,28 +131,14 @@ class FriendListView(LoginRequiredMixin, TemplateView):
             .select_related(
                 "user_from",
                 "user_to",
-                "user_from__profile",
-                "user_to__profile",
-                "user_from__settings",
-                "user_to__settings",
             )
-            .prefetch_related(
-                "user_from__profile__friends",
-                "user_to__profile__friends",
+            .prefetch_related(  # TODO: Is this required?
+                "user_from__friends",
+                "user_to__friends",
             )
         )
 
-        friends = (
-            request.user.profile.friends.all()
-            .select_related(
-                "profile",
-                "settings",
-            )
-            .prefetch_related(
-                "profile__friends",
-            )
-        )
-
+        friends = request.user.friends.all()
         context = {
             "friends_list": friends,
             "friend_requests": friend_requests,
@@ -212,8 +196,8 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
         if not f_req.user_to == request.user:
             raise Http404  # TODO: Use UserPassesTestMixin
 
-        f_req.user_from.profile.friends.add(f_req.user_to)
-        f_req.user_to.profile.friends.add(f_req.user_from)
+        f_req.user_from.friends.add(f_req.user_to)
+        f_req.user_to.friends.add(f_req.user_from)
         f_req.delete()
         f_req.user_from.notify(
             f"{f_req.user_to.name} accepted your friend request",
@@ -226,11 +210,11 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
 class FriendRemoveView(LoginRequiredMixin, View):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        if user not in request.user.profile.friends.all():
+        if user not in request.user.friends.all():
             raise Http404
 
-        request.user.profile.friends.remove(user)
-        user.profile.friends.remove(request.user)
+        request.user.friends.remove(user)
+        user.friends.remove(request.user)
         messages.success(request, f"You are no longer friends with {user}.")
         return redirect("users:friends")
 

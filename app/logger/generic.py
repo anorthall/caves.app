@@ -19,7 +19,7 @@ class TripContextMixin:
             else:
                 report = None
         elif not self.object:
-            # Django will return Http404 shortly, so we can just
+            # Django will return Http404 shortly, so we can just:
             return
         else:
             raise TypeError("Object is not a Trip or TripReport")
@@ -27,10 +27,10 @@ class TripContextMixin:
         user = trip.user
 
         if not user == self.request.user:
-            context["can_view_profile"] = user.profile.is_viewable_by(self.request.user)
+            context["can_view_profile"] = user.is_viewable_by(self.request.user)
 
-            if self.request.user not in user.profile.friends.all():
-                if user.settings.allow_friend_username:
+            if self.request.user not in user.friends.all():
+                if user.allow_friend_username:
                     context["can_add_friend"] = True
 
             if report:

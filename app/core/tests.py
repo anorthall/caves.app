@@ -179,8 +179,8 @@ class TestAllPagesLoad(TestCase):
                 name=f"Test User {i}",
             )
 
-            u.profile.friends.add(self.user)
-            self.user.profile.friends.add(u)
+            u.friends.add(self.user)
+            self.user.friends.add(u)
 
         for i in range(10):
             u = User.objects.create_user(
@@ -417,15 +417,15 @@ class TestMiddleware(TestCase):
         self.assertEqual(response.status_code, 200)
 
         for tz in pytz.all_timezones:
-            self.user.settings.timezone = tz
-            self.user.settings.save()
+            self.user.timezone = tz
+            self.user.save()
 
             response = self.client.get(reverse("log:index"))
             self.assertEqual(response.status_code, 200)
 
         for tz in zoneinfo.available_timezones():
-            self.user.settings.timezone = tz
-            self.user.settings.save()
+            self.user.timezone = tz
+            self.user.save()
 
             response = self.client.get(reverse("log:index"))
             self.assertEqual(response.status_code, 200)

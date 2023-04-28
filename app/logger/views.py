@@ -23,7 +23,7 @@ from django.views.generic import (
     View,
 )
 from logger import statistics
-from users.models import Notification, UserSettings
+from users.models import Notification
 
 from .forms import AddCommentForm, AllUserNotificationForm, TripForm, TripReportForm
 from .generic import TripContextMixin
@@ -58,17 +58,16 @@ class Index(TemplateView):
     def _get_news_context(self):
         return (
             News.objects.filter(is_published=True, posted_at__lte=timezone.now())
-            .prefetch_related("author__profile")
+            .prefetch_related("author")
             .order_by("-posted_at")[:3]
         )
 
     def _get_trips_context(self):
-        friends = self.request.user.profile.friends.all()
+        friends = self.request.user.friends.all()
         trips = (
             Trip.objects.filter(Q(user__in=friends) | Q(user=self.request.user))
-            .select_related("user__settings")
+            .select_related("user")
             .prefetch_related("comments", "likes")
-            .prefetch_related("user__profile__friends")
             .annotate(
                 likes_count=Count("likes", distinct=True),
                 comments_count=Count("comments", distinct=True),
@@ -88,7 +87,7 @@ class Index(TemplateView):
         return sanitised_trips
 
     def _get_liked_str_context(self, trips):
-        friends = self.request.user.profile.friends.all()
+        friends = self.request.user.friends.all()
         liked_str_index = {}
         for trip in trips:
             liked_str_index[trip.pk] = trip.get_liked_str(self.request.user, friends)
@@ -110,7 +109,7 @@ class UserProfile(ListView):
         super().setup(*args, **kwargs)
         self.user = get_object_or_404(User, username=self.kwargs["username"])
 
-        if not self.user.profile.is_viewable_by(self.request.user):
+        if not self.user.is_viewable_by(self.request.user):
             raise Http404  # TODO: Use UserPassesTestMixin
 
     def get_queryset(self):
@@ -123,7 +122,6 @@ class UserProfile(ListView):
         # Sanitise trips to be privacy aware
         # TODO: This is done in other views - extract to a mixin
         if not self.user == self.request.user:
-            qs = qs.select_related("user__settings", "user__profile")
             privacy_aware_trips = []
             for trip in qs:
                 if trip.is_viewable_by(self.request.user):
@@ -153,9 +151,9 @@ class UserProfile(ListView):
         context["user"] = self.user
         context["page_title"] = self.get_page_title()
         if self.request.user.is_authenticated:
-            context["dist_format"] = self.request.user.settings.units
+            context["dist_format"] = self.request.user.units
         else:
-            context["dist_format"] = UserSettings.METRIC
+            context["dist_format"] = User.METRIC
 
         # GET parameters for pagination and sorting at the same time
         parameters = self.request.GET.copy()
@@ -165,8 +163,8 @@ class UserProfile(ListView):
         return context
 
     def get_page_title(self):
-        if self.user.profile.page_title:
-            return self.user.profile.page_title
+        if self.user.page_title:
+            return self.user.page_title
         else:
             return f"{self.user.name}'s trips"
 
@@ -187,19 +185,12 @@ class TripDetail(TripContextMixin, DetailView):
     def get_queryset(self):
         qs = (
             Trip.objects.all()
-            .select_related(
-                "user",
-                "user__profile",
-                "user__settings",
-            )
+            .select_related("user")
             .prefetch_related(
                 "comments",
+                "comments__author",
                 "likes",
-                "likes__settings",
-                "likes__profile",
-                "user__profile__friends",
-                "comments__author__profile",
-                "comments__author__settings",
+                "user__friends",
             )
             .annotate(
                 comments_count=Count("comments", distinct=True),
@@ -227,7 +218,7 @@ class TripDetail(TripContextMixin, DetailView):
         context = super().get_context_data(*args, **kwargs)
 
         if self.request.user.is_authenticated:
-            friends = self.request.user.profile.friends.all()
+            friends = self.request.user.friends.all()
         else:
             friends = None
 
@@ -256,7 +247,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def get_initial(self):
         initial = super(TripCreate, self).get_initial()
         initial = initial.copy()
-        initial["cave_country"] = self.request.user.profile.country.name
+        initial["cave_country"] = self.request.user.country.name
         return initial
 
     def get_success_url(self):
@@ -330,17 +321,12 @@ class ReportDetail(TripContextMixin, DetailView):
     def get_queryset(self):
         qs = (
             TripReport.objects.all()
-            .select_related(
-                "user",
-                "user__profile",
-                "user__settings",
-            )
+            .select_related("user")
             .prefetch_related(
                 "comments",
+                "comments__author",
                 "likes",
-                "user__profile__friends",
-                "comments__author__profile",
-                "comments__author__settings",
+                "user__friends",
             )
             .annotate(
                 likes_count=Count("likes", distinct=True),
@@ -430,10 +416,7 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
 
     def get_object(self):
         trip = Trip.objects.filter(pk=self.kwargs["pk"]).prefetch_related(
-            "comments",
-            "comments__author",
-            "comments__author__settings",
-            "comments__author__profile",
+            "comments", "comments__author"
         )
         return trip.first()
 
@@ -473,7 +456,7 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
             trip.likes.add(request.user)
             trip.user_liked = True
 
-        friends = request.user.profile.friends.all()
+        friends = request.user.friends.all()
         liked_str = {trip.pk: trip.get_liked_str(request.user, friends)}
 
         context = {
@@ -549,7 +532,7 @@ def export(request):
     )
 
     # Content
-    units = request.user.settings.units  # Distance units
+    units = request.user.units  # Distance units
     tf = "%Y-%m-%d %H:%M"  # Time format to use
     x = 1
     for t in qs:
@@ -601,7 +584,7 @@ def export(request):
 def user_statistics(request):
     trips = request.user.trips
     chart_units = "m"
-    if request.user.settings.units == UserSettings.IMPERIAL:
+    if request.user.units == User.IMPERIAL:
         chart_units = "ft"
 
     # Generate stats for trips/distances by year
@@ -626,7 +609,7 @@ def user_statistics(request):
         "gte_five_trips": len(trips) >= 5,
         "show_time_charts": show_time_charts,
         "user": request.user,
-        "dist_format": request.user.settings.units,
+        "dist_format": request.user.units,
         "chart_units": chart_units,
         "year0": prev_year_2,
         "year1": prev_year,
@@ -640,7 +623,7 @@ def user_statistics(request):
         "common_cavers_by_time": statistics.common_cavers_by_time(trips),
         "common_clubs": statistics.common_clubs(trips),
         "most_duration": trips.exclude(duration=None).order_by("-duration")[0:10],
-        "averages": statistics.trip_averages(trips, request.user.settings.units),
+        "averages": statistics.trip_averages(trips, request.user.units),
         "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
             0:10
         ],

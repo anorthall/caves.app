@@ -71,7 +71,7 @@
           <div class="col">
             <small class="text-muted">{{ name|capfirst }}</small><br />
             {% if request.user.is_authenticated %}
-              {{ dist|distformat:request.user.settings.units }}
+              {{ dist|distformat:request.user.units }}
             {% else %}
               {{ dist }}
             {% endif %}
@@ -139,7 +139,7 @@
       {% endif %}
     </span>
 
-    {% if user.settings.allow_comments %}
+    {% if user.allow_comments %}
       <span class="float-end d-none d-md-block">
           <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
       </span>

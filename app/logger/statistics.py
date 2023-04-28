@@ -1,10 +1,12 @@
 import humanize
+from django.contrib.auth import get_user_model
 from django.contrib.gis.measure import D, Distance
 from django.db.models import Count
 from django.utils import timezone
-from users.models import UserSettings
 
 from .models import Trip
+
+User = get_user_model()
 
 
 def sort_comma_separated_list(qs, value, limit=10):
@@ -233,7 +235,7 @@ def trip_averages(qs, units):  # noqa C901
                     value, minimum_unit="minutes", format="%.0f"
                 )
             elif type(value) == Distance:
-                if units == UserSettings.IMPERIAL:
+                if units == User.IMPERIAL:
                     processed_results[key] = f"{round(value.ft, 2)}ft"
                 else:
                     processed_results[key] = f"{round(value.m, 2)}m"

@@ -1,7 +1,7 @@
 {% load user %}
 {% load crispy_forms_tags %}
 {% load markdownify %}
-{% if object.user.settings.allow_comments %}
+{% if object.user.allow_comments %}
   <div class="card" id="comments">
     <div class="card-header">
       <div class="d-flex flex-row align-items-center justify-content-between">

@@ -14,7 +14,7 @@ class TimezoneMiddleware:
         """
         if request.user.is_authenticated:
             try:
-                tz = request.user.settings.timezone
+                tz = request.user.timezone
                 timezone.activate(tz)
             except ZoneInfoNotFoundError:  # pragma: no cover
                 timezone.deactivate()

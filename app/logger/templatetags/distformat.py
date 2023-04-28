@@ -1,7 +1,8 @@
 from django import template
-from users.models import UserSettings
+from django.contrib.auth import get_user_model
 
 register = template.Library()
+User = get_user_model()
 
 
 def format_imperial(value, simplify=True):
@@ -25,9 +26,9 @@ def format_metric(value, simplify=True):
 
 
 @register.filter
-def distformat(value, format=UserSettings.METRIC, simplify=True):
+def distformat(value, format=User.METRIC, simplify=True):
     """Format a distance object in accordance with user preferences"""
-    if format == UserSettings.IMPERIAL:
+    if format == User.IMPERIAL:
         return format_imperial(value, simplify=simplify)
     else:
         return format_metric(value, simplify=simplify)

@@ -1,8 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserAdminChangeForm, UserCreationForm
-from .models import CavingUser, FriendRequest, Notification, UserProfile, UserSettings
+from .models import FriendRequest, Notification
+
+User = get_user_model()
 
 
 class NotificationInline(admin.TabularInline):
@@ -33,52 +36,12 @@ class FriendRequestRecdInline(admin.TabularInline):
     max_num = 0
 
 
-class UserProfileInline(admin.StackedInline):
-    model = UserProfile
-    can_delete = False
-    autocomplete_fields = ["friends"]
-    fieldsets = (
-        (
-            None,
-            {
-                "fields": (
-                    "avatar",
-                    "location",
-                    "country",
-                    "clubs",
-                    "page_title",
-                    "friends",
-                    "bio",
-                )
-            },
-        ),
-    )
-
-
-class UserSettingsInline(admin.StackedInline):
-    model = UserSettings
-    can_delete = False
-    fieldsets = (
-        (
-            None,
-            {
-                "fields": (
-                    "privacy",
-                    "units",
-                    "timezone",
-                    "private_notes",
-                    "show_statistics",
-                )
-            },
-        ),
-    )
-
-
-@admin.register(CavingUser)
+@admin.register(User)
 class CavingUserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
     add_form = UserCreationForm
 
+    autocomplete_fields = ["friends"]
     list_display = (
         "email",
         "username",
@@ -103,14 +66,50 @@ class CavingUserAdmin(BaseUserAdmin):
                     "name",
                     "last_login",
                     "last_seen",
+                    "date_joined",
                     "is_active",
                     "is_superuser",
                 )
             },
         ),
+        (
+            "Profile",
+            {
+                "fields": (
+                    "location",
+                    "country",
+                    "clubs",
+                ),
+            },
+        ),
+        (
+            "Social",
+            {
+                "fields": (
+                    "page_title",
+                    "bio",
+                    "friends",
+                ),
+            },
+        ),
+        (
+            "Settings",
+            {
+                "fields": (
+                    "timezone",
+                    "units",
+                    "privacy",
+                    "allow_friend_email",
+                    "allow_friend_username",
+                    "allow_comments",
+                    "public_statistics",
+                    "private_notes",
+                ),
+            },
+        ),
     )
 
-    readonly_fields = ("last_login", "last_seen")
+    readonly_fields = ("last_login", "last_seen", "date_joined")
 
     add_fieldsets = (
         (
@@ -133,12 +132,11 @@ class CavingUserAdmin(BaseUserAdmin):
         "email",
         "username",
         "name",
+        "bio",
     )
     ordering = ("-date_joined",)
     filter_horizontal = ()
     inlines = [
-        UserProfileInline,
-        UserSettingsInline,
         NotificationInline,
         FriendRequestSentInline,
         FriendRequestRecdInline,

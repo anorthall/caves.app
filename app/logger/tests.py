@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils import timezone as tz
 from django.utils.timezone import datetime as dt
 from django.utils.timezone import timedelta as td
-from users.models import Notification, UserSettings
+from users.models import Notification
 
 from .models import Comment, Trip, TripReport
 from .templatetags import distformat
@@ -205,8 +205,8 @@ class TripModelUnitTests(TestCase):
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
 
-        self.user.settings.privacy = UserSettings.PUBLIC
-        self.user.settings.save()
+        self.user.privacy = User.PUBLIC
+        self.user.save()
         self.assertFalse(trip_private.is_viewable_by(self.user2))
         self.assertTrue(trip_default.is_viewable_by(self.user2))
         self.assertTrue(trip_public.is_viewable_by(self.user2))
@@ -217,8 +217,8 @@ class TripModelUnitTests(TestCase):
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
 
-        self.user.settings.privacy = UserSettings.PRIVATE
-        self.user.settings.save()
+        self.user.privacy = User.PRIVATE
+        self.user.save()
         self.assertFalse(trip_private.is_viewable_by(self.user2))
         self.assertFalse(trip_default.is_viewable_by(self.user2))
         self.assertTrue(trip_public.is_viewable_by(self.user2))
@@ -229,8 +229,8 @@ class TripModelUnitTests(TestCase):
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
 
-        self.user.settings.privacy = UserSettings.FRIENDS
-        self.user.settings.save()
+        self.user.privacy = User.FRIENDS
+        self.user.save()
         self.assertFalse(trip_private.is_viewable_by(self.user2))
         self.assertFalse(trip_default.is_viewable_by(self.user2))
         self.assertTrue(trip_public.is_viewable_by(self.user2))
@@ -241,11 +241,11 @@ class TripModelUnitTests(TestCase):
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
 
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
 
-        self.user.settings.privacy = UserSettings.FRIENDS
-        self.user.settings.save()
+        self.user.privacy = User.FRIENDS
+        self.user.save()
         self.assertFalse(trip_private.is_viewable_by(self.user2))
         self.assertTrue(trip_default.is_viewable_by(self.user2))
         self.assertTrue(trip_public.is_viewable_by(self.user2))
@@ -373,13 +373,13 @@ class TripModelUnitTests(TestCase):
 
         user4, user5 = users[4], users[5]
 
-        user4.profile.friends.add(self.user)
-        self.user.profile.friends.add(user4)
+        user4.friends.add(self.user)
+        self.user.friends.add(user4)
 
-        user5.profile.friends.add(self.user)
-        self.user.profile.friends.add(user5)
+        user5.friends.add(self.user)
+        self.user.friends.add(user5)
 
-        result = self.trip.get_liked_str(self.user, self.user.profile.friends.all())
+        result = self.trip.get_liked_str(self.user, self.user.friends.all())
         self.assertEqual(result, "Liked by Test User 4, Test User 5, and 8 others")
 
     def test_trip_number_function(self):
@@ -957,9 +957,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
             name="User Name",
         )
         self.user.is_active = True
+        self.user.privacy = User.PUBLIC
         self.user.save()
-        self.user.settings.privacy = UserSettings.PUBLIC
-        self.user.settings.save()
 
         self.user2 = User.objects.create_user(
             email="user2@caves.app",
@@ -968,9 +967,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
             name="User 2 Name",
         )
         self.user2.is_active = True
+        self.user2.privacy = User.PUBLIC
         self.user2.save()
-        self.user2.settings.privacy = UserSettings.PUBLIC
-        self.user2.settings.save()
 
         for i in range(1, 200):
             Trip.objects.create(
@@ -1019,8 +1017,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
     def test_user_profile_page_title(self):
         """Test the user profile page title"""
         self.client.force_login(self.user)
-        self.user.profile.page_title = "Test Page Title 123"
-        self.user.profile.save()
+        self.user.page_title = "Test Page Title 123"
+        self.user.save()
 
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
@@ -1029,8 +1027,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
     def test_user_profile_page_bio(self):
         """Test the user profile page bio"""
         self.client.force_login(self.user)
-        self.user.profile.bio = "Test bio 123"
-        self.user.profile.save()
+        self.user.bio = "Test bio 123"
+        self.user.save()
 
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
@@ -1064,8 +1062,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
             trip.privacy = Trip.FRIENDS
             trip.save()
 
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
 
         self.client.force_login(self.user2)
         response = self.client.get(reverse("log:user", args=[self.user.username]))
@@ -1090,8 +1088,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertEqual(response.status_code, 404)
 
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
@@ -1103,23 +1101,23 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
         trip.privacy = Trip.DEFAULT
         trip.save()
-        self.user.settings.privacy = UserSettings.PRIVATE
-        self.user.settings.save()
+        self.user.privacy = User.PRIVATE
+        self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertEqual(response.status_code, 404)
 
-        self.user.settings.privacy = UserSettings.PUBLIC
-        self.user.settings.save()
+        self.user.privacy = User.PUBLIC
+        self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertEqual(response.status_code, 200)
 
-        self.user.settings.privacy = UserSettings.FRIENDS
-        self.user.settings.save()
+        self.user.privacy = User.FRIENDS
+        self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertContains(response, trip.cave_name)
 
-        self.user.settings.privacy = UserSettings.PUBLIC
-        self.user.settings.save()
+        self.user.privacy = User.PUBLIC
+        self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertContains(response, trip.cave_name)
 
@@ -1128,13 +1126,13 @@ class SocialFunctionalityIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
 
-        self.user.settings.privacy = UserSettings.FRIENDS
-        self.user.settings.save()
+        self.user.privacy = User.FRIENDS
+        self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertEqual(response.status_code, 404)
 
-        self.user.settings.privacy = UserSettings.PRIVATE
-        self.user.settings.save()
+        self.user.privacy = User.PRIVATE
+        self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertEqual(response.status_code, 404)
 
@@ -1145,41 +1143,41 @@ class SocialFunctionalityIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.username)
 
-        self.user.settings.privacy = UserSettings.PRIVATE
-        self.user.settings.save()
+        self.user.privacy = User.PRIVATE
+        self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 404)
 
-        self.user.settings.privacy = UserSettings.FRIENDS
-        self.user.settings.save()
+        self.user.privacy = User.FRIENDS
+        self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 404)
 
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.username)
 
-        self.user.settings.privacy = UserSettings.PUBLIC
-        self.user.settings.save()
+        self.user.privacy = User.PUBLIC
+        self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.username)
 
         self.client.logout()
-        self.user.settings.privacy = UserSettings.PRIVATE
-        self.user.settings.save()
+        self.user.privacy = User.PRIVATE
+        self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 404)
 
-        self.user.settings.privacy = UserSettings.FRIENDS
-        self.user.settings.save()
+        self.user.privacy = User.FRIENDS
+        self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 404)
 
-        self.user.settings.privacy = UserSettings.PUBLIC
-        self.user.settings.save()
+        self.user.privacy = User.PUBLIC
+        self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.username)
@@ -1201,8 +1199,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
     def test_add_as_friend_link_does_not_appear_when_disabled(self):
         """Test that the add as friend link does not appear when disabled"""
-        self.user.settings.allow_friend_username = False
-        self.user.settings.save()
+        self.user.allow_friend_username = False
+        self.user.save()
 
         self.client.force_login(self.user2)
         trip = Trip.objects.filter(user=self.user).first()
@@ -1212,8 +1210,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
     def test_add_as_friend_link_does_not_appear_when_already_friends(self):
         """Test that the add as friend link does not appear when already friends"""
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
 
         self.client.force_login(self.user2)
         trip = Trip.objects.filter(user=self.user).first()
@@ -1234,8 +1232,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
     def test_comments_do_not_appear_on_trip_detail_page_when_disabled(self):
         """Test that comments do not appear on the trip detail page when disabled"""
-        self.user.settings.allow_comments = False
-        self.user.settings.save()
+        self.user.allow_comments = False
+        self.user.save()
 
         trip = Trip.objects.filter(user=self.user).first()
         comment = Comment.objects.create(
@@ -1265,8 +1263,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
     def test_comments_do_not_appear_on_trip_report_page_when_disabled(self):
         """Test that comments do not appear on the trip report page when disabled"""
-        self.user.settings.allow_comments = False
-        self.user.settings.save()
+        self.user.allow_comments = False
+        self.user.save()
 
         report = TripReport.objects.create(
             user=self.user,
@@ -1298,8 +1296,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
     def test_user_profile_is_not_linked_on_comments_when_private(self):
         """Test that the user profile is not linked on comments when private"""
-        self.user.settings.privacy = UserSettings.PRIVATE
-        self.user.settings.save()
+        self.user.privacy = User.PRIVATE
+        self.user.save()
 
         trip = Trip.objects.filter(user=self.user).first()
         trip.privacy = Trip.PUBLIC
@@ -1576,8 +1574,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
     def test_adding_comment_on_an_object_where_the_user_disallows_comments(self):
         """Test users cannot comment where the user disallows comments"""
-        self.user.settings.allow_comments = False
-        self.user.settings.save()
+        self.user.allow_comments = False
+        self.user.save()
         trip = Trip.objects.filter(user=self.user).first()
         self.client.force_login(self.user2)
 
@@ -1618,8 +1616,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
         response = self.client.get(
             reverse("log:report_detail", args=[report.pk]),
         )
@@ -1676,12 +1674,12 @@ class TemplateTagUnitTests(TestCase):
 
     def test_distformat_templatetag_with_metric_value(self):
         """Test the distformat() function with a metric value"""
-        metric = UserSettings.METRIC
+        metric = User.METRIC
         self.assertEqual(distformat.distformat(D(ft=1000), format=metric), "305m")
 
     def test_distformat_templatetag_with_imperial_value(self):
         """Test the distformat() function with an imperial value"""
-        imperial = UserSettings.IMPERIAL
+        imperial = User.IMPERIAL
         self.assertEqual(distformat.distformat(D(km=100), format=imperial), "62.14mi")
 
 

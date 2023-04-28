@@ -44,14 +44,14 @@ class UserUnitTests(TestCase):
         user = User.objects.get(email="user@caves.app")
 
         # Test where Privacy is Private
-        user.settings.privacy = user.settings.PRIVATE
-        self.assertEqual(user.settings.privacy, user.settings.PRIVATE)
+        user.privacy = user.PRIVATE
+        self.assertEqual(user.privacy, user.PRIVATE)
         self.assertTrue(user.is_private)
         self.assertFalse(user.is_public)
 
         # Test where Privacy is Public
-        user.settings.privacy = user.settings.PUBLIC
-        self.assertEqual(user.settings.privacy, user.settings.PUBLIC)
+        user.privacy = user.PUBLIC
+        self.assertEqual(user.privacy, user.PUBLIC)
         self.assertFalse(user.is_private)
         self.assertTrue(user.is_public)
 
@@ -109,18 +109,10 @@ class UserUnitTests(TestCase):
 
     def test_user_cannot_have_self_as_friend(self):
         """Test that a user cannot have themselves as a friend"""
-        self.user.profile.friends.add(self.user)
-        self.user.profile.save()
-        self.user.profile.refresh_from_db()
-        self.assertEqual(self.user.profile.friends.count(), 0)
-
-    def test_user_settings_str(self):
-        """Test the __str__ method of the UserSettings model"""
-        self.assertEqual(str(self.user.settings), f"Settings for {self.user}")
-
-    def test_user_profile_str(self):
-        """Test the __str__ method of the UserProfile model"""
-        self.assertEqual(str(self.user.profile), f"Profile for {self.user}")
+        self.user.friends.add(self.user)
+        self.user.save()
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.friends.count(), 0)
 
     def test_user_get_short_name_function(self):
         """Test the get_short_name function of the CavingUser model"""
@@ -471,7 +463,7 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, self.user.name)
         self.assertContains(response, self.user.email)
         self.assertContains(response, self.user.username)
-        self.assertContains(response, self.user.settings.privacy)
+        self.assertContains(response, self.user.privacy)
         self.assertContains(response, "Europe/London")
         self.assertContains(
             response, "If you select a trip to be public, the notes will be hidden."
@@ -492,7 +484,7 @@ class UserIntegrationTestCase(TestCase):
                 "privacy": "Public",
                 "timezone": "US/Central",
                 "units": "Imperial",
-                "show_statistics": True,
+                "public_statistics": True,
                 "bio": "This is a bio for testing.",
             },
             follow=True,
@@ -507,12 +499,12 @@ class UserIntegrationTestCase(TestCase):
 
         self.assertEqual(self.user.name, "New")
         self.assertEqual(self.user.username, "newusername")
-        self.assertEqual(self.user.profile.location, "Testing New Location")
-        self.assertEqual(self.user.settings.privacy, self.user.settings.PUBLIC)
-        self.assertEqual(self.user.settings.timezone, ZoneInfo("US/Central"))
-        self.assertEqual(self.user.settings.units, self.user.settings.IMPERIAL)
-        self.assertTrue(self.user.settings.show_statistics)
-        self.assertEqual(self.user.profile.bio, "This is a bio for testing.")
+        self.assertEqual(self.user.location, "Testing New Location")
+        self.assertEqual(self.user.privacy, self.user.PUBLIC)
+        self.assertEqual(self.user.timezone, ZoneInfo("US/Central"))
+        self.assertEqual(self.user.units, self.user.IMPERIAL)
+        self.assertTrue(self.user.public_statistics)
+        self.assertEqual(self.user.bio, "This is a bio for testing.")
 
     def test_submit_invalid_updates_to_profile(self):
         """Test submitting invalid updates to a user's profile"""
@@ -546,8 +538,8 @@ class UserIntegrationTestCase(TestCase):
     def test_user_distance_settings_are_applied(self):
         """Test user distance settings are applied to distances on the site"""
         self.client.force_login(self.user)
-        self.user.settings.units = self.user.settings.IMPERIAL
-        self.user.settings.save()
+        self.user.units = self.user.IMPERIAL
+        self.user.save()
 
         trip = Trip.objects.create(
             user=self.user,
@@ -566,8 +558,8 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, "3281ft")
 
         # Test metric
-        self.user.settings.units = self.user.settings.METRIC
-        self.user.settings.save()
+        self.user.units = self.user.METRIC
+        self.user.save()
 
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertEqual(response.status_code, 200)
@@ -641,8 +633,8 @@ class FriendsIntegrationTests(TestCase):
     def test_sending_a_friend_request_by_email(self):
         """Test sending a friend request by email"""
         self.client.force_login(self.user)
-        self.user2.settings.allow_friend_email = True
-        self.user2.settings.save()
+        self.user2.allow_friend_email = True
+        self.user2.save()
         self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
         self.assertEqual(FriendRequest.objects.count(), 1)
         self.assertEqual(FriendRequest.objects.first().user_from, self.user)
@@ -651,16 +643,16 @@ class FriendsIntegrationTests(TestCase):
     def test_friend_request_disallowed_by_email(self):
         """Test sending a friend request by email is disallowed"""
         self.client.force_login(self.user)
-        self.user2.settings.allow_friend_email = False
-        self.user2.settings.save()
+        self.user2.allow_friend_email = False
+        self.user2.save()
         self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
         self.assertEqual(FriendRequest.objects.count(), 0)
 
     def test_friend_request_disallowed_by_username(self):
         """Test sending a friend request by username is disallowed"""
         self.client.force_login(self.user)
-        self.user2.settings.allow_friend_username = False
-        self.user2.settings.save()
+        self.user2.allow_friend_username = False
+        self.user2.save()
         self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
         self.assertEqual(FriendRequest.objects.count(), 0)
 
@@ -676,8 +668,8 @@ class FriendsIntegrationTests(TestCase):
     def test_user_cannot_add_a_friend_they_are_already_friends_with(self):
         """Test a user cannot add a friend they are already friends with"""
         self.client.force_login(self.user)
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
         response = self.client.post(
             reverse("users:friend_add"), {"user": self.user2.username}, follow=True
         )
@@ -699,8 +691,8 @@ class FriendsIntegrationTests(TestCase):
             )
         )
         self.assertEqual(FriendRequest.objects.count(), 0)
-        self.assertIn(self.user2, self.user.profile.friends.all())
-        self.assertIn(self.user, self.user2.profile.friends.all())
+        self.assertIn(self.user2, self.user.friends.all())
+        self.assertIn(self.user, self.user2.friends.all())
 
     def test_creating_a_duplicate_friend_request(self):
         """Test creating a duplicate friend request"""
@@ -766,11 +758,11 @@ class FriendsIntegrationTests(TestCase):
     def test_removing_a_friend(self):
         """Test removing a friend"""
         self.client.force_login(self.user)
-        self.user.profile.friends.add(self.user2)
-        self.user2.profile.friends.add(self.user)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
         self.client.get(reverse("users:friend_remove", args=[self.user2.username]))
-        self.assertNotIn(self.user2, self.user.profile.friends.all())
-        self.assertNotIn(self.user, self.user2.profile.friends.all())
+        self.assertNotIn(self.user2, self.user.friends.all())
+        self.assertNotIn(self.user, self.user2.friends.all())
 
     def test_friends_page_with_get_parameters_for_user_to_add(self):
         """Test that the friends page works when a user is specified"""
