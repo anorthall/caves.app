@@ -16,7 +16,7 @@ class UserFactory(DjangoModelFactory):
     email = factory.sequence(lambda n: "user%d@caves.app" % n)
     name = factory.Faker("name")
     password = None
-    is_active = factory.Faker("pybool", truth_probability=80)
+    is_active = factory.Faker("pybool", truth_probability=90)
     bio = factory.Faker("text", max_nb_chars=500)
     location = factory.Faker("city")
     clubs = factory.LazyFunction(generate_club)

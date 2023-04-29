@@ -166,7 +166,7 @@ class TripFactory(DjangoModelFactory):
     class Meta:
         model = Trip
 
-    user = factory.Iterator(get_user_model().objects.all())
+    user = factory.Iterator(get_user_model().objects.filter(is_active=True))
     cave_name = factory.LazyFunction(_generate_cave_name)
     cave_region = factory.Faker("city")
     cave_country = factory.Faker("country")
