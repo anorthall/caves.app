@@ -132,13 +132,13 @@ class FriendListView(LoginRequiredMixin, TemplateView):
                 "user_from",
                 "user_to",
             )
-            .prefetch_related(  # TODO: Is this required?
+            .prefetch_related(
                 "user_from__friends",
                 "user_to__friends",
             )
         )
 
-        friends = request.user.friends.all()
+        friends = request.user.friends.all().prefetch_related("friends")
         context = {
             "friends_list": friends,
             "friend_requests": friend_requests,
