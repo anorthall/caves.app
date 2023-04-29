@@ -13,7 +13,7 @@ from timezone_field import TimeZoneField
 
 
 class CavingUserManager(BaseUserManager):
-    def create_user(self, email, username, name, password=None):
+    def create_user(self, email, username, name, password=None, **kwargs):
         """Creates a CavingUser"""
         if not email:
             raise ValueError("Users must have an email address")
@@ -29,6 +29,7 @@ class CavingUserManager(BaseUserManager):
             email=self.normalize_email(email),
             username=username.lower(),
             name=name,
+            **kwargs,
         )
 
         if password:
@@ -63,7 +64,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = ["username", "name"]
 
     email = models.EmailField(
         "email address",
@@ -78,7 +79,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "address for your logbook.",
     )
     name = models.CharField(
-        max_length=25,
+        max_length=35,
         help_text="Your name as you would like it to appear on your public profile.",
         default="Caver",
         validators=[MinLengthValidator(3)],
