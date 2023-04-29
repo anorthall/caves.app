@@ -67,7 +67,7 @@ class Index(TemplateView):
         trips = (
             Trip.objects.filter(Q(user__in=friends) | Q(user=self.request.user))
             .select_related("user")
-            .prefetch_related("comments", "likes")
+            .prefetch_related("comments", "likes", "user__friends")
             .annotate(
                 likes_count=Count("likes", distinct=True),
                 comments_count=Count("comments", distinct=True),
