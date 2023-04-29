@@ -11,14 +11,14 @@ class Command(BaseCommand):
         parser.add_argument(
             "--users",
             type=int,
-            default=50,
+            default=25,
             help="Number of users to generate",
         )
 
         parser.add_argument(
             "--trips",
             type=int,
-            default=2000,
+            default=6000,
             help="Number of trips to generate",
         )
 
