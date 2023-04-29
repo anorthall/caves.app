@@ -185,11 +185,12 @@ class TripDetail(TripContextMixin, DetailView):
     def get_queryset(self):
         qs = (
             Trip.objects.all()
-            .select_related("user")
+            .select_related("user", "report")
             .prefetch_related(
                 "comments",
                 "comments__author",
                 "likes",
+                "likes__friends",
                 "user__friends",
             )
             .annotate(
@@ -321,11 +322,10 @@ class ReportDetail(TripContextMixin, DetailView):
     def get_queryset(self):
         qs = (
             TripReport.objects.all()
-            .select_related("user")
+            .select_related("user", "trip")
             .prefetch_related(
                 "comments",
                 "comments__author",
-                "likes",
                 "user__friends",
             )
             .annotate(
