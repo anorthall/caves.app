@@ -34,7 +34,6 @@ class TripAdmin(admin.ModelAdmin):
         "start",
     )
     list_filter = (
-        "user__email",
         "type",
         "privacy",
     )
