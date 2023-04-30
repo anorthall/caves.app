@@ -9,8 +9,6 @@ from faker import Faker
 
 from .models import Trip
 
-# TODO: Allow configuration of seed
-factory.random.reseed_random(0)
 fake = Faker()
 
 # Configuration for maximum length of longer trips

@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from factory.django import DjangoModelFactory
 from logger.factories import generate_club
 
-factory.random.reseed_random(0)  # TODO: Allow configuration of seed
 User = get_user_model()
 
 
