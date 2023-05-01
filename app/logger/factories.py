@@ -7,7 +7,7 @@ from factory import random
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from .models import Trip
+from .models import Comment, Trip
 
 fake = Faker()
 
@@ -254,3 +254,12 @@ class TripFactory(DjangoModelFactory):
     def _adjust_kwargs(cls, **kwargs):
         kwargs["cave_name"] = kwargs["cave_name"].replace(".", "")
         return kwargs
+
+
+class CommentFactory(DjangoModelFactory):
+    class Meta:
+        model = Comment
+
+    author = factory.Iterator(get_user_model().objects.filter(is_active=True))
+    content_object = factory.Iterator(Trip.objects.filter(user__allow_comments=True))
+    content = factory.Faker("text", max_nb_chars=400)

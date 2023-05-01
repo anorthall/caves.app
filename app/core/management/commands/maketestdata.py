@@ -4,7 +4,7 @@ import django.db
 import factory.random
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from logger.factories import TripFactory
+from logger.factories import CommentFactory, TripFactory
 from users.factories import UserFactory
 
 User = get_user_model()
@@ -48,23 +48,34 @@ class Command(BaseCommand):
             help="Do not generate likes for trips",
         )
 
+        parser.add_argument(
+            "--no-comments",
+            action="store_true",
+            help="Do not generate comments for trips or trip reports",
+        )
+
     def handle(self, *args, **options):
         # Handle options
         num_users = options["users"]
         num_trips = options["trips"]
         num_friends = options["friends"]
 
-        generate_likes = True
+        with_likes = True
         if options["no_likes"]:
-            generate_likes = False
+            with_likes = False
 
-        random.seed(options["seed"])
-        factory.random.reseed_random(options["seed"])
+        with_comments = True
+        if options["no_comments"]:
+            with_comments = False
+
+        if options["seed"] != 0:
+            random.seed(options["seed"])
+            factory.random.reseed_random(options["seed"])
 
         # Generate users, friendships and trips
         user_pks = _generate_users(self, num_users)
         _generate_friendships(self, num_friends, user_pks)
-        trips = _generate_trips(self, num_trips, user_pks, generate_likes)
+        trips = _generate_trips(self, num_trips, user_pks, with_likes, with_comments)
 
         self.stdout.write(
             f"Done! Generated {len(user_pks)} users and {len(trips)} trips."
@@ -98,7 +109,9 @@ def _generate_users(handler, num_users):
     return user_pks
 
 
-def _generate_trips(handler, num_trips, user_pks=None, with_likes=True):
+def _generate_trips(
+    handler, num_trips, user_pks=None, with_likes=True, with_comments=True
+):
     """Generate num_trips amount of trips amongst the users specified"""
     if user_pks is None:
         users = list(User.objects.all())
@@ -116,6 +129,9 @@ def _generate_trips(handler, num_trips, user_pks=None, with_likes=True):
 
         if with_likes:
             _add_likes_to_trip(trip, users)
+
+        if with_comments:
+            _add_comments_to_object(trip)
 
     return trips
 
@@ -189,3 +205,12 @@ def _add_likes_to_trip(trip, users):
 
     for user in users_that_will_like_the_trip:
         trip.likes.add(user)
+
+
+def _add_comments_to_object(object, num_comments=None):
+    """Add comments to an object"""
+    if num_comments is None:
+        num_comments = random.randint(0, 6)
+
+    for _ in range(num_comments):
+        CommentFactory(content_object=object)
