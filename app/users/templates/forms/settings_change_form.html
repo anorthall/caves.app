@@ -1,12 +1,10 @@
 {% load widget_tweaks %}
 
-<!-- Hidden fields -->
 {% for hidden_field in form.hidden_fields %}
   {{ hidden_field }}
 {% endfor %}
 
 <div class="row mb-3 px-2 g-3">
-  <!-- Privacy -->
   <div class="col-12">
     <label class="form-label" for="{{ form.privacy.auto_id }}">
       Privacy
@@ -26,7 +24,6 @@
     </div>
   </div>
 
-  <!-- Units -->
   <div class="col-12">
     <label class="form-label" for="{{ form.units.auto_id }}">
       Units
@@ -46,7 +43,6 @@
     </div>
   </div>
 
-  <!-- Timezone -->
   <div class="col-12">
     <label class="form-label" for="{{ form.timezone.auto_id }}">
       Timezone
@@ -68,7 +64,6 @@
 </div>
 
 <div class="row mb-3 px-2 g-3">
-  <!-- Statistics checkbox -->
   <div class="col-12 col-md-6">
     <div class="form-check">
       {% if form.is_bound %}
@@ -90,7 +85,6 @@
     </div>
   </div>
 
-  <!-- Private notes checkbox -->
   <div class="col-12 col-md-6">
     <div class="form-check">
       {% if form.is_bound %}
@@ -112,7 +106,6 @@
     </div>
   </div>
 
-  <!-- Friend requests by email checkbox -->
   <div class="col-12 col-md-6">
     <div class="form-check">
       {% if form.is_bound %}
@@ -134,7 +127,6 @@
     </div>
   </div>
 
-  <!-- Friend requests by username checkbox -->
   <div class="col-12 col-md-6">
     <div class="form-check">
       {% if form.is_bound %}
@@ -156,7 +148,6 @@
     </div>
   </div>
 
-  <!-- Allow comments checkbox -->
   <div class="col-12 col-md-6">
     <div class="form-check">
       {% if form.is_bound %}

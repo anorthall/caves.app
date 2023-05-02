@@ -2,12 +2,12 @@
 {% block title %}Add a trip{% endblock %}
 
 {% block main %}
-<h1 class="page-title">Add a trip</h1>
+  <h1 class="page-title">Add a trip</h1>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button class="mt-3 w-100 btn btn-lg btn-success" type="submit" name="save" value="save">Save</button>
-  <button class="mt-3 w-100 btn btn-lg btn-secondary" type="submit" name="addanother" value="addanother">Save and add another</button>
-</form>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button class="mt-3 w-100 btn btn-lg btn-success" type="submit" name="save" value="save">Save</button>
+    <button class="mt-3 w-100 btn btn-lg btn-secondary" type="submit" name="addanother" value="addanother">Save and add another</button>
+  </form>
 {% endblock main %}

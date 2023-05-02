@@ -2,10 +2,10 @@
 {% load get %}
 <span id="like-button{{ trip.pk }}">
   <a class="text-decoration-none"
-    hx-get="{% url 'log:trip_like' trip.pk %}"
-    hx-target="#like-button{{ trip.pk }}"
-    hx-swap="outerHTML"
-    href="#">
+     hx-get="{% url 'log:trip_like' trip.pk %}"
+     hx-target="#like-button{{ trip.pk }}"
+     hx-swap="outerHTML"
+     href="#">
     {% if trip.user_liked %}
       <span class="text-primary">
         <i class="bi bi-hand-thumbs-up-fill"></i>

@@ -4,35 +4,35 @@
 
 
 {% block main %}
-<div class="card">
-  <div class="card-header mb-2">
-    {% include "includes/trip_header.html" %}
-  </div>
+  <div class="card">
+    <div class="card-header mb-2">
+      {% include "includes/trip_header.html" %}
+    </div>
 
-  <div class="card-body">
-    {{ tripreport.content|safe }}
-  </div>
+    <div class="card-body">
+      {{ tripreport.content|safe }}
+    </div>
 
 
-  <div class="card-footer">
-    <div class="row text-muted">
-      <div class="col-12 col-lg-6 text-start">
-        <small>
-          Created: {{ tripreport.added|date:"jS M Y" }}
-        </small>
-      </div>
-      <div class="col text-end d-none d-lg-block">
-        <small>
-          Updated: {{ tripreport.updated|date:"jS M Y" }}
-        </small>
+    <div class="card-footer">
+      <div class="row text-muted">
+        <div class="col-12 col-lg-6 text-start">
+          <small>
+            Created: {{ tripreport.added|date:"jS M Y" }}
+          </small>
+        </div>
+        <div class="col text-end d-none d-lg-block">
+          <small>
+            Updated: {{ tripreport.updated|date:"jS M Y" }}
+          </small>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-{% with tripreport as object %}
-  <div class="mt-4"></div>
-  {% include "includes/comments.html" %}
-{% endwith %}
+  {% with tripreport as object %}
+    <div class="mt-4"></div>
+    {% include "includes/comments.html" %}
+  {% endwith %}
 
 {% endblock main %}

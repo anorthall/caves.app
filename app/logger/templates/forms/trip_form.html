@@ -2,12 +2,10 @@
 {% load tz %}
 {% get_current_timezone as TIME_ZONE %}
 
-<!-- Hidden fields -->
 {% for hidden_field in form.hidden_fields %}
   {{ hidden_field }}
 {% endfor %}
 
-<!-- Cave name -->
 <div class="row mb-3 g-3">
   <div class="col">
     <label class="form-label fw-bold" for="{{ form.cave_name.auto_id }}">
@@ -29,10 +27,8 @@
   </div>
 </div>
 
-<!-- Cave region/country block -->
 <div class="row mb-3 g-3">
   <div class="col-xl-6">
-    <!-- Cave region -->
     <label class="form-label" for="{{ form.cave_region.auto_id }}">
       Cave region
     </label>
@@ -52,7 +48,6 @@
   </div>
 
   <div class="col-xl-6">
-    <!-- Cave country -->
     <label class="form-label" for="{{ form.cave_country.auto_id }}">
       Cave country
     </label>
@@ -72,7 +67,6 @@
   </div>
 </div>
 
-<!-- Cave website -->
 <div class="row mb-3 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.cave_url.auto_id }}">
@@ -95,13 +89,10 @@
 </div>
 
 
-<!-- Trip details title -->
 <h4 class="page-title mt-4">Trip details</h3>
 
-<!-- Start/end time block-->
 <div class="row mb-3 g-3">
   <div class="col-xl-6">
-    <!-- Start time -->
     <label class="form-label fw-bold" for="{{ form.start.auto_id }}">
       Start
     </label>
@@ -122,7 +113,6 @@
   </div>
 
   <div class="col-xl-6">
-    <!-- End time -->
     <label class="form-label" for="{{ form.end.auto_id }}">
       End
     </label>
@@ -143,10 +133,8 @@
   </div>
 </div>
 
-<!-- Trip type/privacy block -->
 <div class="row mb-3 g-3">
   <div class="col-xl-6">
-    <!-- Trip type -->
     <label class="form-label" for="{{ form.type.auto_id }}">
       Type
     </label>
@@ -166,7 +154,6 @@
   </div>
 
   <div class="col-xl-6">
-    <!-- Privacy -->
     <label class="form-label" for="{{ form.privacy.auto_id }}">
       Who can view this trip?
     </label>
@@ -186,10 +173,8 @@
   </div>
 </div>
 
-<!-- Clubs/Expedition block -->
 <div class="row mb-3 g-3">
   <div class="col-xl-6">
-    <!-- Clubs -->
     <label class="form-label" for="{{ form.clubs.auto_id }}">
       Club(s)
     </label>
@@ -209,7 +194,6 @@
   </div>
 
   <div class="col-xl-6">
-    <!-- Expedition -->
     <label class="form-label" for="{{ form.expedition.auto_id }}">
       Expedition
     </label>
@@ -229,7 +213,6 @@
   </div>
 </div>
 
-<!-- Cavers -->
 <div class="row mb-3 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.cavers.auto_id }}">
@@ -252,19 +235,15 @@
 </div>
 
 
-<!-- Distances title -->
 <h4 class="page-title mt-4">Distances</h3>
-
 <p class="text-muted mb-3">
   The unit of measurement must be entered in the field, for example <code>500ft</code> or <code>150m</code>.
   Distances recorded are counted towards your overall statistics, unless they are added to a 'Surface' trip, in
   which case they will be ignored. Supported units: <code>m km cm ft yd inch mi furlong</code>.
 </p>
 
-<!-- Horizontal/vertical distance block -->
 <div class="row mb-3 g-3">
   <div class="col-xl-4">
-    <!-- Horizontal -->
     <label class="form-label" for="{{ form.horizontal_dist.auto_id }}">
       Horizontal
     </label>
@@ -284,7 +263,6 @@
   </div>
 
   <div class="col-xl-4">
-    <!-- Vertical down -->
     <label class="form-label" for="{{ form.vert_dist_down.auto_id }}">
       Down
     </label>
@@ -304,7 +282,6 @@
   </div>
 
   <div class="col-xl-4">
-    <!-- Vertical up -->
     <label class="form-label" for="{{ form.vert_dist_up.auto_id }}">
       Up
     </label>
@@ -324,10 +301,8 @@
   </div>
 </div>
 
-<!-- Survey/resurvey/aid climbing distance block -->
 <div class="row mb-3 g-3">
   <div class="col-xl-4">
-    <!-- Survey dist -->
     <label class="form-label" for="{{ form.surveyed_dist.auto_id }}">
       Surveyed
     </label>
@@ -347,7 +322,6 @@
   </div>
 
   <div class="col-xl-4">
-    <!-- Resurvey dist -->
     <label class="form-label" for="{{ form.resurveyed_dist.auto_id }}">
       Resurveyed
     </label>
@@ -367,7 +341,6 @@
   </div>
 
   <div class="col-xl-4">
-    <!-- Aid climbing dist -->
     <label class="form-label" for="{{ form.aid_dist.auto_id }}">
       Aid climbed
     </label>
@@ -388,10 +361,7 @@
 </div>
 
 
-<!-- Notes title -->
 <h4 class="page-title mt-4">Notes</h3>
-
-<!-- Notes -->
 {% if form.is_bound %}
   {% if form.notes.errors %}
     {% render_field form.notes class="form-control is-invalid" %}

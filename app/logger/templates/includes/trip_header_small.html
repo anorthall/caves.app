@@ -1,5 +1,6 @@
 {% load user %}
-<div data-href="{% url "log:trip_detail" trip.pk %}" class="d-none d-md-flex flex-row align-items-center justify-content-between">
+<div data-href="{% url "log:trip_detail" trip.pk %}"
+     class="d-none d-md-flex flex-row align-items-center justify-content-between">
   <div class="d-flex flex-column align-items-start justify-content-center">
     <h1 class="cave-name fs-4">{{ trip.cave_name }}</h1>
     <small class="fw-lighter">

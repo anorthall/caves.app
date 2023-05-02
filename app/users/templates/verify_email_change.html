@@ -3,34 +3,34 @@
 {% block sidebar %}{% include "includes/sidebar_users.html" %}{% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-header">
-    Verify email change
+  <div class="card">
+    <div class="card-header">
+      Verify email change
+    </div>
+
+    <div class="card-body">
+      <p class="lead">
+        You're almost there! Just one more thing - you need to verify your
+        new email address before it is updated on your account.
+      </p>
+
+      <p>
+        Please check your
+        email for a unique code which has been sent to you. You can then click
+        the link in the email, or enter the code into the box below. If you
+        did not receive the code, and it isn't in your email spam folder, please
+        submit the <a href="{% url 'users:email' %}">email
+          change</a> form again to resend it. Alternatively, send me an
+        <a href="mailto:admin@caves.app">email</a>
+        and I will be able to help.
+      </p>
+
+      <br />
+
+      <form method="get">
+        {{ form }}
+        <button class="mt-3 w-100 btn btn-lg btn-primary" type="submit">Verify</button>
+      </form>
+    </div>
   </div>
-
-  <div class="card-body">
-    <p class="lead">
-      You're almost there! Just one more thing - you need to verify your
-      new email address before it is updated on your account.
-    </p>
-
-    <p>
-      Please check your
-      email for a unique code which has been sent to you. You can then click
-      the link in the email, or enter the code into the box below. If you
-      did not receive the code, and it isn't in your email spam folder, please
-      submit the <a href="{% url 'users:email' %}">email
-      change</a> form again to resend it. Alternatively, send me an
-      <a href="mailto:admin@caves.app">email</a>
-      and I will be able to help.
-    </p>
-
-    <br />
-
-    <form method="get">
-      {{ form }}
-      <button class="mt-3 w-100 btn btn-lg btn-primary" type="submit">Verify</button>
-    </form>
-  </div>
-</div>
 {% endblock main %}

@@ -1,6 +1,5 @@
 {% load widget_tweaks %}
 
-<!-- Hidden fields -->
 {% for hidden_field in form.hidden_fields %}
   {{ hidden_field }}
 {% endfor %}
@@ -69,7 +68,6 @@
 
 <hr class="my-4" />
 
-<!-- Profile page title -->
 <div class="row mb-3 px-2 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.page_title.auto_id }}">
@@ -91,7 +89,6 @@
   </div>
 </div>
 
-<!-- Biography -->
 <div class="row mb-3 px-2 g-3">
   <div class="col">
     <label class="form-label" for="{{ form.bio.auto_id }}">
