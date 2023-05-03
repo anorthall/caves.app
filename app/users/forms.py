@@ -16,6 +16,33 @@ from .verify import verify_token
 User = get_user_model()
 
 
+class AuthenticationForm(auth.forms.AuthenticationForm):
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "mb-4"
+        self.helper.form_show_errors = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    FloatingField("username"),
+                    css_class="col-12",
+                ),
+                Div(
+                    FloatingField("password"),
+                    css_class="col-12",
+                ),
+                Div(
+                    Submit("submit", "Submit", css_class="btn-lg h-100 w-100"),
+                    css_class="col-12",
+                ),
+                css_class="row",
+            )
+        )
+
+
 class PasswordChangeForm(auth.forms.PasswordChangeForm):
     template_name = "forms/bs5_form.html"
 

@@ -5,7 +5,7 @@ from . import views
 # fmt: off
 app_name = "users"
 urlpatterns = [
-    path("login/", views.login, name="login"),
+    path("login/", views.Login.as_view(), name="login"),
     path("logout/", views.Logout.as_view(), name="logout"),
     path("email/", views.update_email, name="email"),
     path("view/", views.Account.as_view(), name="account_detail"),

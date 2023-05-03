@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
+    LoginView,
     LogoutView,
     PasswordChangeView,
     PasswordResetConfirmView,
@@ -23,6 +24,7 @@ from .emails import (
 )
 from .forms import (
     AddFriendForm,
+    AuthenticationForm,
     PasswordChangeForm,
     PasswordResetForm,
     ProfileChangeForm,
@@ -220,30 +222,15 @@ class FriendRemoveView(LoginRequiredMixin, View):
         return redirect("users:friends")
 
 
-def login(request):
-    context = {}
-    if request.method == "POST":
-        username = request.POST.get("email", None)
-        password = request.POST.get("password", None)
-        user = auth.authenticate(request, username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            messages.success(request, f"Now logged in as {user.email}.")
-            return redirect("log:index")
-        else:
-            messages.error(
-                request, "The username and password provided do not match any account."
-            )
-            context = {
-                "login_has_failed": True,  # Displays reset password link
-                "no_form_error_alert": True,  # Silences messages.html
-            }
+class Login(SuccessMessageMixin, LoginView):
+    template_name = "login.html"
+    success_message = "You are now logged in."
+    form_class = AuthenticationForm
 
-    if request.user.is_authenticated:
-        messages.info(request, f"You are logged in as {request.user.email}.")
-        return redirect("log:index")
-
-    return render(request, "login.html", context)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["no_form_error_alert"] = True  # Silences messages.html
+        return context
 
 
 class Logout(LoginRequiredMixin, LogoutView):

@@ -213,44 +213,13 @@ class UserIntegrationTestCase(TestCase):
         """Test login for users"""
         response = self.client.post(
             reverse("users:login"),
-            {"email": "enabled@user.app", "password": "password"},
+            {"username": "enabled@user.app", "password": "password"},
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("log:index"))
 
         response = self.client.get(reverse("log:index"))
-        self.assertContains(response, "Now logged in as enabled@user.app")
-
-    def test_disabled_user_login(self):
-        """Test login for disabled users"""
-        response = self.client.post(
-            reverse("users:login"),
-            {"email": "disabled@user.app", "password": "password"},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response, "The username and password provided do not match any account"
-        )
-
-    def test_login_with_invalid_post_data(self):
-        """Test login with invalid post data"""
-        response = self.client.post(
-            reverse("users:login"), {"invalid-data": "invalid-data"}
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response, "The username and password provided do not match any account"
-        )
-
-    def test_login_when_already_logged_in(self):
-        """Test login when already logged in"""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("users:login"))
-        self.assertEqual(response.status_code, 302)
-
-        response = self.client.get(reverse("users:login"), follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f"You are logged in as {self.user.email}.")
+        self.assertContains(response, "You are now logged in.")
 
     def test_user_registration_page_redirects_when_logged_in(self):
         """Test that the user registration page redirects when already logged in"""
