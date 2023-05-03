@@ -33,8 +33,11 @@
       <i class="bi bi-question-circle"></i>&nbsp; Help
     </a>
 
-    <a class="nav-link" href="{% url 'users:logout' %}">
-      <i class="bi bi-box-arrow-right"></i>&nbsp; Sign out
-    </a>
+    <form>
+      {% csrf_token %}
+      <button formmethod="post" formaction="{% url 'users:logout' %}" class="nav-link">
+        <i class="bi bi-box-arrow-right"></i>&nbsp; Sign out
+      </button>
+    </form>
   </nav>
 </div>

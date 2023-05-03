@@ -246,8 +246,11 @@ def login(request):
     return render(request, "login.html", context)
 
 
-class Logout(SuccessMessageMixin, LoginRequiredMixin, LogoutView):
-    success_message = "You have been signed out."
+class Logout(LoginRequiredMixin, LogoutView):
+    def dispatch(self, *args, **kwargs):
+        result = super().dispatch(*args, **kwargs)
+        messages.success(self.request, "You have been logged out.")
+        return result
 
 
 def register(request):
