@@ -197,7 +197,7 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
     def post(self, request, pk):
         f_req = get_object_or_404(FriendRequest, pk=pk)
         if not f_req.user_to == request.user:
-            raise Http404  # TODO: Use UserPassesTestMixin
+            raise Http404
 
         f_req.user_from.friends.add(f_req.user_to)
         f_req.user_to.friends.add(f_req.user_from)

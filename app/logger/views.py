@@ -14,19 +14,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import localtime as lt
-from django.views.generic import (
-    CreateView,
-    DetailView,
-    ListView,
-    TemplateView,
-    UpdateView,
-    View,
-)
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView, View
 from logger import statistics
 from users.models import Notification
 
 from .forms import AddCommentForm, AllUserNotificationForm, TripForm, TripReportForm
-from .generic import TripContextMixin
+from .generic import TripContextMixin, ViewableObjectDetailView
 from .models import Comment, Trip, TripReport
 from .templatetags.distformat import distformat
 
@@ -106,11 +99,11 @@ class UserProfile(ListView):
     ordering = ("-start", "pk")
 
     def setup(self, *args, **kwargs):
+        """Assign self.user and perform permissions checks"""
         super().setup(*args, **kwargs)
         self.user = get_object_or_404(User, username=self.kwargs["username"])
-
         if not self.user.is_viewable_by(self.request.user):
-            raise Http404  # TODO: Use UserPassesTestMixin
+            raise Http404
 
     def get_queryset(self):
         qs = (
@@ -179,7 +172,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return Trip.objects.filter(user=self.request.user)
 
 
-class TripDetail(TripContextMixin, DetailView):
+class TripDetail(TripContextMixin, ViewableObjectDetailView):
     model = Trip
 
     def get_queryset(self):
@@ -206,16 +199,15 @@ class TripDetail(TripContextMixin, DetailView):
         return qs
 
     def get_object(self, *args, **kwargs):
-        super().get_object(*args, **kwargs)
-        if not self.object.is_viewable_by(self.request.user):
-            raise Http404  # TODO: Use UserPassesTestMixin
-
-        if self.object.user == self.request.user:
-            return self.object
+        """Sanitise the Trip for the current user"""
+        obj = super().get_object(*args, **kwargs)
+        if obj.user == self.request.user:
+            return obj
         else:
-            return self.object.sanitise(self.request.user)
+            return obj.sanitise(self.request.user)
 
     def get_context_data(self, *args, **kwargs):
+        """Add the string of users that liked the trip to the context"""
         context = super().get_context_data(*args, **kwargs)
 
         if self.request.user.is_authenticated:
@@ -261,7 +253,7 @@ class TripDelete(LoginRequiredMixin, View):
     def post(self, request, pk):
         trip = get_object_or_404(Trip, pk=pk)
         if not trip.user == request.user:
-            raise Http404  # TODO: Use UserPassesTestMixin
+            raise Http404
         trip.delete()
         messages.success(
             request,
@@ -294,7 +286,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def get_trip(self):
         trip = get_object_or_404(Trip, pk=self.kwargs["pk"])
         if not trip.user == self.request.user:
-            raise Http404  # TODO: Use UserPassesTestMixin
+            raise Http404
         return trip
 
     def get(self, request, *args, **kwargs):
@@ -310,14 +302,8 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return kwargs
 
 
-class ReportDetail(TripContextMixin, DetailView):
+class ReportDetail(TripContextMixin, ViewableObjectDetailView):
     model = TripReport
-
-    def get_object(self):
-        object = super().get_object()
-        if not object.is_viewable_by(self.request.user):
-            raise Http404  # TODO: Use UserPassesTestMixin
-        return object
 
     def get_queryset(self):
         qs = (
@@ -359,7 +345,7 @@ class ReportDelete(LoginRequiredMixin, View):
     def post(self, request, pk):
         report = get_object_or_404(TripReport, pk=pk)
         if not report.user == request.user:
-            raise Http404  # TODO: Use UserPassesTestMixin
+            raise Http404
 
         trip = report.trip
         report.delete()
@@ -404,9 +390,7 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        trip = self.get_object()
-        if not trip.is_viewable_by(self.request.user):
-            raise Http404  # TODO: Use UserPassesTestMixin
+        trip = self.get_trip()
 
         initial = {"pk": trip.pk, "type": "trip"}
         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
@@ -414,11 +398,17 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
         context["object"] = trip
         return context
 
-    def get_object(self):
-        trip = Trip.objects.filter(pk=self.kwargs["pk"]).prefetch_related(
-            "comments", "comments__author"
+    def get_trip(self):
+        trip = (
+            Trip.objects.filter(pk=self.kwargs["pk"])
+            .prefetch_related("comments", "comments__author")
+            .first()
         )
-        return trip.first()
+
+        if not trip or not trip.is_viewable_by(self.request.user):
+            raise Http404
+
+        return trip
 
 
 class DeleteComment(LoginRequiredMixin, View):
@@ -435,7 +425,7 @@ class DeleteComment(LoginRequiredMixin, View):
                 "The comment has been deleted.",
             )
         else:
-            raise Http404  # TODO: Use UserPassesTestMixin
+            raise Http404
         return redirect(comment.content_object.get_absolute_url())
 
 
@@ -445,9 +435,7 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
     template_name = "includes/htmx_trip_like.html"
 
     def post(self, request, pk):
-        trip = self.get_object(request, pk)
-        if not trip or not trip.is_viewable_by(request.user):
-            raise Http404  # TODO: Use UserPassesTestMixin
+        trip = self.get_trip(request, pk)
 
         if trip.user_liked:
             trip.likes.remove(request.user)
@@ -466,8 +454,8 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)
 
-    def get_object(self, request, pk):
-        return (
+    def get_trip(self, request, pk):
+        trip = (
             Trip.objects.filter(pk=pk)
             .annotate(
                 user_liked=Exists(
@@ -478,6 +466,11 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
             )
             .first()
         )
+
+        if not trip or not trip.is_viewable_by(request.user):
+            raise Http404
+
+        return trip
 
 
 @login_required

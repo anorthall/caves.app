@@ -1,3 +1,6 @@
+from django.http import Http404
+from django.views.generic import DetailView
+
 from .forms import AddCommentForm
 from .models import Trip, TripReport
 
@@ -49,6 +52,19 @@ class TripContextMixin:
         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
         return context
 
-    def get_object(self, *args, **kwargs):
-        self.object = super().get_object(*args, **kwargs)
-        return self.object
+
+class ViewableObjectDetailView(DetailView):
+    """A DetailView that considers permissions for objects like Trip and TripReport"""
+
+    def dispatch(self, request, *args, **kwargs):
+        """Get the object and test permissions before dispatching the view"""
+        self.object = self.get_object()
+        if self.object.is_viewable_by(request.user):
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise Http404
+
+    def get(self, request, *args, **kwargs):
+        """Do not fetch the object here, as it was fetched in dispatch()"""
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)

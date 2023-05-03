@@ -22,5 +22,5 @@ urlpatterns = [
     path("friends/add/", views.FriendAddView.as_view(), name="friend_add"),
     path("friends/request/delete/<int:pk>/", views.FriendRequestDeleteView.as_view(), name="friend_request_delete"),  # noqa E501
     path("friends/request/accept/<int:pk>/", views.FriendRequestAcceptView.as_view(), name="friend_request_accept"),  # noqa E501
-    path("n/<int:pk>/", views.notification_redirect, name="notification"),
+    path("n/<int:pk>/", views.NotificationRedirect.as_view(), name="notification"),
 ]
