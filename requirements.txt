@@ -1,4 +1,4 @@
-Django==4.2.0
+Django==4.2.1
 django-timezone-field==5.0
 django-widget-tweaks==1.4.12
 django-countries==7.5.1
