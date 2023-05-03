@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
+    LogoutView,
     PasswordChangeView,
     PasswordResetConfirmView,
     PasswordResetView,
@@ -245,10 +246,8 @@ def login(request):
     return render(request, "login.html", context)
 
 
-def logout(request):
-    auth.logout(request)
-    messages.info(request, "You have been signed out.")
-    return redirect("log:index")
+class Logout(SuccessMessageMixin, LoginRequiredMixin, LogoutView):
+    success_message = "You have been signed out."
 
 
 def register(request):
