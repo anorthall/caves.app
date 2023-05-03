@@ -361,13 +361,12 @@ def update_email(request):
     return render(request, "email_update.html", {"form": form})
 
 
-@login_required
-def notification_redirect(request, pk):
-    """Redirect to the URL of a notification"""
-    notification = get_object_or_404(Notification, pk=pk)
-    if not notification.user == request.user:
-        return redirect("log:index")
+class NotificationRedirect(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        notification = get_object_or_404(Notification, pk=pk)
+        if not notification.user == request.user:
+            return redirect("log:index")
 
-    notification.read = True
-    notification.save()
-    return redirect(notification.url)
+        notification.read = True
+        notification.save()
+        return redirect(notification.url)
