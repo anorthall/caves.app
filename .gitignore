@@ -128,8 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Mac
+# Applications
 .DS_Store
+.vscode
 
 # Docker
 dev-data/
