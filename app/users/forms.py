@@ -86,9 +86,7 @@ class VerifyEmailForm(forms.Form):
 
     def clean_verify_code(self):
         verify_code = self.cleaned_data["verify_code"]
-        # Decode the user ID and email from the hash
         user_pk, email = verify_token(verify_code)
-        # Check we have a user with the decoded email
         try:
             user = User.objects.get(pk=user_pk)
         except ObjectDoesNotExist:
@@ -96,7 +94,6 @@ class VerifyEmailForm(forms.Form):
                 "Email verification code is not valid or has expired."
             )
 
-        # Save the user and email
         self.user = user
         self.email = email
         return verify_code
