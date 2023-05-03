@@ -3,11 +3,12 @@ from datetime import datetime, timedelta
 
 import factory
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 from factory import random
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from .models import Comment, Trip
+from .models import Comment, Trip, TripReport
 
 fake = Faker()
 
@@ -253,6 +254,30 @@ class TripFactory(DjangoModelFactory):
     @classmethod
     def _adjust_kwargs(cls, **kwargs):
         kwargs["cave_name"] = kwargs["cave_name"].replace(".", "")
+        return kwargs
+
+
+class TripReportFactory(DjangoModelFactory):
+    class Meta:
+        model = TripReport
+
+    title = factory.Faker("sentence", nb_words=5)
+    slug = factory.LazyAttribute(lambda o: slugify(o.title))
+    content = factory.Faker("text", max_nb_chars=4000)
+    trip = factory.Iterator(Trip.objects.filter(report=None))
+
+    @factory.lazy_attribute
+    def pub_date(self):
+        return (self.trip.start + timedelta(days=random.randgen.randint(1, 60))).date()
+
+    @classmethod
+    def _adjust_kwargs(cls, **kwargs):
+        kwargs["title"] = kwargs["title"].replace(".", "")
+
+        user = kwargs.get("user", None)
+        if user is None:
+            kwargs["user"] = kwargs["trip"].user
+
         return kwargs
 
 
