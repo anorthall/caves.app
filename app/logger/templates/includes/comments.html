@@ -49,9 +49,10 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <a href="{% url 'log:comment_delete' comment.pk %}">
-                        <button type="button" class="btn btn-danger">Delete comment</button>
-                      </a>
+                      <form action="{% url 'log:comment_delete' comment.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete comment</button>
+                      </form>
                     </div>
                   </div>
                 </div>

@@ -299,7 +299,7 @@ class TestAllPagesLoad(TestCase):
     def test_htmx_trip_like_toggle_page_loads(self):
         """Test that the HTMX trip like toggle page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(
+        response = self.client.post(
             reverse("log:trip_like", kwargs={"pk": self.trip.pk})
         )
         self.assertEqual(response.status_code, 200)
@@ -308,7 +308,7 @@ class TestAllPagesLoad(TestCase):
         """Test that the HTMX trip like toggle page loads with likes"""
         self.client.force_login(self.user)
         self.trip.likes.add(self.user)
-        response = self.client.get(
+        response = self.client.post(
             reverse("log:trip_like", kwargs={"pk": self.trip.pk})
         )
         self.assertEqual(response.status_code, 200)

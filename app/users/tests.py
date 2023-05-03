@@ -654,7 +654,7 @@ class FriendsIntegrationTests(TestCase):
         self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
 
         self.client.force_login(self.user2)
-        self.client.get(
+        self.client.post(
             reverse(
                 "users:friend_request_accept", args=[FriendRequest.objects.first().pk]
             )
@@ -685,7 +685,7 @@ class FriendsIntegrationTests(TestCase):
         self.assertEqual(FriendRequest.objects.first().user_from, self.user)
         self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
 
-        self.client.get(
+        self.client.post(
             reverse(
                 "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
             )
@@ -701,7 +701,7 @@ class FriendsIntegrationTests(TestCase):
         self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
 
         self.client.force_login(self.user2)
-        self.client.get(
+        self.client.post(
             reverse(
                 "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
             )
@@ -717,7 +717,7 @@ class FriendsIntegrationTests(TestCase):
         self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
 
         self.client.force_login(self.user3)
-        self.client.get(
+        self.client.post(
             reverse(
                 "users:friend_request_delete", args=[FriendRequest.objects.first().pk]
             )
@@ -729,7 +729,7 @@ class FriendsIntegrationTests(TestCase):
         self.client.force_login(self.user)
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
-        self.client.get(reverse("users:friend_remove", args=[self.user2.username]))
+        self.client.post(reverse("users:friend_remove", args=[self.user2.username]))
         self.assertNotIn(self.user2, self.user.friends.all())
         self.assertNotIn(self.user, self.user2.friends.all())
 
@@ -743,7 +743,7 @@ class FriendsIntegrationTests(TestCase):
     def test_friend_remove_view_with_a_user_that_is_not_a_friend(self):
         """Test that the friend remove view returns a 404 if the user is not a friend"""
         self.client.force_login(self.user)
-        response = self.client.get(
+        response = self.client.post(
             reverse("users:friend_remove", args=[self.user2.username])
         )
         self.assertEqual(response.status_code, 404)
@@ -752,7 +752,9 @@ class FriendsIntegrationTests(TestCase):
         """Test that the friend request accept view returns a 404 if an invalid user"""
         self.client.force_login(self.user)
         fr = FriendRequest.objects.create(user_from=self.user2, user_to=self.user3)
-        response = self.client.get(reverse("users:friend_request_accept", args=[fr.pk]))
+        response = self.client.post(
+            reverse("users:friend_request_accept", args=[fr.pk])
+        )
         self.assertEqual(response.status_code, 404)
 
 

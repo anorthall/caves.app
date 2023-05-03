@@ -258,7 +258,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 
 class TripDelete(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def post(self, request, pk):
         trip = get_object_or_404(Trip, pk=pk)
         if not trip.user == request.user:
             raise Http404  # TODO: Use UserPassesTestMixin
@@ -356,7 +356,7 @@ class ReportUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 
 class ReportDelete(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def post(self, request, pk):
         report = get_object_or_404(TripReport, pk=pk)
         if not report.user == request.user:
             raise Http404  # TODO: Use UserPassesTestMixin
@@ -422,7 +422,7 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
 
 
 class DeleteComment(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def post(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
         if (
             comment.author == request.user
@@ -444,7 +444,7 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
 
     template_name = "includes/htmx_trip_like.html"
 
-    def get(self, request, pk):
+    def post(self, request, pk):
         trip = self.get_object(request, pk)
         if not trip or not trip.is_viewable_by(request.user):
             raise Http404  # TODO: Use UserPassesTestMixin

@@ -614,7 +614,7 @@ class TripIntegrationTests(TestCase):
         trip_pk = self.trip.pk
         success_str = f"The trip to {self.trip.cave_name} has been deleted"
 
-        response = self.client.get(
+        response = self.client.post(
             reverse("log:trip_delete", args=[self.trip.pk]), follow=True
         )
         self.assertEqual(response.status_code, 200)
@@ -632,7 +632,7 @@ class TripIntegrationTests(TestCase):
         user2.is_active = True
         user2.save()
         self.client.force_login(user2)
-        response = self.client.get(
+        response = self.client.post(
             reverse("log:trip_delete", args=[self.trip.pk]),
         )
         self.assertEqual(response.status_code, 404)
@@ -814,7 +814,7 @@ class TripReportIntegrationTests(TestCase):
         response = self.client.get(reverse("log:report_update", args=[report.pk]))
         self.assertEqual(response.status_code, 404)
 
-        response = self.client.get(reverse("log:report_delete", args=[report.pk]))
+        response = self.client.post(reverse("log:report_delete", args=[report.pk]))
         self.assertEqual(response.status_code, 404)
 
         response = self.client.get(reverse("log:report_create", args=[self.trip.pk]))
@@ -861,7 +861,7 @@ class TripReportIntegrationTests(TestCase):
         self.assertEqual(report.slug, "test-report")
         self.assertEqual(report.content, "Test content updated.")
 
-        response = self.client.get(reverse("log:report_delete", args=[report.pk]))
+        response = self.client.post(reverse("log:report_delete", args=[report.pk]))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("log:trip_detail", args=[self.trip.pk]))
         self.assertEqual(TripReport.objects.count(), 0)
@@ -1400,7 +1400,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         )
         self.client.force_login(self.user)
 
-        response = self.client.get(
+        response = self.client.post(
             reverse("log:comment_delete", args=[comment.pk]),
             follow=True,
         )
@@ -1418,7 +1418,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         )
         self.client.force_login(self.user)
 
-        response = self.client.get(
+        response = self.client.post(
             reverse("log:comment_delete", args=[comment.pk]),
         )
         self.assertEqual(response.status_code, 404)
@@ -1432,7 +1432,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip.privacy = Trip.PRIVATE
         trip.save()
 
-        response = self.client.get(
+        response = self.client.post(
             reverse("log:trip_like", args=[trip.pk]),
         )
         self.assertEqual(response.status_code, 404)

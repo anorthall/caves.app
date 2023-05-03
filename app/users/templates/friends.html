@@ -136,9 +136,10 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <a href="{% url "users:friend_request_delete" pk=friend_request.pk %}">
-              <button type="button" class="btn btn-danger">Delete request</button>
-            </a>
+            <form action="{% url "users:friend_request_delete" pk=friend_request.pk %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete request</button>
+            </form>
           </div>
         </div>
       </div>
@@ -157,9 +158,10 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <a href="{% url "users:friend_request_accept" pk=friend_request.pk %}">
-                <button type="button" class="btn btn-success">Add friend</button>
-              </a>
+              <form action="{% url "users:friend_request_accept" pk=friend_request.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Add friend</button>
+              </form>
             </div>
           </div>
         </div>
@@ -181,9 +183,10 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <a href="{% url "users:friend_remove" username=friend.username %}">
-              <button type="button" class="btn btn-danger">Remove friend</button>
-            </a>
+            <form action="{% url "users:friend_remove" username=friend.username %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Remove friend</button>
+            </form>
           </div>
         </div>
       </div>

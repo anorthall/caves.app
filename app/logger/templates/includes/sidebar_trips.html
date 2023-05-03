@@ -93,9 +93,10 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <a href="{% url 'log:trip_delete' pk=trip.pk %}">
-              <button type="button" class="btn btn-danger">Delete trip</button>
-            </a>
+            <form action="{% url 'log:trip_delete' pk=trip.pk %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete trip</button>
+            </form>
           </div>
         </div>
       </div>
@@ -115,9 +116,10 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <a href="{% url 'log:report_delete' pk=trip.report.pk %}">
-                <button type="button" class="btn btn-danger">Delete trip report</button>
-              </a>
+              <form action="{% url 'log:report_delete' pk=trip.report.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete trip report</button>
+              </form>
             </div>
           </div>
         </div>

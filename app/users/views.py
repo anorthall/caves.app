@@ -179,7 +179,7 @@ class FriendAddView(LoginRequiredMixin, View):
 
 
 class FriendRequestDeleteView(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def post(self, request, pk):
         f_req = get_object_or_404(FriendRequest, pk=pk)
         if f_req.user_to == request.user or f_req.user_from == request.user:
             f_req.delete()
@@ -194,7 +194,7 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
 
 
 class FriendRequestAcceptView(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def post(self, request, pk):
         f_req = get_object_or_404(FriendRequest, pk=pk)
         if not f_req.user_to == request.user:
             raise Http404  # TODO: Use UserPassesTestMixin
@@ -211,7 +211,7 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
 
 
 class FriendRemoveView(LoginRequiredMixin, View):
-    def get(self, request, username):
+    def post(self, request, username):
         user = get_object_or_404(User, username=username)
         if user not in request.user.friends.all():
             raise Http404
