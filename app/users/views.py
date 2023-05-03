@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
     LoginView,
@@ -15,7 +14,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView, View
+from django.views.generic import FormView, TemplateView, View
 
 from .emails import (
     send_email_change_notification,
@@ -311,54 +310,50 @@ def resend_verify_email(request):
     return render(request, "verify_resend_email.html", {"form": form})
 
 
-def verify_email_change(request):
-    """Verify an email change code for a registered user"""
-    if "verify_code" in request.GET:  # TODO: Why is this line here?
-        form = VerifyEmailForm(request.GET)
-        if form.is_valid():
-            verified_user = form.user
-            verified_user.email = form.email  # Set the user's email
-            verified_user.save()  # Save the user
-            auth.login(request, verified_user)  # Log the user in
-            messages.success(
-                request,
-                f"Your new email address, {form.email}, has been verified.",
-            )
-            return redirect("users:account_detail")
-    else:
-        form = VerifyEmailForm()
+class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
+    form_class = VerifyEmailForm
+    template_name = "verify_email_change.html"
+    success_message = "Your email address has been verified and updated."
+    success_url = reverse_lazy("users:account_detail")
 
-    return render(request, "verify_email_change.html", {"form": form})
+    def form_valid(self, form, *args, **kwargs):
+        """Set the user's new email address and log them in"""
+        verified_user = form.user
+        verified_user.email = form.email
+        verified_user.save()
+        auth.login(self.request, verified_user)
+        return super().form_valid(form, *args, **kwargs)
+
+    def get_initial(self, *args, **kwargs):
+        """Add the verify_code from the URL params to the form's initial data"""
+        initial = super().get_initial(*args, **kwargs)
+        initial["verify_code"] = self.request.GET.get("verify_code", "")
+        return initial.copy()
 
 
-@login_required
-def update_email(request):
-    """Send an email to confirm a change of email address for a registered user"""
-    if request.method == "POST":
-        form = UserChangeEmailForm(request.user, request.POST)
-        if form.is_valid():
-            # Generate verification token and send email
-            user = form.user
-            new_email = form.cleaned_data["email"]
-            verify_code = generate_token(user.pk, new_email)
-            verify_url = settings.SITE_ROOT + reverse("users:verify_email_change")
-            send_email_change_verification(
-                new_email, user.name, verify_url, verify_code
-            )
+class UpdateEmail(SuccessMessageMixin, LoginRequiredMixin, FormView):
+    form_class = UserChangeEmailForm
+    template_name = "email_update.html"
+    success_url = reverse_lazy("users:verify_email_change")
+    success_message = (
+        "Please follow the instructions sent to your new email address within "
+        "24 hours to complete the change."
+    )
 
-            # Send the security notification email
-            send_email_change_notification(user.email, user.name, new_email)
+    def form_valid(self, form, *args, **kwargs):
+        """Generate verification token and send the email"""
+        user = form.user
+        new_email = form.cleaned_data["email"]
+        verify_code = generate_token(user.pk, new_email)
+        verify_url = settings.SITE_ROOT + reverse("users:verify_email_change")
+        send_email_change_verification(new_email, user.name, verify_url, verify_code)
+        send_email_change_notification(user.email, user.name, new_email)
+        return super().form_valid(form, *args, **kwargs)
 
-            messages.info(
-                request,
-                "Please follow the instructions sent to your new email address within "
-                "24 hours to complete the change.",
-            )
-            return redirect("users:verify_email_change")
-    else:
-        form = UserChangeEmailForm(request.user)
-
-    return render(request, "email_update.html", {"form": form})
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs["user"] = self.request.user
+        return kwargs
 
 
 class NotificationRedirect(LoginRequiredMixin, View):

@@ -401,11 +401,12 @@ class UserIntegrationTestCase(TestCase):
         # Check for verification code
         self.assertEqual(mail.outbox[0].subject, "Verify your change of email")
         self.assertEqual(mail.outbox[0].to, ["new-email@caves.app"])
-        verify_url = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
+        verify_code = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
 
         # Test verification with invalid code
-        response = self.client.get(
-            reverse("users:verify_email_change") + "?verify_code=invalid"
+        response = self.client.post(
+            reverse("users:verify_email_change"),
+            {"verify_code": "invalid"},
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -413,13 +414,14 @@ class UserIntegrationTestCase(TestCase):
         )
 
         # Test verification with valid code
-        response = self.client.get(
-            reverse("users:verify_email_change") + "?verify_code=" + verify_url,
+        response = self.client.post(
+            reverse("users:verify_email_change"),
+            {"verify_code": verify_code},
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
-            response, "Your new email address, new-email@caves.app, has been verified."
+            response, "Your email address has been verified and updated."
         )
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, "new-email@caves.app")
