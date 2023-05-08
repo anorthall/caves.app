@@ -49,11 +49,11 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
         self.fields["new_password1"].help_text = ""
-        self.fields[
-            "new_password2"
-        ].help_text = "Your password can't be too similar to your other personal "
-        "information, must contain at least 8 characters, cannot be entirely numeric "
-        "and must not be a commonly used password."
+        self.fields["new_password2"].help_text = (
+            "Your password can't be too similar to your other personal "
+            "information, must contain at least 8 characters, cannot be entirely "
+            "numeric and must not be a commonly used password."
+        )
 
 
 class PasswordResetForm(auth.forms.PasswordResetForm):
@@ -66,11 +66,11 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super(SetPasswordForm, self).__init__(*args, **kwargs)
         self.fields["new_password1"].help_text = ""
-        self.fields[
-            "new_password2"
-        ].help_text = "Your password can't be too similar to your other personal "
-        "information, must contain at least 8 characters, cannot be entirely numeric "
-        "and must not be a commonly used password."
+        self.fields["new_password2"].help_text = (
+            "Your password can't be too similar to your other personal "
+            "information, must contain at least 8 characters, cannot be entirely "
+            "numeric and must not be a commonly used password."
+        )
 
 
 class VerifyEmailForm(forms.Form):
@@ -130,9 +130,11 @@ class UserCreationForm(forms.ModelForm):
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,
-        help_text="Your password can't be too similar to your other personal "
-        "information, must contain at least 8 characters, cannot be entirely numeric "
-        "and must not be a commonly used password.",
+        help_text=(
+            "Your password can't be too similar to your other personal "
+            "information, must contain at least 8 characters, cannot be entirely "
+            "numeric and must not be a commonly used password."
+        ),
         required=True,
     )
     password2 = forms.CharField(
@@ -248,8 +250,10 @@ class UserChangeEmailForm(forms.Form):
         label="New email address",
         max_length=255,
         required=True,
-        help_text="This email address will be verified before any change is "
-        "stored on the system.",
+        help_text=(
+            "This email address will be verified before any change is "
+            "stored on the system."
+        ),
     )
     password = forms.CharField(
         label="Current password",

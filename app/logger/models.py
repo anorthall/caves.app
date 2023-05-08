@@ -87,8 +87,10 @@ class Trip(models.Model):
     cave_url = models.URLField(
         "cave website",
         blank=True,
-        help_text="A website, such as a Wikipedia page, "
-        "giving more information on this cave.",
+        help_text=(
+            "A website, such as a Wikipedia page, "
+            "giving more information on this cave."
+        ),
     )
 
     # Trip details
@@ -109,14 +111,16 @@ class Trip(models.Model):
     clubs = models.CharField(
         max_length=100,
         blank=True,
-        help_text="A comma-separated list of any caving "
-        "clubs associated with this trip.",
+        help_text=(
+            "A comma-separated list of any caving " "clubs associated with this trip."
+        ),
     )
     expedition = models.CharField(
         max_length=100,
         blank=True,
-        help_text="A comma-separated list of any expeditions "
-        "associated with this trip.",
+        help_text=(
+            "A comma-separated list of any expeditions " "associated with this trip."
+        ),
     )
     horizontal_dist = DistanceField(
         max_digits=14,
@@ -408,8 +412,10 @@ class TripReport(models.Model):
     )
     slug = models.SlugField(
         max_length=100,
-        help_text="A unique identifier for the URL of the report. "
-        "No spaces or special characters allowed.",
+        help_text=(
+            "A unique identifier for the URL of the report. "
+            "No spaces or special characters allowed."
+        ),
     )
     content = HTMLField()
 
