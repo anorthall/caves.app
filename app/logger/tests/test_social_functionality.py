@@ -548,7 +548,6 @@ class SocialFunctionalityIntegrationTests(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(notification.read, False)
-        self.assertEqual(response.url, reverse("log:index"))
 
     def test_adding_comment_to_trip_report(self):
         """Test that a comment can be added to a trip report"""
