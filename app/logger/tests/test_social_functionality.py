@@ -137,6 +137,37 @@ class SocialFunctionalityIntegrationTests(TestCase):
         for trip in self.user.trips.order_by("-start")[:50]:
             self.assertContains(response, trip.cave_name)
 
+    def test_that_private_trips_do_not_appear_in_the_trip_feed(self):
+        """Test that private trips do not appear in the trip feed"""
+        self.client.force_login(self.user2)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
+
+        # Delete all user2 trips so they don't appear in the feed
+        # and block user1 trips from appearing
+        for trip in self.user2.trips:
+            trip.delete()
+
+        # First set the trips to public and verify they do appear in the
+        # feed, otherwise if sorting is broken the test will pass even if
+        # private trips are appearing in the feed
+        for trip in self.user.trips:
+            trip.privacy = Trip.PUBLIC
+            trip.save()
+
+        response = self.client.get(reverse("log:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "User1 Cave")
+
+        # Now set the trips to private and verify they do not appear in the feed
+        for trip in self.user.trips:
+            trip.privacy = Trip.PRIVATE
+            trip.save()
+
+        response = self.client.get(reverse("log:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "User1 Cave")
+
     def test_trip_detail_page_with_various_privacy_settings(self):
         """Test the trip detail page with various privacy settings"""
         trip = self.user.trips.first()
