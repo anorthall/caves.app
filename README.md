@@ -52,4 +52,6 @@ docker compose up
 
 
 ## Feedback
-Feedback of any kind is more than welcome. Please feel free to open an issue on GitHub, or contact me [directly via email](mailto:andrew@caver.dev) at `andrew@caver.dev`.
+Feedback of any kind is more than welcome. Please feel free to open an issue on GitHub, or contact me [directly via email](mailto:andrew@caver.dev) at `andrew@caver.dev`. You are also welcome to
+[join the caves.app Discord server](https://discord.gg/jEvPbR4G4k) to discuss either using the
+application or development.
