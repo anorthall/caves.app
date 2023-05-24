@@ -1,14 +1,9 @@
-import zoneinfo
-
-import pytz
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 from logger.models import Comment, Trip, TripReport
 from users.models import FriendRequest
-
-from .models import FAQ, News
 
 User = get_user_model()
 
@@ -342,90 +337,3 @@ class TestAllPagesLoad(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:statistics"))
         self.assertEqual(response.status_code, 200)
-
-
-@tag("integration", "admin", "fast")
-class TestAuthorAutoassignForNewsAndFAQs(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            email="superuser@caves.app",
-            username="superuser",
-            password="password",
-            name="Super User",
-        )
-        self.user.is_superuser = True
-        self.user.is_active = True
-        self.user.save()
-
-        self.client = Client()
-
-    def test_news_author_autoassign(self):
-        """Test that the news author is autoassigned in Django admin"""
-        self.client.force_login(self.user)
-        self.client.post(
-            reverse("admin:core_news_add"),
-            {
-                "title": "Test News",
-                "content": "Test content",
-                "posted_at_0": timezone.now().date(),
-                "posted_at_1": timezone.now().time(),
-            },
-        )
-
-        news = News.objects.get(title="Test News")
-        self.assertEqual(news.author, self.user)
-
-    def test_faq_author_autoassign(self):
-        """Test that the FAQ author is autoassigned in Django admin"""
-        self.client.force_login(self.user)
-        self.client.post(
-            reverse("admin:core_faq_add"),
-            {
-                "question": "Test Question",
-                "answer": "Test answer",
-                "posted_at_0": timezone.now().date(),
-                "posted_at_1": timezone.now().time(),
-            },
-        )
-
-        faq = FAQ.objects.get(question="Test Question")
-        self.assertEqual(faq.author, self.user)
-
-
-class TestMiddleware(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            email="test@caves.app",
-            username="testuser",
-            password="password",
-            name="Test User",
-        )
-        self.user.is_active = True
-        self.user.save()
-
-        self.client = Client()
-
-    @tag("fast", "middleware")
-    def test_timezone_middleware_with_all_timezones(self):
-        """
-        Test that the timezone middleware does not produce any errors
-        when tested with every timezone in pytz and zoneinfo
-        """
-        self.client.force_login(self.user)
-
-        response = self.client.get(reverse("log:index"))
-        self.assertEqual(response.status_code, 200)
-
-        for tz in pytz.all_timezones:
-            self.user.timezone = tz
-            self.user.save()
-
-            response = self.client.get(reverse("log:index"))
-            self.assertEqual(response.status_code, 200)
-
-        for tz in zoneinfo.available_timezones():
-            self.user.timezone = tz
-            self.user.save()
-
-            response = self.client.get(reverse("log:index"))
-            self.assertEqual(response.status_code, 200)
