@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView
 from logger.models import Trip
 
-from .generic import AuthStateTemplateMixin
+from .mixins import AuthStateTemplateMixin
 from .models import FAQ
 
 User = get_user_model()

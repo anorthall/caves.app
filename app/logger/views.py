@@ -19,7 +19,7 @@ from logger import statistics
 from users.models import Notification
 
 from .forms import AddCommentForm, AllUserNotificationForm, TripForm, TripReportForm
-from .generic import TripContextMixin, ViewableObjectDetailView
+from .mixins import TripContextMixin, ViewableObjectDetailView
 from .models import Comment, Trip, TripReport
 from .templatetags.distformat import distformat
 

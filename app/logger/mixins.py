@@ -28,7 +28,6 @@ class TripContextMixin:
             raise TypeError("Object is not a Trip or TripReport")
 
         user = trip.user
-
         if not user == self.request.user:
             context["can_view_profile"] = user.is_viewable_by(self.request.user)
 
@@ -41,8 +40,7 @@ class TripContextMixin:
 
         context["trip"] = trip
         context["report"] = report
-        # This is the author of the trip/report, not the request user
-        context["user"] = user
+        context["user"] = user  # This is the author of the trip/report
 
         # Comment form
         initial = {
