@@ -399,6 +399,7 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
         context["display_hide_button"] = True
         context["object"] = trip
+        context["object_owner"] = trip.user
         return context
 
     def get_trip(self):
