@@ -113,22 +113,18 @@ class UserProfile(ListView):
             raise PermissionDenied
 
     def get_queryset(self):
-        qs = (
+        trips = (
             Trip.objects.filter(user=self.profile_user)
             .select_related("report")
             .order_by(*self.get_ordering())
         )
 
         # Sanitise trips to be privacy aware
-        # TODO: This is done in other views - extract to a mixin
         if not self.profile_user == self.request.user:
-            privacy_aware_trips = []
-            for trip in qs:
-                if trip.is_viewable_by(self.request.user):
-                    privacy_aware_trips.append(trip)
-            return privacy_aware_trips
+            sanitised_trips = [x for x in trips if x.is_viewable_by(self.request.user)]
+            return sanitised_trips
         else:
-            return qs
+            return trips
 
     def get_ordering(self):
         allowed_ordering = [
