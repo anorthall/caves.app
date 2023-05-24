@@ -134,7 +134,7 @@ class CavingUserAdmin(BaseUserAdmin):
         "name",
         "bio",
     )
-    ordering = ("-date_joined",)
+    ordering = ("-last_seen",)
     filter_horizontal = ()
     inlines = [
         NotificationInline,
