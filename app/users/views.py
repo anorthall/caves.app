@@ -242,7 +242,7 @@ class Logout(LoginRequiredMixin, LogoutView):
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect("users:account_detail")  # Already registered
+        return redirect("users:account_detail")
 
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -361,7 +361,7 @@ class NotificationRedirect(LoginRequiredMixin, View):
     def get(self, request, pk):
         notification = get_object_or_404(Notification, pk=pk)
         if not notification.user == request.user:
-            return redirect("log:index")
+            raise PermissionDenied
 
         notification.read = True
         notification.save()
