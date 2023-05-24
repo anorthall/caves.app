@@ -1,5 +1,5 @@
 # caves.app
-[![Run Django Tests](https://github.com/anorthall/caves.app/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/anorthall/caves.app/actions/workflows/run-tests.yaml)
+[![Run Django Tests](https://github.com/anorthall/caves.app/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/anorthall/caves.app/actions/workflows/run-tests.yaml) [![codecov](https://codecov.io/gh/anorthall/caves.app/branch/main/graph/badge.svg?token=HDZHAETW75)](https://codecov.io/gh/anorthall/caves.app)
 
 A Django web application to log caving trips. Running online at [caves.app](https://caves.app/).
 
