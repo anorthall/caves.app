@@ -3,13 +3,13 @@
 {% load markdownify %}
 
 {% if object_owner.allow_comments %}
-  <div class="card" id="comments">
+  <div class="card" id="comments{{ object.pk }}">
     <div class="card-header">
       <div class="d-flex flex-row align-items-center justify-content-between">
         <span class="float-start">Comments</span>
         {% if display_hide_button %}
           <small class="float-end text-muted">
-            <button class="btn btn-sm btn-secondary" onclick="document.getElementById('comments').remove()">Hide</button>
+            <button class="btn btn-sm btn-secondary" onclick="document.getElementById('comments{{ object.pk }}').remove()">Hide</button>
           </small>
         {% endif %}
       </div>
@@ -27,7 +27,7 @@
                 &mdash; by {% user comment.author %}, {{ comment.added|timesince }} ago
                 {% if user.is_authenticated %}
                   {% if user == comment.author or user == object_owner or user.is_superuser %}
-                    <a class="float-end link-danger" data-bs-toggle="modal" data-bs-target="#deleteComment{{ forloop.counter }}">
+                    <a class="float-end link-danger" data-bs-toggle="modal" data-bs-target="#deleteComment{{ comment.pk }}">
                       delete
                     </a>
                   {% endif %}
@@ -37,7 +37,7 @@
           </div>
           {% if user.is_authenticated %}
             {% if user == comment.author or user == object_owner or user.is_superuser %}
-              <div class="modal fade" id="deleteComment{{ forloop.counter }}" tabindex="-1">
+              <div class="modal fade" id="deleteComment{{ comment.pk }}" tabindex="-1">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
