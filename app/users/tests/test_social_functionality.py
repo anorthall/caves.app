@@ -234,4 +234,4 @@ class SocialIntegrationTests(TestCase):
         response = self.client.post(
             reverse("users:friend_request_accept", args=[fr.pk])
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)

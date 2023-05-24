@@ -191,10 +191,10 @@ class TripReportIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
         response = self.client.post(reverse("log:report_delete", args=[report.pk]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         response = self.client.get(reverse("log:report_create", args=[self.trip.pk]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_users_can_view_and_edit_their_own_trip_reports(self):
         """Test users can view and edit their own trip reports."""

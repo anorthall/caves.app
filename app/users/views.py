@@ -10,6 +10,7 @@ from django.contrib.auth.views import (
     PasswordResetView,
 )
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -188,7 +189,7 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
                 "deleted.",
             )
         else:
-            raise Http404
+            raise PermissionDenied
         return redirect("users:friends")
 
 
@@ -196,7 +197,7 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
     def post(self, request, pk):
         f_req = get_object_or_404(FriendRequest, pk=pk)
         if not f_req.user_to == request.user:
-            raise Http404
+            raise PermissionDenied
 
         f_req.user_from.friends.add(f_req.user_to)
         f_req.user_to.friends.add(f_req.user_from)

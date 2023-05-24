@@ -639,4 +639,4 @@ class TripIntegrationTests(TestCase):
         response = self.client.post(
             reverse("log:trip_delete", args=[self.trip.pk]),
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)

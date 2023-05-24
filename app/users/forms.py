@@ -6,7 +6,7 @@ from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.urls import reverse
 
@@ -89,7 +89,7 @@ class VerifyEmailForm(forms.Form):
         user_pk, email = verify_token(verify_code)
         try:
             user = User.objects.get(pk=user_pk)
-        except ObjectDoesNotExist:
+        except User.DoesNotExist:
             raise ValidationError(
                 "Email verification code is not valid or has expired."
             )
@@ -117,7 +117,7 @@ class ResendVerifyEmailForm(forms.Form):
         email = self.cleaned_data["email"]
         try:
             user = User.objects.get(email__exact=email)
-        except ObjectDoesNotExist:
+        except User.DoesNotExist:
             return email
 
         if not user.is_active:

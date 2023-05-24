@@ -151,7 +151,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip.privacy = Trip.FRIENDS
         trip.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
@@ -162,14 +162,14 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip.privacy = Trip.PRIVATE
         trip.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         trip.privacy = Trip.DEFAULT
         trip.save()
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.privacy = User.PUBLIC
         self.user.save()
@@ -194,12 +194,12 @@ class SocialFunctionalityIntegrationTests(TestCase):
         self.user.privacy = User.FRIENDS
         self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_user_profile_page_with_various_privacy_settings(self):
         """Test the user profile page with various privacy settings"""
@@ -211,12 +211,12 @@ class SocialFunctionalityIntegrationTests(TestCase):
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.privacy = User.FRIENDS
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
@@ -234,12 +234,12 @@ class SocialFunctionalityIntegrationTests(TestCase):
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.privacy = User.FRIENDS
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.privacy = User.PUBLIC
         self.user.save()
@@ -486,7 +486,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         response = self.client.post(
             reverse("log:comment_delete", args=[comment.pk]),
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(Comment.objects.count(), 1)
 
     def test_htmx_like_view_on_an_object_the_user_cannot_view(self):
@@ -500,7 +500,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         response = self.client.post(
             reverse("log:trip_like", args=[trip.pk]),
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_htmx_comment_view_on_an_object_the_user_cannot_view(self):
         """Test that the HTMX comment view respects privacy"""
@@ -513,7 +513,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         response = self.client.get(
             reverse("log:htmx_trip_comment", args=[trip.pk]),
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_comments_send_a_notification_when_posted(self):
         """Test that a notification is sent when a comment is posted"""
@@ -672,14 +672,14 @@ class SocialFunctionalityIntegrationTests(TestCase):
         response = self.client.get(
             reverse("log:report_detail", args=[report.pk]),
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         report.privacy = TripReport.FRIENDS
         report.save()
         response = self.client.get(
             reverse("log:report_detail", args=[report.pk]),
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
@@ -709,7 +709,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         response = self.client.get(
             reverse("log:report_detail", args=[report.pk]),
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         trip.privacy = Trip.PUBLIC
         trip.save()

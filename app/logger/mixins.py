@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from django.views.generic import DetailView
 
 from .forms import AddCommentForm
@@ -17,12 +17,11 @@ class TripContextMixin:
             context["is_report"] = True  # For includes/trip_header.html
         elif isinstance(self.object, Trip):
             trip = self.object
+            report = None
             if hasattr(trip, "report"):
                 report = trip.report
-            else:
-                report = None
         elif not self.object:
-            # Django will return Http404 shortly, so we can just:
+            # Django will return a 404 shortly, so we can just exit
             return
         else:
             raise TypeError("Object is not a Trip or TripReport")
@@ -60,7 +59,7 @@ class ViewableObjectDetailView(DetailView):
         if self.object.is_viewable_by(request.user):
             return super().dispatch(request, *args, **kwargs)
         else:
-            raise Http404
+            raise PermissionDenied
 
     def get(self, request, *args, **kwargs):
         """Do not fetch the object here, as it was fetched in dispatch()"""

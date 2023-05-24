@@ -7,9 +7,9 @@ from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Exists, OuterRef, Q
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -110,7 +110,7 @@ class UserProfile(ListView):
         super().setup(*args, **kwargs)
         self.user = get_object_or_404(User, username=self.kwargs["username"])
         if not self.user.is_viewable_by(self.request.user):
-            raise Http404
+            raise PermissionDenied
 
     def get_queryset(self):
         qs = (
@@ -260,7 +260,7 @@ class TripDelete(LoginRequiredMixin, View):
     def post(self, request, pk):
         trip = get_object_or_404(Trip, pk=pk)
         if not trip.user == request.user:
-            raise Http404
+            raise PermissionDenied
         trip.delete()
         messages.success(
             request,
@@ -293,7 +293,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def get_trip(self):
         trip = get_object_or_404(Trip, pk=self.kwargs["pk"])
         if not trip.user == self.request.user:
-            raise Http404
+            raise PermissionDenied
         return trip
 
     def get(self, request, *args, **kwargs):
@@ -352,7 +352,7 @@ class ReportDelete(LoginRequiredMixin, View):
     def post(self, request, pk):
         report = get_object_or_404(TripReport, pk=pk)
         if not report.user == request.user:
-            raise Http404
+            raise PermissionDenied
 
         trip = report.trip
         report.delete()
@@ -413,7 +413,7 @@ class HTMXTripComment(LoginRequiredMixin, TemplateView):
         )
 
         if not trip or not trip.is_viewable_by(self.request.user):
-            raise Http404
+            raise PermissionDenied
 
         return trip
 
@@ -432,7 +432,7 @@ class DeleteComment(LoginRequiredMixin, View):
                 "The comment has been deleted.",
             )
         else:
-            raise Http404
+            raise PermissionDenied
         return redirect(comment.content_object.get_absolute_url())
 
 
@@ -475,7 +475,7 @@ class TripLikeToggle(LoginRequiredMixin, TemplateView):
         )
 
         if not trip or not trip.is_viewable_by(request.user):
-            raise Http404
+            raise PermissionDenied
 
         return trip
 
@@ -674,7 +674,7 @@ class AdminTools(LoginRequiredMixin, UserPassesTestMixin, View):
                 messages.success(request, f"Now logged in as {user.email}.")
                 login(request, user)
                 return redirect("log:index")
-        except ObjectDoesNotExist:
+        except User.DoesNotExist:
             messages.error(request, "User was not found.")
 
     def process_notify_form(self, request):
