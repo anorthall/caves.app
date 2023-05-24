@@ -19,3 +19,12 @@ if os.environ.get("SENTRY_KEY", None):  # pragma: no cover
         traces_sample_rate=1.0,
         send_default_pii=True,
     )
+
+
+# Google Analytics
+GOOGLE_ANALYTICS_ID = os.environ.get("GOOGLE_ANALYTICS_ID", None)
+
+if GOOGLE_ANALYTICS_ID:  # pragma: no cover
+    TEMPLATES["OPTIONS"]["context_processors"] += [
+        "core.context_processors.google_analytics",
+    ]

@@ -20,9 +20,16 @@
     <!-- HTMX  -->
     <script src="{% static "js/htmx.min.js" %}"></script>
 
-    {% if not debug %}
-      <!-- Plausible Analytics -->
-      <script defer data-domain="caves.app" src="https://stats.caver.dev/js/plausible.js"></script>
+    {% if google_analytics_id %}
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_id }}"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', '{{ google_analytics_id }}');
+      </script>
     {% endif %}
 
     {% block header_scripts %}{% endblock %}
