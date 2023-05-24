@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Exists, OuterRef, Q
@@ -14,7 +14,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import localtime as lt
-from django.views.generic import CreateView, ListView, TemplateView, UpdateView, View
+from django.views.generic import (
+    CreateView,
+    ListView,
+    RedirectView,
+    TemplateView,
+    UpdateView,
+    View,
+)
 from logger import statistics
 from users.models import Notification
 
@@ -637,50 +644,53 @@ def user_statistics(request):
     return render(request, "statistics.html", context)
 
 
-def admin_tools(request):  # noqa: C901
-    """Tools for website administrators."""
-    if not request.user.is_superuser:
-        raise Http404  # TODO: Use UserPassesTestMixin
+class AdminTools(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
 
-    if request.POST:
+    def get(self, request, *args, **kwargs):
+        login_user_list = User.objects.filter(is_active=True).values_list(
+            "email", flat=True
+        )
+        context = {
+            "login_user_list": login_user_list,
+            "notify_form": AllUserNotificationForm(),
+        }
+        return render(request, "admin_tools.html", context)
+
+    def post(self, request, *args, **kwargs):
         if request.POST.get("login_as", False):
-            try:
-                user = User.objects.get(email=request.POST["login_as"])
-                if user.is_superuser:
-                    messages.error(
-                        request, "Cannot login as a superuser via this page."
-                    )
-                elif user:
-                    messages.success(request, f"Now logged in as {user.email}.")
-                    login(request, user)
-                    return redirect("log:index")
-            except ObjectDoesNotExist:
-                messages.error(request, "User was not found.")
-
+            self.process_login_as_form(request)
         elif request.POST.get("notify", False):
-            form = AllUserNotificationForm(request.POST)
-            if form.is_valid():
-                for user in User.objects.all():
-                    Notification.objects.create(
-                        user=user,
-                        message=form.cleaned_data["message"],
-                        url=form.cleaned_data["url"],
-                    )
-                messages.success(request, "Notifications sent.")
+            self.process_notify_form(request)
+        return self.get(request, *args, **kwargs)
 
-    login_user_list = User.objects.filter(is_active=True).values_list(
-        "email", flat=True
-    )
+    def process_login_as_form(self, request):
+        try:
+            user = User.objects.get(email=request.POST["login_as"])
+            if user.is_superuser:
+                messages.error(request, "Cannot login as a superuser via this page.")
+            elif user:
+                messages.success(request, f"Now logged in as {user.email}.")
+                login(request, user)
+                return redirect("log:index")
+        except ObjectDoesNotExist:
+            messages.error(request, "User was not found.")
 
-    context = {
-        "login_user_list": login_user_list,
-        "notify_form": AllUserNotificationForm(),
-    }
+    def process_notify_form(self, request):
+        form = AllUserNotificationForm(request.POST)
+        if form.is_valid():
+            for user in User.objects.all():
+                Notification.objects.create(
+                    user=user,
+                    message=form.cleaned_data["message"],
+                    url=form.cleaned_data["url"],
+                )
+            messages.success(request, "Notifications sent.")
 
-    return render(request, "admin_tools.html", context)
 
-
-@login_required
-def trips_redirect(request):
+class TripsRedirect(LoginRequiredMixin, RedirectView):
     """Redirect from /trips/ to /u/username"""
-    return redirect("log:user", username=request.user.username)
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse("log:user", kwargs={"username": self.request.user.username})

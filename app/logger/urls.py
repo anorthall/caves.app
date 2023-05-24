@@ -8,7 +8,7 @@ app_name = "log"
 urlpatterns = [
     path("", views.Index.as_view(), name="index"),
     path("u/<username>/", views.UserProfile.as_view(), name="user"),
-    path("trips/", views.trips_redirect, name="trip_list"),
+    path("trips/", views.TripsRedirect.as_view(), name="trip_list"),
     path("trips/export/", views.export, name="export"),
     path("trip/<int:pk>/", views.TripDetail.as_view(), name="trip_detail"),
     path("trip/<int:pk>/like", views.TripLikeToggle.as_view(), name="trip_like"),
@@ -23,6 +23,6 @@ urlpatterns = [
     path("comment/delete/<int:pk>/", views.DeleteComment.as_view(), name="comment_delete"),  # noqa E501
     path("comment/htmxtrip/<int:pk>/", views.HTMXTripComment.as_view(), name="htmx_trip_comment"),  # noqa E501
     path("statistics/", views.user_statistics, name="statistics"),
-    path("admin-tools/", views.admin_tools, name="admin_tools"),
+    path("admin-tools/", views.AdminTools.as_view(), name="admin_tools"),
     path("charts/", include("logger.charts_urls")),
 ]
