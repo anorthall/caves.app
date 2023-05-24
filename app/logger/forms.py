@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import timezone
-from logger.templatetags.distformat import distformat
+from logger.templatetags.logger_tags import distformat
 from users.models import Notification
 
 from .models import Comment, Trip, TripReport

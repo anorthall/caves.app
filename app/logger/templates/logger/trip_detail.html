@@ -1,6 +1,6 @@
 {% extends "base_sidebar.html" %}
-{% load distformat %}
-{% load user %}
+{% load logger_tags %}
+{% load users_tags %}
 {% block title %}{{ trip.cave_name }}{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 

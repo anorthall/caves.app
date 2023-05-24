@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase, tag
-from users.templatetags.user import user as user_templatetag
+from users.templatetags.users_tags import user as user_templatetag
 
 User = get_user_model()
 

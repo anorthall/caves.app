@@ -1,5 +1,5 @@
-{% load user %}
-{% load get %}
+{% load users_tags %}
+{% load logger_tags %}
 <span id="like-button{{ trip.pk }}">
   <a class="text-decoration-none"
      hx-post="{% url 'log:trip_like' trip.pk %}"

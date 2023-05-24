@@ -28,7 +28,7 @@ from users.models import Notification
 from .forms import AddCommentForm, AllUserNotificationForm, TripForm, TripReportForm
 from .mixins import TripContextMixin, ViewableObjectDetailView
 from .models import Comment, Trip, TripReport
-from .templatetags.distformat import distformat
+from .templatetags.logger_tags import distformat
 
 User = get_user_model()
 

@@ -32,3 +32,8 @@ def distformat(value, format=User.METRIC, simplify=True):
         return format_imperial(value, simplify=simplify)
     else:
         return format_metric(value, simplify=simplify)
+
+
+@register.filter
+def get(dict, value):
+    return dict[value]
