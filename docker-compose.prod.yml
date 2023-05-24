@@ -5,18 +5,18 @@ services:
     image: postgres:15.2-alpine
     restart: always
     volumes:
-      - ./prod-data/db:/var/lib/postgresql/data
+      - ./data/production/db:/var/lib/postgresql/data
     env_file:
-      - ./etc/prod/postgres.env
+      - ./config/docker/production/postgres.env
 
   pgbackups:
     image: prodrigestivill/postgres-backup-local
     restart: always
     user: postgres:postgres
     volumes:
-      - ./prod-data/backups/db:/backups
+      - ./data/production/backups/db:/backups
     env_file:
-      - ./etc/prod/postgres-backup.env
+      - ./config/docker/production/postgres-backup.env
     depends_on:
       - db
 
@@ -25,14 +25,15 @@ services:
     user: 1001:1001
     build:
       context: .
-      dockerfile: ./etc/prod/Dockerfile.prod
-    command: gunicorn cavinglog.wsgi:application --bind 0.0.0.0:8000
+      dockerfile: ./config/docker/production/Dockerfile.prod.web
+    command: gunicorn config.django.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./prod-data/staticfiles:/opt/caves/staticfiles
+      - ./data/production/staticfiles:/opt/caves/staticfiles
+      - ./config/django:/opt/caves/config/django
       - ./app:/opt/caves/app
     ports:
       - 8000:8000
     env_file:
-      - ./etc/prod/prod.env
+      - ./config/docker/production/production.env
     depends_on:
       - db

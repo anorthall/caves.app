@@ -3,6 +3,7 @@ import sys
 
 import django.db
 import factory.random
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from logger.factories import CommentFactory, TripFactory, TripReportFactory
@@ -64,6 +65,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if not settings.DEBUG:
+            self.stderr.write("This command is only intended for use in development.")
+            sys.exit(1)
+
         self.options = options
 
         if options["reports"] < 0:
@@ -122,8 +127,8 @@ class Command(BaseCommand):
                 self.stderr.write(
                     "Perhaps you need to delete your database before "
                     "generating further test data? Try removing the "
-                    "dev-data directory and restarting Docker to reset "
-                    "the development environment."
+                    "data/development directory and restarting Docker to "
+                    "reset the development environment."
                 )
                 self.stderr.write(f"Aborting with {len(user_pks)} users created.")
                 sys.exit("Error creating user")

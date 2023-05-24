@@ -2,4 +2,4 @@
 max-line-length = 88
 extend-ignore = E203
 max-complexity = 10
-exclude = */migrations/*,add_user_trips.py
+exclude = */migrations/*,add_user_trips.py,config/django/settings/*

@@ -1,4 +1,0 @@
-FROM postgres:15.2-alpine
-
-# Load blank database with an admin user only
-ADD ./etc/dev/dev_db_data.sql /docker-entrypoint-initdb.d

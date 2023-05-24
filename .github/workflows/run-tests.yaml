@@ -21,11 +21,13 @@ jobs:
       SQL_DATABASE: postgres
       SQL_HOST: localhost
       SQL_PORT: 5432
+      PYTHONPATH: ${{ github.workspace }}
+      BASE_DIR: ${{ github.workspace }}/app
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python 3.11.3
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.11.3
       - name: Upgrade pip
@@ -33,10 +35,11 @@ jobs:
           pip install --upgrade pip wheel
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r config/requirements/development.txt
       - name: Run Django tests
         working-directory: ./app
         run: |
+          touch ${{ github.workspace }}/config/__init__.py
           coverage run --source=. ./manage.py test -v 2 --noinput
           coverage xml
     services:

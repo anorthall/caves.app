@@ -37,17 +37,17 @@ Additional test data can be generated using the `maketestdata` Django management
 docker-compose exec web-dev ./manage.py maketestdata
 ```
 
-By default, this will create 25 users and 6,000 trips, although this is configurable (see `manage.py maketestdata --help` for more information). Generation of users and trips may take a few minutes on slower systems. Please note that the `maketestdata` command can only create users once, as it will attempt to re-use the same sequential emails on the second attempt. If you wish to re-create users, you can stop the Docker instance and delete the `dev-data` directory, before re-initialising the environment:
+By default, this will create 25 users and 6,000 trips, although this is configurable (see `manage.py maketestdata --help` for more information). Generation of users and trips may take a few minutes on slower systems. Please note that the `maketestdata` command can only create users once, as it will attempt to re-use the same sequential emails on the second attempt. If you wish to re-create users, you can stop the Docker instance and delete the `data/development` directory, before re-initialising the environment:
 
 ```
 docker compose down -v
-rm -r dev-data/
+rm -r data/development/
 docker compose up
 ```
 
 ### Hints
 - Any emails generated whilst using the development environment will be printed directly to the console.
-- Python requirements are listed in `requirements.txt` and can be installed locally (for linting, etc) with `pip install -r requirements.txt`.
+- Python requirements are listed in `config/requirements/development.txt` and can be installed locally (for linting, etc) with `pip install -r config/requirements/development.txt`.
 - Tests can be run via `docker-compose exec web-dev ./manage.py test`.
 
 

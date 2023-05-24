@@ -133,7 +133,5 @@ dmypy.json
 .vscode
 
 # Docker
-dev-data/
-prod-data/
-etc/prod/prod.env
-etc/dev/dev.env
+data/
+config/docker/production/production.env

@@ -4,21 +4,24 @@ services:
   db-dev:
     build:
       context: .
-      dockerfile: ./etc/dev/Dockerfile.dev.db
+      dockerfile: ./config/docker/development/Dockerfile.dev.db
     volumes:
-      - ./dev-data/db:/var/lib/postgresql/data
+      - ./data/development/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   web-dev:
-    build: .
+    build:
+      context: .
+      dockerfile: ./config/docker/development/Dockerfile.dev.web
     command: python manage.py runserver 0.0.0.0:8000 --insecure
     volumes:
       - ./app/:/opt/dev/app/
+      - ./config/django/:/opt/dev/config/django/
     ports:
       - "8000:8000"
     env_file:
-      - ./etc/dev/dev.env
+      - ./config/docker/development/development.env
     depends_on:
       - db-dev

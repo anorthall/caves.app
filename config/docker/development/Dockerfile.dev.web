@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+FROM python:3.11.3-alpine
+
+# Environment setup
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set working directory and create config/__init__.py
+RUN mkdir -p /opt/dev /opt/dev/config
+WORKDIR /opt/dev
+
+# Set Python path for config directory
+RUN touch /opt/dev/config/__init__.py
+ENV PYTHONPATH "/opt/dev/"
+
+# System packages
+RUN apk update \
+    && apk add postgresql-dev gcc python3-dev musl-dev
+
+# Python packages
+RUN pip install --upgrade pip
+COPY ./config/requirements/development.txt ./config/development-requirements.txt
+RUN pip install -r ./config/development-requirements.txt
+
+# Copy entrypoint
+COPY ./config/docker/development/entrypoint.dev.sh config/entrypoint.dev.sh
+RUN chmod +x /opt/dev/config/entrypoint.dev.sh
+
+# Final environment
+WORKDIR /opt/dev/app
+ENV BASE_DIR /opt/dev/app
+
+# Run entrypoint.sh.
+ENTRYPOINT ["/opt/dev/config/entrypoint.dev.sh"]

@@ -11,6 +11,6 @@ import os  # pragma: no cover
 from django.core.wsgi import get_wsgi_application  # pragma: no cover
 
 os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE", "cavinglog.settings"
+    "DJANGO_SETTINGS_MODULE", "config.django.settings.base"
 )  # pragma: no cover  # noqa: E501
 application = get_wsgi_application()  # pragma: no cover

@@ -18,7 +18,7 @@ RUN apk update \
 
 # Python packages
 RUN pip install --upgrade pip
-COPY ./requirements.txt .
+COPY ./config/requirements/production.txt requirements.txt
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/caves/wheels -r requirements.txt
 
 ##################
@@ -34,11 +34,15 @@ COPY --from=builder /usr/src/caves/wheels /opt/caves/wheels
 RUN pip install --no-cache /opt/caves/wheels/*
 
 # Create directories
-RUN mkdir -p /opt/caves /opt/caves/staticfiles
+RUN mkdir -p /opt/caves /opt/caves/staticfiles /opt/caves/config
 
 # Copy entrypoint
-COPY ./etc/prod/entrypoint.prod.sh /opt/caves
-RUN chmod +x /opt/caves/entrypoint.prod.sh
+COPY ./config/docker/production/entrypoint.prod.sh /opt/caves/config
+RUN chmod +x /opt/caves/config/entrypoint.prod.sh
+
+# Set Python path for config directory
+RUN touch /opt/caves/config/__init__.py
+ENV PYTHONPATH "/opt/caves/"
 
 # Set up user
 RUN addgroup --g 1001 caves
@@ -47,5 +51,8 @@ RUN chown caves:caves -R /opt/caves
 USER caves
 WORKDIR /opt/caves/app
 
+# Set base dir for Django contrib
+ENV BASE_DIR "/opt/caves/app"
+
 # Run entrypoint.sh.
-ENTRYPOINT ["/opt/caves/entrypoint.prod.sh"]
+ENTRYPOINT ["/opt/caves/config/entrypoint.prod.sh"]

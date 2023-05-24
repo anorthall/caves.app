@@ -17,10 +17,4 @@ then
     python manage.py migrate
 fi
 
-if [ "$RUN_TESTS" = "yes" ]
-then
-    echo "Running tests..."
-    python manage.py test
-fi
-
 exec "$@"
