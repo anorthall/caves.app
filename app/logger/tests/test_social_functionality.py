@@ -546,7 +546,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         response = self.client.get(
             reverse("users:notification", args=[notification.pk]),
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(notification.read, False)
         self.assertEqual(response.url, reverse("log:index"))
 
