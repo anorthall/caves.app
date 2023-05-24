@@ -23,8 +23,8 @@
             {% csrf_token %}
             <select class="form-select" name="login_as" aria-label="Select user">
               <option selected>Select a user</option>
-              {% for user in login_user_list  %}
-                <option value="{{ user }}">{{ user }}</option>
+              {% for user_email in login_user_list  %}
+                <option value="{{ user_email }}">{{ user_email }}</option>
               {% endfor %}
             </select>
             <button type="submit" class="btn btn-primary mt-3">Login as user</button>

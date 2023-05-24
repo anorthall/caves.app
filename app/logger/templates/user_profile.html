@@ -3,7 +3,7 @@
 {% load static %}
 {% load markdownify %}
 {% block title %}{{ page_title }}{% endblock %}
-{% block description %}{{ user.name }}'s trips on caves.app.{% endblock %}
+{% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
 {% block main %}
   <div class="row page-title mb-3">
@@ -13,15 +13,15 @@
 
     <div class="col d-none d-md-flex justify-content-end align-items-center">
       <small class="text-muted float-right">
-        @{{ user.username }}
+        @{{ profile_user.username }}
       </small>
     </div>
   </div>
 
-  {% if user.bio %}
-    {{ user.bio|markdownify }}
-  {% elif not user.bio and not trips %}
-    {% if request.user == user %}
+  {% if profile_user.bio %}
+    {{ profile_user.bio|markdownify }}
+  {% elif not profile_user.bio and not trips %}
+    {% if user == profile_user %}
       <p>Once you add some trips, or a biography in your profile, they will appear here!</p>
     {% else %}
       <p>This is the profile of a caves.app user who has not added any trips or a bio yet.</p>
@@ -140,7 +140,7 @@
                 {% if trip.report %}
                   <a class="text-warning" href="{% url 'log:report_detail' pk=trip.report.pk %}"><i class="bi bi-card-text"></i></a>&nbsp;
                 {% endif %}
-                {% if request.user == user %}
+                {% if user == profile_user %}
                   <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>&nbsp;
                 {% endif %}
               </td>
@@ -152,7 +152,7 @@
       {% include "paginate_bootstrap.html" %}
     </div>
   {% else %}
-    {% if request.user == user %}
+    {% if user == profile_user %}
       You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
     {% endif %}
   {% endif %}

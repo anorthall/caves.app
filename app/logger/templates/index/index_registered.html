@@ -76,7 +76,7 @@
                 {% for name, distance in trip.distances.items %}
                   <div class="col">
                     <small class="text-muted">{{ name|capfirst }}</small><br />
-                    {{ distance|distformat:request.user.units }}
+                    {{ distance|distformat:user.units }}
                   </div>
                 {% endfor %}
               </div>

@@ -106,22 +106,22 @@ class UserProfile(ListView):
     ordering = ("-start", "pk")
 
     def setup(self, *args, **kwargs):
-        """Assign self.user and perform permissions checks"""
+        """Assign self.profile_user and perform permissions checks"""
         super().setup(*args, **kwargs)
-        self.user = get_object_or_404(User, username=self.kwargs["username"])
-        if not self.user.is_viewable_by(self.request.user):
+        self.profile_user = get_object_or_404(User, username=self.kwargs["username"])
+        if not self.profile_user.is_viewable_by(self.request.user):
             raise PermissionDenied
 
     def get_queryset(self):
         qs = (
-            Trip.objects.filter(user=self.user)
+            Trip.objects.filter(user=self.profile_user)
             .select_related("report")
             .order_by(*self.get_ordering())
         )
 
         # Sanitise trips to be privacy aware
         # TODO: This is done in other views - extract to a mixin
-        if not self.user == self.request.user:
+        if not self.profile_user == self.request.user:
             privacy_aware_trips = []
             for trip in qs:
                 if trip.is_viewable_by(self.request.user):
@@ -148,7 +148,7 @@ class UserProfile(ListView):
 
     def get_context_data(self):
         context = super().get_context_data()
-        context["user"] = self.user
+        context["profile_user"] = self.profile_user
         context["page_title"] = self.get_page_title()
         if self.request.user.is_authenticated:
             context["dist_format"] = self.request.user.units
@@ -163,10 +163,10 @@ class UserProfile(ListView):
         return context
 
     def get_page_title(self):
-        if self.user.page_title:
-            return self.user.page_title
+        if self.profile_user.page_title:
+            return self.profile_user.page_title
         else:
-            return f"{self.user.name}'s trips"
+            return f"{self.profile_user.name}'s trips"
 
 
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

@@ -9,7 +9,7 @@
 
       <div class="collapse navbar-collapse" id="mainNavbar">
         <ul class="navbar-nav ms-auto">
-          {% if request.user.is_authenticated %}
+          {% if user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
                 <i class="bi bi-plus-circle"></i>&nbsp; Add
@@ -17,7 +17,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link {% active_link 'log:user' username=request.user.username %}" href="{% url 'log:user' username=request.user.username %}">
+              <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
                 <i class="bi bi-card-list"></i>&nbsp; Trips
               </a>
             </li>
@@ -43,7 +43,7 @@
             {% include "navbar_unregistered.html" %}
           {% endif %}
 
-          {% if request.user.is_superuser %}
+          {% if user.is_superuser %}
             <li class="nav-item">
               <a class="nav-link {% active_link 'log:statistics' %}" href="{% url 'admin:index' %}">
                 <i class="bi bi-gear"></i>&nbsp; Admin

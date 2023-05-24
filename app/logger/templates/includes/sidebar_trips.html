@@ -1,14 +1,14 @@
 {% load active_link_tags %}
 
 {% if trip %}
-  {% if request.user == trip.user %}
+  {% if user == object_owner %}
     <div class="card">
       <div class="card-header text-muted">
         Your trip
       </div>
 
       <nav class="nav nav-pills flex-column m-2">
-        <a class="nav-link {% active_link 'log:user' username=request.user.username %}" href="{% url 'log:user' username=request.user.username %}">
+        <a class="nav-link {% active_link 'log:user' username=object_owner.username %}" href="{% url 'log:user' username=object_owner.username %}">
           <i class="bi bi-card-list"></i>&nbsp; Trip list
         </a>
 
@@ -50,12 +50,12 @@
   {% else %}
     <div class="card">
       <div class="card-header text-muted">
-        Trip by {{ user.name }}
+        Trip by {{ object_owner.name }}
       </div>
 
       <nav class="nav nav-pills flex-column m-2">
         {% if can_view_profile %}
-          <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
+          <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
             <i class="bi bi-card-list"></i>&nbsp; View profile
           </a>
         {% endif %}
@@ -64,8 +64,8 @@
           <i class="bi bi-info-circle"></i>&nbsp; View this trip
         </a>
 
-        {% if can_add_friend and request.user.is_authenticated %}
-          <a class="nav-link" href="{% url 'users:friends' %}?u={{ user.username }}">
+        {% if can_add_friend and user.is_authenticated %}
+          <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">
             <i class="bi bi-plus-lg"></i>&nbsp; Add as friend
           </a>
         {% endif %}
@@ -79,7 +79,7 @@
     </div>
   {% endif %}
 
-  {% if request.user == trip.user %}
+  {% if user == object_owner %}
     <div class="modal fade" id="deleteTripModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">

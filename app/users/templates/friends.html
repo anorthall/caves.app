@@ -70,7 +70,7 @@
             <tbody class="align-middle">
               {% for friend_request in friend_requests %}
                 <tr>
-                  {% if friend_request.user_from == request.user %}
+                  {% if friend_request.user_from == user %}
                     <td>You</td>
                   {% else %}
                     <td>
@@ -78,7 +78,7 @@
                     </td>
                   {% endif %}
 
-                  {% if friend_request.user_to == request.user %}
+                  {% if friend_request.user_to == user %}
                     <td>You</td>
                   {% else %}
                     <td>
@@ -87,7 +87,7 @@
                   {% endif %}
 
                   <td class="text-end">
-                    {% if friend_request.user_to == request.user %}
+                    {% if friend_request.user_to == user %}
                       <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#acceptReqModal{{ forloop.counter }}">
                         <i class="bi bi-check-lg"></i>
                       </button>
@@ -125,7 +125,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            {% if friend_request.user_from == request.user %}
+            {% if friend_request.user_from == user %}
               Are you sure you wish to delete a friend request that you sent to
               {% user friend_request.user_to %}?
             {% else %}
@@ -145,7 +145,7 @@
       </div>
     </div>
 
-    {% if friend_request.user_to == request.user %}
+    {% if friend_request.user_to == user %}
       <div class="modal fade" id="acceptReqModal{{ forloop.counter }}" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">

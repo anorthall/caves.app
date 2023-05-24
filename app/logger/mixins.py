@@ -26,12 +26,12 @@ class TripContextMixin:
         else:
             raise TypeError("Object is not a Trip or TripReport")
 
-        user = trip.user
-        if not user == self.request.user:
-            context["can_view_profile"] = user.is_viewable_by(self.request.user)
+        object_owner = trip.user
+        if not object_owner == self.request.user:
+            context["can_view_profile"] = object_owner.is_viewable_by(self.request.user)
 
-            if self.request.user not in user.friends.all():
-                if user.allow_friend_username:
+            if self.request.user not in object_owner.friends.all():
+                if object_owner.allow_friend_username:
                     context["can_add_friend"] = True
 
             if report:
@@ -39,7 +39,7 @@ class TripContextMixin:
 
         context["trip"] = trip
         context["report"] = report
-        context["user"] = user  # This is the author of the trip/report
+        context["object_owner"] = object_owner
 
         # Comment form
         initial = {

@@ -70,8 +70,8 @@
           {% for name, dist in trip.distances.items %}
             <div class="col">
               <small class="text-muted">{{ name|capfirst }}</small><br />
-              {% if request.user.is_authenticated %}
-                {{ dist|distformat:request.user.units }}
+              {% if user.is_authenticated %}
+                {{ dist|distformat:user.units }}
               {% else %}
                 {{ dist }}
               {% endif %}
@@ -109,7 +109,7 @@
 
     <div class="card-footer">
       <span class="float-start">
-        {% if request.user.is_authenticated %}
+        {% if user.is_authenticated %}
           {% include "includes/htmx_trip_like.html" %}
           {% if trip.likes_count > 0 %}
             <span class="ms-1" data-bs-toggle="modal" data-bs-target="#usersThatLikedTrip{{ trip.pk }}"><i class="bi bi-info-circle"></i></span>
@@ -139,7 +139,7 @@
         {% endif %}
       </span>
 
-      {% if user.allow_comments %}
+      {% if object_owner.allow_comments %}
         <span class="float-end d-none d-md-block">
           <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
         </span>
