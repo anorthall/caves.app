@@ -1,8 +1,6 @@
 import humanize
 from distance import D, DistanceField, DistanceUnitField
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -13,26 +11,6 @@ from .validators import (
     horizontal_dist_validator,
     vertical_dist_validator,
 )
-
-
-class Comment(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    content = models.TextField()
-    added = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("content_type", "object_id")
-
-    class Meta:
-        indexes = [
-            models.Index(fields=["content_type", "object_id"]),
-        ]
-        ordering = ["-added"]
-
-    def __str__(self):
-        return f"Comment by {self.author} on {self.content_object}"
 
 
 class Trip(models.Model):
@@ -203,7 +181,6 @@ class Trip(models.Model):
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="liked_trips"
     )
-    comments = GenericRelation(Comment)
     privacy = models.CharField(
         "Who can view this trip?",
         max_length=10,
@@ -403,7 +380,6 @@ class TripReport(models.Model):
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="liked_reports"
     )
-    comments = GenericRelation("Comment")
 
     # Content
     title = models.CharField(max_length=100)

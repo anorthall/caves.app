@@ -6,7 +6,7 @@ import factory.random
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from logger.factories import CommentFactory, TripFactory, TripReportFactory
+from logger.factories import TripFactory, TripReportFactory
 from logger.models import Trip
 from users.factories import UserFactory
 
@@ -155,8 +155,9 @@ class Command(BaseCommand):
             num_likes, num_comments = 0, 0
             if not self.options["no_likes"]:
                 num_likes = self._add_likes_to_trip(trip, users)
-            if not self.options["no_comments"]:
-                num_comments = self._add_comments_to_object(trip, users)
+            # TODO: Refactor comments
+            # if not self.options["no_comments"]:
+            #     num_comments = self._add_comments_to_object(trip, users)
 
             if self.options["verbosity"] >= 2:
                 self.stdout.write(
@@ -186,8 +187,9 @@ class Command(BaseCommand):
             reports.append(report)
 
             num_comments = 0
-            if with_comments:
-                num_comments = self._add_comments_to_object(report, users)
+            # TODO: Refactor comments
+            # if with_comments:
+            #     num_comments = self._add_comments_to_object(report, users)
 
             if self.options["verbosity"] >= 2:
                 self.stdout.write(
@@ -268,14 +270,15 @@ class Command(BaseCommand):
 
         return num_likes
 
-    def _add_comments_to_object(self, object, users):
-        """Add comments to an object"""
-        if self.options["no_comments"]:
-            return 0
+    # TODO: Refactor comments
+    # def _add_comments_to_object(self, object, users):
+    #     """Add comments to an object"""
+    #     if self.options["no_comments"]:
+    #         return 0
 
-        num_comments = random.randint(0, 6)
-        for _ in range(num_comments):
-            user = random.choice(users)
-            CommentFactory(content_object=object, author=user)
+    #     num_comments = random.randint(0, 6)
+    #     for _ in range(num_comments):
+    #         user = random.choice(users)
+    #         CommentFactory(content_object=object, author=user)
 
-        return num_comments
+    #     return num_comments

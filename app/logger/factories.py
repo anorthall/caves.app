@@ -8,7 +8,7 @@ from factory import random
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from .models import Comment, Trip, TripReport
+from .models import Trip, TripReport
 
 fake = Faker()
 
@@ -281,10 +281,11 @@ class TripReportFactory(DjangoModelFactory):
         return kwargs
 
 
-class CommentFactory(DjangoModelFactory):
-    class Meta:
-        model = Comment
+# TODO: Refactor comments
+# class CommentFactory(DjangoModelFactory):
+#     class Meta:
+#         model = Comment
 
-    author = factory.Iterator(get_user_model().objects.filter(is_active=True))
-    content_object = factory.Iterator(Trip.objects.filter(user__allow_comments=True))
-    content = factory.Faker("text", max_nb_chars=400)
+#     author = factory.Iterator(get_user_model().objects.filter(is_active=True))
+#     content_object = factory.Iterator(Trip.objects.filter(user__allow_comments=True))
+#     content = factory.Faker("text", max_nb_chars=400)

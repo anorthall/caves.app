@@ -30,9 +30,12 @@
     </div>
   </div>
 
-  {% with tripreport as object %}
-    <div class="mt-4"></div>
-    {% include "includes/comments.html" %}
-  {% endwith %}
+  {% comment %}
+    TODO: Refactor comments
+    {% with tripreport as object %}
+      <div class="mt-4"></div>
+      {% include "includes/comments.html" %}
+    {% endwith %}
+  {% endcomment %}
 
 {% endblock main %}

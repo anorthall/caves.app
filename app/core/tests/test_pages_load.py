@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
-from logger.models import Comment, Trip, TripReport
+from logger.models import Trip, TripReport
 from users.models import FriendRequest
 
 User = get_user_model()
@@ -269,27 +269,30 @@ class TestAllPagesLoad(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_htmx_comment_page_loads(self):
-        """Test that the HTMX comment page loads"""
-        self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
-        )
-        self.assertEqual(response.status_code, 200)
+    # TODO: Refactor comments
+    # def test_htmx_comment_page_loads(self):
+    #     """Test that the HTMX comment page loads"""
+    #     self.client.force_login(self.user)
+    #     response = self.client.get(
+    #         reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
-    def test_htmx_comment_page_loads_with_comments(self):
-        """Test that the HTMX comment page loads with comments"""
-        self.client.force_login(self.user)
-        for i in range(10):
-            c = Comment.objects.create(
-                author=self.user, content_object=self.trip, content=f"Test Comment {i}"
-            )
-            c.save()
+    # def test_htmx_comment_page_loads_with_comments(self):
+    #     """Test that the HTMX comment page loads with comments"""
+    #     self.client.force_login(self.user)
+    #     for i in range(10):
+    #         c = Comment.objects.create(
+    #             author=self.user,
+    #             content_object=self.trip,
+    #             content=f"Test Comment {i}"
+    #         )
+    #         c.save()
 
-        response = self.client.get(
-            reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
-        )
-        self.assertEqual(response.status_code, 200)
+    #     response = self.client.get(
+    #         reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
     def test_htmx_trip_like_toggle_page_loads(self):
         """Test that the HTMX trip like toggle page loads"""

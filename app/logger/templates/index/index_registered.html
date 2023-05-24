@@ -90,15 +90,18 @@
               {% endwith %}
             </span>
 
-            {% if trip.user.allow_comments %}
-              <span hx-get="{% url 'log:htmx_trip_comment' trip.pk %}" hx-target="#comment{{ trip.pk }}" class="float-end">
-                <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}<span class="d-none d-md-inline"> comment{{ trip.comments_count|pluralize }}</span>
-              </span>
-            {% endif %}
+            {% comment %}
+              TODO: Refactor comments
+              {% if trip.user.allow_comments %}
+                <span hx-get="{% url 'log:htmx_trip_comment' trip.pk %}" hx-target="#comment{{ trip.pk }}" class="float-end">
+                  <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}<span class="d-none d-md-inline"> comment{{ trip.comments_count|pluralize }}</span>
+                </span>
+              {% endif %}
+            {% endcomment %}
           </div>
         </div>
 
-        <div class="shadow mb-4" id="comment{{ trip.pk }}"></div>
+        {% comment %} TODO: Refactor comments  <div class="shadow mb-4" id="comment{{ trip.pk }}"></div> {% endcomment %}
       {% endfor %}
     </div>
 

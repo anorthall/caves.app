@@ -1,7 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from django.views.generic import DetailView
 
-from .forms import AddCommentForm
 from .models import Trip, TripReport
 
 
@@ -40,13 +39,6 @@ class TripContextMixin:
         context["trip"] = trip
         context["report"] = report
         context["object_owner"] = object_owner
-
-        # Comment form
-        initial = {
-            "pk": self.object.pk,
-            "type": self.object.__class__.__name__.lower(),
-        }
-        context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
         return context
 
 

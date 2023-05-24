@@ -25,9 +25,9 @@ from django.views.generic import (
 from logger import statistics
 from users.models import Notification
 
-from .forms import AddCommentForm, AllUserNotificationForm, TripForm, TripReportForm
+from .forms import AllUserNotificationForm, TripForm, TripReportForm
 from .mixins import TripContextMixin, ViewableObjectDetailView
-from .models import Comment, Trip, TripReport
+from .models import Trip, TripReport
 from .templatetags.logger_tags import distformat
 
 User = get_user_model()
@@ -67,10 +67,9 @@ class Index(TemplateView):
         trips = (
             Trip.objects.filter(Q(user__in=friends) | Q(user=self.request.user))
             .select_related("user")
-            .prefetch_related("comments", "likes", "user__friends")
+            .prefetch_related("likes", "user__friends")
             .annotate(
                 likes_count=Count("likes", distinct=True),
-                comments_count=Count("comments", distinct=True),
                 user_liked=Exists(
                     User.objects.filter(
                         pk=self.request.user.pk, liked_trips=OuterRef("pk")
@@ -183,14 +182,11 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             Trip.objects.all()
             .select_related("user", "report")
             .prefetch_related(
-                "comments",
-                "comments__author",
                 "likes",
                 "likes__friends",
                 "user__friends",
             )
             .annotate(
-                comments_count=Count("comments", distinct=True),
                 likes_count=Count("likes", distinct=True),
                 user_liked=Exists(
                     User.objects.filter(
@@ -312,11 +308,7 @@ class ReportDetail(TripContextMixin, ViewableObjectDetailView):
         qs = (
             TripReport.objects.all()
             .select_related("user", "trip")
-            .prefetch_related(
-                "comments",
-                "comments__author",
-                "user__friends",
-            )
+            .prefetch_related("user__friends")
             .annotate(
                 likes_count=Count("likes", distinct=True),
             )
@@ -359,78 +351,79 @@ class ReportDelete(LoginRequiredMixin, View):
         return redirect("log:trip_detail", pk=trip.pk)
 
 
-class AddComment(LoginRequiredMixin, View):
-    def post(self, request):
-        form = AddCommentForm(self.request, request.POST)
-        if form.is_valid():
-            form.save()
-            if form.object.user != request.user:
-                form.object.user.notify(
-                    f"{request.user} commented on your {form.type_str}",
-                    form.object.get_absolute_url(),
-                )
-            messages.success(
-                request,
-                "Your comment has been added.",
-            )
-        else:
-            if form.errors.get("content", None):
-                for error in form.errors["content"]:
-                    messages.error(request, error)
-            else:
-                messages.error(
-                    request,
-                    "There was an error adding your comment. Please try again.",
-                )
-        if hasattr(form, "object"):
-            return redirect(form.object.get_absolute_url())
-        else:
-            return redirect("log:index")
+# TODO: Refactor comments
+# class AddComment(LoginRequiredMixin, View):
+#     def post(self, request):
+#         form = AddCommentForm(self.request, request.POST)
+#         if form.is_valid():
+#             form.save()
+#             if form.object.user != request.user:
+#                 form.object.user.notify(
+#                     f"{request.user} commented on your {form.type_str}",
+#                     form.object.get_absolute_url(),
+#                 )
+#             messages.success(
+#                 request,
+#                 "Your comment has been added.",
+#             )
+#         else:
+#             if form.errors.get("content", None):
+#                 for error in form.errors["content"]:
+#                     messages.error(request, error)
+#             else:
+#                 messages.error(
+#                     request,
+#                     "There was an error adding your comment. Please try again.",
+#                 )
+#         if hasattr(form, "object"):
+#             return redirect(form.object.get_absolute_url())
+#         else:
+#             return redirect("log:index")
 
 
-class HTMXTripComment(LoginRequiredMixin, TemplateView):
-    template_name = "includes/comments.html"
+# class HTMXTripComment(LoginRequiredMixin, TemplateView):
+#     template_name = "includes/comments.html"
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        trip = self.get_trip()
+#     def get_context_data(self, *args, **kwargs):
+#         context = super().get_context_data(*args, **kwargs)
+#         trip = self.get_trip()
 
-        initial = {"pk": trip.pk, "type": "trip"}
-        context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
-        context["display_hide_button"] = True
-        context["object"] = trip
-        context["object_owner"] = trip.user
-        return context
+#         initial = {"pk": trip.pk, "type": "trip"}
+#         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
+#         context["display_hide_button"] = True
+#         context["object"] = trip
+#         context["object_owner"] = trip.user
+#         return context
 
-    def get_trip(self):
-        trip = (
-            Trip.objects.filter(pk=self.kwargs["pk"])
-            .prefetch_related("comments", "comments__author")
-            .first()
-        )
+#     def get_trip(self):
+#         trip = (
+#             Trip.objects.filter(pk=self.kwargs["pk"])
+#             .prefetch_related("comments", "comments__author")
+#             .first()
+#         )
 
-        if not trip or not trip.is_viewable_by(self.request.user):
-            raise PermissionDenied
+#         if not trip or not trip.is_viewable_by(self.request.user):
+#             raise PermissionDenied
 
-        return trip
+#         return trip
 
 
-class DeleteComment(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        comment = get_object_or_404(Comment, pk=pk)
-        if (
-            comment.author == request.user
-            or comment.content_object.user == request.user  # noqa: W503
-            or request.user.is_superuser  # noqa: W503
-        ):
-            comment.delete()
-            messages.success(
-                request,
-                "The comment has been deleted.",
-            )
-        else:
-            raise PermissionDenied
-        return redirect(comment.content_object.get_absolute_url())
+# class DeleteComment(LoginRequiredMixin, View):
+#     def post(self, request, pk):
+#         comment = get_object_or_404(Comment, pk=pk)
+#         if (
+#             comment.author == request.user
+#             or comment.content_object.user == request.user  # noqa: W503
+#             or request.user.is_superuser  # noqa: W503
+#         ):
+#             comment.delete()
+#             messages.success(
+#                 request,
+#                 "The comment has been deleted.",
+#             )
+#         else:
+#             raise PermissionDenied
+#         return redirect(comment.content_object.get_absolute_url())
 
 
 class TripLikeToggle(LoginRequiredMixin, TemplateView):

@@ -139,17 +139,23 @@
         {% endif %}
       </span>
 
-      {% if object_owner.allow_comments %}
-        <span class="float-end d-none d-md-block">
-          <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
-        </span>
-      {% endif %}
+      {% comment %}
+        TODO: Refactor comments
+        {% if object_owner.allow_comments %}
+          <span class="float-end d-none d-md-block">
+            <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
+          </span>
+        {% endif %}
+      {% endcomment %}
     </div>
   </div>
 
-  {% with trip as object %}
-    <div class="mt-4"></div>
-    {% include "includes/comments.html" %}
-  {% endwith %}
+  {% comment %}
+    TODO: Refactor comments
+    {% with trip as object %}
+      <div class="mt-4"></div>
+      {% include "includes/comments.html" %}
+    {% endwith %}
+  {% endcomment %}
 
 {% endblock main %}

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.forms import ModelForm
 from logger.forms import DistanceUnitFormMixin
 
-from .models import Comment, Trip, TripReport
+from .models import Trip, TripReport
 
 
 class TripAdminForm(DistanceUnitFormMixin, ModelForm):
@@ -103,12 +103,4 @@ class TripReportAdmin(admin.ModelAdmin):
     list_filter = ("user", "pub_date", "privacy")
     search_fields = ("title", "content")
     prepopulated_fields = {"slug": ("title",)}
-    readonly_fields = ("added", "updated")
-
-
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ("author", "content_type", "object_id", "added")
-    list_filter = ("content_type", "added")
-    search_fields = ("content",)
     readonly_fields = ("added", "updated")
