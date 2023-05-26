@@ -287,7 +287,10 @@ class Trip(models.Model):
                 liked_user_names.append(f"{number_of_others} others")
 
         if len(liked_user_names) == 1:
-            return f"{liked_user_names[0]} liked this"
+            if self_liked:
+                return "You liked this"
+            else:
+                return f"{liked_user_names[0]} liked this"
         else:
             english_list = ", ".join(liked_user_names[:-1])
             english_list = english_list + ", and " + liked_user_names[-1]
