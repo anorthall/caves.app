@@ -4,9 +4,19 @@
 {% load humanize %}
 
 {% block main %}
-  <h1 class="fs-5 mb-3 ms-3">
-    You &amp; your friends &nbsp;<i class="bi bi-arrow-down"></i>
-  </h1>
+  <div class="row mb-2">
+    <div class="col-12 col-lg-9 col-xl-8">
+      <div class="d-flex justify-content-between">
+        <h1 class="fs-5 ms-3">
+          You &amp; your friends &nbsp;<i class="bi bi-arrow-down"></i>
+        </h1>
+        <div class="text-muted">
+          <a class="btn btn-sm {% if ordering == "-added" %}btn-primary{% else %}btn-secondary{% endif %}" href="?sort=-added">Added</a>
+          <a class="btn btn-sm {% if ordering == "-start" %}btn-primary{% else %}btn-secondary{% endif %}" href="?sort=-start">Date</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="row">
     <div class="col-12 col-lg-9 col-xl-8">
@@ -19,23 +29,23 @@
           <div class="card-body">
             <div class="row row-cols-2 g-3">
               <div class="col">
-                <small class="text-muted">Start</small><br />
+                <small class="text-muted trip-field">Start</small><br />
                 {{ trip.start|naturalday:"D, jS M y"|capfirst }}, {{ trip.start|time:"g:i a" }}
               </div>
 
               <div class="col">
-                <small class="text-muted">Type</small><br />
+                <small class="text-muted trip-field">Type</small><br />
                 {{ trip.type }}<br />
               </div>
 
               {% if trip.end %}
                 <div class="col">
-                  <small class="text-muted">End</small><br />
+                  <small class="text-muted trip-field">End</small><br />
                   {{ trip.end|naturalday:"D, jS M y"|capfirst }}, {{ trip.end|time:"g:i a" }}
                 </div>
 
                 <div class="col">
-                  <small class="text-muted">Duration</small><br />
+                  <small class="text-muted trip-field">Duration</small><br />
                   {{ trip.duration_str }}<br />
                 </div>
               {% endif %}
@@ -47,7 +57,7 @@
               <div class="row row-cols-2 g-3">
                 {% if trip.cavers %}
                   <div class="col">
-                    <small class="text-muted">Cavers</small><br />
+                    <small class="text-muted trip-field">Cavers</small><br />
                     {{ trip.cavers }}
                   </div>
                 {% endif %}
@@ -55,13 +65,13 @@
                 {% if trip.clubs or trip.expedition %}
                   <div class="col">
                     {% if trip.clubs and trip.expedition %}
-                      <small class="text-muted">Organisations</small><br />
+                      <small class="text-muted trip-field">Organisations</small><br />
                       {{ trip.expedition }}</span>, {{ trip.clubs }}<br />
                     {% elif trip.clubs %}
-                      <small class="text-muted">Clubs</small><br />
+                      <small class="text-muted trip-field">Clubs</small><br />
                       {{ trip.clubs }}
                     {% elif trip.expedition %}
-                      <small class="text-muted">Expedition</small><br />
+                      <small class="text-muted trip-field">Expedition</small><br />
                       {{ trip.expedition }}
                     {% endif %}
                   </div>
@@ -75,7 +85,7 @@
               <div class="row row-cols-2 g-3">
                 {% for name, distance in trip.distances.items %}
                   <div class="col">
-                    <small class="text-muted">{{ name|capfirst }}</small><br />
+                    <small class="text-muted trip-field">{{ name|capfirst }}</small><br />
                     {{ distance|distformat:user.units }}
                   </div>
                 {% endfor %}

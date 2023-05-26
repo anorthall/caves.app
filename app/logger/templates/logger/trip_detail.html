@@ -15,20 +15,20 @@
       <div class="row row-cols-2 row-cols-md-3 g-3">
       <!-- Start time-->
         <div class="col">
-          <small class="text-muted">Date/time entered</small><br />
+          <small class="text-muted trip-field">Date/time entered</small><br />
           {{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}
         </div>
 
         {% if trip.end %}
         <!-- Duration -->
           <div class="col">
-            <small class="text-muted">Trip duration</small><br />
+            <small class="text-muted trip-field">Trip duration</small><br />
             {{ trip.duration_str }}
           </div>
 
         <!-- End time -->
           <div class="col">
-            <small class="text-muted">Date/time exited</small><br />
+            <small class="text-muted trip-field">Date/time exited</small><br />
             {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
           </div>
         {% endif %}
@@ -40,7 +40,7 @@
           {% if trip.cavers %}
           <!-- Cavers -->
             <div class="col-12 col-lg-6 col-xl-4">
-              <small class="text-muted">Cavers on trip</small><br />
+              <small class="text-muted trip-field">Cavers on trip</small><br />
               {{ trip.cavers }}
             </div>
           {% endif %}
@@ -48,7 +48,7 @@
           {% if trip.clubs %}
           <!-- Clubs -->
             <div class="col-6 col-xl-4">
-              <small class="text-muted">Clubs</small><br />
+              <small class="text-muted trip-field">Clubs</small><br />
               {{ trip.clubs }}
             </div>
           {% endif %}
@@ -56,7 +56,7 @@
           {% if trip.expedition %}
           <!-- Expedition -->
             <div class="col-6 col-xl-4">
-              <small class="text-muted">Expedition</small><br />
+              <small class="text-muted trip-field">Expedition</small><br />
               {{ trip.expedition }}
             </div>
           {% endif %}
@@ -69,7 +69,7 @@
         <div class="row row-cols-2 row-cols-md-3 g-3">
           {% for name, dist in trip.distances.items %}
             <div class="col">
-              <small class="text-muted">{{ name|capfirst }}</small><br />
+              <small class="text-muted trip-field">{{ name|capfirst }}</small><br />
               {% if user.is_authenticated %}
                 {{ dist|distformat:user.units }}
               {% else %}
@@ -86,7 +86,7 @@
       <!-- Notes -->
         <div class="row g-3">
           <div class="col notes-display">
-            <small class="text-muted">Notes</small><br />
+            <small class="text-muted trip-field">Notes</small><br />
             {{ trip.notes|linebreaks }}
           </div>
         </div>
@@ -98,7 +98,7 @@
       <!-- External Resources -->
         <div class="row g-3">
           <div class="col">
-            <small class="text-muted">External resources</small>
+            <small class="text-muted trip-field">External resources</small>
             <ol class="mb-0">
               {% if trip.cave_url %}<li><a href="{{ trip.cave_url }}">Website for {{ trip.cave_name }}</a></li>{% endif %}
             </ol>

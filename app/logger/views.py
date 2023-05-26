@@ -45,7 +45,8 @@ class Index(TemplateView):
     def get_authenticated_context(self, **kwargs):
         context = {}
         context["news"] = self._get_news_context()
-        context["trips"] = self._get_trips_context()
+        context["ordering"] = self._get_and_set_ordering()
+        context["trips"] = self._get_trips_context(context["ordering"])
         context["liked_str"] = self._get_liked_str_context(context["trips"])
 
         if len(context["trips"]) == 0:
@@ -62,8 +63,9 @@ class Index(TemplateView):
             .order_by("-posted_at")[:3]
         )
 
-    def _get_trips_context(self):
+    def _get_trips_context(self, ordering):
         friends = self.request.user.friends.all()
+
         trips = (
             Trip.objects.filter(Q(user__in=friends) | Q(user=self.request.user))
             .select_related("user")
@@ -76,7 +78,7 @@ class Index(TemplateView):
                     ).only("pk")
                 ),
             )
-        ).order_by("-added")[
+        ).order_by(ordering)[
             :25
         ]  # TODO: Make this configurable
 
@@ -84,6 +86,17 @@ class Index(TemplateView):
         sanitised_trips = [x for x in trips if x.is_viewable_by(self.request.user)]
 
         return sanitised_trips
+
+    def _get_and_set_ordering(self):
+        """Get the ordering from GET params and save it to the user model
+        if it is valid. Return the ordering to be used in the template."""
+        allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
+        if self.request.GET.get("sort") in allowed_ordering:
+            self.request.user.feed_ordering = self.request.GET.get("sort")
+            self.request.user.save()
+            return self.request.GET.get("sort")
+        else:
+            return self.request.user.feed_ordering
 
     def _get_liked_str_context(self, trips):
         friends = self.request.user.friends.all()

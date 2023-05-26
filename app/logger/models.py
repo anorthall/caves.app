@@ -287,8 +287,7 @@ class Trip(models.Model):
                 liked_user_names.append(f"{number_of_others} others")
 
         if len(liked_user_names) == 1:
-            capfirst = liked_user_names[0].capitalize()
-            return f"{capfirst} liked this"
+            return f"{liked_user_names[0]} liked this"
         else:
             english_list = ", ".join(liked_user_names[:-1])
             english_list = english_list + ", and " + liked_user_names[-1]
@@ -333,7 +332,9 @@ class Trip(models.Model):
         for field in self._meta.fields:
             if isinstance(field, DistanceField):
                 if getattr(self, field.name) > D(m=0):
-                    distances[field.verbose_name] = getattr(self, field.name)
+                    distances[field.verbose_name.replace(" distance", "")] = getattr(
+                        self, field.name
+                    )
         return distances
 
     @property

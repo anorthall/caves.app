@@ -205,6 +205,21 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         ),
     )
 
+    # Feed settings
+    # feed_ordering value should be a value which can be passed to
+    # Trip.objects.order_by() to order trips in the feed.
+    FEED_ADDED = "-added"
+    FEED_DATE = "-start"
+    FEED_ORDERING_CHOICES = [
+        (FEED_ADDED, "Recently added"),
+        (FEED_DATE, "Trip date"),
+    ]
+    feed_ordering = models.CharField(
+        default=FEED_ADDED,
+        max_length=15,
+        choices=FEED_ORDERING_CHOICES,
+    )
+
     # All other settings
     timezone = TimeZoneField(
         default="Europe/London",
