@@ -10,9 +10,17 @@
         <h1 class="fs-5 ms-3 mb-0 align-self-center">
           You &amp; your friends &nbsp;<i class="bi bi-arrow-down"></i>
         </h1>
-        <div class="text-muted">
-          <a class="btn btn-sm {% if ordering == "-added" %}btn-primary{% else %}btn-secondary{% endif %}" href="?sort=-added">Added</a>
-          <a class="btn btn-sm {% if ordering == "-start" %}btn-primary{% else %}btn-secondary{% endif %}" href="?sort=-start">Date</a>
+        <div class="d-flex flex-row text-muted">
+          <form method="post" action="{% url 'log:set_feed_ordering' %}" class="me-1">
+            {% csrf_token %}
+            <input type="hidden" name="sort" value="-added">
+            <input type="submit" value="Added" class="btn btn-sm {% if ordering == "-added" %}btn-primary{% else %}btn-secondary{% endif %}">
+          </form>
+          <form method="post" action="{% url 'log:set_feed_ordering' %}">
+            {% csrf_token %}
+            <input type="hidden" name="sort" value="-start">
+            <input type="submit" value="Date" class="btn btn-sm {% if ordering == "-start" %}btn-primary{% else %}btn-secondary{% endif %}">
+          </form>
         </div>
       </div>
     </div>

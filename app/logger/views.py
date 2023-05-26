@@ -45,7 +45,7 @@ class Index(TemplateView):
     def get_authenticated_context(self, **kwargs):
         context = {}
         context["news"] = self._get_news_context()
-        context["ordering"] = self._get_and_set_ordering()
+        context["ordering"] = self.request.user.feed_ordering
         context["trips"] = self._get_trips_context(context["ordering"])
         context["liked_str"] = self._get_liked_str_context(context["trips"])
 
@@ -86,17 +86,6 @@ class Index(TemplateView):
         sanitised_trips = [x for x in trips if x.is_viewable_by(self.request.user)]
 
         return sanitised_trips
-
-    def _get_and_set_ordering(self):
-        """Get the ordering from GET params and save it to the user model
-        if it is valid. Return the ordering to be used in the template."""
-        allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
-        if self.request.GET.get("sort") in allowed_ordering:
-            self.request.user.feed_ordering = self.request.GET.get("sort")
-            self.request.user.save()
-            return self.request.GET.get("sort")
-        else:
-            return self.request.user.feed_ordering
 
     def _get_liked_str_context(self, trips):
         friends = self.request.user.friends.all()
@@ -697,3 +686,14 @@ class TripsRedirect(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         return reverse("log:user", kwargs={"username": self.request.user.username})
+
+
+class SetFeedOrdering(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        """Get the ordering from GET params and save it to the user model
+        if it is valid. Return the ordering to be used in the template."""
+        allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
+        if self.request.POST.get("sort") in allowed_ordering:
+            self.request.user.feed_ordering = self.request.POST.get("sort")
+            self.request.user.save()
+        return redirect(reverse("log:index"))
