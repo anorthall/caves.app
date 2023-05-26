@@ -68,35 +68,6 @@ def copy_profile_name_to_user_name(apps, schema_editor):  # pragma: no cover
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("users", "0001_initial"),
-        ("users", "0002_alter_cavinguser_timezone_alter_cavinguser_units"),
-        ("users", "0003_cavinguser_profile_page_title_and_more"),
-        ("users", "0004_alter_cavinguser_profile_page_title_and_more"),
-        ("users", "0005_cavinguser_private_notes_alter_cavinguser_bio_and_more"),
-        ("users", "0006_remove_cavinguser_first_name_and_more"),
-        ("users", "0007_alter_cavinguser_name"),
-        ("users", "0008_alter_cavinguser_privacy"),
-        ("users", "0009_cavinguser_last_seen"),
-        ("users", "0010_cavinguser_friends"),
-        ("users", "0011_usersettings_userprofile"),
-        ("users", "0012_remove_userprofile_id_remove_usersettings_id_and_more"),
-        ("users", "0013_copy_profile_and_settings_data"),
-        ("users", "0014_alter_usersettings_options_remove_cavinguser_name"),
-        ("users", "0015_remove_cavinguser_bio_remove_cavinguser_clubs_and_more"),
-        ("users", "0016_alter_userprofile_friends_alter_userprofile_name"),
-        ("users", "0017_usersettings_show_statistics"),
-        ("users", "0018_copy_show_statistics"),
-        ("users", "0019_remove_userprofile_show_statistics"),
-        ("users", "0020_notification_friendrequest_and_more"),
-        ("users", "0021_alter_userprofile_name"),
-        ("users", "0022_alter_userprofile_name"),
-        ("users", "0023_usersettings_allow_comments_and_more"),
-        ("users", "0024_cavinguser_name"),
-        ("users", "0025_copy_profile_name_to_user_name"),
-        ("users", "0026_remove_userprofile_name"),
-    ]
-
     initial = True
 
     dependencies = [
