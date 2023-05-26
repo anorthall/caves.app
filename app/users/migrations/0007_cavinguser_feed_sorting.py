@@ -13,9 +13,9 @@ class Migration(migrations.Migration):
             model_name="cavinguser",
             name="feed_sorting",
             field=models.CharField(
-                choices=[("A", "Recently added"), ("D", "Trip date")],
-                default="A",
-                max_length=1,
+                choices=[("-added", "Recently added"), ("-start", "Trip date")],
+                default="-added",
+                max_length=15,
             ),
         ),
     ]
