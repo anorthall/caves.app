@@ -98,7 +98,7 @@
 
 <div id="loadMoreTrips" class="text-center">
   {% if trips.has_next %}
-    <button class="btn btn-primary"
+    <button class="btn btn-primary w-100"
             hx-get="{% url 'log:feed_htmx_view' %}?page={{ trips.next_page_number }}"
             hx-target="#loadMoreTrips"
             hx-swap="outerHTML"
