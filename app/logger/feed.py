@@ -29,9 +29,12 @@ def get_trips_context(request, ordering, page=1):
     sanitised_trips = [x for x in trips if x.is_viewable_by(request.user)]
 
     try:
-        paginated_trips = Paginator(sanitised_trips, 10).page(page)
+        paginated_trips = Paginator(
+            object_list=sanitised_trips, per_page=10, allow_empty_first_page=False
+        ).page(page)
     except EmptyPage:
         return []
+
     return paginated_trips
 
 

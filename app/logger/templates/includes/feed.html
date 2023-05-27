@@ -96,8 +96,8 @@
   {% comment %} TODO: Refactor comments  <div class="shadow mb-4" id="comment{{ trip.pk }}"></div> {% endcomment %}
 {% endfor %}
 
-<div id="loadMoreTrips" class="text-center">
-  {% if trips.has_next %}
+{% if trips.has_next %}
+  <div id="loadMoreTrips" class="text-center">
     <button class="btn btn-primary w-100"
             hx-get="{% url 'log:feed_htmx_view' %}?page={{ trips.next_page_number }}"
             hx-target="#loadMoreTrips"
@@ -105,5 +105,5 @@
             hx-indicator="#loading">
       Load more trips
     </button>
-  {% endif %}
-</div>
+  </div>
+{% endif %}

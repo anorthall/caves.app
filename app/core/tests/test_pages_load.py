@@ -269,6 +269,12 @@ class TestAllPagesLoad(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_htmx_feed_page_loads(self):
+        """Test that the HTMX feed page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:feed_htmx_view"))
+        self.assertEqual(response.status_code, 200)
+
     # TODO: Refactor comments
     # def test_htmx_comment_page_loads(self):
     #     """Test that the HTMX comment page loads"""
