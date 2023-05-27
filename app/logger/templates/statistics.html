@@ -10,7 +10,7 @@
 
 {% block main %}
   <h1 class="page-title">
-    Trip statistics
+    Statistics
   </h1>
 
   {% if trips %}
@@ -586,17 +586,9 @@
     {% endif %}
 
   {% else %}
-
-    <div class="card">
-      <div class="card-header">Statistics</div>
-
-      <div class="card-body">
-        <p class="m-0">
-          You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
-        </p>
-      </div>
-    </div>
-
+    <p class="lead">
+      You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
+    </p>
   {% endif %}
 {% endblock main %}
 
