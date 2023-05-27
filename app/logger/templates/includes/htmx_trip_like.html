@@ -2,7 +2,7 @@
 {% load logger_tags %}
 <span id="like-button{{ trip.pk }}">
   <a class="text-decoration-none"
-     hx-post="{% url 'log:trip_like' trip.pk %}"
+     hx-post="{% url 'log:trip_like_htmx_view' trip.pk %}"
      hx-target="#like-button{{ trip.pk }}"
      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
      hx-swap="outerHTML"

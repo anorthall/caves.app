@@ -70,7 +70,7 @@ class Index(TemplateView):
         )
 
 
-class HTMXFeedView(LoginRequiredMixin, TemplateView):
+class HTMXFeed(LoginRequiredMixin, TemplateView):
     """Paginate the trip feed by rendering more trips via HTMX"""
 
     template_name = "includes/feed.html"
@@ -433,7 +433,7 @@ class ReportDelete(LoginRequiredMixin, View):
 #         return redirect(comment.content_object.get_absolute_url())
 
 
-class TripLikeToggle(LoginRequiredMixin, TemplateView):
+class HTMXTripLike(LoginRequiredMixin, TemplateView):
     """HTMX view for toggling a trip like"""
 
     template_name = "includes/htmx_trip_like.html"

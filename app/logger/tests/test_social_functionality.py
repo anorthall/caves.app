@@ -530,7 +530,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip.save()
 
         response = self.client.post(
-            reverse("log:trip_like", args=[trip.pk]),
+            reverse("log:trip_like_htmx_view", args=[trip.pk]),
         )
         self.assertEqual(response.status_code, 403)
 
