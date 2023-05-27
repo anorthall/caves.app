@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import (
     CreateView,
+    FormView,
     ListView,
     RedirectView,
     TemplateView,
@@ -21,8 +22,8 @@ from django.views.generic import (
 from logger import statistics
 from users.models import Notification
 
-from . import feed
-from .forms import AllUserNotificationForm, TripForm, TripReportForm
+from . import feed, services
+from .forms import AllUserNotificationForm, TripForm, TripReportForm, TripSearchForm
 from .mixins import TripContextMixin, ViewableObjectDetailView
 from .models import Trip, TripReport
 
@@ -261,6 +262,36 @@ class TripDelete(LoginRequiredMixin, View):
             f"The trip to {trip.cave_name} has been deleted.",
         )
         return redirect("log:user", username=request.user.username)
+
+
+class Search(LoginRequiredMixin, FormView):
+    template_name = "search.html"
+    form_class = TripSearchForm
+
+
+class SearchResults(LoginRequiredMixin, View):
+    def get(self, request):
+        form = TripSearchForm(request.GET)
+        if form.is_valid():
+            trips = services.trip_search(
+                terms=form.cleaned_data["terms"],
+                for_user=request.user,
+                search_user=form.cleaned_data.get("user", None),
+            )
+            context = {
+                "trips": trips,
+                "form": form,
+            }
+            if len(trips) == 0:
+                context["no_results"] = True
+
+            return render(request, "search.html", context)
+        else:
+            context = {
+                "form": form,
+                "no_form_error_alert": True,
+            }
+            return render(request, "search.html", context)
 
 
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):

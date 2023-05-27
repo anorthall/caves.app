@@ -19,6 +19,8 @@ urlpatterns = [
     path("report/add/<int:pk>/", views.ReportCreate.as_view(), name="report_create"),
     path("report/edit/<int:pk>/", views.ReportUpdate.as_view(), name="report_update"),
     path("report/delete/<int:pk>/", views.ReportDelete.as_view(), name="report_delete"),
+    path("search/", views.Search.as_view(), name="search"),
+    path("search/r/", views.SearchResults.as_view(), name="search_results"),
     path("feed/htmx/", views.HTMXFeed.as_view(), name="feed_htmx_view"),
     path("feed/set_ordering/", views.SetFeedOrdering.as_view(), name="feed_set_ordering"),  # noqa E501
     # TODO: Refactor comments

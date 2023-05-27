@@ -1,0 +1,75 @@
+{% extends "base_full_width.html" %}
+{% load logger_tags %}
+{% load users_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %}Search caves.app{% endblock %}
+{% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
+
+{% block main %}
+  <div class="card mb-4">
+    <div class="card-header">
+      Search
+    </div>
+
+    <div class="card-body">
+      <p>
+        This page allows you to search through trips by cave name, region, and country. All public trips will
+        be shown in the results, as well as trips created by your friends that you are allowed to view.
+        Specifying a username will limit the results to trips created by that user.
+      </p>
+
+      <hr>
+
+      {% crispy form %}
+    </div>
+  </div>
+
+  {% if not trips %}
+    {% if no_results %}
+      <div class="card">
+        <div class="card-header">
+          No trips found
+        </div>
+
+        <div class="card-body">
+          No trips were found matching your search criteria.
+        </div>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="card">
+      <div class="card-header">
+        {{ trips|length }} trips found
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User</th>
+                <th>Cave</th>
+                <th>Region</th>
+                <th>Country</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for trip in trips %}
+                <tr data-href="{{ trip.get_absolute_url }}">
+                  <td>{{ forloop.counter }}</td>
+                  <td>{% user trip.user %}</td>
+                  <td><a href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a></td>
+                  <td>{{ trip.cave_region }}</td>
+                  <td>{{ trip.cave_country }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

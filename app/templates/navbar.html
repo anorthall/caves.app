@@ -39,6 +39,11 @@
                 <i class="bi bi-person-circle"></i>&nbsp; Account
               </a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'log:search' %}">
+                <i class="bi bi-search"></i>&nbsp; Search
+              </a>
           {% else %}
             {% include "navbar_unregistered.html" %}
           {% endif %}

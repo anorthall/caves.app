@@ -1,12 +1,11 @@
 from datetime import timedelta
 
-# from crispy_forms.helper import FormHelper
-# from crispy_forms.layout import Submit
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Field, Layout, Submit
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-
-#  from django.urls import reverse
+from django.urls import reverse
 from django.utils import timezone
 from logger.templatetags.logger_tags import distformat
 from users.models import Notification
@@ -142,6 +141,48 @@ class AllUserNotificationForm(forms.ModelForm):
     class Meta:
         model = Notification
         fields = ["message", "url"]
+
+
+class TripSearchForm(forms.Form):
+    terms = forms.CharField(
+        label="Terms",
+        required=True,
+        help_text="Text to search for in trip records.",
+    )
+    user = forms.CharField(
+        label="Username",
+        required=False,
+        help_text="Limit search to a specific user (optional).",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "get"
+        self.helper.form_action = reverse("log:search_results")
+        self.helper.layout = Layout(
+            Div(
+                Field("terms", wrapper_class="col-12 col-md-8"),
+                Field("user", wrapper_class="col-12 col-md-4"),
+                css_class="row",
+            ),
+            Submit("submit", "Search", css_class="btn btn-primary w-100"),
+        )
+
+    def clean_terms(self):
+        terms = self.cleaned_data.get("terms").strip()
+        if len(terms) < 3:
+            raise ValidationError("Please enter at least three characters.")
+        return terms
+
+    def clean_user(self):
+        user = self.cleaned_data.get("user").strip()
+        if user:
+            try:
+                user = User.objects.get(username=user)
+            except User.DoesNotExist:
+                raise ValidationError("Username not found.")
+        return user
 
 
 # TODO: Refactor comments
