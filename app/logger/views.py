@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Exists, OuterRef, Q
+from django.db.models import Count, Exists, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -25,6 +25,7 @@ from django.views.generic import (
 from logger import statistics
 from users.models import Notification
 
+from . import feed
 from .forms import AllUserNotificationForm, TripForm, TripReportForm
 from .mixins import TripContextMixin, ViewableObjectDetailView
 from .models import Trip, TripReport
@@ -35,6 +36,7 @@ User = get_user_model()
 
 class Index(TemplateView):
     def get(self, request, *args, **kwargs):
+        """Determine if the user is logged in and render the appropriate template"""
         if request.user.is_authenticated:
             context = self.get_authenticated_context(**kwargs)
             return self.render_to_response(context)
@@ -43,57 +45,59 @@ class Index(TemplateView):
             return super().get(request, *args, **kwargs)
 
     def get_authenticated_context(self, **kwargs):
-        context = {}
-        context["news"] = self._get_news_context()
+        """Return the trip feed for a logged in user"""
+        context = super().get_context_data(**kwargs)
+        context["news"] = self.get_news_context()
         context["ordering"] = self.request.user.feed_ordering
-        context["trips"] = self._get_trips_context(context["ordering"])
-        context["liked_str"] = self._get_liked_str_context(context["trips"])
+        context["trips"] = feed.get_trips_context(self.request, context["ordering"])
+        context["liked_str"] = feed.get_liked_str_context(
+            self.request, context["trips"]
+        )
 
-        if len(context["trips"]) == 0:
-            self.template_name = "index/index_new_user.html"
-        else:
+        # If there are no trips, show the new user page
+        if context["trips"]:
             self.template_name = "index/index_registered.html"
+        else:
+            self.template_name = "index/index_new_user.html"
 
         return context
 
-    def _get_news_context(self):
+    def get_news_context(self):
         return (
             News.objects.filter(is_published=True, posted_at__lte=timezone.now())
             .prefetch_related("author")
             .order_by("-posted_at")[:3]
         )
 
-    def _get_trips_context(self, ordering):
-        friends = self.request.user.friends.all()
 
-        trips = (
-            Trip.objects.filter(Q(user__in=friends) | Q(user=self.request.user))
-            .select_related("user")
-            .prefetch_related("likes", "user__friends")
-            .annotate(
-                likes_count=Count("likes", distinct=True),
-                user_liked=Exists(
-                    User.objects.filter(
-                        pk=self.request.user.pk, liked_trips=OuterRef("pk")
-                    ).only("pk")
-                ),
-            )
-        ).order_by(ordering)[
-            :25
-        ]  # TODO: Make this configurable
+class HTMXFeedView(LoginRequiredMixin, TemplateView):
+    """Paginate the trip feed by rendering more trips via HTMX"""
 
-        # Remove trips that the user does not have permission to view.
-        sanitised_trips = [x for x in trips if x.is_viewable_by(self.request.user)]
+    template_name = "includes/feed.html"
 
-        return sanitised_trips
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ordering"] = self.request.user.feed_ordering
+        context["trips"] = feed.get_trips_context(
+            request=self.request,
+            ordering=context["ordering"],
+            page=self.request.GET.get("page", 1),
+        )
+        context["liked_str"] = feed.get_liked_str_context(
+            self.request, context["trips"]
+        )
+        return context
 
-    def _get_liked_str_context(self, trips):
-        friends = self.request.user.friends.all()
-        liked_str_index = {}
-        for trip in trips:
-            liked_str_index[trip.pk] = trip.get_liked_str(self.request.user, friends)
 
-        return liked_str_index
+class SetFeedOrdering(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        """Get the ordering from GET params and save it to the user model
+        if it is valid. Return the ordering to be used in the template."""
+        allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
+        if self.request.POST.get("sort") in allowed_ordering:
+            self.request.user.feed_ordering = self.request.POST.get("sort")
+            self.request.user.save()
+        return redirect(reverse("log:index"))
 
 
 class UserProfile(ListView):
@@ -152,6 +156,7 @@ class UserProfile(ListView):
         else:
             context["dist_format"] = User.METRIC
 
+        # TODO: Paginate via HTMX
         # GET parameters for pagination and sorting at the same time
         parameters = self.request.GET.copy()
         parameters = parameters.pop("page", True) and parameters.urlencode()
@@ -686,14 +691,3 @@ class TripsRedirect(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         return reverse("log:user", kwargs={"username": self.request.user.username})
-
-
-class SetFeedOrdering(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        """Get the ordering from GET params and save it to the user model
-        if it is valid. Return the ordering to be used in the template."""
-        allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
-        if self.request.POST.get("sort") in allowed_ordering:
-            self.request.user.feed_ordering = self.request.POST.get("sort")
-            self.request.user.save()
-        return redirect(reverse("log:index"))

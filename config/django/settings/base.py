@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "mailer",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_htmx",
     "markdownify.apps.MarkdownifyConfig",
 ]
 
@@ -103,6 +104,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
     "users.middleware.TimezoneMiddleware",
     "users.middleware.LastSeenMiddleware",
 ]

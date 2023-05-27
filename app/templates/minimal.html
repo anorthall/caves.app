@@ -1,4 +1,5 @@
 {% load static %}
+{% load django_htmx %}
 <!doctype html>
 <html lang="en" class="h-100">
   <head>
@@ -19,6 +20,7 @@
 
     <!-- HTMX  -->
     <script src="{% static "js/htmx.min.js" %}"></script>
+    {% django_htmx_script %}
 
     {% if google_analytics_id %}
       <!-- Google tag (gtag.js) -->
