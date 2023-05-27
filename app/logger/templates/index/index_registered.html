@@ -1,4 +1,5 @@
 {% extends "base_full_width.html" %}
+{% load markdownify %}
 
 {% block main %}
   <div class="row mb-2">
@@ -21,6 +22,11 @@
         </div>
       </div>
     </div>
+    <div class="col-12 col-lg-3 col-xl-4 d-none d-lg-block">
+      <h1 class="fs-5 ms-3 mb-0 align-self-center">
+        News &nbsp;<i class="bi bi-arrow-down"></i>
+      </h1>
+    </div>
   </div>
 
   <div class="row">
@@ -32,7 +38,28 @@
 
     <div class="col-12 col-lg-3 col-xl-4">
       <div class="shadow">
-        {% include "includes/news.html" %}
+        {% if news %}
+          <div class="card">
+            <div class="card-header d-lg-none">
+              News
+            </div>
+
+            <div class="card-body">
+              {% for item in news %}
+                <div class="mb-3">
+                  <div class="d-flex flex-column border-bottom border-secondary mb-2">
+                    <strong class="fs-5">{{ item.title }}</strong>
+                    <small class="text-muted">
+                      <i class="bi bi-person"></i> {{ item.author.name }}
+                      &middot; {{ item.posted_at|timesince }} ago
+                    </small>
+                  </div>
+                  <p>{{ item.content|markdownify }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>

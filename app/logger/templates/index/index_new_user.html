@@ -1,53 +1,46 @@
 {% extends "base_full_width.html" %}
+{% load markdownify %}
 
 {% block main %}
-  <div class="row">
-    <div class="col-12 col-lg-8">
-      <h1 class="page-title">
-        Welcome!
-      </h1>
+  <h1 class="page-title">
+    Welcome!
+  </h1>
 
-      <p class="lead">
-        Thanks for signing up to caves.app, {{ user.name }}!
-      </p>
+  <p class="lead">
+    Thanks for signing up to caves.app, {{ user.name }}!
+  </p>
 
-      <p class="mb-3">
-        Before you add your first trip, I thought I'd give you a few hints on how to best use
-        the site. Follow the steps below to get started:
-      </p>
+  <p class="mb-3">
+    Before you add your first trip, I thought I'd give you a few hints on how to best use
+    the site. Follow the steps below to get started:
+  </p>
 
-      <ol>
-        <li class="mb-2">
-          <a href="{% url 'users:account_update' %}">Fill out your user profile!</a> Some settings are important for the functionality
-          of the site &mdash; such as the timezone that will be used to enter/display trips and which distance units to use.
-        </li>
+  <ol>
+    <li class="mb-2">
+      <a href="{% url 'users:account_update' %}">Fill out your user profile!</a> Some settings are important for the functionality
+      of the site &mdash; such as the timezone that will be used to enter/display trips and which distance units to use.
+    </li>
 
-        <li class="mb-2">
-          <a href="{% url 'log:trip_create' %}">Add your first trips!</a> The form should be straightforward enough
-          and the only required data to create a trip is the cave name and trip start time.
-        </li>
+    <li class="mb-2">
+      <a href="{% url 'log:trip_create' %}">Add your first trips!</a> The form should be straightforward enough
+      and the only required data to create a trip is the cave name and trip start time.
+    </li>
 
-        <li class="mb-2">
-          <a href="{% url 'users:friends' %}">Add some friends!</a> If you know the username or email address of your
-          friends, you can add them and view their trips in your timeline.
-        </li>
+    <li class="mb-2">
+      <a href="{% url 'users:friends' %}">Add some friends!</a> If you know the username or email address of your
+      friends, you can add them and view their trips in your timeline.
+    </li>
 
-        <li>
-          Enjoy the website! It is being actively developed and you may come across features that do not work properly.
-          If you do, please <a href="mailto:admin@caves.app">let me know</a> immediately by sending an email to
-          <code>admin@caves.app</code> and I will do my best to fix them.
-        </li>
-      </ol>
+    <li>
+      Enjoy the website! It is being actively developed and you may come across features that do not work properly.
+      If you do, please <a href="mailto:admin@caves.app">let me know</a> immediately by sending an email to
+      <code>admin@caves.app</code> and I will do my best to fix them.
+    </li>
+  </ol>
 
-      <div class="text-muted">
-        <small>
-          This notice will disappear once there are trips to display in your feed.
-        </small>
-      </div>
-    </div>
-
-    <div class="col-12 col-lg-4">
-      {% include "includes/news.html" %}
-    </div>
+  <div class="text-muted">
+    <small>
+      This notice will disappear once there are trips to display in your feed.
+    </small>
   </div>
 {% endblock main %}
