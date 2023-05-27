@@ -16,7 +16,7 @@ if os.environ.get("SENTRY_KEY", None):  # pragma: no cover
         integrations=[
             DjangoIntegration(),
         ],
-        traces_sample_rate=1.0,
+        traces_sample_rate=0.2,
         send_default_pii=True,
     )
 
