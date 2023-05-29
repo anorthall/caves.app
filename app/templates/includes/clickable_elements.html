@@ -1,0 +1,8 @@
+<!-- Clickable elements with data-href -->
+<script>
+  jQuery(document).ready(function($) {
+    $('*[data-href]').on('click', function() {
+      window.location = $(this).data("href");
+    });
+  });
+</script>
