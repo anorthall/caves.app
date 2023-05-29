@@ -2,6 +2,8 @@
 {% load logger_tags %}
 {% load users_tags %}
 {% block title %}{{ trip.cave_name }}{% endblock %}
+{% block display_title %}{{ trip.user.name }}'s trips{% endblock %}
+{% block display_title_right %}@{{ trip.user.username }}{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
