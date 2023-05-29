@@ -385,7 +385,7 @@ class TripModelUnitTests(TestCase):
         self.user.friends.add(user5)
 
         result = self.trip.get_liked_str(self.user, self.user.friends.all())
-        self.assertEqual(result, "Liked by Test User 4, Test User 5, and 8 others")
+        self.assertEqual(result, "Liked by Test User 4, Test User 5 and 8 others")
 
     def test_trip_number_function(self):
         """Test the Trip model number function"""
