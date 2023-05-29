@@ -43,6 +43,13 @@ body {
   margin-bottom: 0;
 }
 
+.trip-field {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 
 /*
   Statistics
@@ -90,12 +97,6 @@ h1.page-title {
 
 .comment-display > p {
   margin-bottom: 0;
-}
-
-.trip-field {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.7rem;
-  text-transform: none;
 }
 
 
