@@ -1,24 +1,20 @@
-{% extends "base_sidebar.html" %}
+{% extends "base.html" %}
 {% block title %}Edit trip report{% endblock %}
+{% block display_title %}Edit trip report{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 {% block header_scripts %}{{ form.media }}{% endblock %}
 
-{% block main %}
-  <div class="card">
-    <div class="card-header">
-      Edit trip report
-    </div>
-
-    <div class="card-body">
-      {% include "includes/tripreport_help_text.html" %}
-
-      <form method="post">
-        {% csrf_token %}
-
-        {{ form }}
-
-        <button class="mt-3 w-100 btn btn-lg btn-success" type="submit" name="save" value="save">Save</button>
-      </form>
-    </div>
+{% block content %}
+  <div class="alert alert-secondary mb-4">
+    You are editing a trip report for the trip to <strong>{{ trip.cave_name }}</strong> on <strong>{{ trip.start|date }}</strong>. Would you
+    like to <a target="_blank" href="{% url 'log:trip_detail' trip.id %}">view the trip</a>?
   </div>
-{% endblock main %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    {{ form }}
+
+    <button class="mt-3 w-100 btn btn-lg btn-success" type="submit" name="save" value="save">Save</button>
+  </form>
+{% endblock %}

@@ -1,19 +1,12 @@
-{% extends "base_sidebar.html" %}
+{% extends "base.html" %}
 {% block title %}Edit trip{% endblock %}
+{% block display_title %}Edit trip to {{ trip.cave_name }}{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
-{% block main %}
-  <div class="card">
-    <div class="card-header">
-      Edit trip
-    </div>
-
-    <div class="card-body">
-      <form method="post">
-        {% csrf_token %}
-        {{ form }}
-        <button class="mt-3 w-100 btn btn-lg btn-success" type="submit">Save</button>
-      </form>
-    </div>
-  </div>
-{% endblock main %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button class="mt-3 w-100 btn btn-lg btn-success" type="submit">Save</button>
+  </form>
+{% endblock %}
