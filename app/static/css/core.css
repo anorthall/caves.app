@@ -99,6 +99,10 @@ h1.page-title {
   margin-bottom: 0;
 }
 
+.mw-35 {
+  max-width: 35rem;
+}
+
 
 /*
   Forms
