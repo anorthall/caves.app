@@ -22,6 +22,14 @@
     <script src="{% static "js/htmx.min.js" %}"></script>
     {% django_htmx_script %}
 
+    <!-- Bootstrap v5.2.3 JS -->
+    <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
+
+    <!-- jQuery v3.6.4 JS -->
+    <script src="{% static "js/jquery-3.6.4.min.js" %}"></script>
+
+    {% include "includes/clickable_elements.html" %}
+
     {% if google_analytics_id %}
       <!-- Google tag (gtag.js) -->
       <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_id }}"></script>
@@ -39,21 +47,6 @@
 
   <body class="d-flex flex-column h-100">
     {% block body %}{% endblock body %}
-
-    <!-- Bootstrap v5.2.3 JS -->
-    <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
-
-    <!-- jQuery v3.6.4 JS -->
-    <script src="{% static "js/jquery-3.6.4.min.js" %}"></script>
-
-    <!-- Clickable elements with data-href -->
-    <script>
-      jQuery(document).ready(function($) {
-        $('*[data-href]').on('click', function() {
-          window.location = $(this).data("href");
-        });
-      });
-    </script>
 
     {% block footer_scripts %}{% endblock %}
   </body>

@@ -293,7 +293,7 @@ class Trip(models.Model):
                 return f"{liked_user_names[0]} liked this"
         else:
             english_list = ", ".join(liked_user_names[:-1])
-            english_list = english_list + ", and " + liked_user_names[-1]
+            english_list = english_list + " and " + liked_user_names[-1]
             return f"Liked by {english_list}"
 
     def get_liked_str(self, for_user=None, for_user_friends=None):
