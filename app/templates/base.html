@@ -4,7 +4,8 @@
   <header>
     <nav class="navbar navbar-expand-md navbar-dark bg-primary py-2">
       <div class="container">
-        {% include "navbar_items.html" %}
+        {% include "includes/navbar_brand.html" %}
+        {% include "includes/navbar_items.html" %}
       </div>
     </nav>
     <div class="bg-light border-top border-bottom border-3 py-4">
@@ -29,7 +30,7 @@
 
   <main class="flex-shrink-0 my-4">
     <div class="container">
-      {% include "messages.html" %}
+      {% include "includes/messages.html" %}
       {% block content %}{% endblock %}
     </div>
   </main>

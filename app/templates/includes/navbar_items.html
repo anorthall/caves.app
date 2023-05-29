@@ -1,6 +1,4 @@
 {% load active_link_tags %}
-{% comment %} <a class="navbar-brand fs-3 fw-bolder" href="/">{% if debug %}dev-{% endif %}caves.app</a> {% endcomment %}
-<a class="navbar-brand" href="/">caves.app</a>
 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
   <span class="navbar-toggler-icon"></span>
 </button>
@@ -64,6 +62,6 @@
       </li>
     {% endif %}
 
-    {% include "notifications.html" %}
+    {% include "includes/notifications.html" %}
   </ul>
 </div>
