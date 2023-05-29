@@ -1,16 +1,13 @@
 {% extends "base.html" %}
-{% load active_link_tags %}
 
 {% block content %}
-  <div class="container">
-    <div class="row g-0 g-lg-3">
-      <div class="col-12 col-lg-9">
-        {% block main %}{% endblock %}
-      </div>
-
-      <nav class="col-12 col-lg-3 mt-4 mt-lg-3">
-        {% block sidebar %}{% endblock %}
-      </nav>
+  <div class="row g-0 g-lg-3">
+    <div class="col-12 col-lg-9">
+      {% block main %}{% endblock %}
     </div>
+
+    <nav class="col-12 col-lg-3 mt-4 mt-lg-3">
+      {% block sidebar %}{% endblock %}
+    </nav>
   </div>
-{% endblock content %}
+{% endblock %}

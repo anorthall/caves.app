@@ -1,19 +1,34 @@
-/* Fonts */
+/*
+  Fonts
+*/
+
 @font-face {
   font-family: 'Space Mono', monospace;
   src: url("/static/fonts/SpaceMono-Regular.ttf") format("truetype");
 }
 
-/* Main layout options */
+
+/*
+  Main layout options
+*/
+
 body {
   overflow-y:scroll;
 }
 
 .alert {
-  text-align: center
+  text-align: center;
 }
 
-/* Trip display */
+.center-container {
+  max-width: 38em;
+}
+
+
+/*
+  Trip display
+*/
+
 .cave-name {
   font-weight: 400;
   margin-bottom: 0;
@@ -28,17 +43,20 @@ body {
   margin-bottom: 0;
 }
 
-/* Statistics */
+
+/*
+  Statistics
+*/
+
 .statistics-table tbody th {
   font-weight: normal;
 }
 
-/* Clickable JS elements */
-[data-href], [data-bs-toggle], [hx-get] {
-  cursor: pointer;
-}
 
-/* Navbar */
+/*
+  Navbar
+*/
+
 .navbar-toggler {
   border-color: transparent !important;
 }
@@ -56,7 +74,11 @@ body {
   outline: 0px none #fff !important;
 }
 
-/* Text */
+
+/*
+  Text
+*/
+
 .page-title {
   margin-bottom: 0.5rem;
 }
@@ -76,18 +98,34 @@ h1.page-title {
   text-transform: none;
 }
 
-/* Hide crispy forms asterisk */
+
+/*
+  Forms
+*/
+
 .asteriskField {
   display: none !important;
 }
 
-/* HTMX */
+
+/*
+  JS Elements
+*/
+
 .htmx-request {
   opacity: .5;
   transition: opacity 300ms linear;
 }
 
-/* Notifications */
+[data-href], [data-bs-toggle], [hx-get] {
+  cursor: pointer;
+}
+
+
+/*
+  Notifications
+*/
+
 .icon-badge-group .icon-badge-container {
     display: inline-block;
 }

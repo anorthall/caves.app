@@ -1,75 +1,58 @@
-{% extends "base_full_width.html" %}
+{% extends "base.html" %}
 {% load logger_tags %}
 {% load users_tags %}
 {% load crispy_forms_tags %}
 
 {% block title %}Search caves.app{% endblock %}
+{% block display_title %}Search{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
-{% block main %}
-  <div class="card mb-4">
-    <div class="card-header">
-      Search
-    </div>
-
-    <div class="card-body">
-      <p>
-        This page allows you to search through trips by cave name, region, and country. All public trips will
-        be shown in the results, as well as trips created by your friends that you are allowed to view.
-        Specifying a username will limit the results to trips created by that user.
-      </p>
-
-      <hr>
-
-      {% crispy form %}
-    </div>
+{% block content %}
+  {% if not trips and no_results %}
+  <div class="alert alert-danger mb-4">
+    <strong>No trips found</strong><br>
+      No trips were found matching your search criteria.
   </div>
+  {% endif %}
 
-  {% if not trips %}
-    {% if no_results %}
-      <div class="card">
-        <div class="card-header">
-          No trips found
-        </div>
+  <p>
+    This page allows you to search through trips by cave name, region, and country. All public trips will
+    be shown in the results, as well as trips created by your friends that you are allowed to view.
+    Specifying a username will limit the results to trips created by that user.
+  </p>
 
-        <div class="card-body">
-          No trips were found matching your search criteria.
-        </div>
-      </div>
-    {% endif %}
-  {% else %}
-    <div class="card">
-      <div class="card-header">
-        {{ trips|length }} trips found
-      </div>
+  <hr>
 
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-sm table-striped">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>User</th>
-                <th>Cave</th>
-                <th>Region</th>
-                <th>Country</th>
-              </tr>
-            </thead>
+  {% crispy form %}
 
-            <tbody>
-              {% for trip in trips %}
-                <tr data-href="{{ trip.get_absolute_url }}">
-                  <td>{{ forloop.counter }}</td>
-                  <td>{% user trip.user %}</td>
-                  <td><a href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a></td>
-                  <td>{{ trip.cave_region }}</td>
-                  <td>{{ trip.cave_country }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
+  {% if trips %}
+    <hr class="my-4">
+
+    <h2 class="fs-4 mb-3">Results</h2>
+    <div class="table-responsive">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Cave</th>
+            <th>Region</th>
+            <th>Country</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for trip in trips %}
+            <tr data-href="{{ trip.get_absolute_url }}">
+              <td>{{ forloop.counter }}</td>
+              <td>{% user trip.user %}</td>
+              <td><a href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a></td>
+              <td>{{ trip.cave_region }}</td>
+              <td>{{ trip.cave_country }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   {% endif %}
 {% endblock %}

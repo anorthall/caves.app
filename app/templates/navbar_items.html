@@ -1,0 +1,69 @@
+{% load active_link_tags %}
+{% comment %} <a class="navbar-brand fs-3 fw-bolder" href="/">{% if debug %}dev-{% endif %}caves.app</a> {% endcomment %}
+<a class="navbar-brand" href="/">caves.app</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+  <span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="mainNavbar">
+  <ul class="navbar-nav ms-auto">
+    {% if user.is_authenticated %}
+      {% comment %}  Authenticated user links  {% endcomment %}
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
+          <i class="bi bi-plus-circle"></i>&nbsp; Add
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
+          <i class="bi bi-card-list"></i>&nbsp; Trips
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'log:statistics' %}" href="{% url 'log:statistics' %}">
+          <i class="bi bi-bar-chart"></i>&nbsp; Statistics
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
+          <i class="bi bi-people"></i>&nbsp; Friends
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
+          <i class="bi bi-person-circle"></i>&nbsp; Account
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'log:search' %}">
+          <i class="bi bi-search"></i>&nbsp; Search
+        </a>
+    {% else %}
+      {% comment %}  Unregistered/Unauthenticated user links  {% endcomment %}
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'users:login' %}" href="{% url 'users:login' %}">
+          <i class="bi bi-person-circle"></i>&nbsp; Login
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'users:register' %}" href="{% url 'users:register' %}">
+          <i class="bi bi-house"></i>&nbsp; Register
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% active_link 'core:about' %}" href="{% url 'core:about' %}">
+          <i class="bi bi-info-circle"></i>&nbsp; About
+        </a>
+      </li>
+    {% endif %}
+
+    {% include "notifications.html" %}
+  </ul>
+</div>

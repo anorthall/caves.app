@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% load users_tags %}
 {% block title %}Your friends{% endblock %}
+{% block display_title %}Your friends{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_users.html" %}{% endblock %}
 
 {% block main %}
@@ -192,4 +193,4 @@
       </div>
     </div>
   {% endfor %}
-{% endblock main %}
+{% endblock %}

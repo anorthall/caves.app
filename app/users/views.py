@@ -225,6 +225,7 @@ class Login(SuccessMessageMixin, LoginView):
     template_name = "login.html"
     success_message = "You are now logged in."
     form_class = AuthenticationForm
+    redirect_authenticated_user = True
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

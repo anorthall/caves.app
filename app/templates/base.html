@@ -1,14 +1,37 @@
 {% extends "minimal.html" %}
-{% load static %}
 
 {% block body %}
-  {% include "navbar.html" %}
+  <header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary py-2">
+      <div class="container">
+        {% include "navbar_items.html" %}
+      </div>
+    </nav>
+    <div class="bg-light border-top border-bottom border-3 py-4">
+      <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="fs-3 fw-bold m-0">{% block display_title %}caves.app{% endblock %}</h1>
+
+        <div class="d-none d-md-flex justify-content-end align-items-center">
+          <div class="text-muted float-right fs-5">
+            {% block display_title_right %}
+              {% comment %} <form action="{% url 'log:search_results' %}" method="get">
+                <div class="input-group">
+                  <input class="form-control" type="text" placeholder="Search" name="terms">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                </div>
+              </form> {% endcomment %}
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
   <main class="flex-shrink-0 my-4">
-    {% include "messages.html" %}
-
-    {% block content %}
-    {% endblock %}
+    <div class="container">
+      {% include "messages.html" %}
+      {% block content %}{% endblock %}
+    </div>
   </main>
 
   <footer class="footer mt-auto py-3 border-top bg-primary text-white">

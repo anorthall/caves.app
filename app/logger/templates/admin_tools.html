@@ -1,12 +1,9 @@
-{% extends "base_full_width.html" %}
+{% extends "base.html" %}
 {% load logger_tags %}
 {% block title %}Admin tools{% endblock %}
+{% block display_title %}Admin tools{% endblock %}
 
-{% block main %}
-  <h1 class="page-title">
-    Admin tools
-  </h1>
-
+{% block content %}
   <div class="row row-cols-1 row-cols-lg-2 g-4">
     <div class="col">
       <div class="card h-100">
@@ -53,4 +50,4 @@
       </div>
     </div>
   </div>
-{% endblock main %}
+{% endblock %}

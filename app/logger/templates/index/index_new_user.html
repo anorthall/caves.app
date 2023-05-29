@@ -1,11 +1,9 @@
-{% extends "base_full_width.html" %}
+{% extends "base.html" %}
+{% block title %}Welcome to caves.app!{% endblock %}
+{% block display_title %}Welcome to caves.app!{% endblock %}
 {% load markdownify %}
 
-{% block main %}
-  <h1 class="page-title">
-    Welcome!
-  </h1>
-
+{% block content %}
   <p class="lead">
     Thanks for signing up to caves.app, {{ user.name }}!
   </p>
@@ -43,4 +41,4 @@
       This notice will disappear once there are trips to display in your feed.
     </small>
   </div>
-{% endblock main %}
+{% endblock %}

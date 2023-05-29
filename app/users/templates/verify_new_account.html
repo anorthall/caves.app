@@ -1,11 +1,8 @@
-{% extends "base_full_width.html" %}
+{% extends "base.html" %}
 {% block title %}Complete your registration{% endblock %}
+{% block display_title %}Complete your registration{% endblock %}
 
-{% block main %}
-  <h1 class="page-title">
-    Registration complete
-  </h1>
-
+{% block content %}
   <p class="lead">
     You're almost there! Just one more thing - you need to verify your
     email address before you can sign in. You have 24 hours to confirm
@@ -27,4 +24,4 @@
     {{ form }}
     <button class="mt-3 w-100 btn btn-lg btn-primary" type="submit">Verify</button>
   </form>
-{% endblock main %}
+{% endblock %}

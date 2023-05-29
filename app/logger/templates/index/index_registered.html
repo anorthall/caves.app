@@ -1,9 +1,10 @@
-{% extends "base_full_width.html" %}
+{% extends "base.html" %}
+{% block display_title %}Recent activity{% endblock %}
 {% load markdownify %}
 
-{% block main %}
+{% block content %}
   <div class="row mb-2">
-    <div class="col-12 col-lg-9 col-xl-8">
+    <div class="col-12 col-xl-8">
       <div class="d-flex justify-content-between">
         <h1 class="fs-5 ms-3 mb-0 align-self-center">
           You &amp; your friends &nbsp;<i class="bi bi-arrow-down"></i>
@@ -22,7 +23,7 @@
         </div>
       </div>
     </div>
-    <div class="col-12 col-lg-3 col-xl-4 d-none d-lg-block">
+    <div class="col-12 col-xl-4 d-none d-xl-block">
       <h1 class="fs-5 ms-3 mb-0 align-self-center">
         News &nbsp;<i class="bi bi-arrow-down"></i>
       </h1>
@@ -30,17 +31,17 @@
   </div>
 
   <div class="row">
-    <div class="col-12 col-lg-9 col-xl-8">
+    <div class="col-12 col-xl-8">
       {% include "includes/feed.html" %}
     </div>
 
-    <hr class="my-4 d-lg-none">
+    <hr class="my-4 d-xl-none">
 
-    <div class="col-12 col-lg-3 col-xl-4">
+    <div class="col-12 col-xl-4">
       <div class="shadow">
         {% if news %}
           <div class="card">
-            <div class="card-header d-lg-none">
+            <div class="card-header d-xl-none">
               News
             </div>
 
@@ -63,4 +64,4 @@
       </div>
     </div>
   </div>
-{% endblock main %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% load markdownify %}
+
+{% block title %}caves.app - help{% endblock %}
+{% block display_title %}Help{% endblock %}
+{% block description %}Frequently asked questions about caves.app, and how to get help with the site.{% endblock %}
+
+{% block content %}
+  <p>
+    If you need any help with anything, or if you've encountered a problem with the site, then please do not hesitate to
+    <a href="mailto:admin@caves.app">send me an email</a> and I will get back to you as soon as possible. Equally, any
+    feedback &mdash; positive or negative &mdash; is very welcome.
+  </p>
+
+  <p class="mb-0">
+    The support email address is: <code>admin@caves.app</code>.
+  </p>
+
+  {% if faqs %}
+    <hr class="my-4">
+
+    <h3 class="page-title mb-3">
+      Frequently asked questions
+    </h3>
+
+    {% for faq in faqs %}
+      <div class="mb-4">
+        <div class="border-bottom border-secondary fs-5 mb-2">
+          {{ faq.question }}
+        </div>
+        {{ faq.answer|markdownify }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endblock %}

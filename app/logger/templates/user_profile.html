@@ -1,31 +1,23 @@
-{% extends "base_full_width.html" %}
+{% extends "base.html" %}
 {% load logger_tags %}
 {% load markdownify %}
 
 {% block title %}{{ page_title }}{% endblock %}
+{% block display_title %}{{ page_title }}{% endblock %}
+{% block display_title_right %}@{{ profile_user.username }}{% endblock %}
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
-{% block main %}
-  <div class="row page-title mb-3">
-    <div class="col-auto">
-      <h1>{{ page_title }}</h1>
-    </div>
-
-    <div class="col d-none d-md-flex justify-content-end align-items-center">
-      <small class="text-muted float-right">
-        @{{ profile_user.username }}
-      </small>
-    </div>
-  </div>
-
+{% block content %}
   {% if profile_user.bio %}
     {{ profile_user.bio|markdownify }}
   {% elif not profile_user.bio and not trips %}
-    {% if user == profile_user %}
-      <p>Once you add some trips, or a biography in your profile, they will appear here!</p>
-    {% else %}
-      <p>This is the profile of a caves.app user who has not added any trips or a bio yet.</p>
-    {% endif %}
+    <p class="lead">
+      There is nothing here &mdash; yet.
+      {% if user == profile_user %}
+        Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
+        <a href="{% url 'users:account_update' %}">update your profile</a>?
+      {% endif %}
+    </p>
   {% endif %}
 
   {% if trips %}
@@ -151,10 +143,6 @@
 
       {% include "paginate_bootstrap.html" %}
     </div>
-  {% else %}
-    {% if user == profile_user %}
-      You have not logged any trips yet! Why not <a href="{% url 'log:trip_create' %}">add one now?</a>
-    {% endif %}
   {% endif %}
 
-{% endblock main %}
+{% endblock %}

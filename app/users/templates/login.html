@@ -1,23 +1,18 @@
-{% extends "base.html" %}
+{% extends "base_narrow.html" %}
 {% load crispy_forms_tags %}
 {% block title %}Sign in to caves.app{% endblock %}
+{% block display_title %}Sign in{% endblock %}
 
 {% block content %}
-  <div class="container">
-    <div class="col-md-8 col-lg-7 col-xl-6 col-xxl-5 mx-auto">
-      <h1 class="page-title mb-4 text-center">Login</h1>
+  {% crispy form %}
 
-      {% crispy form %}
+  <p class="text-center fs-5">
+    Need an account? <a href="{% url 'users:register' %}">Sign up!</a>
+  </p>
 
-      <p class="text-center fs-5">
-        Need an account? <a href="{% url 'users:register' %}">Sign up!</a>
-      </p>
-
-      <p class="text-center">
-        <a class="link-dark" href="{% url 'users:password_reset' %}">
-          <small>Forgotten your password?</small>
-        </a>
-      </p>
-    </div>
-  </div>
-{% endblock content %}
+  <p class="text-center">
+    <a class="link-dark" href="{% url 'users:password_reset' %}">
+      <small>Forgotten your password?</small>
+    </a>
+  </p>
+{% endblock %}
