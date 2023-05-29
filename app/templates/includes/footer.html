@@ -1,0 +1,16 @@
+<span class="float-start">
+  {% block footer_left %}
+    <span class="d-none d-md-block">
+      Copyright &copy; 2023 <a class="text-decoration-none text-white" href="https://northall.me.uk/">Andrew Northall</a>
+    </span>
+
+    <span class="d-md-none">
+      &copy; 2023 <a class="text-decoration-none text-white" href="https://northall.me.uk/">Andrew Northall</a>
+    </span>
+  {% endblock %}
+</span>
+<span class="float-end">
+  {% block footer_right %}
+    <a href="{% url 'core:help' %}" class="text-decoration-none text-white">Help</a>{% if user.is_authenticated %}<span class="mx-2">&middot;</span><a href="{% url 'core:about' %}" class="text-decoration-none text-white">About</a>{% endif %}
+  {% endblock %}
+</span>
