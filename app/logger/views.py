@@ -176,6 +176,11 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_queryset(self):
         return Trip.objects.filter(user=self.request.user)
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["object_owner"] = self.object.user
+        return context
+
 
 class TripDetail(TripContextMixin, ViewableObjectDetailView):
     model = Trip
@@ -303,16 +308,21 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         "pub_date": timezone.localdate,
     }
 
+    def dispatch(self, request, *args, **kwargs):
+        self.trip = self.get_trip()
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         candidate = form.save(commit=False)
         candidate.user = self.request.user
-        candidate.trip = self.get_trip()
+        candidate.trip = self.trip
         candidate.save()
         return super().form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["trip"] = self.get_trip()
+        context["trip"] = self.trip
+        context["object_owner"] = self.trip.user
         return context
 
     def get_trip(self):
@@ -322,9 +332,8 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return trip
 
     def get(self, request, *args, **kwargs):
-        trip = self.get_trip()
-        if trip.has_report:
-            return redirect(trip.report.get_absolute_url())
+        if self.trip.has_report:
+            return redirect(self.trip.report.get_absolute_url())
 
         return super().get(self, request, *args, **kwargs)
 
@@ -361,6 +370,7 @@ class ReportUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["trip"] = self.get_object().trip
+        context["object_owner"] = self.get_object().user
         return context
 
     def get_form_kwargs(self):
