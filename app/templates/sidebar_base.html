@@ -1,0 +1,11 @@
+<div class="pe-4 border-end border-2 h-100">
+    {% comment %}
+      <h3 class="fs-5 fw-bold pb-1 ms-1 mb-2">
+        {% block sidebar_title %}{% endblock %}
+      </h3>
+    {% endcomment %}
+
+    <nav id="sidebar" class="nav nav-light nav-pills d-flex flex-column h-100">
+      {% block sidebar_nav %}{% endblock %}
+    </nav>
+</div>

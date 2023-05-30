@@ -112,6 +112,12 @@ h1.page-title {
   display: none !important;
 }
 
+.form-container {
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 /*
   JS Elements
@@ -160,4 +166,17 @@ h1.page-title {
     position: absolute;
     top: -5px;
     left: 15px;
+}
+
+
+/*
+  Sidebar
+*/
+
+#sidebar .nav-link {
+  padding-left: 0.5rem;
+}
+
+#sidebar .bi {
+  color: var(--bs-gray-500);
 }

@@ -4,13 +4,11 @@
 {% block display_title_right %}@{{ tripreport.user.username }}{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
-
 {% block main %}
   <div class="card">
     <div class="card-body">
       {{ tripreport.content|safe }}
     </div>
-
 
     <div class="card-footer">
       <div class="row text-muted">

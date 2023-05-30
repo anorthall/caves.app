@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_sidebar.html" %}
 {% block title %}Edit trip{% endblock %}
 {% block display_title %}Edit trip to {{ trip.cave_name }}{% endblock %}
 {% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
-{% block content %}
+{% block main %}
   <form method="post">
     {% csrf_token %}
     {{ form }}
