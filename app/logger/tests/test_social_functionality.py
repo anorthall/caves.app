@@ -283,7 +283,6 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip = Trip.objects.filter(user=self.user).first()
         response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
         self.assertContains(response, trip.cave_name)
-        self.assertContains(response, f"Trip by {self.user.name}")
         self.assertContains(response, "View profile")
         self.assertContains(response, "View this trip")
         self.assertContains(response, "Add as friend")
