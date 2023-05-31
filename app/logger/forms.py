@@ -134,13 +134,15 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
 
 
 class AllUserNotificationForm(forms.ModelForm):
-    """Form to send a notification to all users"""
-
-    template_name = "forms/bs5_form.html"
-
     class Meta:
         model = Notification
         fields = ["message", "url"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.add_input(Submit("notify", "Send Notification"))
 
 
 class TripSearchForm(forms.Form):

@@ -4,7 +4,7 @@
 </button>
 
 <div class="collapse navbar-collapse" id="mainNavbar">
-  <ul class="navbar-nav ms-auto">
+  <ul class="navbar-nav w-100 d-lg-flex justify-content-center mx-lg-5 w-100">
     {% if user.is_authenticated %}
       {% comment %}  Authenticated user links  {% endcomment %}
       <li class="nav-item">
@@ -36,11 +36,6 @@
           <i class="bi bi-person-circle"></i>&nbsp; Account
         </a>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'log:search' %}">
-          <i class="bi bi-search"></i>&nbsp; Search
-        </a>
     {% else %}
       {% comment %}  Unregistered/Unauthenticated user links  {% endcomment %}
       <li class="nav-item">
@@ -61,7 +56,9 @@
         </a>
       </li>
     {% endif %}
+  </ul>
 
+  <ul class="navbar-nav">
     {% include "includes/notifications.html" %}
   </ul>
 </div>

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load logger_tags %}
+{% load crispy_forms_tags %}
+
 {% block title %}Admin tools{% endblock %}
 {% block display_title %}Admin tools{% endblock %}
 
@@ -41,11 +43,7 @@
             Use this form to send a notification to all users.
           </p>
 
-          <form method="post">
-            {% csrf_token %}
-            {{ notify_form }}
-            <button type="submit" name="notify" value="notify" class="btn btn-primary">Send notification</button>
-          </form>
+          {% crispy notify_form %}
         </div>
       </div>
     </div>

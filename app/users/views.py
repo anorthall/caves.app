@@ -27,10 +27,8 @@ from .forms import (
     AuthenticationForm,
     PasswordChangeForm,
     PasswordResetForm,
-    ProfileChangeForm,
     ResendVerifyEmailForm,
     SetPasswordForm,
-    SettingsChangeForm,
     UserChangeEmailForm,
     UserChangeForm,
     UserCreationForm,
@@ -66,15 +64,14 @@ class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
 
 
 class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
-    template_name = "password_change.html"
+    template_name = "crispy_account_form.html"
+    extra_context = {"title": "Change your password"}
     success_url = reverse_lazy("users:account_detail")
     form_class = PasswordChangeForm
     success_message = "Your password has been updated."
 
 
 class Account(LoginRequiredMixin, TemplateView):
-    """View the user's account details."""
-
     template_name = "account.html"
 
     def get_context_data(self, **kwargs):
@@ -82,37 +79,21 @@ class Account(LoginRequiredMixin, TemplateView):
         return context
 
 
-class AccountUpdate(LoginRequiredMixin, TemplateView):
-    """Update the user's account and settings."""
+class AccountUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
+    template_name = "crispy_account_form.html"
+    extra_context = {"title": "Update your account"}
+    form_class = UserChangeForm
+    success_url = reverse_lazy("users:account_update")
+    success_message = "Your account has been updated."
 
-    template_name = "account_update.html"
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs["instance"] = self.request.user
+        return kwargs
 
-    def get_context_data(self, **kwargs):
-        u = self.request.user
-        context = super().get_context_data(**kwargs)
-        context["user_form"] = UserChangeForm(instance=u)
-        context["settings_form"] = SettingsChangeForm(instance=u)
-        context["profile_form"] = ProfileChangeForm(instance=u)
-        return context
-
-    def post(self, request, *args, **kwargs):
-        u = request.user
-        u_form = UserChangeForm(request.POST, instance=u)
-        s_form = SettingsChangeForm(request.POST, instance=u)
-        p_form = ProfileChangeForm(request.POST, instance=u, files=request.FILES)
-
-        if u_form.is_valid() and s_form.is_valid() and p_form.is_valid():
-            u_form.save()
-            s_form.save()
-            p_form.save()
-            messages.success(request, "Your profile has been updated.")
-            return redirect("users:account_update")
-
-        context = self.get_context_data(*args, **kwargs)
-        context["user_form"] = u_form
-        context["settings_form"] = s_form
-        context["profile_form"] = p_form
-        return render(request, self.template_name, context)
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
 class FriendListView(LoginRequiredMixin, TemplateView):
@@ -327,14 +308,15 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
 
     def get_initial(self, *args, **kwargs):
         """Add the verify_code from the URL params to the form's initial data"""
-        initial = super().get_initial(*args, **kwargs)
+        initial = super().get_initial(*args, **kwargs).copy()
         initial["verify_code"] = self.request.GET.get("verify_code", "")
-        return initial.copy()
+        return initial
 
 
 class UpdateEmail(SuccessMessageMixin, LoginRequiredMixin, FormView):
+    template_name = "crispy_account_form.html"
+    extra_context = {"title": "Change your email address"}
     form_class = UserChangeEmailForm
-    template_name = "email_update.html"
     success_url = reverse_lazy("users:verify_email_change")
     success_message = (
         "Please follow the instructions sent to your new email address within "

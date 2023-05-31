@@ -16,12 +16,62 @@ body {
   overflow-y:scroll;
 }
 
-.alert {
-  text-align: center;
+#messages .alert {
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+#messages .message-title {
+  margin-right: 0.5rem;
+  font-weight: bold;
 }
 
 .center-container {
   max-width: 38em;
+}
+
+
+/*
+  Sidebar
+*/
+
+#sidebarContainer {
+  min-width: 200px;
+  max-width: 200px;
+}
+
+#sidebar .nav-link {
+  padding-left: 0.5rem;
+  color: var(--bs-primary);
+}
+
+#mobileMenuContainer {
+  background-color: #fafeff;
+}
+
+#mobileMenu .nav-link {
+  padding-right: 0.8rem;
+  padding-left: 0.8rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  color: var(--bs-primary);
+  text-align: center;
+}
+
+#sidebar .nav-link .bi, #mobileMenu .nav-link .bi {
+  margin-right: 0.5rem;
+  opacity: 0.8;
+}
+
+#sidebar .nav-link:hover, #mobileMenu .nav-link:hover {
+  opacity: 0.7;
+  transition: opacity .3s ease-in-out;
+}
+
+#sidebar .nav-link.active, #mobileMenu .nav-link.active {
+  color: white;
+  opacity: 100 !important;
 }
 
 
@@ -81,6 +131,12 @@ body {
   outline: 0px none #fff !important;
 }
 
+@media (min-width: 992px) {
+  .navbar-nav .nav-item {
+    padding: 0 0.75rem;
+  }
+}
+
 
 /*
   Text
@@ -101,6 +157,10 @@ h1.page-title {
 
 .mw-35 {
   max-width: 35rem;
+}
+
+.mw-45 {
+  max-width: 45rem;
 }
 
 
@@ -166,17 +226,4 @@ h1.page-title {
     position: absolute;
     top: -5px;
     left: 15px;
-}
-
-
-/*
-  Sidebar
-*/
-
-#sidebar .nav-link {
-  padding-left: 0.5rem;
-}
-
-#sidebar .bi {
-  color: var(--bs-gray-500);
 }

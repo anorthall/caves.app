@@ -1,6 +1,6 @@
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Layout, Submit
+from crispy_forms.layout import Div, Fieldset, Layout, Submit
 from django import forms
 from django.contrib import auth
 from django.contrib.auth import get_user_model
@@ -54,6 +54,18 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
             "information, must contain at least 8 characters, cannot be entirely "
             "numeric and must not be a commonly used password."
         )
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "mw-35"
+        self.helper.layout = Layout(
+            Fieldset(
+                "Change password",
+                "old_password",
+                "new_password1",
+                "new_password2",
+                Submit("submit", "Change password"),
+            )
+        )
 
 
 class PasswordResetForm(auth.forms.PasswordResetForm):
@@ -80,9 +92,13 @@ class VerifyEmailForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.user = None
         self.email = None
-        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "mw-45 mt-4"
+        self.helper.add_input(Submit("submit", "Verify email"))
 
     def clean_verify_code(self):
         verify_code = self.cleaned_data["verify_code"]
@@ -199,48 +215,71 @@ class UserAdminChangeForm(forms.ModelForm):
 
 class UserChangeForm(forms.ModelForm):
     template_name = "forms/user_change_form.html"
-    email = forms.EmailField(
-        disabled=True,
-        help_text="Use the change email page to update your email address.",
-    )
 
     class Meta:
         model = User
         fields = (
-            "email",
-            "username",
             "name",
-        )
-
-
-class ProfileChangeForm(forms.ModelForm):
-    template_name = "forms/profile_change_form.html"
-
-    class Meta:
-        model = User
-        fields = (
+            "username",
             "location",
             "country",
-            "clubs",
             "page_title",
             "bio",
-        )
-
-
-class SettingsChangeForm(forms.ModelForm):
-    template_name = "forms/settings_change_form.html"
-
-    class Meta:
-        model = User
-        fields = (
+            "clubs",
             "privacy",
-            "private_notes",
             "units",
             "timezone",
+            "private_notes",
             "public_statistics",
             "allow_friend_username",
             "allow_friend_email",
             "allow_comments",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            Fieldset(
+                "Personal details",
+                Div(
+                    Div("name", css_class="col"),
+                    Div("username", css_class="col"),
+                    Div("location", css_class="col"),
+                    Div("country", css_class="col"),
+                    css_class="row row-cols-1 row-cols-lg-2",
+                ),
+            ),
+            Fieldset(
+                "Profile settings",
+                Div(
+                    Div("page_title", css_class="col"),
+                    Div("bio", css_class="col"),
+                    Div("clubs", css_class="col"),
+                    css_class="row row-cols-1",
+                ),
+                css_class="mt-4",
+            ),
+            Fieldset(
+                "Account settings",
+                Div(
+                    Div("privacy", css_class="col"),
+                    Div("units", css_class="col"),
+                    Div("timezone", css_class="col"),
+                    css_class="row row-cols-1 row-cols-xl-3",
+                ),
+                Div(
+                    Div("private_notes", css_class="col"),
+                    Div("public_statistics", css_class="col"),
+                    Div("allow_friend_username", css_class="col"),
+                    Div("allow_friend_email", css_class="col"),
+                    Div("allow_comments", css_class="col"),
+                    css_class="row row-cols-1 row-cols-lg-3",
+                ),
+                css_class="mt-4",
+            ),
+            Submit("submit", "Save changes", css_class="btn-lg w-100 mt-4"),
         )
 
 
@@ -263,8 +302,19 @@ class UserChangeEmailForm(forms.Form):
     )
 
     def __init__(self, user, *args, **kwargs):
-        self.user = user
         super().__init__(*args, **kwargs)
+        self.user = user
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "mw-35"
+        self.helper.layout = Layout(
+            Fieldset(
+                "Change email address",
+                "email",
+                "password",
+                Submit("submit", "Update email"),
+            )
+        )
 
     def clean_password(self):
         """Check the user entered their password correctly"""

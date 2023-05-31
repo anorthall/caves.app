@@ -25,7 +25,7 @@
         {% endif %}
         <li>
           <div data-href="{% url 'users:notification' pk=notification.pk %}" class="dropdown-item text-dark my-0">
-            <span{% if not notification.read %} class="fw-bold{% endif %}">{{ notification.message }}</span>
+            <span{% if not notification.read %} class="fw-bold"{% endif %}>{{ notification.message }}</span>
             <br />
             <small class="text-muted">
               {{ notification.added|timesince }} ago

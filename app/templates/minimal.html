@@ -18,6 +18,8 @@
     <!-- Bootstrap Icons v1.10.3 -->
     <link rel="stylesheet" href="{% static "bootstrap-icons/bootstrap-icons.css" %}">
 
+    {% block stylesheets %}{% endblock %}
+
     <!-- HTMX  -->
     <script src="{% static "js/htmx.min.js" %}"></script>
     {% django_htmx_script %}

@@ -426,7 +426,7 @@ class UserIntegrationTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Your profile has been updated.")
+        self.assertContains(response, "Your account has been updated.")
 
         # Check the user details have been updated
         self.user.refresh_from_db()
