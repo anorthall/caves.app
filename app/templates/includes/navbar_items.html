@@ -9,50 +9,50 @@
       {% comment %}  Authenticated user links  {% endcomment %}
       <li class="nav-item">
         <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
-          <i class="bi bi-plus-circle"></i>&nbsp; Add
+          <i class="bi bi-plus-circle"></i> Add
         </a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
-          <i class="bi bi-card-list"></i>&nbsp; Trips
+          <i class="bi bi-card-list"></i> Trips
         </a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link {% active_link 'log:statistics' %}" href="{% url 'log:statistics' %}">
-          <i class="bi bi-bar-chart"></i>&nbsp; Statistics
+          <i class="bi bi-bar-chart"></i> Statistics
         </a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
-          <i class="bi bi-people"></i>&nbsp; Friends
+          <i class="bi bi-people"></i> Friends
         </a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
-          <i class="bi bi-person-circle"></i>&nbsp; Account
+          <i class="bi bi-person-circle"></i> Account
         </a>
       </li>
     {% else %}
       {% comment %}  Unregistered/Unauthenticated user links  {% endcomment %}
       <li class="nav-item">
         <a class="nav-link {% active_link 'users:login' %}" href="{% url 'users:login' %}">
-          <i class="bi bi-person-circle"></i>&nbsp; Login
+          <i class="bi bi-person-circle"></i> Login
         </a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link {% active_link 'users:register' %}" href="{% url 'users:register' %}">
-          <i class="bi bi-house"></i>&nbsp; Register
+          <i class="bi bi-house"></i> Register
         </a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link {% active_link 'core:about' %}" href="{% url 'core:about' %}">
-          <i class="bi bi-info-circle"></i>&nbsp; About
+          <i class="bi bi-info-circle"></i> About
         </a>
       </li>
     {% endif %}

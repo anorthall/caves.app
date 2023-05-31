@@ -1,0 +1,12 @@
+{% extends "base_sidebar.html" %}
+{% load static %}
+
+{% block stylesheets %}
+  <link href="{% static 'css/trips.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Trips{% endblock %}
+{% block display_title %}Trips{% endblock %}
+
+{% block sidebar %}{% include "includes/sidebar_trips.html" with generate_modal="yes" %}{% endblock %}
+{% block mobile_menu %}{% include "includes/sidebar_trips.html" %}{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_trips.html" %}
 {% load logger_tags %}
 {% load markdownify %}
 
@@ -7,11 +7,13 @@
 {% block display_title_right %}@{{ profile_user.username }}{% endblock %}
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
-{% block content %}
+{% block main %}
   {% if profile_user.bio %}
-    {{ profile_user.bio|markdownify }}
+    <div class="mb-4">
+      {{ profile_user.bio|markdownify }}
+    </div>
   {% elif not profile_user.bio and not trips %}
-    <p class="lead">
+    <p class="lead mb-4">
       There is nothing here &mdash; yet.
       {% if user == profile_user %}
         Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
@@ -21,7 +23,7 @@
   {% endif %}
 
   {% if trips %}
-    <div class="table-responsive mt-4">
+    <div class="table-responsive">
       <table class="table table-hover table-striped mb-0">
         <thead class="border-top">
           <tr>

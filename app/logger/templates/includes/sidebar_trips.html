@@ -1,78 +1,100 @@
-{% extends "sidebar_base.html" %}
 {% load active_link_tags %}
 
-{% block sidebar_title %}
-  {% if user == object_owner %}
-    Your trip
-  {% else %}
-    Trip by {{ object_owner.name }}
-  {% endif %}
-{% endblock %}
+{% if user.is_authenticated %}
+  {% comment %} Authenticated user links {% endcomment %}
+  <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
+    <i class="bi bi-people-fill"></i> Your feed
+  </a>
 
-{% block sidebar_nav %}
-  {% if user == object_owner %}
-    <a class="nav-link {% active_link 'log:user' username=object_owner.username %}" href="{% url 'log:user' username=object_owner.username %}">
-      <i class="bi bi-card-list"></i>&nbsp; Your trips
-    </a>
+  <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
+    <i class="bi bi-list"></i> Trip list
+  </a>
 
+  <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
+    <i class="bi bi-search"></i> Search
+  </a>
+
+  <a class="nav-link {% active_link 'log:export' %}" href="{% url 'log:export' %}">
+    <i class="bi bi-save-fill"></i> Export
+  </a>
+{% else %}
+  {% comment %} Unauthenticated user links {% endcomment %}
+  <a class="nav-link" href="{% url 'users:login' %}">
+    <i class="bi bi-person-circle"></i> Sign in
+  </a>
+
+  <a class="nav-link" href="{% url 'users:register' %}">
+    <i class="bi bi-house"></i> Register
+  </a>
+{% endif %}
+
+{% if trip and user == object_owner %}
+  {% comment %} Viewing a trip as the owner of it {% endcomment %}
+  <hr class="m-2">
+
+  <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+    <i class="bi bi-info-circle"></i> View trip
+  </a>
+
+  <a class="nav-link {% active_link 'log:trip_update' pk=trip.pk %}" href="{% url 'log:trip_update' pk=trip.pk %}">
+    <i class="bi bi-pencil"></i> Edit trip
+  </a>
+
+  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripModal">
+    <i class="bi bi-x-lg"></i> Delete trip
+  </a>
+
+  {% if trip.report %}
     <hr class="m-2">
-
-    <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
-      <i class="bi bi-info-circle"></i>&nbsp; View trip
+    <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+      <i class="bi bi-card-text"></i> View trip report
     </a>
 
-    <a class="nav-link {% active_link 'log:trip_update' pk=trip.pk %}" href="{% url 'log:trip_update' pk=trip.pk %}">
-      <i class="bi bi-pencil"></i>&nbsp; Edit trip
+    <a class="nav-link {% active_link 'log:report_update' pk=trip.report.pk %}" href="{% url 'log:report_update' pk=trip.report.pk %}">
+      <i class="bi bi-pencil"></i> Edit trip report
     </a>
 
-    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripModal">
-      <i class="bi bi-x-lg"></i>&nbsp; Delete trip
+    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripReportModal">
+      <i class="bi bi-x-lg"></i> Delete trip report
     </a>
-
-    {% if trip.report %}
-      <hr class="m-2">
-      <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
-        <i class="bi bi-card-text"></i>&nbsp; View trip report
-      </a>
-
-      <a class="nav-link {% active_link 'log:report_update' pk=trip.report.pk %}" href="{% url 'log:report_update' pk=trip.report.pk %}">
-        <i class="bi bi-pencil"></i>&nbsp; Edit trip report
-      </a>
-
-      <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripReportModal">
-        <i class="bi bi-x-lg"></i>&nbsp; Delete trip report
-      </a>
-    {% else %}
-      <hr class="m-2">
-      <a class="nav-link {% active_link 'log:report_create' pk=trip.pk %}" href="{% url 'log:report_create' pk=trip.pk %}">
-        <i class="bi bi-card-text"></i>&nbsp; Add trip report
-      </a>
-    {% endif %}
   {% else %}
-    {% if can_view_profile %}
-      <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
-        <i class="bi bi-card-list"></i>&nbsp; View profile
-      </a>
-    {% endif %}
-
-    <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
-      <i class="bi bi-info-circle"></i>&nbsp; View this trip
+    <hr class="m-2">
+    <a class="nav-link {% active_link 'log:report_create' pk=trip.pk %}" href="{% url 'log:report_create' pk=trip.pk %}">
+      <i class="bi bi-card-text"></i> Add trip report
     </a>
-
-    {% if can_add_friend and user.is_authenticated %}
-      <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">
-        <i class="bi bi-plus-lg"></i>&nbsp; Add as friend
-      </a>
-    {% endif %}
-
-    {% if can_view_report %}
-      <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
-        <i class="bi bi-card-text"></i>&nbsp; View trip report
-      </a>
-    {% endif %}
   {% endif %}
 
-  {% if user == object_owner %}
+{% elif trip and user != object_owner %}
+  {% comment %}Viewing a trip but not the owner of it{% endcomment %}
+
+  <hr class="m-2">
+
+  {% if can_view_profile %}
+    <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
+      <i class="bi bi-person-fill"></i> Trips by this user
+    </a>
+  {% endif %}
+
+  <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+    <i class="bi bi-card-text"></i> View trip
+  </a>
+
+  {% if can_view_report %}
+    <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+      <i class="bi bi-card-text"></i> View trip report
+    </a>
+  {% endif %}
+
+  {% if can_add_friend and user.is_authenticated %}
+    <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">
+      <i class="bi bi-plus-lg"></i> Add as friend
+    </a>
+  {% endif %}
+{% endif %}
+
+{% if generate_modal == "yes" %}
+  {% comment %}Delete trip/report modal{% endcomment %}
+  {% if trip and user == object_owner %}
     <div class="modal fade" id="deleteTripModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -119,4 +141,4 @@
       </div>
     {% endif %}
   {% endif %}
-{% endblock %}
+{% endif %}

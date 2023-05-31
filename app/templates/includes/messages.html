@@ -1,7 +1,7 @@
 {% if messages or form %}
   <div id="messages">
     {% if form.errors %}
-      <div class="alert alert-danger alert-dismissible" role="alert">
+      <div class="alert alert-danger alert-dismissible mb-0" role="alert">
         <div class="container">
           <span class="message-title">
             <i class="bi bi-exclamation-triangle-fill"></i>
@@ -13,7 +13,7 @@
     {% endif %}
 
     {% for message in messages %}
-      <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+      <div class="alert {{ message.tags }} alert-dismissible mb-0" role="alert">
         <div class="container">
           <span class="message-title">
             {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}

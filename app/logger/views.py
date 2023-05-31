@@ -37,7 +37,7 @@ class Index(TemplateView):
             context = self.get_authenticated_context(**kwargs)
             return self.render_to_response(context)
         else:
-            self.template_name = "index/index_unregistered.html"
+            self.template_name = "index_unregistered.html"
             return super().get(request, *args, **kwargs)
 
     def get_authenticated_context(self, **kwargs):
@@ -52,9 +52,9 @@ class Index(TemplateView):
 
         # If there are no trips, show the new user page
         if context["trips"]:
-            self.template_name = "index/index_registered.html"
+            self.template_name = "social_feed.html"
         else:
-            self.template_name = "index/index_new_user.html"
+            self.template_name = "new_user.html"
 
         return context
 
@@ -288,7 +288,9 @@ class SearchResults(LoginRequiredMixin, View):
                 "form": form,
             }
             if len(trips) == 0:
-                context["no_results"] = True
+                messages.error(
+                    request, "No trips were found with the provided search terms."
+                )
 
             return render(request, "search.html", context)
         else:

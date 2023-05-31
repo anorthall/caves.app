@@ -1,10 +1,10 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_trips.html" %}
 {% load logger_tags %}
 {% load users_tags %}
+
 {% block title %}Trip to {{ trip.cave_name }}{% endblock %}
 {% block display_title %}Trip to {{ trip.cave_name }}{% endblock %}
 {% block display_title_right %}@{{ trip.user.username }}{% endblock %}
-{% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
 {% block main %}
   <div class="mb-2">
@@ -154,4 +154,4 @@
     {% endwith %}
   {% endcomment %}
 
-{% endblock main %}
+{% endblock %}

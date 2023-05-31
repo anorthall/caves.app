@@ -1,0 +1,28 @@
+{% extends "base_trips.html" %}
+{% load markdownify %}
+
+{% block title %}caves.app{% endblock %}
+{% block display_title %}Recent activity{% endblock %}
+
+{% block main %}
+  <div class="d-flex flex-row justify-content-between mb-3">
+    <h3 class="fs-5 ms-3 mb-0 align-self-center">
+      You &amp; your friends &nbsp;<i class="bi bi-arrow-down"></i>
+    </h3>
+
+    <div class="d-flex flex-row text-muted">
+      <form method="post" action="{% url 'log:feed_set_ordering' %}" class="me-1">
+        {% csrf_token %}
+        <input type="hidden" name="sort" value="-added">
+        <input type="submit" value="Added" class="btn btn-sm {% if ordering == "-added" %}btn-primary{% else %}btn-secondary{% endif %}">
+      </form>
+      <form method="post" action="{% url 'log:feed_set_ordering' %}">
+        {% csrf_token %}
+        <input type="hidden" name="sort" value="-start">
+        <input type="submit" value="Start" class="btn btn-sm {% if ordering == "-start" %}btn-primary{% else %}btn-secondary{% endif %}">
+      </form>
+    </div>
+  </div>
+
+  {% include "includes/feed.html" %}
+{% endblock %}

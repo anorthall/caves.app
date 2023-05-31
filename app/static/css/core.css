@@ -37,8 +37,14 @@ body {
 */
 
 #sidebarContainer {
-  min-width: 200px;
-  max-width: 200px;
+  min-width: 250px;
+  max-width: 250px;
+  display: inline;
+}
+
+#sidebar {
+  position: sticky;
+  top: 2rem;
 }
 
 #sidebar .nav-link {

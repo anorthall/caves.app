@@ -1,24 +1,14 @@
-{% extends "base.html" %}
+{% extends "base_trips.html" %}
 {% load logger_tags %}
 {% load users_tags %}
 {% load crispy_forms_tags %}
 
 {% block title %}Search caves.app{% endblock %}
 {% block display_title %}Search{% endblock %}
-{% block sidebar %}{% include "includes/sidebar_trips.html" %}{% endblock %}
 
-{% block content %}
-  {% if not trips and no_results %}
-  <div class="alert alert-danger mb-4">
-    <strong>No trips found</strong><br>
-      No trips were found matching your search criteria.
-  </div>
-  {% endif %}
-
-  <p>
-    This page allows you to search through trips by cave name, region, and country. All public trips will
-    be shown in the results, as well as trips created by your friends that you are allowed to view.
-    Specifying a username will limit the results to trips created by that user.
+{% block main %}
+  <p class="lead">
+    This page allows you to search through trips by cave name, region, and country.
   </p>
 
   <hr>

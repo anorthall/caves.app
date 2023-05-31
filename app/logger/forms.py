@@ -164,8 +164,8 @@ class TripSearchForm(forms.Form):
         self.helper.form_action = reverse("log:search_results")
         self.helper.layout = Layout(
             Div(
-                Field("terms", wrapper_class="col-12 col-md-8"),
-                Field("user", wrapper_class="col-12 col-md-4"),
+                Field("terms", wrapper_class="col-12 col-lg-8"),
+                Field("user", wrapper_class="col-12 col-lg-4"),
                 css_class="row",
             ),
             Submit("submit", "Search", css_class="btn btn-primary w-100"),
