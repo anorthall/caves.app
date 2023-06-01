@@ -42,7 +42,7 @@ User = get_user_model()
 
 
 class PasswordResetView(SuccessMessageMixin, PasswordResetView):
-    template_name = "password_reset.html"
+    template_name = "users/password_reset.html"
     email_template_name = "emails/email_password_reset.html"
     html_email_template_name = "emails/email_html_password_reset.html"
     subject_template_name = "emails/email_password_reset_subject.txt"
@@ -57,7 +57,7 @@ class PasswordResetView(SuccessMessageMixin, PasswordResetView):
 
 
 class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
-    template_name = "password_reset_confirm.html"
+    template_name = "users/password_reset_confirm.html"
     success_url = reverse_lazy("users:account_detail")
     form_class = SetPasswordForm
     post_reset_login = True
@@ -65,7 +65,7 @@ class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
 
 
 class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
-    template_name = "crispy_account_form.html"
+    template_name = "users/crispy_form.html"
     extra_context = {"title": "Change your password"}
     success_url = reverse_lazy("users:account_detail")
     form_class = PasswordChangeForm
@@ -73,7 +73,7 @@ class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChange
 
 
 class Account(LoginRequiredMixin, TemplateView):
-    template_name = "account.html"
+    template_name = "users/account.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -81,7 +81,7 @@ class Account(LoginRequiredMixin, TemplateView):
 
 
 class SettingsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
-    template_name = "crispy_account_form.html"
+    template_name = "users/crispy_form.html"
     extra_context = {"title": "Update your account"}
     form_class = SettingsChangeForm
     success_url = reverse_lazy("users:settings_update")
@@ -98,7 +98,7 @@ class SettingsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
 
 
 class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
-    template_name = "crispy_account_form.html"
+    template_name = "users/crispy_form.html"
     extra_context = {"title": "Update your profile"}
     form_class = ProfileChangeForm
     success_url = reverse_lazy("users:profile_update")
@@ -115,7 +115,7 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
 
 
 class FriendListView(LoginRequiredMixin, TemplateView):
-    template_name = "friends.html"
+    template_name = "users/friends.html"
 
     def get(self, request):
         if self.request.GET.get("u", None):
@@ -221,7 +221,7 @@ class FriendRemoveView(LoginRequiredMixin, View):
 
 
 class Login(SuccessMessageMixin, LoginView):
-    template_name = "login.html"
+    template_name = "users/login.html"
     success_message = "You are now logged in."
     form_class = AuthenticationForm
     redirect_authenticated_user = True
@@ -258,7 +258,7 @@ def register(request):
     else:
         form = UserCreationForm()
 
-    return render(request, "register.html", {"form": form})
+    return render(request, "users/register.html", {"form": form})
 
 
 def verify_new_account(request):
@@ -283,7 +283,7 @@ def verify_new_account(request):
     else:
         form = VerifyEmailForm()
 
-    return render(request, "verify_new_account.html", {"form": form})
+    return render(request, "users/verify_new_account.html", {"form": form})
 
 
 def resend_verify_email(request):
@@ -307,12 +307,12 @@ def resend_verify_email(request):
         )
     else:
         form = ResendVerifyEmailForm()
-    return render(request, "verify_resend_email.html", {"form": form})
+    return render(request, "users/verify_resend_email.html", {"form": form})
 
 
 class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
     form_class = VerifyEmailForm
-    template_name = "verify_email_change.html"
+    template_name = "users/verify_email_change.html"
     success_message = "Your email address has been verified and updated."
     success_url = reverse_lazy("users:account_detail")
 
@@ -332,7 +332,7 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
 
 
 class UpdateEmail(SuccessMessageMixin, LoginRequiredMixin, FormView):
-    template_name = "crispy_account_form.html"
+    template_name = "users/crispy_form.html"
     extra_context = {"title": "Change your email address"}
     form_class = UserChangeEmailForm
     success_url = reverse_lazy("users:verify_email_change")

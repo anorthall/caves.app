@@ -44,8 +44,6 @@ class AuthenticationForm(auth.forms.AuthenticationForm):
 
 
 class PasswordChangeForm(auth.forms.PasswordChangeForm):
-    template_name = "forms/bs5_form.html"
-
     def __init__(self, *args, **kwargs):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
         self.fields["new_password1"].help_text = ""
@@ -69,11 +67,11 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
 
 
 class PasswordResetForm(auth.forms.PasswordResetForm):
-    template_name = "forms/bs5_form.html"
+    template_name = "_bs5_form.html"
 
 
 class SetPasswordForm(auth.forms.SetPasswordForm):
-    template_name = "forms/bs5_form.html"
+    template_name = "_bs5_form.html"
 
     def __init__(self, *args, **kwargs):
         super(SetPasswordForm, self).__init__(*args, **kwargs)
@@ -86,7 +84,6 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
 
 
 class VerifyEmailForm(forms.Form):
-    template_name = "forms/bs5_form.html"
     verify_code = forms.CharField(
         label="Verification code", max_length=100, required=True
     )
@@ -116,7 +113,7 @@ class VerifyEmailForm(forms.Form):
 
 
 class ResendVerifyEmailForm(forms.Form):
-    template_name = "forms/bs5_form.html"
+    template_name = "_bs5_form.html"
     email = forms.EmailField(
         label="Email address",
         max_length=255,

@@ -4,7 +4,7 @@ repos:
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
-        exclude: app/users/templates/includes/user_tag.html
+        exclude: app/templates/users/_user_tag.html
     -   id: trailing-whitespace
 -   repo: https://github.com/psf/black
     rev: 23.3.0

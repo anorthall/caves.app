@@ -1,12 +1,12 @@
-{% extends "minimal.html" %}
+{% extends "_minimal.html" %}
 
 {% block body %}
   <header>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2">
       <div class="container">
-        {% include "includes/navbar_brand.html" %}
-        {% include "includes/navbar_items.html" %}
+        {% include "_navbar_brand.html" %}
+        {% include "_navbar_items.html" %}
       </div>
     </nav>
 
@@ -42,7 +42,7 @@
     {% endblock %}
 
     <!-- Messages -->
-    {% include "includes/messages.html" %}
+    {% include "_messages.html" %}
   </header>
 
   <main class="d-flex flex-column flex-fill my-3 my-md-4">
@@ -53,7 +53,7 @@
 
   <footer class="footer mt-auto py-3 border-top bg-primary text-white">
     <div class="container">
-      {% include "includes/footer.html" %}
+      {% include "_footer.html" %}
     </div>
   </footer>
 {% endblock body %}

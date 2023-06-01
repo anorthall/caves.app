@@ -48,7 +48,7 @@ class DistanceUnitFormMixin:
 
 
 class TripReportForm(forms.ModelForm):
-    template_name = "forms/tripreport_form.html"
+    template_name = "logger/_trip_report_form.html"
 
     class Meta:
         model = TripReport

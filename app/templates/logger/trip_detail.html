@@ -8,7 +8,7 @@
 
 {% block main %}
   <div class="mb-2">
-    {% include "includes/trip_header.html" %}
+    {% include "logger/_trip_header.html" %}
   </div>
 
   <!-- Data blocks -->
@@ -108,7 +108,7 @@
 
   <span class="float-start">
     {% if user.is_authenticated %}
-      {% include "includes/htmx_trip_like.html" %}
+      {% include "logger/_htmx_trip_like.html" %}
       {% if trip.likes_count > 0 %}
         <span class="ms-1" data-bs-toggle="modal" data-bs-target="#usersThatLikedTrip{{ trip.pk }}"><i class="bi bi-info-circle"></i></span>
         <div class="modal fade" id="usersThatLikedTrip{{ trip.pk }}" tabindex="-1">
@@ -150,7 +150,7 @@
     TODO: Refactor comments
     {% with trip as object %}
       <div class="mt-4"></div>
-      {% include "includes/comments.html" %}
+      {% include "logger/_comments.html" %}
     {% endwith %}
   {% endcomment %}
 

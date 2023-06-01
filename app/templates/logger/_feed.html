@@ -5,7 +5,7 @@
 {% for trip in trips %}
   <div class="card shadow mb-5">
     <div class="card-header">
-      {% include "includes/trip_header_small.html" %}
+      {% include "logger/_trip_header_small.html" %}
     </div>
 
     <div class="card-body">
@@ -78,7 +78,7 @@
     <div class="card-footer">
       <span class="float-start">
         {% with trip.likes_count as likes_count %}
-          {% include "includes/htmx_trip_like.html" %}
+          {% include "logger/_htmx_trip_like.html" %}
         {% endwith %}
       </span>
 
@@ -106,4 +106,4 @@
     </button>
   </div>
 {% endif %}
-{% include "includes/clickable_elements.html" %}
+{% include "_clickable_elements.html" %}
