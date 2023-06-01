@@ -170,7 +170,8 @@ class UserProfile(ListView):
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Trip
     form_class = TripForm
-    template_name = "trip_update_form.html"
+    extra_context = {"title": "Edit trip"}
+    template_name = "crispy_trips_form.html"
     success_message = "The trip has been updated."
 
     def get_queryset(self):
@@ -232,7 +233,8 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
 class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Trip
     form_class = TripForm
-    template_name = "trip_create.html"
+    template_name = "crispy_trips_form.html"
+    extra_context = {"title": "Add a trip"}
     success_message = "The trip has been created."
     initial = {
         "start": timezone.localdate(),

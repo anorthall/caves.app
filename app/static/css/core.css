@@ -195,6 +195,13 @@ h1.page-title {
   margin-right: auto;
 }
 
+.subtitle, form fieldset legend {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
 
 /*
   JS Elements
@@ -243,4 +250,13 @@ h1.page-title {
     position: absolute;
     top: -5px;
     left: 15px;
+}
+
+
+/*
+  Account info
+*/
+
+.account-info-label {
+  color: var(--bs-gray-700);
 }

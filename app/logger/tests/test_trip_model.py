@@ -463,8 +463,8 @@ class TripIntegrationTests(TestCase):
         self.assertContains(response, "Cave region")
         self.assertContains(response, "Cave country")
         self.assertContains(response, "Cavers")
-        self.assertContains(response, "Notes")
-        self.assertContains(response, "Save")
+        self.assertContains(response, "Trip notes")
+        self.assertContains(response, "Create trip")
 
         response = self.client.post(
             reverse("log:trip_create"),
@@ -582,8 +582,8 @@ class TripIntegrationTests(TestCase):
         self.assertContains(response, "Cave region")
         self.assertContains(response, "Cave country")
         self.assertContains(response, "Cavers")
-        self.assertContains(response, "Notes")
-        self.assertContains(response, "Save")
+        self.assertContains(response, "Trip notes")
+        self.assertContains(response, "Update trip")
         self.assertContains(response, self.trip.cave_name)
 
         response = self.client.post(

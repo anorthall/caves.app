@@ -7,7 +7,7 @@
 {% block main %}
   {% if friends_list %}
     <div class="mb-5">
-      <h3 class="account-subtitle">Your friends</h3>
+      <h3 class="subtitle">Your friends</h3>
 
       <div class="table-responsive">
         <table class="table table-hover">
@@ -49,7 +49,7 @@
 
   {% if friend_requests %}
     <div class="mb-5">
-      <h3 class="account-subtitle">Friend requests</h3>
+      <h3 class="subtitle">Friend requests</h3>
 
       <div class="table-responsive">
         <table class="table table-hover">
@@ -98,7 +98,7 @@
   {% endif %}
 
   <div>
-    <h3 class="account-subtitle">Add a friend</h3>
+    <h3 class="subtitle">Add a friend</h3>
 
     {% crispy add_friend_form %}
     <div id="form-errors">{{ form_errors }}</div>
