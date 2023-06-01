@@ -16,6 +16,15 @@ body {
   overflow-y:scroll;
 }
 
+.center-container {
+  max-width: 38em;
+}
+
+
+/*
+  Messages
+*/
+
 #messages .alert {
   border-radius: 0 !important;
   padding-left: 0 !important;
@@ -27,8 +36,36 @@ body {
   font-weight: bold;
 }
 
-.center-container {
-  max-width: 38em;
+
+/*
+  Navbar
+*/
+
+#mainNavbar .bi {
+  margin-right: 0.5rem;
+}
+
+.navbar-toggler {
+  border-color: transparent !important;
+}
+
+.navbar-dropdown .dropdown-item:hover {
+  background-color: #f7f7f7 !important;
+}
+
+.navbar-dropdown .dropdown-item.active {
+  background-color: #f7f7f7 !important;
+  font-weight: bold !important;
+}
+
+.dropdown-toggle.focus, .dropdown-toggle:focus {
+  outline: 0px none #fff !important;
+}
+
+@media (min-width: 992px) {
+  .navbar-nav .nav-item {
+    padding: 0 0.75rem;
+  }
 }
 
 
@@ -113,34 +150,6 @@ body {
 
 .statistics-table tbody th {
   font-weight: normal;
-}
-
-
-/*
-  Navbar
-*/
-
-.navbar-toggler {
-  border-color: transparent !important;
-}
-
-.navbar-dropdown .dropdown-item:hover {
-  background-color: #f7f7f7 !important;
-}
-
-.navbar-dropdown .dropdown-item.active {
-  background-color: #f7f7f7 !important;
-  font-weight: bold !important;
-}
-
-.dropdown-toggle.focus, .dropdown-toggle:focus {
-  outline: 0px none #fff !important;
-}
-
-@media (min-width: 992px) {
-  .navbar-nav .nav-item {
-    padding: 0 0.75rem;
-  }
 }
 
 
