@@ -552,6 +552,13 @@ def user_statistics(request):
             if trips.filter(end__isnull=False):
                 show_time_charts = True
 
+    if len(trips) < 5:
+        messages.warning(
+            request,
+            "Full featured statistics are not available as you have added "
+            "less than five trips.",
+        )
+
     context = {
         "trips": trips,
         "gte_five_trips": len(trips) >= 5,
