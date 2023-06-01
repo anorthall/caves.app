@@ -411,41 +411,57 @@ class UserIntegrationTestCase(TestCase):
         """Test submitting updates to a user's profile"""
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("users:account_update"),
+            reverse("users:profile_update"),
             {
                 "name": "New",
                 "username": "newusername",
                 "location": "Testing New Location",
-                "privacy": "Public",
-                "timezone": "US/Central",
-                "units": "Imperial",
-                "public_statistics": True,
                 "bio": "This is a bio for testing.",
             },
             follow=True,
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Your account has been updated.")
+        self.assertContains(response, "Your profile has been updated.")
+
+        # Check the user details have been updated
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, "New")
+        self.assertEqual(self.user.username, "newusername")
+        self.assertEqual(self.user.location, "Testing New Location")
+        self.assertEqual(self.user.bio, "This is a bio for testing.")
+
+    def test_submit_updates_to_settings(self):
+        """Test submitting updates to a user's settings"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("users:settings_update"),
+            {
+                "privacy": "Friends",
+                "timezone": "US/Central",
+                "units": "Imperial",
+                "public_statistics": True,
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your settings have been updated.")
 
         # Check the user details have been updated
         self.user.refresh_from_db()
         from zoneinfo import ZoneInfo
 
-        self.assertEqual(self.user.name, "New")
-        self.assertEqual(self.user.username, "newusername")
-        self.assertEqual(self.user.location, "Testing New Location")
-        self.assertEqual(self.user.privacy, self.user.PUBLIC)
+        self.assertEqual(self.user.privacy, self.user.FRIENDS)
         self.assertEqual(self.user.timezone, ZoneInfo("US/Central"))
         self.assertEqual(self.user.units, self.user.IMPERIAL)
         self.assertTrue(self.user.public_statistics)
-        self.assertEqual(self.user.bio, "This is a bio for testing.")
 
     def test_submit_invalid_updates_to_profile(self):
         """Test submitting invalid updates to a user's profile"""
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("users:account_update"),
+            reverse("users:profile_update"),
             {
                 "username": "spaces in username",
             },

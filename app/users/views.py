@@ -27,10 +27,11 @@ from .forms import (
     AuthenticationForm,
     PasswordChangeForm,
     PasswordResetForm,
+    ProfileChangeForm,
     ResendVerifyEmailForm,
     SetPasswordForm,
+    SettingsChangeForm,
     UserChangeEmailForm,
-    UserChangeForm,
     UserCreationForm,
     VerifyEmailForm,
 )
@@ -79,12 +80,29 @@ class Account(LoginRequiredMixin, TemplateView):
         return context
 
 
-class AccountUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
+class SettingsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "crispy_account_form.html"
     extra_context = {"title": "Update your account"}
-    form_class = UserChangeForm
-    success_url = reverse_lazy("users:account_update")
-    success_message = "Your account has been updated."
+    form_class = SettingsChangeForm
+    success_url = reverse_lazy("users:settings_update")
+    success_message = "Your settings have been updated."
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs["instance"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+
+class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
+    template_name = "crispy_account_form.html"
+    extra_context = {"title": "Update your profile"}
+    form_class = ProfileChangeForm
+    success_url = reverse_lazy("users:profile_update")
+    success_message = "Your profile has been updated."
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super().get_form_kwargs(*args, **kwargs)

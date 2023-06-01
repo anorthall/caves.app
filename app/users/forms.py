@@ -213,9 +213,48 @@ class UserAdminChangeForm(forms.ModelForm):
         )
 
 
-class UserChangeForm(forms.ModelForm):
-    template_name = "forms/user_change_form.html"
+class SettingsChangeForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = (
+            "privacy",
+            "units",
+            "timezone",
+            "private_notes",
+            "public_statistics",
+            "allow_friend_username",
+            "allow_friend_email",
+            "allow_comments",
+        )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            Fieldset(
+                "Account settings",
+                Div(
+                    Div("privacy", css_class="col"),
+                    Div("units", css_class="col"),
+                    Div("timezone", css_class="col"),
+                    css_class="row row-cols-1 row-cols-xl-3",
+                ),
+                Div(
+                    Div("private_notes", css_class="col"),
+                    Div("public_statistics", css_class="col"),
+                    Div("allow_friend_username", css_class="col"),
+                    Div("allow_friend_email", css_class="col"),
+                    Div("allow_comments", css_class="col"),
+                    css_class="row row-cols-1 row-cols-lg-3",
+                ),
+                css_class="mt-4",
+            ),
+            Submit("submit", "Save changes", css_class="btn-lg w-100 mt-4"),
+        )
+
+
+class ProfileChangeForm(forms.ModelForm):
     class Meta:
         model = User
         fields = (
@@ -226,14 +265,6 @@ class UserChangeForm(forms.ModelForm):
             "page_title",
             "bio",
             "clubs",
-            "privacy",
-            "units",
-            "timezone",
-            "private_notes",
-            "public_statistics",
-            "allow_friend_username",
-            "allow_friend_email",
-            "allow_comments",
         )
 
     def __init__(self, *args, **kwargs):
@@ -258,24 +289,6 @@ class UserChangeForm(forms.ModelForm):
                     Div("bio", css_class="col"),
                     Div("clubs", css_class="col"),
                     css_class="row row-cols-1",
-                ),
-                css_class="mt-4",
-            ),
-            Fieldset(
-                "Account settings",
-                Div(
-                    Div("privacy", css_class="col"),
-                    Div("units", css_class="col"),
-                    Div("timezone", css_class="col"),
-                    css_class="row row-cols-1 row-cols-xl-3",
-                ),
-                Div(
-                    Div("private_notes", css_class="col"),
-                    Div("public_statistics", css_class="col"),
-                    Div("allow_friend_username", css_class="col"),
-                    Div("allow_friend_email", css_class="col"),
-                    Div("allow_comments", css_class="col"),
-                    css_class="row row-cols-1 row-cols-lg-3",
                 ),
                 css_class="mt-4",
             ),

@@ -151,10 +151,16 @@ class TestAllPagesLoad(TestCase):
         response = self.client.get(reverse("users:account_detail"))
         self.assertEqual(response.status_code, 200)
 
-    def test_account_update_page_loads(self):
-        """Test that the account update page loads"""
+    def test_profile_update_page_loads(self):
+        """Test that the profile update page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("users:account_update"))
+        response = self.client.get(reverse("users:profile_update"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_settings_update_page_loads(self):
+        """Test that the settings update page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:settings_update"))
         self.assertEqual(response.status_code, 200)
 
     def test_friends_page_loads_without_friends(self):
