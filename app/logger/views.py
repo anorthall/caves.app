@@ -170,7 +170,7 @@ class UserProfile(ListView):
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Trip
     form_class = TripForm
-    template_name_suffix = "_update_form"
+    template_name = "trip_update_form.html"
     success_message = "The trip has been updated."
 
     def get_queryset(self):
@@ -184,6 +184,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class TripDetail(TripContextMixin, ViewableObjectDetailView):
     model = Trip
+    template_name = "trip_detail.html"
 
     def get_queryset(self):
         qs = (
@@ -231,7 +232,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
 class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Trip
     form_class = TripForm
-    template_name_suffix = "_create_form"
+    template_name = "trip_create.html"
     success_message = "The trip has been created."
     initial = {
         "start": timezone.localdate(),
@@ -304,7 +305,7 @@ class SearchResults(LoginRequiredMixin, View):
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = TripReport
     form_class = TripReportForm
-    template_name_suffix = "_create_form"
+    template_name = "trip_report_create.html"
     success_message = "The trip report has been created."
     initial = {
         "pub_date": timezone.localdate,
@@ -347,6 +348,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class ReportDetail(TripContextMixin, ViewableObjectDetailView):
     model = TripReport
+    template_name = "trip_report_detail.html"
 
     def get_queryset(self):
         qs = (
@@ -363,7 +365,7 @@ class ReportDetail(TripContextMixin, ViewableObjectDetailView):
 class ReportUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = TripReport
     form_class = TripReportForm
-    template_name_suffix = "_update_form"
+    template_name = "trip_report_update.html"
     success_message = "The trip report has been updated."
 
     def get_queryset(self):
