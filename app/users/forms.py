@@ -246,9 +246,8 @@ class SettingsChangeForm(forms.ModelForm):
                     Div("allow_friend_username", css_class="col"),
                     Div("allow_friend_email", css_class="col"),
                     Div("allow_comments", css_class="col"),
-                    css_class="row row-cols-1 row-cols-lg-3",
+                    css_class="row row-cols-1 row-cols-lg-3 mt-4",
                 ),
-                css_class="mt-4",
             ),
             Submit("submit", "Save changes", css_class="btn-lg w-100 mt-4"),
         )
