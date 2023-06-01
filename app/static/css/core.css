@@ -225,6 +225,11 @@ h1.page-title {
   cursor: pointer;
 }
 
+.htmx-request {
+  opacity: 0.5;
+  transition: opacity 300ms linear;
+}
+
 
 /*
   Notifications

@@ -101,8 +101,7 @@
     <button class="btn btn-primary w-100"
             hx-get="{% url 'log:feed_htmx_view' %}?page={{ trips.next_page_number }}"
             hx-target="#loadMoreTrips"
-            hx-swap="outerHTML"
-            hx-indicator="#loading">
+            hx-swap="outerHTML">
       Load more trips
     </button>
   </div>
