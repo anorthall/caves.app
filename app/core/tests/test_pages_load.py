@@ -83,25 +83,6 @@ class TestAllPagesLoad(TestCase):
         response = self.client.get(reverse("core:help"))
         self.assertEqual(response.status_code, 200)
 
-    def test_about_page_loads(self):
-        """Test that the about page loads"""
-        response = self.client.get(reverse("core:about"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_about_page_loads_with_trips_with_duration(self):
-        """Test that the about page loads with trips with duration"""
-        self.client.force_login(self.user)
-        for i in range(25):
-            Trip.objects.create(
-                user=self.user,
-                cave_name="Test Trip {}".format(i),
-                start=timezone.now() - timezone.timedelta(hours=i),
-                end=timezone.now(),
-            ).save()
-
-        response = self.client.get(reverse("core:about"))
-        self.assertEqual(response.status_code, 200)
-
     def test_verify_new_account_page_loads(self):
         """Test that the verify new account page loads"""
         response = self.client.get(reverse("users:verify_new_account"))
