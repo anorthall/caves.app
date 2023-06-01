@@ -5,19 +5,17 @@
 {% block description %}Oops! Something went wrong.{% endblock %}
 
 {% block content %}
-  <div class="container">
-    <div class="col col-lg-6 mx-auto text-center">
-      <h1 class="display-4">Oops</h1>
+  <div class="container px-0">
+    <div class="mw-35">
+      <h1 class="display-4">Oops.</h1>
       <p class="fs-4 mt-3">There was an internal server error.</p>
       <p class="mt-3">
-        This service is in active development and I'm still trying to iron out some bugs. I've received a report
-        of what caused the error and I will try to fix it as soon as possible.
-        If you think you have information that may help, or would like to provide feedback, you
-        can email <code>admin@caves.app</code>, although usually I will have automatically received enough
-        information to fix the issue.
+        I've received a report of what caused the error and I will try to fix it as soon as possible.
+        If you like, you can submit a bug report on
+        <a href="https://github.com/anorthall/caves.app/issues/new/choose">GitHub</a>.
       </p>
 
-      <p class="mt-3">Sorry about that! Thank you for using caves.app.</p>
+      <p class="mt-3">Sorry about that! Thanks for using caves.app.</p>
 
       <button class="btn btn-primary btn-lg mt-3" onclick="window.history.back()">Go back</button>
     </div>
