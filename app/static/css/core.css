@@ -119,6 +119,15 @@ body {
   opacity: 100 !important;
 }
 
+.sidebar-header {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-left: 0.5rem;
+  padding-bottom: 0.5rem;
+  color: var(--bs-gray-700);
+}
 
 /*
   Trip display
