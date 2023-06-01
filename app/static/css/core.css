@@ -79,10 +79,12 @@ body {
   display: inline;
 }
 
+/* TODO: Disabled as it breaks Bootstrap modals
 #sidebar {
   position: sticky;
   top: 2rem;
 }
+*/
 
 #sidebar .nav-link {
   padding-left: 0.5rem;
