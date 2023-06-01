@@ -1,9 +1,10 @@
-{% extends "base.html" %}
+{% extends "base_center.html" %}
 
 {% block title %}Complete your registration{% endblock %}
 {% block display_title %}Complete your registration{% endblock %}
 
-{% block content %}
+{% block main %}
+<div class="mw-45 mb-3">
   <p class="lead">
     You're almost there! Just one more thing - you need to verify your
     email address before you can sign in. You have 24 hours to confirm
@@ -25,4 +26,5 @@
     {{ form }}
     <button class="mt-3 w-100 btn btn-lg btn-primary" type="submit">Verify</button>
   </form>
+</div>
 {% endblock %}

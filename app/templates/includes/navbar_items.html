@@ -4,7 +4,7 @@
 </button>
 
 <div class="collapse navbar-collapse" id="mainNavbar">
-  <ul class="navbar-nav w-100 d-lg-flex justify-content-center mx-lg-5 w-100">
+  <ul class="navbar-nav w-100 d-lg-flex {% if user.is_authenticated %}justify-content-center{% else %}justify-content-end{% endif %} mx-lg-5 w-100">
     {% if user.is_authenticated %}
       {% comment %}  Authenticated user links  {% endcomment %}
       <li class="nav-item">

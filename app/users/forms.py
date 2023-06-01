@@ -142,7 +142,6 @@ class ResendVerifyEmailForm(forms.Form):
 
 
 class UserCreationForm(forms.ModelForm):
-    template_name = "forms/bs5_form.html"
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,
@@ -170,6 +169,12 @@ class UserCreationForm(forms.ModelForm):
         self.fields["name"].widget.attrs["autocomplete"] = "name"
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         self.fields["name"].initial = None
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "mw-35"
+        self.helper.add_input(
+            Submit("submit", "Create account", css_class="w-100 btn-lg mt-3")
+        )
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -187,6 +192,12 @@ class UserCreationForm(forms.ModelForm):
             self.add_error("password2", error)
 
         return password2
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if User.objects.filter(username__iexact=username).exists():
+            raise ValidationError("Username already taken.")
+        return username
 
     def save(self, commit=True):
         # Save the provided password in hashed format
@@ -296,7 +307,6 @@ class ProfileChangeForm(forms.ModelForm):
 
 
 class UserChangeEmailForm(forms.Form):
-    template_name = "forms/bs5_form.html"
     email = forms.EmailField(
         label="New email address",
         max_length=255,
@@ -344,8 +354,6 @@ class UserChangeEmailForm(forms.Form):
 
 
 class AddFriendForm(forms.Form):
-    """A form used to send a friend request to another user."""
-
     user = forms.CharField(
         label="Username or email address",
         max_length=150,
