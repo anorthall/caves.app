@@ -6,10 +6,6 @@
     <i class="bi bi-people-fill"></i> Recent
   </a>
 
-  <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
-    <i class="bi bi-person-fill"></i> Profile
-  </a>
-
   <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
     <i class="bi bi-search"></i> Search
   </a>

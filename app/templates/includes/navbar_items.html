@@ -14,6 +14,12 @@
       </li>
 
       <li class="nav-item">
+        <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
+          <i class="bi bi-people-fill"></i> Recent
+        </a>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
           <i class="bi bi-card-list"></i> Trips
         </a>
@@ -22,12 +28,6 @@
       <li class="nav-item">
         <a class="nav-link {% active_link 'log:statistics' %}" href="{% url 'log:statistics' %}">
           <i class="bi bi-bar-chart"></i> Statistics
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
-          <i class="bi bi-people"></i> Friends
         </a>
       </li>
 
