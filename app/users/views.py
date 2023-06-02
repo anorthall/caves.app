@@ -61,7 +61,7 @@ class PasswordResetView(SuccessMessageMixin, PasswordResetView):
 
 
 class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
-    template_name = "users/crispy_form_center.html"
+    template_name = "users/password_reset_confirm.html"
     success_url = reverse_lazy("users:account_detail")
     form_class = SetPasswordForm
     post_reset_login = True

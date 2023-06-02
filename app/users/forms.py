@@ -314,7 +314,6 @@ class ProfileChangeForm(forms.ModelForm):
                     Div("page_title", css_class="col"),
                     Div("bio", css_class="col"),
                     Div("clubs", css_class="col"),
-                    Div("avatar", css_class="col"),
                     css_class="row row-cols-1",
                 ),
                 css_class="mt-4",
