@@ -7,7 +7,6 @@
             <i class="bi bi-exclamation-triangle-fill"></i>
           </span>
           {% if form.non_field_errors %}
-            <strong>Error</strong><br>
             {% for error in form.non_field_errors %}
               {{ error }}
             {% endfor %}

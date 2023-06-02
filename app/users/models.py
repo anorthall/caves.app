@@ -142,6 +142,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     )
     avatar = models.ImageField(
         upload_to=avatar_upload_path,
+        verbose_name="profile picture",
         blank=True,
         help_text="A profile picture to display on your public profile.",
     )

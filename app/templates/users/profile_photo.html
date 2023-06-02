@@ -1,0 +1,88 @@
+{% extends "base_account.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Upload profile picture{% endblock %}
+
+{% block stylesheets %}
+  <!-- Cropper.js CSS-->
+  <link href="{% static "css/cropper.min.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block header_scripts %}
+  <!-- Cropper.js -->
+  <script src="{% static "js/cropper.min.js" %}"></script>
+{% endblock %}
+
+{% block main %}
+  {% crispy form %}
+
+  <!-- Cropping modal -->
+  <div class="modal" id="cropModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cropModalLabel">Crop image</h5>
+        </div>
+        <div class="modal-body w-100">
+          <div id="image_box d-flex justify-content-center align-items-center">
+            <img id="crop_image" style="width: 100%; height: 100%;">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="crop_button" type="button" class="btn btn-success">Crop and save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cropping JS -->
+  <script>
+    // This script has been graciously borrowed (and modified) from the tutorial
+    // by Rohan Goel at the following URL:
+    // https://medium.com/geekculture/implement-cropping-feature-on-your-website-in-under-10-min-cropper-js-46b90d860748
+
+    // Getting all the required elements
+    const image_box = document.getElementById('image_box')
+    const crop_btn = document.getElementById('crop_button')
+    const crop_image = document.getElementById('crop_image')
+    const image_input = document.getElementById('id_avatar')
+    const form = document.getElementById('avatar-form')
+    const modal_id = "#cropModal"
+
+    // When user uploads the image this event will get triggered
+    image_input.addEventListener('change', ()=>{
+      const img_data = image_input.files[0]
+      const url = URL.createObjectURL(img_data)
+
+      // Load the image into the modal
+      crop_image.src = url
+
+      $(modal_id).modal('show')
+
+      const cropper = new Cropper(crop_image, {
+        // Make the cropper box fill the modal box using these options:
+
+        aspectRatio: 1,
+        initialAspectRatio: 1,
+        viewMode: 3,
+        dragMode: 'none',
+        center: true,
+      })
+
+      // When crop button is clicked this event will get triggered
+      crop_btn.addEventListener('click', ()=>{
+        cropper.getCroppedCanvas().toBlob((blob)=>{
+
+          let fileInputElement = image_input;
+          let file = new File([blob], img_data.name,{type:"image/*", lastModified:new Date().getTime()});
+          let container = new DataTransfer();
+          container.items.add(file);
+          fileInputElement.files = container.files;
+
+          form.submit();
+        });
+      });
+    });
+  </script>
+{% endblock %}

@@ -67,12 +67,17 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
 
 
 class PasswordResetForm(auth.forms.PasswordResetForm):
-    template_name = "_bs5_form.html"
+    def __init__(self, *args, **kwargs):
+        super(PasswordResetForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            FloatingField("email"),
+            Submit("submit", "Reset password", css_class="btn-lg w-100"),
+        )
 
 
 class SetPasswordForm(auth.forms.SetPasswordForm):
-    template_name = "_bs5_form.html"
-
     def __init__(self, *args, **kwargs):
         super(SetPasswordForm, self).__init__(*args, **kwargs)
         self.fields["new_password1"].help_text = ""
@@ -80,6 +85,13 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
             "Your password can't be too similar to your other personal "
             "information, must contain at least 8 characters, cannot be entirely "
             "numeric and must not be a commonly used password."
+        )
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            FloatingField("new_password1"),
+            FloatingField("new_password2"),
+            Submit("submit", "Change password", css_class="btn-lg w-100 mt-4"),
         )
 
 
@@ -93,9 +105,11 @@ class VerifyEmailForm(forms.Form):
         self.user = None
         self.email = None
         self.helper = FormHelper()
-        self.helper.form_method = "post"
-        self.helper.form_class = "mw-45 mt-4"
-        self.helper.add_input(Submit("submit", "Verify email"))
+        self.helper.form_method = "get"
+        self.helper.layout = Layout(
+            FloatingField("verify_code"),
+            Submit("submit", "Verify email", css_class="btn-lg w-100"),
+        )
 
     def clean_verify_code(self):
         verify_code = self.cleaned_data["verify_code"]
@@ -113,7 +127,6 @@ class VerifyEmailForm(forms.Form):
 
 
 class ResendVerifyEmailForm(forms.Form):
-    template_name = "_bs5_form.html"
     email = forms.EmailField(
         label="Email address",
         max_length=255,
@@ -124,6 +137,12 @@ class ResendVerifyEmailForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = None
         super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            FloatingField("email"),
+            Submit("submit", "Resend verification email", css_class="btn-lg w-100"),
+        )
 
     def clean_email(self):
         # Set self.user only if the email belongs to an inactive account
@@ -272,7 +291,6 @@ class ProfileChangeForm(forms.ModelForm):
             "page_title",
             "bio",
             "clubs",
-            "avatar",
         )
 
     def __init__(self, *args, **kwargs):
@@ -350,6 +368,27 @@ class UserChangeEmailForm(forms.Form):
         if User.objects.filter(email=email).exists():
             raise ValidationError("That email is already in use.")
         return email
+
+
+class AvatarChangeForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ("avatar",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_id = "avatar-form"
+        self.helper.form_show_labels = False
+        self.helper.layout = Layout(
+            Fieldset(
+                "Profile picture",
+                "avatar",
+                id="avatar-fieldset",
+            ),
+            Submit("btn_submit", "Save profile picture", css_class="btn-lg mt-4"),
+        )
 
 
 class AddFriendForm(forms.Form):

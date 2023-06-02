@@ -25,6 +25,7 @@ from .emails import (
 from .forms import (
     AddFriendForm,
     AuthenticationForm,
+    AvatarChangeForm,
     PasswordChangeForm,
     PasswordResetForm,
     ProfileChangeForm,
@@ -42,7 +43,7 @@ User = get_user_model()
 
 
 class PasswordResetView(SuccessMessageMixin, PasswordResetView):
-    template_name = "users/password_reset.html"
+    template_name = "users/crispy_form_center.html"
     email_template_name = "emails/email_password_reset.html"
     html_email_template_name = "emails/email_html_password_reset.html"
     subject_template_name = "emails/email_password_reset_subject.txt"
@@ -54,14 +55,20 @@ class PasswordResetView(SuccessMessageMixin, PasswordResetView):
     extra_email_context = {
         "site_root": settings.SITE_ROOT,
     }
+    extra_context = {
+        "title": "Reset your password",
+    }
 
 
 class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
-    template_name = "users/password_reset_confirm.html"
+    template_name = "users/crispy_form_center.html"
     success_url = reverse_lazy("users:account_detail")
     form_class = SetPasswordForm
     post_reset_login = True
     success_message = "Your password has been updated and you are signed in."
+    extra_context = {
+        "title": "Set your password",
+    }
 
 
 class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
@@ -103,6 +110,22 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     form_class = ProfileChangeForm
     success_url = reverse_lazy("users:profile_update")
     success_message = "Your profile has been updated."
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs["instance"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+
+class AvatarUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
+    template_name = "users/profile_photo.html"
+    form_class = AvatarChangeForm
+    success_url = reverse_lazy("users:account_detail")
+    success_message = "Your profile picture has been updated."
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super().get_form_kwargs(*args, **kwargs)

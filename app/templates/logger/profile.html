@@ -59,7 +59,7 @@
               </small>
             </th>
 
-            <th class="d-none d-md-table-cell" scope="col">
+            <th class="d-none d-xl-table-cell" scope="col">
               Duration
               <small>
                 <a href="?sort=duration" class="text-decoration-none">
@@ -83,7 +83,7 @@
               </small>
             </th>
 
-            <th class="d-none d-lg-table-cell" scope="col">
+            <th class="d-none d-xxl-table-cell" scope="col">
               Down
               <small>
                 <a href="?sort=vert_dist_down" class="text-decoration-none">
@@ -124,7 +124,7 @@
                 {% endif %}
               </td>
 
-              <td class="d-none d-md-table-cell">
+              <td class="d-none d-xl-table-cell">
                 {% if trip.duration_str %}
                   {{ trip.duration_str }}
                 {% endif %}
@@ -132,7 +132,7 @@
 
               <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:dist_format }}</td>
 
-              <td class="d-none d-lg-table-cell">{{ trip.vert_dist_down|distformat:dist_format }}</td>
+              <td class="d-none d-xxl-table-cell">{{ trip.vert_dist_down|distformat:dist_format }}</td>
 
               <td class="d-none d-lg-table-cell">
                 {{ trip.type }}

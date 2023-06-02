@@ -1,5 +1,15 @@
 {% load active_link_tags %}
 
+{% if trip %}
+  <div class="mb-4">
+    {% if trip.user.avatar %}
+      {% include "users/_profile_picture.html" with image_url=trip.user.avatar_profile.url %}
+    {% else %}
+      {% include "users/_profile_picture.html" %}
+    {% endif %}
+  </div>
+{% endif %}
+
 {% if user.is_authenticated %}
   {% comment %} Authenticated user links {% endcomment %}
   <span class="nav-item sidebar-header d-none d-md-block">Trips</span>

@@ -3,8 +3,12 @@
 
 {% block main %}
   <div class="row g-5 mb-5 d-md-none">
-    <div class="col d-flex">
-      <img class="align-self-center mx-auto img-fluid rounded-circle border border-primary border-2 shadow" src="{% if user.avatar %}{{ user.avatar_profile.url }}{% endif %}">
+    <div class="d-flex justify-content-center mb-1">
+      {% if user.avatar %}
+        {% include "users/_profile_picture.html" with image_url=user.avatar_profile.url %}
+      {% else %}
+        {% include "users/_profile_picture.html" %}
+      {% endif %}
     </div>
   </div>
 

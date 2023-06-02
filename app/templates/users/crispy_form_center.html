@@ -1,0 +1,11 @@
+{% extends "base_center.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block display_title %}{{ title }}{% endblock %}
+
+{% block main %}
+  <div class="w-100 mw-35">
+    {% crispy form %}
+  </div>
+{% endblock %}

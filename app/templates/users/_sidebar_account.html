@@ -12,16 +12,16 @@
   <i class="bi bi-info-circle-fill"></i> Overview
 </a>
 
-<a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
-  <i class="bi bi-people-fill"></i> Friends
-</a>
-
-<a class="nav-link {% active_link 'users:settings_update' %}" href="{% url 'users:settings_update' %}">
-  <i class="bi bi-gear-fill"></i> Settings
-</a>
-
 <a class="nav-link {% active_link 'users:profile_update' %}" href="{% url 'users:profile_update' %}">
   <i class="bi bi-person-fill"></i> Profile
+</a>
+
+<a class="nav-link {% active_link 'users:profile_photo_update' %}" href="{% url 'users:profile_photo_update' %}">
+  <i class="bi bi-camera-fill"></i> Photo
+</a>
+
+<a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
+  <i class="bi bi-people-fill"></i> Friends
 </a>
 
 <a class="nav-link {% active_link 'users:password_update' %}" href="{% url 'users:password_update' %}">
@@ -30,6 +30,10 @@
 
 <a class="nav-link {% active_link 'users:email' %}" href="{% url 'users:email' %}">
   <i class="bi  bi-envelope-at-fill"></i> Email
+</a>
+
+<a class="nav-link {% active_link 'users:settings_update' %}" href="{% url 'users:settings_update' %}">
+  <i class="bi bi-gear-fill"></i> Settings
 </a>
 
 <form>

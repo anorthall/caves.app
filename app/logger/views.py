@@ -295,13 +295,13 @@ class SearchResults(LoginRequiredMixin, View):
                     request, "No trips were found with the provided search terms."
                 )
 
-            return render(request, "search.html", context)
+            return render(request, "logger/search.html", context)
         else:
             context = {
                 "form": form,
                 "no_form_error_alert": True,
             }
-            return render(request, "search.html", context)
+            return render(request, "logger/search.html", context)
 
 
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):

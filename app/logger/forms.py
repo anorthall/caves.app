@@ -262,7 +262,7 @@ class TripSearchForm(forms.Form):
                 Field("user", wrapper_class="col-12 col-lg-4"),
                 css_class="row",
             ),
-            Submit("submit", "Search", css_class="btn btn-primary w-100"),
+            Submit("submit", "Search", css_class="btn btn-primary w-100 mt-3"),
         )
 
     def clean_terms(self):
