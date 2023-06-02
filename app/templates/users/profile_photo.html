@@ -18,7 +18,7 @@
   {% crispy form %}
 
   <!-- Cropping modal -->
-  <div class="modal" id="cropModal" tabindex="-1" role="dialog">
+  <div class="modal" id="cropModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -30,11 +30,26 @@
           </div>
         </div>
         <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" onclick="window.location.reload();">Cancel</button>
           <button id="crop_button" type="button" class="btn btn-success">Crop and save</button>
         </div>
       </div>
     </div>
   </div>
+
+  <style type="text/css">
+    /* Circular crop */
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+
+    /* The css styles for `outline` do not follow `border-radius` on iOS/Safari (#979). */
+    .cropper-view-box {
+        outline: 0;
+        box-shadow: 0 0 0 1px #39f;
+    }
+  </style>
 
   <!-- Cropping JS -->
   <script>
