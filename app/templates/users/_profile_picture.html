@@ -1,3 +1,12 @@
 {% load static %}
-<img class="align-self-center justify-self-center img-fluid rounded-circle border border-2 shadow"
-     src="{% if image_url %}{{ image_url }}{% else %}{% static 'images/blank-profile.webp' %}{% endif %}">
+{% if photo_user.avatar %}
+  <a href="{{ photo_user.avatar.url }}">
+      <img class="align-self-center justify-self-center img-fluid rounded-circle border border-2 shadow"
+           src="{{ photo_user.avatar_profile.url }}"
+           alt="{{ photo_user.name }}'s profile picture">
+  </a>
+{% else %}
+  <img class="align-self-center justify-self-center img-fluid rounded-circle"
+        src="{% static 'images/blank_profile_picture.svg' %}"
+        alt="Default profile picture">
+{% endif %}

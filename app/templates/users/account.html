@@ -5,7 +5,7 @@
   <div class="row g-5 mb-5 d-md-none">
     <div class="d-flex justify-content-center mb-1">
       {% if user.avatar %}
-        {% include "users/_profile_picture.html" with image_url=user.avatar_profile.url %}
+        {% include "users/_profile_picture.html" with photo_user=user %}
       {% else %}
         {% include "users/_profile_picture.html" %}
       {% endif %}

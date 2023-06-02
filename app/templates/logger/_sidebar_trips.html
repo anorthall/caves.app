@@ -3,7 +3,7 @@
 {% if trip %}
   <div class="mb-5 d-none d-md-block">
     {% if trip.user.avatar %}
-      {% include "users/_profile_picture.html" with image_url=trip.user.avatar_profile.url %}
+      {% include "users/_profile_picture.html" with photo_user=trip.user %}
     {% else %}
       {% include "users/_profile_picture.html" %}
     {% endif %}

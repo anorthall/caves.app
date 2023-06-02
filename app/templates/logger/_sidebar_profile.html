@@ -1,7 +1,7 @@
 <div class="d-flex my-3 my-md-0 flex-column align-items-center text-center">
   <div class="mb-4">
     {% if profile_user.avatar %}
-      {% include "users/_profile_picture.html" with image_url=profile_user.avatar_profile.url %}
+      {% include "users/_profile_picture.html" with photo_user=profile_user %}
     {% else %}
       {% include "users/_profile_picture.html" %}
     {% endif %}
