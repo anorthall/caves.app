@@ -1,16 +1,19 @@
 {% extends "base.html" %}
-{% load active_link_tags %}
 
 {% block content %}
-  <div class="container">
-    <div class="row g-0 g-lg-3">
-      <div class="col-12 col-lg-9">
-        {% block main %}{% endblock %}
+  <div class="d-flex flex-row h-100 mt-3">
+    <!-- Sidebar -->
+    <div class="d-none d-md-block" id="sidebarContainer">
+      <div class="pe-4 border-end border-2 h-100">
+        <nav id="sidebar" class="nav nav-light nav-pills d-flex flex-column">
+          {% block sidebar %}{% endblock %}
+        </nav>
       </div>
+    </div>
 
-      <nav class="col-12 col-lg-3 mt-4 mt-lg-3">
-        {% block sidebar %}{% endblock %}
-      </nav>
+    <!-- Main content -->
+    <div class="ps-0 ps-md-4 d-block h-100 w-100" id="mainContent">
+      {% block main %}{% endblock %}
     </div>
   </div>
-{% endblock content %}
+{% endblock %}

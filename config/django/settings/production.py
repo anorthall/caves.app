@@ -27,3 +27,11 @@ if GOOGLE_ANALYTICS_ID:  # pragma: no cover
     TEMPLATES[0]["OPTIONS"]["context_processors"] += [
         "core.context_processors.google_analytics"
     ]
+
+
+# Media files
+MEDIA_ROOT = "/opt/caves/media/"
+MEDIA_URL = "/media/"
+TEMPLATES[0]["OPTIONS"]["context_processors"] += [
+    "django.template.context_processors.media"
+]

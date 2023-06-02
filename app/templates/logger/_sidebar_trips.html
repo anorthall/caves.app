@@ -1,0 +1,151 @@
+{% load active_link_tags %}
+
+{% if trip %}
+  <div class="mb-5 d-none d-md-block">
+    {% if trip.user.avatar %}
+      {% include "users/_profile_picture.html" with photo_user=trip.user %}
+    {% else %}
+      {% include "users/_profile_picture.html" %}
+    {% endif %}
+  </div>
+{% endif %}
+
+{% if user.is_authenticated %}
+  {% comment %} Authenticated user links {% endcomment %}
+  <span class="nav-item sidebar-header d-none d-md-block">Trips</span>
+
+  <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
+    <i class="bi bi-people-fill"></i> Recent
+  </a>
+
+  <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
+    <i class="bi bi-search"></i> Search
+  </a>
+
+  <a class="nav-link {% active_link 'log:export' %}" href="{% url 'log:export' %}">
+    <i class="bi bi-save-fill"></i> Export
+  </a>
+{% else %}
+  {% comment %} Unauthenticated user links {% endcomment %}
+  <span class="nav-item sidebar-header d-none d-md-block">caves.app</span>
+
+  <a class="nav-link" href="{% url 'users:login' %}">
+    <i class="bi bi-person-circle"></i> Sign in
+  </a>
+
+  <a class="nav-link" href="{% url 'users:register' %}">
+    <i class="bi bi-house"></i> Register
+  </a>
+{% endif %}
+
+{% if trip and user == object_owner %}
+  {% comment %} Viewing a trip as the owner of it {% endcomment %}
+  <span class="nav-item sidebar-header d-none d-md-block mt-4">This trip</span>
+  <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+    <i class="bi bi-info-circle"></i> View trip
+  </a>
+
+  <a class="nav-link {% active_link 'log:trip_update' pk=trip.pk %}" href="{% url 'log:trip_update' pk=trip.pk %}">
+    <i class="bi bi-pencil"></i> Edit trip
+  </a>
+
+  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripModal">
+    <i class="bi bi-x-lg"></i> Delete trip
+  </a>
+
+  <span class="nav-item sidebar-header d-none d-md-block mt-4">Report</span>
+  {% if trip.report %}
+    <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+      <i class="bi bi-card-text"></i> View trip report
+    </a>
+
+    <a class="nav-link {% active_link 'log:report_update' pk=trip.report.pk %}" href="{% url 'log:report_update' pk=trip.report.pk %}">
+      <i class="bi bi-pencil"></i> Edit trip report
+    </a>
+
+    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripReportModal">
+      <i class="bi bi-x-lg"></i> Delete trip report
+    </a>
+  {% else %}
+    <a class="nav-link {% active_link 'log:report_create' pk=trip.pk %}" href="{% url 'log:report_create' pk=trip.pk %}">
+      <i class="bi bi-card-text"></i> Add trip report
+    </a>
+  {% endif %}
+
+{% elif trip and user != object_owner %}
+  {% comment %}Viewing a trip but not the owner of it{% endcomment %}
+
+  <span class="nav-item sidebar-header d-none d-md-block mt-4">{{ object_owner.username }}</span>
+  {% if can_view_profile %}
+    <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
+      <i class="bi bi-person-fill"></i> User profile
+    </a>
+  {% endif %}
+
+  <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+    <i class="bi bi-card-text"></i> View trip
+  </a>
+
+  {% if can_view_report %}
+    <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+      <i class="bi bi-card-text"></i> View trip report
+    </a>
+  {% endif %}
+
+  {% if can_add_friend and user.is_authenticated %}
+    <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">
+      <i class="bi bi-plus-lg"></i> Add as friend
+    </a>
+  {% endif %}
+{% endif %}
+
+{% if generate_modal == "yes" %}
+  {% comment %}Delete trip/report modal{% endcomment %}
+  {% if trip and user == object_owner %}
+    <div class="modal fade" id="deleteTripModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5">Delete trip</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to delete the trip to {{ trip.cave_name }} on
+            {{ trip.start|date }}? This action is permanent and cannot be undone.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <form action="{% url 'log:trip_delete' pk=trip.pk %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete trip</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if trip.report %}
+      <div class="modal fade" id="deleteTripReportModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5">Delete trip report</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete the trip report for the trip to {{ trip.cave_name }} on
+              {{ trip.start|date }}? This action is permanent and cannot be undone.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <form action="{% url 'log:report_delete' pk=trip.report.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete trip report</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endif %}

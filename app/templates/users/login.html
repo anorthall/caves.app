@@ -1,0 +1,20 @@
+{% extends "base_center.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sign in to caves.app{% endblock %}
+{% block display_title %}Sign in{% endblock %}
+
+{% block main %}
+    {% crispy form %}
+
+    <p class="fs-5">
+      Need an account? <a href="{% url 'users:register' %}">Sign up!</a>
+    </p>
+
+    <p>
+      <a class="link-dark" href="{% url 'users:password_reset' %}">
+        <small>Forgotten your password?</small>
+      </a>
+    </p>
+  </div>
+{% endblock %}

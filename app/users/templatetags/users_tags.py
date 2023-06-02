@@ -5,7 +5,7 @@ register = template.Library()
 User = get_user_model()
 
 
-@register.inclusion_tag("includes/user_tag.html", takes_context=True)
+@register.inclusion_tag("users/_user_tag.html", takes_context=True)
 def user(context, user, show_username=False):
     if not isinstance(user, User):
         raise TypeError("user must be a Django user instance")

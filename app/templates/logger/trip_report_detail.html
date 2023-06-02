@@ -1,0 +1,33 @@
+{% extends "base_trips.html" %}
+
+{% block title %}{{ tripreport.title }}{% endblock %}
+{% block display_title %}Trip report{% endblock %}
+{% block display_title_right %}@{{ tripreport.user.username }}{% endblock %}
+
+{% block main %}
+  <h1 class="display-5 mb-4">{{ tripreport.title }}</h1>
+
+  {{ tripreport.content|safe }}
+
+  <div class="row text-muted">
+    <div class="col-12 col-lg-6 text-start">
+      <small>
+        Created: {{ tripreport.added|date:"jS M Y" }}
+      </small>
+    </div>
+    <div class="col text-end d-none d-lg-block">
+      <small>
+        Updated: {{ tripreport.updated|date:"jS M Y" }}
+      </small>
+    </div>
+  </div>
+
+  {% comment %}
+    TODO: Refactor comments
+    {% with tripreport as object %}
+      <div class="mt-4"></div>
+      {% include "logger/_comments.html" %}
+    {% endwith %}
+  {% endcomment %}
+
+{% endblock main %}

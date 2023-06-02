@@ -1,0 +1,30 @@
+{% extends "base_center.html" %}
+
+{% block title %}caves.app{% endblock %}
+{% block display_title %}A modern approach to cave logging{% endblock %}
+{% block description %}An online tool to log caving trips and activity.{% endblock %}
+
+{% block main %}
+  <div class="text-center mw-35">
+    <p>
+      A streamlined, mobile-friendly interface allows you to record and view your caving trips
+      from anywhere. Keep detailed records of everything you've done &mdash; who was there, the
+      distance you surveyed, how long you spent underground, and more.
+    </p>
+
+    <p>
+      Easily share your activities with anyone via your public profile, and keep up to date with what
+      your friends are up to via the activity feed.
+    </p>
+
+    <p>
+      The service is free to use and you have complete control over your data.
+      Questions? Have a look at the <a href="{% url 'core:help' %}">help page</a>.
+    </p>
+
+    <div class="d-flex flex-column flex-fill text-center">
+      <a class="btn btn-lg btn-primary mt-3" href="{% url 'users:register' %}">Sign up!</a>
+      <a class="btn btn-lg btn-success mt-3" href="{% url 'users:login' %}">Log in</a>
+    </div>
+  </div>
+{% endblock %}

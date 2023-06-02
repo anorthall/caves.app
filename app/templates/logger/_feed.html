@@ -1,0 +1,44 @@
+{% load humanize %}
+
+{% for trip in trips %}
+  <div class="card shadow mb-4 mb-lg-5">
+    <div class="card-header">
+      {% include "logger/_trip_header_small.html" %}
+    </div>
+
+    <div class="card-body">
+      {% include "logger/_trip_data_blocks.html" %}
+    </div>
+
+    <div class="card-footer">
+      <span class="float-start">
+        {% with trip.likes_count as likes_count %}
+          {% include "logger/_htmx_trip_like.html" %}
+        {% endwith %}
+      </span>
+
+      {% comment %}
+        TODO: Refactor comments
+        {% if trip.user.allow_comments %}
+          <span hx-get="{% url 'log:htmx_trip_comment' trip.pk %}" hx-target="#comment{{ trip.pk }}" class="float-end">
+            <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}<span class="d-none d-md-inline"> comment{{ trip.comments_count|pluralize }}</span>
+          </span>
+        {% endif %}
+      {% endcomment %}
+    </div>
+  </div>
+
+  {% comment %} TODO: Refactor comments  <div class="shadow mb-4" id="comment{{ trip.pk }}"></div> {% endcomment %}
+{% endfor %}
+
+{% if trips.has_next %}
+  <div id="loadMoreTrips" class="text-center">
+    <button class="btn btn-primary w-100"
+            hx-get="{% url 'log:feed_htmx_view' %}?page={{ trips.next_page_number }}"
+            hx-target="#loadMoreTrips"
+            hx-swap="outerHTML">
+      Load more trips
+    </button>
+  </div>
+{% endif %}
+{% include "_clickable_elements.html" %}

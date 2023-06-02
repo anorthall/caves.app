@@ -1,0 +1,63 @@
+{% load users_tags %}
+{% load logger_tags %}
+
+{% if trip.cavers %}
+  <div class="row mb-3">
+    <div class="col">
+      <small class="text-muted trip-field">Cavers</small><br />
+      {{ trip.cavers }}
+    </div>
+  </div>
+{% endif %}
+
+<!-- Data blocks -->
+<div class="row row-cols-2 row-cols-lg-3 g-3">
+  <!-- Start time-->
+  <div class="col">
+    <small class="text-muted trip-field">Date/time entered</small><br />
+    {{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}
+  </div>
+
+  {% if trip.end %}
+    <!-- Duration -->
+    <div class="col">
+      <small class="text-muted trip-field">Trip duration</small><br />
+      {{ trip.duration_str }}
+    </div>
+
+    <!-- End time -->
+    <div class="col">
+      <small class="text-muted trip-field">Date/time exited</small><br />
+      {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
+    </div>
+
+    {% if trip.clubs %}
+    <!-- Clubs -->
+      <div class="col-6 col-xl-4">
+        <small class="text-muted trip-field">Clubs</small><br />
+        {{ trip.clubs }}
+      </div>
+    {% endif %}
+
+    {% if trip.expedition %}
+    <!-- Expedition -->
+      <div class="col">
+        <small class="text-muted trip-field">Expedition</small><br />
+        {{ trip.expedition }}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% if trip.has_distances %}
+    {% for name, dist in trip.distances.items %}
+      <div class="col">
+        <small class="text-muted trip-field">{{ name|capfirst }}</small><br />
+        {% if user.is_authenticated %}
+          {{ dist|distformat:user.units }}
+        {% else %}
+          {{ dist }}
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>

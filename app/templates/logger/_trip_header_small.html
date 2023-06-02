@@ -1,0 +1,39 @@
+{% load users_tags %}
+<div data-href="{% url "log:trip_detail" trip.pk %}"
+     class="d-none d-lg-flex flex-row align-items-center justify-content-between">
+  <div class="d-flex flex-column align-items-start justify-content-center">
+    <h1 class="cave-name fs-4">{{ trip.cave_name }}</h1>
+    <small>
+      <i class="bi bi-person"></i> {% user trip.user %},
+      added {{ trip.added|timesince }} ago
+    </small>
+  </div>
+
+  <div class="d-flex flex-column align-items-end justify-content-center">
+    <div class="d-flex flex-column align-items-center justify-content-center">
+      <small class="text-muted">
+        {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
+      </small>
+      <small class="text-muted">
+        {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
+      </small>
+    </div>
+  </div>
+</div>
+
+<div data-href="{% url "log:trip_detail" trip.pk %}" class="d-flex d-lg-none">
+  <div class="d-flex flex-column align-items-start justify-content-center">
+    <h1 class="cave-name">{{ trip.cave_name }}</h1>
+
+    <small class="text-muted">
+      {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
+      {% if trip.cave_region and trip.cave_country %}&middot;{% endif %}
+      {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
+    </small>
+
+    <small>
+      <i class="bi bi-person"></i> {% user trip.user %},
+      added {{ trip.added|timesince }} ago
+    </small>
+  </div>
+</div>

@@ -37,7 +37,7 @@ class Index(TemplateView):
             context = self.get_authenticated_context(**kwargs)
             return self.render_to_response(context)
         else:
-            self.template_name = "index/index_unregistered.html"
+            self.template_name = "core/index_unregistered.html"
             return super().get(request, *args, **kwargs)
 
     def get_authenticated_context(self, **kwargs):
@@ -52,9 +52,9 @@ class Index(TemplateView):
 
         # If there are no trips, show the new user page
         if context["trips"]:
-            self.template_name = "index/index_registered.html"
+            self.template_name = "logger/social_feed.html"
         else:
-            self.template_name = "index/index_new_user.html"
+            self.template_name = "core/new_user.html"
 
         return context
 
@@ -69,7 +69,7 @@ class Index(TemplateView):
 class HTMXFeed(LoginRequiredMixin, TemplateView):
     """Paginate the trip feed by rendering more trips via HTMX"""
 
-    template_name = "includes/feed.html"
+    template_name = "logger/_feed.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -100,7 +100,7 @@ class UserProfile(ListView):
     """List all of a user's trips and their profile information"""
 
     model = Trip
-    template_name = "user_profile.html"
+    template_name = "logger/profile.html"
     context_object_name = "trips"
     slug_field = "username"
     paginate_by = 50
@@ -170,7 +170,8 @@ class UserProfile(ListView):
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Trip
     form_class = TripForm
-    template_name_suffix = "_update_form"
+    extra_context = {"title": "Edit trip"}
+    template_name = "logger/crispy_form.html"
     success_message = "The trip has been updated."
 
     def get_queryset(self):
@@ -184,6 +185,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class TripDetail(TripContextMixin, ViewableObjectDetailView):
     model = Trip
+    template_name = "logger/trip_detail.html"
 
     def get_queryset(self):
         qs = (
@@ -231,7 +233,8 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
 class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Trip
     form_class = TripForm
-    template_name_suffix = "_create_form"
+    template_name = "logger/crispy_form.html"
+    extra_context = {"title": "Add a trip"}
     success_message = "The trip has been created."
     initial = {
         "start": timezone.localdate(),
@@ -270,7 +273,7 @@ class TripDelete(LoginRequiredMixin, View):
 
 
 class Search(LoginRequiredMixin, FormView):
-    template_name = "search.html"
+    template_name = "logger/search.html"
     form_class = TripSearchForm
 
 
@@ -288,21 +291,23 @@ class SearchResults(LoginRequiredMixin, View):
                 "form": form,
             }
             if len(trips) == 0:
-                context["no_results"] = True
+                messages.error(
+                    request, "No trips were found with the provided search terms."
+                )
 
-            return render(request, "search.html", context)
+            return render(request, "logger/search.html", context)
         else:
             context = {
                 "form": form,
                 "no_form_error_alert": True,
             }
-            return render(request, "search.html", context)
+            return render(request, "logger/search.html", context)
 
 
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = TripReport
     form_class = TripReportForm
-    template_name_suffix = "_create_form"
+    template_name = "logger/trip_report_create.html"
     success_message = "The trip report has been created."
     initial = {
         "pub_date": timezone.localdate,
@@ -345,6 +350,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class ReportDetail(TripContextMixin, ViewableObjectDetailView):
     model = TripReport
+    template_name = "logger/trip_report_detail.html"
 
     def get_queryset(self):
         qs = (
@@ -361,7 +367,7 @@ class ReportDetail(TripContextMixin, ViewableObjectDetailView):
 class ReportUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = TripReport
     form_class = TripReportForm
-    template_name_suffix = "_update_form"
+    template_name = "logger/trip_report_update.html"
     success_message = "The trip report has been updated."
 
     def get_queryset(self):
@@ -425,7 +431,7 @@ class ReportDelete(LoginRequiredMixin, View):
 
 
 # class HTMXTripComment(LoginRequiredMixin, TemplateView):
-#     template_name = "includes/comments.html"
+#     template_name = "logger/_comments.html"
 
 #     def get_context_data(self, *args, **kwargs):
 #         context = super().get_context_data(*args, **kwargs)
@@ -472,7 +478,7 @@ class ReportDelete(LoginRequiredMixin, View):
 class HTMXTripLike(LoginRequiredMixin, TemplateView):
     """HTMX view for toggling a trip like"""
 
-    template_name = "includes/htmx_trip_like.html"
+    template_name = "logger/_htmx_trip_like.html"
 
     def post(self, request, pk):
         trip = self.get_trip(request, pk)
@@ -515,7 +521,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
 class CSVExport(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, "export.html")
+        return render(request, "logger/export.html")
 
     def post(self, request, *args, **kwargs):
         try:
@@ -549,6 +555,13 @@ def user_statistics(request):
         if (ordered.first().start.date() - ordered.last().start.date()).days > 40:
             if trips.filter(end__isnull=False):
                 show_time_charts = True
+
+    if len(trips) < 5:
+        messages.warning(
+            request,
+            "Full featured statistics are not available as you have added "
+            "less than five trips.",
+        )
 
     context = {
         "trips": trips,
@@ -587,7 +600,7 @@ def user_statistics(request):
             "-horizontal_dist"
         )[0:10],
     }
-    return render(request, "statistics.html", context)
+    return render(request, "logger/statistics.html", context)
 
 
 class AdminTools(LoginRequiredMixin, UserPassesTestMixin, View):
@@ -602,7 +615,7 @@ class AdminTools(LoginRequiredMixin, UserPassesTestMixin, View):
             "login_user_list": login_user_list,
             "notify_form": AllUserNotificationForm(),
         }
-        return render(request, "admin_tools.html", context)
+        return render(request, "logger/admin_tools.html", context)
 
     def post(self, request, *args, **kwargs):
         if request.POST.get("login_as", False):

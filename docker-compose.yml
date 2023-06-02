@@ -18,6 +18,7 @@ services:
     command: python manage.py runserver 0.0.0.0:8000 --insecure
     volumes:
       - ./app/:/opt/dev/app/
+      - ./data/development/media:/opt/dev/media/
       - ./config/django/:/opt/dev/config/django/
     ports:
       - "8000:8000"

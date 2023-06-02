@@ -1,0 +1,27 @@
+{% extends "base_trips.html" %}
+{% load logger_tags %}
+
+{% block title %}Export trips{% endblock %}
+{% block display_title %}Export trips{% endblock %}
+
+{% block main %}
+  <div class="mw-35">
+    <h3 class="subtitle">Export your trips</h3>
+
+    <p class="lead">
+      This utility allows you to download your trips to your computer so you can make your own backups or process the
+      data yourself.
+    </p>
+
+    <p>
+      Click the button below to export all of your recorded trip data as a
+      <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV file</a>.
+      This file can be opened in any spreadsheet application such as Microsoft Excel, Google Sheets, or OpenOffice.
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" name="download" value="download" class="btn btn-primary">Export trips</button>
+    </form>
+  </div>
+{% endblock %}

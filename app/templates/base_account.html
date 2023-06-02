@@ -1,0 +1,12 @@
+{% extends "base_sidebar.html" %}
+{% load static %}
+
+{% block stylesheets %}
+  <link href="{% static 'css/account.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Your account{% endblock %}
+{% block display_title %}Your account{% endblock %}
+
+{% block sidebar %}{% include "users/_sidebar_account.html" %}{% endblock %}
+{% block mobile_menu %}{% include "users/_sidebar_account.html" %}{% endblock %}

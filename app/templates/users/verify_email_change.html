@@ -1,0 +1,27 @@
+{% extends "users/crispy_form.html" %}
+
+{% block title %}Verify email change{% endblock %}
+
+{% block text %}
+  <div class="mw-45 mb-3">
+    <h3 class="subtitle">
+      Verify email change
+    </h3>
+
+    <p class="lead">
+      You're almost there! Just one more thing - you need to verify your
+      new email address before it is updated on your account.
+    </p>
+
+    <p>
+      Please check your
+      email for a unique code which has been sent to you. You can then click
+      the link in the email, or enter the code into the box below. If you
+      did not receive the code, and it isn't in your email spam folder, please
+      submit the <a href="{% url 'users:email' %}">email
+        change</a> form again to resend it. Alternatively, send me an
+      <a href="mailto:admin@caves.app">email</a>
+      and I will be able to help.
+    </p>
+  </div>
+{% endblock %}

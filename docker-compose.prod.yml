@@ -29,6 +29,7 @@ services:
     command: gunicorn config.django.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./data/production/staticfiles:/opt/caves/staticfiles
+      - ./data/production/media:/opt/caves/media/
       - ./config/django:/opt/caves/config/django
       - ./app:/opt/caves/app
     ports:

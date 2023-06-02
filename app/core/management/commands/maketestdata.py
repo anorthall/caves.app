@@ -64,6 +64,12 @@ class Command(BaseCommand):
             help="Do not generate comments for trips or trip reports",
         )
 
+        parser.add_argument(
+            "--admin-trips",
+            action="store_true",
+            help="Generate trips for the admin@caves.app user",
+        )
+
     def handle(self, *args, **options):
         if not settings.DEBUG:
             self.stderr.write("This command is only intended for use in development.")
@@ -80,6 +86,11 @@ class Command(BaseCommand):
 
         # Generate users, friendships and trips
         user_pks = self._generate_users()
+
+        if options["admin_trips"]:
+            admin_user = User.objects.get(email="admin@caves.app")
+            user_pks.append(admin_user.pk)
+
         self._generate_friendships(user_pks)
         trips = self._generate_trips(user_pks)
         reports = self._generate_trip_reports(user_pks)

@@ -1,34 +1,59 @@
-{% extends "minimal.html" %}
-{% load static %}
+{% extends "_minimal.html" %}
 
 {% block body %}
-  {% include "navbar.html" %}
+  <header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2">
+      <div class="container">
+        {% include "_navbar_brand.html" %}
+        {% include "_navbar_items.html" %}
+      </div>
+    </nav>
 
-  <main class="flex-shrink-0 my-4">
-    {% include "messages.html" %}
+    <!-- Page display title -->
+    <div class="bg-light border-top border-bottom border-2 py-4">
+      <div class="container {% block display_title_container_class %}d-flex flex-column flex-md-row justify-content-between{% endblock %}">
+        <h1 class="{% block display_title_class %}fs-3 fw-bold m-0 text-center{% endblock %}">{% block display_title %}caves.app{% endblock %}</h1>
 
-    {% block content %}
+        <div class="d-flex align-items-center justify-content-center">
+          <div class="text-muted fs-5">
+            {% block display_title_right %}
+              {% comment %} <form action="{% url 'log:search_results' %}" method="get">
+                <div class="input-group">
+                  <input class="form-control" type="text" placeholder="Search" name="terms">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                </div>
+              </form> {% endcomment %}
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% block mobile_menu_container %}
+      <!-- Mobile top level menu -->
+      <div id="mobileMenuContainer" class="d-md-none border-bottom border-primary py-3">
+        <div class="container">
+          <nav id="mobileMenu" class="nav nav-light nav-pills d-flex flex-row justify-content-center">
+            {% block mobile_menu %}{% endblock %}
+          </nav>
+        </div>
+      </div>
     {% endblock %}
+
+    <!-- Messages -->
+    {% include "_messages.html" %}
+  </header>
+
+  <main class="d-flex flex-column flex-fill my-3 my-md-4">
+    <div class="container flex-fill mb-4">
+      {% block content %}{% endblock %}
+    </div>
   </main>
 
   <footer class="footer mt-auto py-3 border-top bg-primary text-white">
     <div class="container">
-      <span class="float-start">
-        {% block footer_left %}
-          <span class="d-none d-md-block">
-            Copyright &copy; 2023 <a class="text-decoration-none text-white" href="https://northall.me.uk/">Andrew Northall</a>
-          </span>
-
-          <span class="d-md-none">
-            &copy; 2023 <a class="text-decoration-none text-white" href="https://northall.me.uk/">Andrew Northall</a>
-          </span>
-        {% endblock %}
-      </span>
-      <span class="float-end">
-        {% block footer_right %}
-          <a href="{% url 'core:help' %}" class="text-decoration-none text-white">Help</a>{% if user.is_authenticated %}<span class="mx-2">&middot;</span><a href="{% url 'core:about' %}" class="text-decoration-none text-white">About</a>{% endif %}
-        {% endblock %}
-      </span>
+      {% include "_footer.html" %}
     </div>
   </footer>
 {% endblock body %}

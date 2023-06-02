@@ -1,19 +1,148 @@
-/* Fonts */
+/*
+  Fonts
+*/
+
 @font-face {
   font-family: 'Space Mono', monospace;
   src: url("/static/fonts/SpaceMono-Regular.ttf") format("truetype");
 }
 
-/* Main layout options */
+
+/*
+  Main layout options
+*/
+
 body {
   overflow-y:scroll;
 }
 
-.alert {
-  text-align: center
+.center-container {
+  max-width: 38em;
 }
 
-/* Trip display */
+
+/*
+  Messages
+*/
+
+#messages .alert {
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+#messages .message-title {
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+
+/*
+  Navbar
+*/
+
+#mainNavbar .bi {
+  margin-right: 0.5rem;
+}
+
+.navbar-toggler {
+  border-color: transparent !important;
+}
+
+.navbar-dropdown .dropdown-item:hover {
+  background-color: #f7f7f7;
+}
+
+.navbar-dropdown .dropdown-item.active {
+  background-color: #f7f7f7 !important;
+  font-weight: bold !important;
+}
+
+.dropdown-toggle.focus, .dropdown-toggle:focus {
+  outline: 0px none #fff !important;
+}
+
+.dropdown-title {
+  font-weight: bold !important;
+  color: var(--bs-primary) !important;
+  letter-spacing: 0.03rem;
+}
+
+.dropdown-item.dropdown-title:hover {
+  background-color: transparent !important;
+}
+
+@media (min-width: 992px) {
+  .navbar-nav .nav-item {
+    padding: 0 0.75rem;
+  }
+}
+
+
+/*
+  Sidebar
+*/
+
+#sidebarContainer {
+  min-width: 250px;
+  max-width: 250px;
+  display: inline;
+}
+
+/* TODO: Disabled as it breaks Bootstrap modals
+#sidebar {
+  position: sticky;
+  top: 2rem;
+}
+*/
+
+#sidebar .nav-link {
+  padding-left: 0.5rem;
+  color: var(--bs-primary);
+}
+
+#mobileMenuContainer {
+  background-color: #fafeff;
+}
+
+#mobileMenu .nav-link {
+  padding-right: 0.8rem;
+  padding-left: 0.8rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  color: var(--bs-primary);
+  text-align: center;
+}
+
+#sidebar .nav-link .bi, #mobileMenu .nav-link .bi {
+  margin-right: 0.5rem;
+  opacity: 0.8;
+}
+
+#sidebar .nav-link:hover, #mobileMenu .nav-link:hover {
+  opacity: 0.7;
+  transition: opacity .3s ease-in-out;
+}
+
+#sidebar .nav-link.active, #mobileMenu .nav-link.active {
+  color: white;
+  opacity: 100 !important;
+}
+
+.sidebar-header {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-left: 0.5rem;
+  padding-bottom: 0.5rem;
+  color: var(--bs-gray-700);
+}
+
+/*
+  Trip display
+*/
+
 .cave-name {
   font-weight: 400;
   margin-bottom: 0;
@@ -28,66 +157,85 @@ body {
   margin-bottom: 0;
 }
 
-/* Statistics */
+.trip-field {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+
+/*
+  Statistics
+*/
+
 .statistics-table tbody th {
   font-weight: normal;
 }
 
-/* Clickable JS elements */
-[data-href], [data-bs-toggle], [hx-get] {
-  cursor: pointer;
-}
 
-/* Navbar */
-.navbar-toggler {
-  border-color: transparent !important;
-}
-
-.navbar-dropdown .dropdown-item:hover {
-  background-color: #f7f7f7 !important;
-}
-
-.navbar-dropdown .dropdown-item.active {
-  background-color: #f7f7f7 !important;
-  font-weight: bold !important;
-}
-
-.dropdown-toggle.focus, .dropdown-toggle:focus {
-  outline: 0px none #fff !important;
-}
-
-/* Text */
-.page-title {
-  margin-bottom: 0.5rem;
-}
-
-h1.page-title {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
+/*
+  Text
+*/
 
 .comment-display > p {
   margin-bottom: 0;
 }
 
-.trip-field {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.7rem;
-  text-transform: none;
+.mw-35 {
+  max-width: 35rem;
 }
 
-/* Hide crispy forms asterisk */
+.mw-45 {
+  max-width: 45rem;
+}
+
+
+/*
+  Forms
+*/
+
 .asteriskField {
   display: none !important;
 }
 
-/* HTMX */
+.form-container {
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.subtitle, form fieldset legend {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
+
+/*
+  JS Elements
+*/
+
 .htmx-request {
   opacity: .5;
   transition: opacity 300ms linear;
 }
 
-/* Notifications */
+[data-href], [data-bs-toggle], [hx-get] {
+  cursor: pointer;
+}
+
+.htmx-request {
+  opacity: 0.5;
+  transition: opacity 300ms linear;
+}
+
+
+/*
+  Notifications
+*/
+
 .icon-badge-group .icon-badge-container {
     display: inline-block;
 }
@@ -117,4 +265,18 @@ h1.page-title {
     position: absolute;
     top: -5px;
     left: 15px;
+}
+
+
+/*
+  Accounts
+*/
+
+.account-info-label {
+  color: var(--bs-gray-700);
+}
+
+.profile-photo {
+  max-width: 220px;
+  height: auto;
 }

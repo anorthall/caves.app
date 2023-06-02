@@ -1,0 +1,252 @@
+{% extends "base_account.html" %}
+{% load markdownify %}
+
+{% block main %}
+  <div class="row g-5 mb-5 d-md-none">
+    <div class="d-flex justify-content-center mb-1">
+      {% if user.avatar %}
+        {% include "users/_profile_picture.html" with photo_user=user %}
+      {% else %}
+        {% include "users/_profile_picture.html" %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-5">
+    <div class="col-12 col-lg-6">
+      <div class="h-100">
+        <div class="row p-1 mb-4">
+          <h3 class="fs-5">Personal information</h3>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Name
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.name }}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Email
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.email }}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Username
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.username }}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Location
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.location %}{{ user.location }}{% else %}Not recorded{% endif %}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Country
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.country %}{{ user.country.name }}{% else %}Not recorded{% endif %}
+          </div>
+        </div>
+
+        <div class="row p-1">
+          <div class="col-5 account-info-label">
+            Clubs
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.clubs %}{{ user.clubs }}{% else %}Not recorded{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="h-100">
+        <div class="row p-1 mb-4">
+          <h3 class="fs-5">Account information</h3>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Timezone
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.timezone }}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Units
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.units }}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Comments
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.allow_comments %}
+              Enabled
+            {% else %}
+              Disabled
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Friend requests
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.allow_friend_email or user.allow_friend_username %}
+              Enabled
+            {% else %}
+              Disabled
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 account-info-label">
+            Member for
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.date_joined|timesince }}
+          </div>
+        </div>
+
+        <div class="row p-1">
+          <div class="col-5 account-info-label">
+            Last login
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.last_login|timesince }} ago
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4 g-5">
+    <div class="col-12">
+      <div>
+        <div class="row p-1 mb-4">
+          <h3 class="fs-5">Profile settings</h3>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
+            Privacy
+          </div>
+
+          <div class="col account-info-data">
+            {{ user.privacy }}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
+            Profile title
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.page_title %}
+              {{ user.page_title }}
+            {% else %}
+              {{ user.name }}'s trips
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
+            Profile URL
+          </div>
+
+          <div class="col account-info-data">
+            <a href="{% url 'log:user' user.username %}">
+              https://caves.app{% url 'log:user' user.username %}
+            </a>
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
+            Statistics
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.is_private %}
+              Public statistics are disabled as your profile is private.
+            {% else %}
+              Statistics are {% if not user.public_statistics %}not {% endif %}shown on your profile page.
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row p-1 border-bottom">
+          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
+            Trip notes
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.is_private %}
+              If you select a trip to be public, the notes will be {% if user.private_notes %}hidden{% else %}shown{% endif %}.
+            {% else %}
+              {% if user.private_notes %}
+                Your trip notes are hidden.
+              {% else %}
+                Your trip notes are public, unless the trip is set to private.
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row p-1">
+          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
+            Biography
+          </div>
+
+          <div class="col account-info-data">
+            {% if user.bio %}
+              {{ user.bio|markdownify }}<br />
+            {% else %}
+              Not recorded
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

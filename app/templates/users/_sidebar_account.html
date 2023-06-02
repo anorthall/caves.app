@@ -1,0 +1,44 @@
+{% load active_link_tags %}
+
+<div class="d-none d-md-flex mb-5">
+  {% if user.avatar %}
+    {% include "users/_profile_picture.html" with photo_user=user %}
+  {% else %}
+    {% include "users/_profile_picture.html" %}
+  {% endif %}
+</div>
+
+<a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
+  <i class="bi bi-info-circle-fill"></i> Overview
+</a>
+
+<a class="nav-link {% active_link 'users:profile_update' %}" href="{% url 'users:profile_update' %}">
+  <i class="bi bi-person-fill"></i> Profile
+</a>
+
+<a class="nav-link {% active_link 'users:profile_photo_update' %}" href="{% url 'users:profile_photo_update' %}">
+  <i class="bi bi-camera-fill"></i> Photo
+</a>
+
+<a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
+  <i class="bi bi-people-fill"></i> Friends
+</a>
+
+<a class="nav-link {% active_link 'users:password_update' %}" href="{% url 'users:password_update' %}">
+  <i class="bi bi-key-fill"></i> Password
+</a>
+
+<a class="nav-link {% active_link 'users:email' %}" href="{% url 'users:email' %}">
+  <i class="bi  bi-envelope-at-fill"></i> Email
+</a>
+
+<a class="nav-link {% active_link 'users:settings_update' %}" href="{% url 'users:settings_update' %}">
+  <i class="bi bi-gear-fill"></i> Settings
+</a>
+
+<form>
+  {% csrf_token %}
+  <button formmethod="post" formaction="{% url 'users:logout' %}" class="nav-link">
+    <i class="bi bi-x-octagon-fill"></i> Sign out
+  </button>
+</form>

@@ -1,0 +1,20 @@
+<div class="d-flex my-3 my-md-0 flex-column align-items-center text-center">
+  <div class="mb-4">
+    {% if profile_user.avatar %}
+      {% include "users/_profile_picture.html" with photo_user=profile_user %}
+    {% else %}
+      {% include "users/_profile_picture.html" %}
+    {% endif %}
+  </div>
+
+  <strong>{{ profile_user.name }}</strong>
+  <span class="text-muted mb-2">@{{ profile_user.username }}</span>
+
+  {% if profile_user.clubs %}
+    <span class="mb-2 fst-italic">{{ profile_user.clubs }}</span>
+  {% endif %}
+
+  <span class="text-primary">{{ profile_user.location }}</span>
+  <span class="text-primary">{{ profile_user.country.name }}</span>
+
+</div>
