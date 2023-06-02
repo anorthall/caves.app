@@ -11,80 +11,15 @@
     {% include "logger/_trip_header.html" %}
   </div>
 
-  <!-- Data blocks -->
-  <div class="row row-cols-2 row-cols-md-3 g-3">
-    <!-- Start time-->
-    <div class="col">
-      <small class="text-muted trip-field">Date/time entered</small><br />
-      {{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}
-    </div>
+  {% include "logger/_trip_data_blocks.html" %}
 
-    {% if trip.end %}
-    <!-- Duration -->
-      <div class="col">
-        <small class="text-muted trip-field">Trip duration</small><br />
-        {{ trip.duration_str }}
-      </div>
-
-    <!-- End time -->
-      <div class="col">
-        <small class="text-muted trip-field">Date/time exited</small><br />
-        {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
-      </div>
-    {% endif %}
-  </div>
-
-  {% if trip.cavers or trip.clubs or trip.expedition %}
-    <hr />
-    <div class="row g-3">
-      {% if trip.cavers %}
-      <!-- Cavers -->
-        <div class="col-12 col-lg-6 col-xl-4">
-          <small class="text-muted trip-field">Cavers on trip</small><br />
-          {{ trip.cavers }}
-        </div>
-      {% endif %}
-
-      {% if trip.clubs %}
-      <!-- Clubs -->
-        <div class="col-6 col-xl-4">
-          <small class="text-muted trip-field">Clubs</small><br />
-          {{ trip.clubs }}
-        </div>
-      {% endif %}
-
-      {% if trip.expedition %}
-      <!-- Expedition -->
-        <div class="col-6 col-xl-4">
-          <small class="text-muted trip-field">Expedition</small><br />
-          {{ trip.expedition }}
-        </div>
-      {% endif %}
-    </div>
-  {% endif %}
-
-  {% if trip.has_distances %}
-    <hr />
-
-    <div class="row row-cols-2 row-cols-md-3 g-3">
-      {% for name, dist in trip.distances.items %}
-        <div class="col">
-          <small class="text-muted trip-field">{{ name|capfirst }}</small><br />
-          {% if user.is_authenticated %}
-            {{ dist|distformat:user.units }}
-          {% else %}
-            {{ dist }}
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
+  {% if trip.notes or trip.cave_url %}
+    <hr class="my-4">
   {% endif %}
 
   {% if trip.notes %}
-    <hr />
-
     <!-- Notes -->
-    <div class="row g-3">
+    <div class="row g-3{% if trip.cave_url %} mb-3{% endif %}">
       <div class="col notes-display">
         <small class="text-muted trip-field">Notes</small><br />
         {{ trip.notes|linebreaks }}
@@ -93,8 +28,6 @@
   {% endif %}
 
   {% if trip.cave_url %}
-    <hr />
-
     <!-- External Resources -->
     <div class="row g-3">
       <div class="col">
@@ -106,6 +39,7 @@
     </div>
   {% endif %}
 
+  <hr class="my-4">
   <span class="float-start">
     {% if user.is_authenticated %}
       {% include "logger/_htmx_trip_like.html" %}

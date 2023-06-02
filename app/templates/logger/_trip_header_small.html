@@ -1,9 +1,9 @@
 {% load users_tags %}
 <div data-href="{% url "log:trip_detail" trip.pk %}"
-     class="d-none d-md-flex flex-row align-items-center justify-content-between">
+     class="d-none d-lg-flex flex-row align-items-center justify-content-between">
   <div class="d-flex flex-column align-items-start justify-content-center">
     <h1 class="cave-name fs-4">{{ trip.cave_name }}</h1>
-    <small class="fw-lighter">
+    <small>
       <i class="bi bi-person"></i> {% user trip.user %},
       added {{ trip.added|timesince }} ago
     </small>
@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<div data-href="{% url "log:trip_detail" trip.pk %}" class="d-flex d-md-none">
+<div data-href="{% url "log:trip_detail" trip.pk %}" class="d-flex d-lg-none">
   <div class="d-flex flex-column align-items-start justify-content-center">
     <h1 class="cave-name">{{ trip.cave_name }}</h1>
 
@@ -31,7 +31,7 @@
       {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
     </small>
 
-    <small class="fw-lighter">
+    <small>
       <i class="bi bi-person"></i> {% user trip.user %},
       added {{ trip.added|timesince }} ago
     </small>
