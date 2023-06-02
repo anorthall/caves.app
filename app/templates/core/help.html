@@ -19,17 +19,15 @@
   </p>
 
   {% if faqs %}
-    <hr class="my-4">
-
-    <h3 class="page-title mb-3">
+    <h3 class="mt-5 mb-4">
       Frequently asked questions
     </h3>
 
     {% for faq in faqs %}
       <div class="mb-4">
-        <div class="border-bottom border-secondary fs-5 mb-2">
+        <h4 class="subtitle">
           {{ faq.question }}
-        </div>
+        </h4>
         {{ faq.answer|markdownify }}
       </div>
     {% endfor %}
