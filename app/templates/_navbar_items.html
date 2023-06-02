@@ -1,5 +1,5 @@
 {% load active_link_tags %}
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+<button class="navbar-toggler order-1" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
   <span class="navbar-toggler-icon"></span>
 </button>
 
@@ -51,24 +51,57 @@
       </li>
     {% endif %}
   </ul>
+</div>
 
-  <ul class="navbar-nav d-flex flex-row">
-    {% include "_notifications.html" %}
-    {% if user.is_authenticated %}
-      {% if user.avatar %}
-        <li class="p-0 nav-item align-self-center justify-self-center d-none d-lg-block">
-          <a href="{% url 'users:account_detail' %}" class="nav-link">
+{% if user.is_authenticated %}
+  <div class="d-flex flex-row justify-content-center align-items-center order-0 ms-auto me-2">
+    {% if user.avatar %}
+      <div>
+        <a href="{% url 'users:account_detail' %}" class="nav-link">
+          {% if user.avatar %}
             <img src="{{ user.avatar_navbar.url }}" class="rounded-circle border border-dark" alt="User avatar">
-          </a>
-        </li>
-      {% else %}
-        <li class="nav-item p-0">
-          <a href="{% url 'users:account_detail' %}" class="nav-link d-none d-lg-block">
+          {% else %}
             <i class="bi bi-person-circle"></i>
-          </a>
-        </li>
-      {% endif %}
+          {% endif %}
+        </a>
+      </div>
     {% endif %}
 
+    {% if notifications.list %}
+      <div class="dropdown ms-3">
+        <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+          <span class="icon-badge-container text-white">
+            {% if notifications.unread %}
+              <i class="bi bi-bell-fill icon-badge-icon"></i>
+              <span class="icon-badge">{{ notifications.unread }}</span>
+            {% else %}
+              <i class="bi bi-bell"></i>
+            {% endif %}
+          </span>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end navbar-dropdown border border-2 bg-light py-2">
+          <li>
+            <div class="dropdown-item dropdown-title my-0">
+              Notifications
+            </div>
+          </li>
+
+          {% for notification in notifications.list %}
+            <hr class="dropdown-divider">
+
+            <li>
+              <div data-href="{% url 'users:notification' pk=notification.pk %}" class="dropdown-item text-primary my-0">
+                <span{% if not notification.read %} class="fw-bold"{% endif %}>{{ notification.message }}</span>
+                <br />
+                <small class="text-muted">
+                  {{ notification.added|timesince }} ago
+                </small>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
   </ul>
-</div>
+{% endif %}

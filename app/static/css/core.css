@@ -50,7 +50,7 @@ body {
 }
 
 .navbar-dropdown .dropdown-item:hover {
-  background-color: #f7f7f7 !important;
+  background-color: #f7f7f7;
 }
 
 .navbar-dropdown .dropdown-item.active {
@@ -60,6 +60,16 @@ body {
 
 .dropdown-toggle.focus, .dropdown-toggle:focus {
   outline: 0px none #fff !important;
+}
+
+.dropdown-title {
+  font-weight: bold !important;
+  color: var(--bs-primary) !important;
+  letter-spacing: 0.03rem;
+}
+
+.dropdown-item.dropdown-title:hover {
+  background-color: transparent !important;
 }
 
 @media (min-width: 992px) {
