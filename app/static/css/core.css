@@ -278,9 +278,14 @@ h1.page-title {
 
 
 /*
-  Account info
+  Accounts
 */
 
 .account-info-label {
   color: var(--bs-gray-700);
+}
+
+.profile-photo {
+  max-width: 220px;
+  height: auto;
 }
