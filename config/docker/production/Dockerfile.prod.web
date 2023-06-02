@@ -34,7 +34,7 @@ COPY --from=builder /usr/src/caves/wheels /opt/caves/wheels
 RUN pip install --no-cache /opt/caves/wheels/*
 
 # Create directories
-RUN mkdir -p /opt/caves /opt/caves/staticfiles /opt/caves/config
+RUN mkdir -p /opt/caves /opt/caves/config
 
 # Copy entrypoint
 COPY ./config/docker/production/entrypoint.prod.sh /opt/caves/config
