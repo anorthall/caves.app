@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
 from django import forms
@@ -48,19 +49,56 @@ class DistanceUnitFormMixin:
 
 
 class TripReportForm(forms.ModelForm):
-    template_name = "logger/_trip_report_form.html"
-
     class Meta:
         model = TripReport
-        exclude = ["user", "trip"]
+        fields = [
+            "title",
+            "pub_date",
+            "slug",
+            "content",
+            "privacy",
+        ]
         widgets = {
             "pub_date": forms.DateInput(attrs={"type": "date"}),
         }
 
-    def __init__(self, *args, **kwargs):
-        """Store the trip user. This is used to validate the slug."""
-        self.user = kwargs.pop("user")
-        return super().__init__(*args, **kwargs)
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.fields["content"].label = ""
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            Fieldset(
+                "Report",
+                FloatingField("title"),
+                Div(
+                    Div("pub_date", css_class="col-12 col-xl-6"),
+                    Div("slug", css_class="col-12 col-xl-6"),
+                    css_class="row mt-4",
+                ),
+                css_class="mt-4",
+            ),
+            Fieldset(
+                "Content",
+                "content",
+                css_class="mt-4",
+            ),
+            Fieldset(
+                "Privacy",
+                "privacy",
+                css_class="mt-4",
+            ),
+        )
+
+        if self.instance.pk:
+            self.helper.add_input(
+                Submit("submit", "Update report", css_class="btn-lg w-100 mt-4")
+            )
+        else:
+            self.helper.add_input(
+                Submit("submit", "Create report", css_class="btn-lg w-100 mt-4")
+            )
 
     def clean_slug(self):
         """Check that the user does not have another slug with the same value"""
