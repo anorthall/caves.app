@@ -1,0 +1,3 @@
+{% load static %}
+<img class="align-self-center justify-self-center img-fluid rounded-circle border border-2 shadow"
+     src="{% if image_url %}{{ image_url }}{% else %}{% static 'images/blank-profile.webp' %}{% endif %}">

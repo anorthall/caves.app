@@ -2,6 +2,12 @@
 {% load markdownify %}
 
 {% block main %}
+  <div class="row g-5 mb-5 d-md-none">
+    <div class="col d-flex">
+      <img class="align-self-center mx-auto img-fluid rounded-circle border border-primary border-2 shadow" src="{% if user.avatar %}{{ user.avatar_profile.url }}{% endif %}">
+    </div>
+  </div>
+
   <div class="row g-5">
     <div class="col-12 col-lg-6">
       <div class="h-100">

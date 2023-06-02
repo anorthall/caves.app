@@ -30,12 +30,6 @@
           <i class="bi bi-bar-chart"></i> Statistics
         </a>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
-          <i class="bi bi-person-circle"></i> Account
-        </a>
-      </li>
     {% else %}
       {% comment %}  Unregistered/Unauthenticated user links  {% endcomment %}
       <li class="nav-item">
@@ -52,7 +46,23 @@
     {% endif %}
   </ul>
 
-  <ul class="navbar-nav">
+  <ul class="navbar-nav d-flex flex-row">
     {% include "_notifications.html" %}
+    {% if user.is_authenticated %}
+      {% if user.avatar %}
+        <li class="p-0 nav-item align-self-center justify-self-center d-none d-lg-block">
+          <a href="{% url 'users:account_detail' %}" class="nav-link">
+            <img src="{{ user.avatar_navbar.url }}" class="rounded-circle border border-dark" alt="User avatar">
+          </a>
+        </li>
+      {% else %}
+        <li class="nav-item p-0">
+          <a href="{% url 'users:account_detail' %}" class="nav-link d-none d-lg-block">
+            <i class="bi bi-person-circle"></i>
+          </a>
+        </li>
+      {% endif %}
+    {% endif %}
+
   </ul>
 </div>

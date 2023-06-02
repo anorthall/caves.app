@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -8,8 +10,16 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 from logger.models import Trip, TripReport
 from timezone_field import TimeZoneField
+
+
+def avatar_upload_path(instance, filename):
+    """Returns the path to upload avatars to"""
+    ext = filename.split(".")[-1].lower()
+    return f"avatars/{instance.uuid}/avatar.{ext}"
 
 
 class CavingUserManager(BaseUserManager):
@@ -66,6 +76,13 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = ["username", "name"]
 
+    uuid = models.UUIDField(
+        verbose_name="UUID",
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text="A unique identifier for this user.",
+    )
     email = models.EmailField(
         "email address",
         max_length=255,
@@ -122,6 +139,23 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "A title to display on your profile page (if enabled). "
             "If left blank it will use your full name."
         ),
+    )
+    avatar = models.ImageField(
+        upload_to=avatar_upload_path,
+        blank=True,
+        help_text="A profile picture to display on your public profile.",
+    )
+    avatar_profile = ImageSpecField(
+        source="avatar",
+        processors=[ResizeToFill(225, 225)],
+        format="JPEG",
+        options={"quality": 90},
+    )
+    avatar_navbar = ImageSpecField(
+        source="avatar",
+        processors=[ResizeToFill(25, 25)],
+        format="JPEG",
+        options={"quality": 90},
     )
 
     #

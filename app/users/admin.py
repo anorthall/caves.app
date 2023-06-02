@@ -64,6 +64,7 @@ class CavingUserAdmin(BaseUserAdmin):
                     "email",
                     "username",
                     "name",
+                    "uuid",
                     "last_login",
                     "last_seen",
                     "date_joined",
@@ -109,7 +110,7 @@ class CavingUserAdmin(BaseUserAdmin):
         ),
     )
 
-    readonly_fields = ("last_login", "last_seen", "date_joined")
+    readonly_fields = ("last_login", "last_seen", "date_joined", "uuid")
 
     add_fieldsets = (
         (

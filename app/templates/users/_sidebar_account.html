@@ -1,5 +1,13 @@
 {% load active_link_tags %}
 
+<div class="d-none d-md-flex mb-5">
+  {% if user.avatar %}
+    {% include "users/_profile_picture.html" with image_url=user.avatar_profile.url %}
+  {% else %}
+    {% include "users/_profile_picture.html" %}
+  {% endif %}
+</div>
+
 <a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
   <i class="bi bi-info-circle-fill"></i> Overview
 </a>

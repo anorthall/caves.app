@@ -1,5 +1,5 @@
 {% if notifications.list %}
-  <li class="nav-item dropdown">
+  <li class="nav-item dropdown pe-1">
     <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
       <span class="d-none d-lg-block icon-badge-container">
         {% if notifications.unread %}
@@ -11,7 +11,7 @@
       </span>
 
       <span class="d-lg-none">
-        <i class="bi bi-bell"></i>&nbsp; Notifications
+        <i class="bi bi-bell"></i> Notifications
         {% if notifications.unread %}
           ({{ notifications.unread }})
         {% endif %}

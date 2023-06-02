@@ -1,4 +1,5 @@
-{% extends "base_full_width.html" %}
+{% extends "base_sidebar.html" %}
+{% load static %}
 {% load logger_tags %}
 {% load markdownify %}
 
@@ -7,7 +8,14 @@
 {% block display_title_right %}@{{ profile_user.username }}{% endblock %}
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
-{% block content %}
+{% block stylesheets %}
+  <link href="{% static 'css/trips.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
+{% block mobile_menu %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
+
+{% block main %}
   {% if profile_user.bio %}
     <div class="mb-4">
       {{ profile_user.bio|markdownify }}
