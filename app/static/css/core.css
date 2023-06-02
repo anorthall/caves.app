@@ -178,15 +178,6 @@ body {
   Text
 */
 
-.page-title {
-  margin-bottom: 0.5rem;
-}
-
-h1.page-title {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
 .comment-display > p {
   margin-bottom: 0;
 }
