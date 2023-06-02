@@ -124,7 +124,10 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "biography",
         blank=True,
         help_text=(
-            "Information about you that will be displayed on " "your public profile."
+            "Information about you that will be displayed on "
+            "your public profile. "
+            "Some <a href='https://www.markdownguide.org/basic-syntax/'>Markdown</a> "
+            "is supported."
         ),
     )
     clubs = models.CharField(
