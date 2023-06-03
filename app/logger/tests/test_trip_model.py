@@ -131,12 +131,12 @@ class TripModelUnitTests(TestCase):
         trip = Trip.objects.get(cave_name="Duration Trip")
         trip.end = dt.fromisoformat("2010-01-02T13:01:00+00:00")
         trip.save()
-        self.assertEqual(trip.duration_str, "1 day, 1 hour and 1 minute")
+        self.assertEqual(trip.duration_str, "25 hours and 1 minute")
 
         trip = Trip.objects.get(cave_name="Duration Trip")
         trip.end = dt.fromisoformat("2010-01-03T14:02:00+00:00")
         trip.save()
-        self.assertEqual(trip.duration_str, "2 days, 2 hours and 2 minutes")
+        self.assertEqual(trip.duration_str, "50 hours and 2 minutes")
 
     def test_has_distances_property(self):
         """Test the Trip.has_distances property"""

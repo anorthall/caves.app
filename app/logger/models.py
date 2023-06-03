@@ -210,7 +210,8 @@ class Trip(models.Model):
             td = self.end - self.start
 
         if td:
-            self.duration_str = humanize.precisedelta(td, minimum_unit="minutes")
+            self.duration_str = humanize.precisedelta(td, minimum_unit="minutes",
+                suppress=['days', 'months', 'years'])
         else:
             self.duration_str = None
         return self.duration_str
