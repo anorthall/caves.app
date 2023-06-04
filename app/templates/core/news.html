@@ -1,0 +1,16 @@
+{% extends "base_trips.html" %}
+{% load humanize %}
+{% load users_tags %}
+{% load markdownify %}
+
+{% block title %}caves.app - news{% endblock %}
+{% block display_title %}News{% endblock %}
+{% block description %}Information about the latest updates to caves.app.{% endblock %}
+
+{% block main %}
+  <div class="mw-45">
+    {% for item in news %}
+      {% include "core/_news_item.html" with news=item %}
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -5,6 +5,8 @@ from django.utils import timezone
 from logger.models import Trip, TripReport
 from users.models import FriendRequest
 
+from ..models import News
+
 User = get_user_model()
 
 
@@ -31,6 +33,24 @@ class TestAllPagesLoad(TestCase):
             slug="test",
             content="Test Report Content",
             pub_date=timezone.now().date(),
+        )
+
+        self.news1 = News.objects.create(
+            title="Test News 1",
+            slug="test-news-1",
+            posted_at=timezone.now(),
+            author=self.user,
+            content="Test News 1 Content",
+            is_published=True,
+        )
+
+        self.news2 = News.objects.create(
+            title="Test News 2",
+            slug="test-news-2",
+            posted_at=timezone.now(),
+            author=self.user,
+            content="Test News 2 Content",
+            is_published=True,
         )
 
         self.client = Client()
@@ -77,10 +97,14 @@ class TestAllPagesLoad(TestCase):
         response = self.client.get(reverse("core:help"))
         self.assertEqual(response.status_code, 200)
 
-    def test_help_page_loads_when_logged_in(self):
-        """Test that the help page loads when logged in"""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("core:help"))
+    def test_news_page_loads(self):
+        """Test that the news page loads"""
+        response = self.client.get(reverse("core:news"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_news_detail_page_loads(self):
+        """Test that the news detail page loads"""
+        response = self.client.get(reverse("core:news_detail", args=[self.news1.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_verify_new_account_page_loads(self):

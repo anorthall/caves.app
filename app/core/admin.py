@@ -16,12 +16,14 @@ if settings.DEBUG:  # pragma: no cover
 class NewsAdmin(admin.ModelAdmin):
     list_display = ("title", "author", "posted_at", "added", "updated")
     readonly_fields = ("added", "updated", "author")
+    prepopulated_fields = {"slug": ("title",)}
     fieldsets = (
         (
             None,
             {
                 "fields": (
                     "title",
+                    "slug",
                     "content",
                     "posted_at",
                     "is_published",
