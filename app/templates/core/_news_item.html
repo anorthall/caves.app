@@ -1,0 +1,20 @@
+{% load users_tags %}
+{% load markdownify %}
+{% load humanize %}
+
+<div class="mb-5">
+  <h4 class="subtitle fs-3 mb-1 pb-1" id="news{{ news.id }}">
+    <a class="text-decoration-none text-black" href="{{ news.get_absolute_url }}">
+      {{ news.title }}
+    </a>
+  </h4>
+
+  <div class="mb-3">
+    <span class="text-muted">
+      <i class="bi bi-person-fill"></i>
+    </span>
+    {% user news.author %}, {{ news.posted_at|naturaltime }}
+  </div>
+
+  {{ news.content|markdownify }}
+</div>

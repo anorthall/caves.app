@@ -1,11 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 
 User = get_user_model()
 
 
 class News(models.Model):
     title = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True)
     posted_at = models.DateTimeField()
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     content = models.TextField(help_text="Markdown is supported.")
@@ -23,6 +25,9 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("core:news_detail", kwargs={"slug": self.slug})
 
 
 class FAQ(models.Model):

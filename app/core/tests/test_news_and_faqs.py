@@ -30,6 +30,7 @@ class TestAuthorAutoassignForNewsAndFAQs(TestCase):
             reverse("admin:core_news_add"),
             {
                 "title": "Test News",
+                "slug": "test-news",
                 "content": "Test content",
                 "posted_at_0": timezone.now().date(),
                 "posted_at_1": timezone.now().time(),

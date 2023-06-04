@@ -25,17 +25,6 @@
   <a class="nav-link {% active_link 'log:export' %}" href="{% url 'log:export' %}">
     <i class="bi bi-save-fill"></i> Export
   </a>
-{% else %}
-  {% comment %} Unauthenticated user links {% endcomment %}
-  <span class="nav-item sidebar-header d-none d-lg-block">caves.app</span>
-
-  <a class="nav-link" href="{% url 'users:login' %}">
-    <i class="bi bi-person-circle"></i> Sign in
-  </a>
-
-  <a class="nav-link" href="{% url 'users:register' %}">
-    <i class="bi bi-house"></i> Register
-  </a>
 {% endif %}
 
 {% if trip and user == object_owner %}
@@ -98,6 +87,26 @@
     </a>
   {% endif %}
 {% endif %}
+
+
+<span class="nav-item sidebar-header d-none d-lg-block mt-4">caves.app</span>
+{% if user.is_anonymous %}
+  <a class="nav-link" href="{% url 'users:login' %}">
+    <i class="bi bi-person-circle"></i> Sign in
+  </a>
+
+  <a class="nav-link" href="{% url 'users:register' %}">
+    <i class="bi bi-house"></i> Register
+  </a>
+{% endif %}
+
+<a class="nav-link{% if trip %} d-none d-lg-block{% endif %} {% active_link 'core:news' %}" href="{% url 'core:news' %}">
+  <i class="bi bi-newspaper"></i> News
+</a>
+
+<a class="nav-link{% if trip %} d-none d-lg-block{% endif %} {% active_link 'core:help' %}" href="{% url 'core:help' %}">
+  <i class="bi bi-question-circle"></i> Help
+</a>
 
 {% if generate_modal == "yes" %}
   {% comment %}Delete trip/report modal{% endcomment %}
