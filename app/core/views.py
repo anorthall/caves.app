@@ -9,14 +9,22 @@ User = get_user_model()
 
 class Help(TemplateView):
     template_name = "core/help.html"
-    extra_context = {"faqs": FAQ.objects.all().order_by("question")}
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["faqs"] = FAQ.objects.all().order_by("question")
+        return context
 
 
 class News(TemplateView):
     template_name = "core/news.html"
-    extra_context = {
-        "news": NewsModel.objects.filter(is_published=True).order_by("-posted_at")
-    }
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["news"] = NewsModel.objects.filter(is_published=True).order_by(
+            "-posted_at"
+        )
+        return context
 
 
 class NewsDetail(DetailView):
