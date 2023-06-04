@@ -1,3 +1,6 @@
+import os
+import uuid
+
 import humanize
 from distance import D, DistanceField, DistanceUnitField
 from django.conf import settings
@@ -219,6 +222,13 @@ class Trip(models.Model):
     added = models.DateTimeField("trip added on", auto_now_add=True)
     updated = models.DateTimeField("trip last updated", auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    uuid = models.UUIDField(
+        verbose_name="UUID",
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text="A unique identifier for this trip.",
+    )
 
     def __str__(self):
         return self.cave_name
@@ -396,6 +406,32 @@ class Trip(models.Model):
         qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
+
+
+def trip_photo_upload_path(instance, filename):
+    """Returns the path to upload trip photos to"""
+    original_filename, ext = os.path.splitext(filename)
+    return f"photos/{instance.user.uuid}/{instance.trip.uuid}/{instance.uuid}{ext}"
+
+
+class TripPhoto(models.Model):
+    uuid = models.UUIDField("UUID", default=uuid.uuid4, editable=False, unique=True)
+    trip = models.ForeignKey(
+        Trip, on_delete=models.CASCADE, related_name="photos", editable=False
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, editable=False
+    )
+    photo = models.ImageField(upload_to=trip_photo_upload_path)
+    caption = models.CharField(max_length=100, blank=True)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.caption or os.path.basename(self.photo.name)
+
+    def get_absolute_url(self):
+        return self.photo.url
 
 
 class TripReport(models.Model):

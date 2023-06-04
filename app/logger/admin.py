@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.forms import ModelForm
 from logger.forms import DistanceUnitFormMixin
 
-from .models import Trip, TripReport
+from .models import Trip, TripPhoto, TripReport
 
 
 class TripAdminForm(DistanceUnitFormMixin, ModelForm):
@@ -26,6 +26,7 @@ class TripAdmin(admin.ModelAdmin):
     readonly_fields = (
         "added",
         "updated",
+        "uuid",
     )
     list_display = (
         "user",
@@ -47,6 +48,7 @@ class TripAdmin(admin.ModelAdmin):
                 "fields": (
                     "user",
                     "privacy",
+                    "uuid",
                     "added",
                     "updated",
                 ),
@@ -99,6 +101,39 @@ class TripAdmin(admin.ModelAdmin):
         ),
         ("Notes", {"fields": ("notes",)}),
     )
+
+
+@admin.register(TripPhoto)
+class TripPhotoAdmin(admin.ModelAdmin):
+    list_display = ("user", "trip", "added", "updated")
+    search_fields = ("user", "trip", "caption")
+    readonly_fields = ("added", "updated", "uuid")
+    fieldsets = (
+        (
+            "Internal data",
+            {
+                "fields": (
+                    "user",
+                    "trip",
+                    "uuid",
+                    "added",
+                    "updated",
+                ),
+            },
+        ),
+        (
+            "Photo details",
+            {
+                "fields": (
+                    "caption",
+                    "photo",
+                ),
+            },
+        ),
+    )
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(TripReport)
