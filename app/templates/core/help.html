@@ -27,7 +27,7 @@
         <ol>
           {% for faq in faqs %}
             <li>
-              <a href="#faq{{ forloop.counter }}">{{ faq.question }}</a>
+              <a href="#faq{{ faq.id }}">{{ faq.question }}</a>
             </li>
           {% endfor %}
         </ol>
@@ -35,7 +35,7 @@
 
       {% for faq in faqs %}
         <div class="mb-5">
-          <h4 class="subtitle mb-2" id="faq{{ forloop.counter }}">
+          <h4 class="subtitle mb-2" id="faq{{ faq.id }}">
             {{ faq.question }}
           </h4>
           {{ faq.answer|markdownify }}

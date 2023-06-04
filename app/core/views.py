@@ -8,7 +8,7 @@ User = get_user_model()
 
 class Help(TemplateView):
     template_name = "core/help.html"
-    extra_context = {"faqs": FAQ.objects.all().order_by("updated")}
+    extra_context = {"faqs": FAQ.objects.all().order_by("question")}
 
 
 class HTTP400(TemplateView):
