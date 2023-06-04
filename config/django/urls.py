@@ -6,7 +6,7 @@ urlpatterns = [
     path("", include("logger.urls")),
     path("", include("core.urls")),
     path("account/", include("users.urls")),
-    path("admin/", admin.site.urls),
+    path(settings.ADMIN_URL, admin.site.urls),
     path("tinymce/", include("tinymce.urls")),
 ]
 

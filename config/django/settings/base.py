@@ -22,6 +22,10 @@ TIME_FORMAT = "H:i"
 SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
 
 
+# Django admin interface URL path
+ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
+
+
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-secret-key")
