@@ -79,6 +79,12 @@ def _generate_expedition():
     return fake.city() + " " + random.randgen.choice(suffixes)
 
 
+def _generate_cave_entrance_or_exit():
+    if random.randgen.randint(1, 100) > 20:
+        return ""
+    return _generate_cave_name()
+
+
 def _generate_cave_name():
     suffixes = [
         "Cave",
@@ -167,6 +173,8 @@ class TripFactory(DjangoModelFactory):
 
     user = factory.Iterator(get_user_model().objects.filter(is_active=True))
     cave_name = factory.LazyFunction(_generate_cave_name)
+    cave_entrance = factory.LazyFunction(_generate_cave_entrance_or_exit)
+    cave_exit = factory.LazyFunction(_generate_cave_entrance_or_exit)
     cave_region = factory.Faker("city")
     cave_country = factory.Faker("country")
     cave_url = factory.Faker("url")
