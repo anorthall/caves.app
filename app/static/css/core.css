@@ -277,6 +277,17 @@ body {
 }
 
 .profile-photo {
-  max-width: 220px;
-  height: auto;
+  height: 220px;
+  max-width: 100vw;
+}
+
+.profile-photo-header {
+  height: 80px;
+  max-width: 100vw;
+}
+
+@media (min-width: 768px) {
+  .profile-photo-header {
+    height: 100px;
+  }
 }

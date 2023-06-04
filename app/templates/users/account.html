@@ -2,7 +2,7 @@
 {% load markdownify %}
 
 {% block main %}
-  <div class="row g-5 mb-5 d-md-none">
+  <div class="row g-5 mb-5 d-lg-none">
     <div class="d-flex justify-content-center mb-1">
       {% if user.avatar %}
         {% include "users/_profile_picture.html" with photo_user=user %}

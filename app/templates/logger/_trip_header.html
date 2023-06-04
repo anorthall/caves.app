@@ -1,36 +1,34 @@
 <div class="d-none d-lg-flex flex-row align-items-center justify-content-between mb-4">
   <div class="d-flex flex-column align-items-start justify-content-center">
-    {% if is_report %}
-      <h1 class="cave-name cave-name-lg">{{ trip.report.title }}</h1>
-    {% else %}
-      <h1 class="cave-name cave-name-lg">{{ trip.cave_name }}</h1>
+    <h1 class="cave-name cave-name-lg">{{ trip.cave_name }}</h1>
+    {% if trip.cave_entrance or trip.cave_exit %}
+      <span class="text-primary">
+        via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
+      </span>
     {% endif %}
   </div>
 
   <div class="d-flex flex-column align-items-end justify-content-center">
-    {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
-    {% if trip.cave_region and trip.cave_country %}&middot;{% endif %}
-    {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
-    <small class="text-muted">
+    <span class="text-primary">{{ trip.cave_region }}</span>
+    <span class="text-primary align-self-center">{{ trip.cave_country }}</span>
+    <small class="text-muted align-self-center">
       {{ trip.start|timesince }} ago
     </small>
   </div>
 </div>
 
-<div class="d-flex d-lg-none mb-4">
+<div class="d-flex d-lg-none mb-4 pb-2 border-bottom">
   <div class="d-flex flex-column align-items-start justify-content-center">
-    {% if is_report %}
-      <h1 class="cave-name cave-name-lg">{{ trip.report.title }}</h1>
-    {% else %}
-      <h1 class="cave-name cave-name-lg">{{ trip.cave_name }}</h1>
-    {% endif %}
-    <span class="text-muted">
+    <small class="text-muted">
       {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
       {% if trip.cave_region and trip.cave_country %}&middot;{% endif %}
       {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
-    </span>
-    <small class="text-muted">
-      {{ trip.start|timesince }} ago
     </small>
+    <h1 class="cave-name cave-name-lg">{{ trip.cave_name }}</h1>
+    {% if trip.cave_entrance or trip.cave_exit %}
+      <span class="text-primary">
+        via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
+      </span>
+    {% endif %}
   </div>
 </div>

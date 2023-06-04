@@ -14,6 +14,8 @@ class TripAdmin(admin.ModelAdmin):
     form = TripAdminForm
     search_fields = (
         "cave_name",
+        "cave_entrance",
+        "cave_exit",
         "cave_region",
         "cave_country",
         "cavers",
@@ -55,6 +57,8 @@ class TripAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "cave_name",
+                    "cave_entrance",
+                    "cave_exit",
                     "cave_region",
                     "cave_country",
                 ),

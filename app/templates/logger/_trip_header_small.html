@@ -2,38 +2,61 @@
 <div data-href="{% url "log:trip_detail" trip.pk %}"
      class="d-none d-lg-flex flex-row align-items-center justify-content-between">
   <div class="d-flex flex-column align-items-start justify-content-center">
-    <h1 class="cave-name fs-4">{{ trip.cave_name }}</h1>
-    <small>
-      <i class="bi bi-person"></i> {% user trip.user %},
-      added {{ trip.added|timesince }} ago
-    </small>
+    <div class="d-flex flex-row align-items-center">
+      <div class="pe-3 me-3 border-end h-100">
+        {% include "users/_profile_picture_header.html" with photo_user=trip.user %}
+      </div>
+
+      <div>
+        {% if trip.cave_entrance or trip.cave_exit %}
+          <small class="text-primary">
+            <i class="bi bi-person-fill"></i> {% user trip.user %}, {{ trip.added|timesince }} ago
+          </small>
+        {% endif %}
+        <h1 class="cave-name fs-4 my-1">{{ trip.cave_name }}</h1>
+        {% if trip.cave_entrance or trip.cave_exit %}
+          <span class="text-primary">
+            via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
+          </span>
+        {% else %}
+          <small class="text-primary">
+            <i class="bi bi-person-fill"></i> {% user trip.user %}, {{ trip.added|timesince }} ago
+          </small>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   <div class="d-flex flex-column align-items-end justify-content-center">
-    <div class="d-flex flex-column align-items-center justify-content-center">
-      <small class="text-muted">
-        {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
-      </small>
-      <small class="text-muted">
-        {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
-      </small>
+    <div class="d-flex flex-column align-items-center justify-content-center text-primary">
+      <span>{{ trip.cave_region }}</span>
+      <span>{{ trip.cave_country }}</span>
     </div>
   </div>
 </div>
 
 <div data-href="{% url "log:trip_detail" trip.pk %}" class="d-flex d-lg-none">
-  <div class="d-flex flex-column align-items-start justify-content-center">
-    <h1 class="cave-name">{{ trip.cave_name }}</h1>
+  <div class="d-flex flex-row align-items-start justify-content-center">
+    <div class="d-flex align-items-center">
+      <div class="pe-3 me-3 border-end">
+        {% include "users/_profile_picture_header.html" with photo_user=trip.user %}
+      </div>
 
-    <small class="text-muted">
-      {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
-      {% if trip.cave_region and trip.cave_country %}&middot;{% endif %}
-      {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
-    </small>
-
-    <small>
-      <i class="bi bi-person"></i> {% user trip.user %},
-      added {{ trip.added|timesince }} ago
-    </small>
+      <div class="d-flex flex-column">
+        <small class="text-primary">
+          <i class="bi bi-person-fill"></i> {% user trip.user %}
+        </small>
+        <h1 class="cave-name fs-4 my-1">{{ trip.cave_name }}</h1>
+        {% if trip.cave_entrance or trip.cave_exit %}
+          <span class="text-primary">
+            via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
+          </span>
+        {% else %}
+          <small class="text-primary">
+            {{ trip.cave_region }}{% if trip.cave_region and trip.cave_country %} &middot; {% endif %}{{ trip.cave_country }}
+          </small>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>

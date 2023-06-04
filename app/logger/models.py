@@ -59,11 +59,36 @@ class Trip(models.Model):
     ]
 
     # Cave details
-    cave_name = models.CharField(max_length=100)
-    cave_region = models.CharField(max_length=100, blank=True)
-    cave_country = models.CharField(max_length=100, blank=True)
+    cave_name = models.CharField(
+        max_length=100,
+        help_text="The name of the cave or cave system entered.",
+    )
+    cave_entrance = models.CharField(
+        "entrance",
+        max_length=100,
+        blank=True,
+        help_text="The location at which you entered the cave.",
+    )
+    cave_exit = models.CharField(
+        "exit",
+        max_length=100,
+        blank=True,
+        help_text="The location at which you exited the cave.",
+    )
+    cave_region = models.CharField(
+        "region",
+        max_length=100,
+        blank=True,
+        help_text="The state or region in which the cave is located.",
+    )
+    cave_country = models.CharField(
+        "country",
+        max_length=100,
+        blank=True,
+        help_text="The country in which the cave is located.",
+    )
     cave_url = models.URLField(
-        "cave website",
+        "website",
         blank=True,
         help_text=(
             "A website, such as a Wikipedia page, "
@@ -84,7 +109,10 @@ class Trip(models.Model):
     cavers = models.CharField(
         max_length=250,
         blank=True,
-        help_text="A comma-separated list of cavers that were on this trip.",
+        help_text=(
+            "A comma-separated list of cavers that were on this trip. "
+            "Avoid adding yourself to this list."
+        ),
     )
     clubs = models.CharField(
         max_length=100,

@@ -1,7 +1,7 @@
 {% load active_link_tags %}
 
 {% if trip %}
-  <div class="mb-5 d-none d-md-block">
+  <div class="mb-5 d-none d-lg-block">
     {% if trip.user.avatar %}
       {% include "users/_profile_picture.html" with photo_user=trip.user %}
     {% else %}
@@ -12,7 +12,7 @@
 
 {% if user.is_authenticated %}
   {% comment %} Authenticated user links {% endcomment %}
-  <span class="nav-item sidebar-header d-none d-md-block">Trips</span>
+  <span class="nav-item sidebar-header d-none d-lg-block">Trips</span>
 
   <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
     <i class="bi bi-people-fill"></i> Recent
@@ -27,7 +27,7 @@
   </a>
 {% else %}
   {% comment %} Unauthenticated user links {% endcomment %}
-  <span class="nav-item sidebar-header d-none d-md-block">caves.app</span>
+  <span class="nav-item sidebar-header d-none d-lg-block">caves.app</span>
 
   <a class="nav-link" href="{% url 'users:login' %}">
     <i class="bi bi-person-circle"></i> Sign in
@@ -40,7 +40,7 @@
 
 {% if trip and user == object_owner %}
   {% comment %} Viewing a trip as the owner of it {% endcomment %}
-  <span class="nav-item sidebar-header d-none d-md-block mt-4">This trip</span>
+  <span class="nav-item sidebar-header d-none d-lg-block mt-4">This trip</span>
   <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
     <i class="bi bi-info-circle"></i> View trip
   </a>
@@ -53,7 +53,7 @@
     <i class="bi bi-x-lg"></i> Delete trip
   </a>
 
-  <span class="nav-item sidebar-header d-none d-md-block mt-4">Report</span>
+  <span class="nav-item sidebar-header d-none d-lg-block mt-4">Report</span>
   {% if trip.report %}
     <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
       <i class="bi bi-card-text"></i> View trip report
@@ -75,7 +75,7 @@
 {% elif trip and user != object_owner %}
   {% comment %}Viewing a trip but not the owner of it{% endcomment %}
 
-  <span class="nav-item sidebar-header d-none d-md-block mt-4">{{ object_owner.username }}</span>
+  <span class="nav-item sidebar-header d-none d-lg-block mt-4">{{ object_owner.username }}</span>
   {% if can_view_profile %}
     <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
       <i class="bi bi-person-fill"></i> User profile

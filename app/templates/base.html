@@ -12,7 +12,7 @@
 
     <!-- Page display title -->
     <div class="bg-light border-top border-bottom border-2 py-4">
-      <div class="container {% block display_title_container_class %}d-flex flex-column flex-md-row justify-content-between{% endblock %}">
+      <div class="container {% block display_title_container_class %}d-flex flex-column flex-lg-row justify-content-between{% endblock %}">
         <h1 class="{% block display_title_class %}fs-3 fw-bold m-0 text-center{% endblock %}">{% block display_title %}caves.app{% endblock %}</h1>
 
         <div class="d-flex align-items-center justify-content-center">
@@ -32,7 +32,7 @@
 
     {% block mobile_menu_container %}
       <!-- Mobile top level menu -->
-      <div id="mobileMenuContainer" class="d-md-none border-bottom border-primary py-3">
+      <div id="mobileMenuContainer" class="d-lg-none border-bottom border-primary py-3">
         <div class="container">
           <nav id="mobileMenu" class="nav nav-light nav-pills d-flex flex-row justify-content-center">
             {% block mobile_menu %}{% endblock %}
@@ -45,7 +45,7 @@
     {% include "_messages.html" %}
   </header>
 
-  <main class="d-flex flex-column flex-fill my-3 my-md-4">
+  <main class="d-flex flex-column flex-fill my-3 my-lg-4">
     <div class="container flex-fill mb-4">
       {% block content %}{% endblock %}
     </div>

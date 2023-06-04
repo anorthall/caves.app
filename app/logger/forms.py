@@ -117,6 +117,8 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
         model = Trip
         fields = [
             "cave_name",
+            "cave_entrance",
+            "cave_exit",
             "cave_region",
             "cave_country",
             "cave_url",
@@ -150,6 +152,8 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
                 "Cave details",
                 Div(
                     Div("cave_name", css_class="col-12"),
+                    Div("cave_entrance", css_class="col-12 col-lg-6"),
+                    Div("cave_exit", css_class="col-12 col-lg-6"),
                     Div("cave_region", css_class="col-12 col-lg-6"),
                     Div("cave_country", css_class="col-12 col-lg-6"),
                     Div("cave_url", css_class="col-12"),

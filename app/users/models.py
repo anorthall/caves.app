@@ -143,6 +143,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "If left blank it will use your full name."
         ),
     )
+
+    # Avatar
     avatar = models.ImageField(
         upload_to=avatar_upload_path,
         verbose_name="profile picture",

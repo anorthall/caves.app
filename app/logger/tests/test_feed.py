@@ -83,7 +83,7 @@ class FeedIntegrationTests(TestCase):
         response = self.client.get(reverse("log:index"))
         self.assertEqual(response.status_code, 200)
 
-        first_cave_name = response.content.split(b'<h1 class="cave-name fs-4">')[
+        first_cave_name = response.content.split(b'<h1 class="cave-name fs-4 my-1">')[
             1
         ].split(b"</h1>")[0]
         self.assertEqual(first_cave_name, b"Test Cave 1")
@@ -110,7 +110,7 @@ class FeedIntegrationTests(TestCase):
         response = self.client.get(reverse("log:index"))
         self.assertEqual(response.status_code, 200)
 
-        first_cave_name = response.content.split(b'<h1 class="cave-name fs-4">')[
+        first_cave_name = response.content.split(b'<h1 class="cave-name fs-4 my-1">')[
             1
         ].split(b"</h1>")[0]
         self.assertEqual(first_cave_name, b"Test Cave 5")
