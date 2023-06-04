@@ -10,7 +10,7 @@
       <div>
         {% if trip.cave_entrance or trip.cave_exit %}
           <small class="text-primary">
-            <i class="bi bi-person-fill"></i> {% user trip.user %}, {{ trip.added|timesince }} ago
+            <i class="bi bi-person-fill"></i> {% user trip.user %} &middot; {{ trip.added|timesince }} ago
           </small>
         {% endif %}
         <h1 class="cave-name fs-4 my-1">{{ trip.cave_name }}</h1>
@@ -20,7 +20,7 @@
           </span>
         {% else %}
           <small class="text-primary">
-            <i class="bi bi-person-fill"></i> {% user trip.user %}, {{ trip.added|timesince }} ago
+            <i class="bi bi-person-fill"></i> {% user trip.user %} &middot; {{ trip.added|timesince }} ago
           </small>
         {% endif %}
       </div>
@@ -44,13 +44,13 @@
 
       <div class="d-flex flex-column">
         <small class="text-primary">
-          <i class="bi bi-person-fill"></i> {% user trip.user %}
+          <i class="bi bi-person-fill"></i> {% user trip.user %} &middot; {{ trip.added|timesince }} ago
         </small>
         <h1 class="cave-name fs-4 my-1">{{ trip.cave_name }}</h1>
         {% if trip.cave_entrance or trip.cave_exit %}
-          <span class="text-primary">
+          <small class="text-primary">
             via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
-          </span>
+          </small>
         {% else %}
           <small class="text-primary">
             {{ trip.cave_region }}{% if trip.cave_region and trip.cave_country %} &middot; {% endif %}{{ trip.cave_country }}

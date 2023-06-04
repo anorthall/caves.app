@@ -15,7 +15,10 @@
   </div>
 </div>
 
-<div class="d-flex d-lg-none mb-4 pb-2 border-bottom">
+<div class="d-flex flex-row d-lg-none mb-4 pb-2 border-bottom">
+  <div class="pe-3 me-3 border-end h-100 p-2">
+    {% include "users/_profile_picture_header.html" with photo_user=object_owner %}
+  </div>
   <div class="d-flex flex-column align-items-start justify-content-center">
     <small class="text-muted">
       {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
@@ -23,10 +26,9 @@
       {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
     </small>
     <h1 class="cave-name cave-name-lg">{{ trip.cave_name }}</h1>
-    {% if trip.cave_entrance or trip.cave_exit %}
-      <span class="text-primary">
-        via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
-      </span>
-    {% endif %}
+
+    <span class="text-primary">
+      {% if trip.cave_entrance or trip.cave_exit %}via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }} &middot; {% endif %}{{ trip.start|timesince }} ago
+    </span>
   </div>
 </div>
