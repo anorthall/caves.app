@@ -49,6 +49,10 @@ body {
   height: 120px;
 }
 
+#unregisteredNavbarContainer {
+  height: 60px;
+}
+
 @media (min-width: 992px) {
   .navbar-nav .nav-item {
     padding: 0 0.75rem;
