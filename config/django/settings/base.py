@@ -26,6 +26,10 @@ SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
 ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
 
 
+# Staff pages URL path
+STAFF_URL = os.environ.get("STAFF_URL", "staff/")
+
+
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-secret-key")
@@ -63,6 +67,7 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "logger.apps.LoggerConfig",
+    "staff.apps.StaffConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
