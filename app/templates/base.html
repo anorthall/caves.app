@@ -3,10 +3,72 @@
 {% block body %}
   <header>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2" id="navbarContainer">
       <div class="container">
-        {% include "_navbar_brand.html" %}
-        {% include "_navbar_items.html" %}
+        <a class="navbar-brand fs-3 fw-bolder" href="/">{% if debug %}devel.app{% else %}caves.app{% endif %}</a>
+        <ul class="navbar-nav w-100 d-none d-lg-flex mx-5 w-100 {% if user.is_authenticated %}justify-content-center{% else %}justify-content-end{% endif %}" id="mainNavbar">
+          {% include "_navbar_links.html" %}
+        </ul>
+
+        {% if user.is_authenticated %}
+          <div class="d-flex flex-row justify-content-center align-items-center order-0 ms-auto me-2">
+            {% if user.is_staff %}
+              <div class="me-3">
+                <a href="{% url 'admin:index' %}" class="nav-link text-white">
+                  <i class="bi bi-gear-fill"></i>
+                </a>
+              </div>
+            {% endif %}
+
+            <div>
+              <a href="{% url 'users:account_detail' %}" class="nav-link text-white">
+                {% if user.avatar %}
+                  <img src="{{ user.avatar_navbar.url }}" class="rounded-circle border border-dark" alt="User avatar">
+                {% else %}
+                  <i class="bi bi-person-circle"></i>
+                {% endif %}
+              </a>
+            </div>
+
+            <div class="ms-3" x-data="{ open: false }">
+              <a class="nav-link" href="#">
+                <span class="icon-badge-container text-white" x-on:click="open = !open">
+                  {% if notifications.unread %}
+                    <i class="bi bi-bell-fill icon-badge-icon"></i>
+                    <span class="icon-badge">{{ notifications.unread }}</span>
+                  {% else %}
+                    <i class="bi bi-bell"></i>
+                  {% endif %}
+                </span>
+              </a>
+
+              <div class="notification-dropdown shadow-lg border border-2 bg-light" x-show="open" x-transition>
+                <div class="item title my-0">
+                  Notifications
+                </div>
+
+                {% if notifications.list %}
+                  {% for notification in notifications.list %}
+                    <div data-href="{% url 'users:notification' pk=notification.pk %}" class="item text-primary">
+                      <span{% if not notification.read %} class="fw-bold"{% endif %}>{{ notification.message }}</span>
+                      <br />
+                      <small class="text-muted">
+                        {{ notification.added|timesince }} ago
+                      </small>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="item title fw-normal text-primary">
+                    <span>You do not have any notifications. Oh well!</span>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </ul>
+        {% endif %}
+      </div>
+      <div class="container d-flex flex-row justify-content-center d-lg-none" id="navbarMobileMenu">
+        {% include "_navbar_links.html" %}
       </div>
     </nav>
 
