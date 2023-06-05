@@ -19,7 +19,7 @@ psycopg2==2.9.6
 gunicorn==20.1.0
 Pillow==9.5.0
 factory-boy==3.2.1
-coverage==7.2.6
+coverage==7.2.7
 tblib==1.7.0
 pre-commit==3.3.2
 tzdata==2023.3
