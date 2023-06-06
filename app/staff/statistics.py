@@ -1,16 +1,16 @@
-from attrs import define, field
+from attrs import frozen
 from django.utils import timezone
 
 
-@define
+@frozen
 class Statistics:
-    model_name = field(type=str)
-    metric = field(type=str)
-    day = field(type=int)
-    week = field(type=int)
-    month = field(type=int)
-    year = field(type=int)
-    total = field(type=int)
+    model_name: str
+    metric: str
+    day: int
+    week: int
+    month: int
+    year: int
+    total: int
 
 
 def get_time_statistics(queryset, metric="New", lookup="added__gte"):
