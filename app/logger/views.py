@@ -153,8 +153,9 @@ class UserProfile(ListView):
         else:
             context["dist_format"] = User.METRIC
 
-        # TODO: Paginate via HTMX
-        # GET parameters for pagination and sorting at the same time
+        # This code provides the current GET parameters as a context variable
+        # so that when a pagination link is clicked, the GET parameters are
+        # preserved (for sorting).
         parameters = self.request.GET.copy()
         parameters = parameters.pop("page", True) and parameters.urlencode()
         context["get_parameters"] = parameters
@@ -401,81 +402,6 @@ class ReportDelete(LoginRequiredMixin, View):
             f"The trip report for the trip to {trip.cave_name} has been deleted.",
         )
         return redirect(trip.get_absolute_url())
-
-
-# TODO: Refactor comments
-# class AddComment(LoginRequiredMixin, View):
-#     def post(self, request):
-#         form = AddCommentForm(self.request, request.POST)
-#         if form.is_valid():
-#             form.save()
-#             if form.object.user != request.user:
-#                 form.object.user.notify(
-#                     f"{request.user} commented on your {form.type_str}",
-#                     form.object.get_absolute_url(),
-#                 )
-#             messages.success(
-#                 request,
-#                 "Your comment has been added.",
-#             )
-#         else:
-#             if form.errors.get("content", None):
-#                 for error in form.errors["content"]:
-#                     messages.error(request, error)
-#             else:
-#                 messages.error(
-#                     request,
-#                     "There was an error adding your comment. Please try again.",
-#                 )
-#         if hasattr(form, "object"):
-#             return redirect(form.object.get_absolute_url())
-#         else:
-#             return redirect("log:index")
-
-
-# class HTMXTripComment(LoginRequiredMixin, TemplateView):
-#     template_name = "logger/_comments.html"
-
-#     def get_context_data(self, *args, **kwargs):
-#         context = super().get_context_data(*args, **kwargs)
-#         trip = self.get_trip()
-
-#         initial = {"uuid": trip.uuid, "type": "trip"}
-#         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
-#         context["display_hide_button"] = True
-#         context["object"] = trip
-#         context["object_owner"] = trip.user
-#         return context
-
-#     def get_trip(self):
-#         trip = (
-#             Trip.objects.filter(pk=self.kwargs["pk"])
-#             .prefetch_related("comments", "comments__author")
-#             .first()
-#         )
-
-#         if not trip or not trip.is_viewable_by(self.request.user):
-#             raise PermissionDenied
-
-#         return trip
-
-
-# class DeleteComment(LoginRequiredMixin, View):
-#     def post(self, request, pk):
-#         comment = get_object_or_404(Comment, pk=pk)
-#         if (
-#             comment.author == request.user
-#             or comment.content_object.user == request.user  # noqa: W503
-#             or request.user.is_superuser  # noqa: W503
-#         ):
-#             comment.delete()
-#             messages.success(
-#                 request,
-#                 "The comment has been deleted.",
-#             )
-#         else:
-#             raise PermissionDenied
-#         return redirect(comment.content_object.get_absolute_url())
 
 
 class HTMXTripLike(LoginRequiredMixin, TemplateView):

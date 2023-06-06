@@ -287,13 +287,3 @@ class TripReportFactory(DjangoModelFactory):
             kwargs["user"] = kwargs["trip"].user
 
         return kwargs
-
-
-# TODO: Refactor comments
-# class CommentFactory(DjangoModelFactory):
-#     class Meta:
-#         model = Comment
-
-#     author = factory.Iterator(get_user_model().objects.filter(is_active=True))
-#     content_object = factory.Iterator(Trip.objects.filter(user__allow_comments=True))
-#     content = factory.Faker("text", max_nb_chars=400)

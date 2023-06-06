@@ -70,22 +70,4 @@
       {{ trip.likes_count }} like{{ trip.likes_count|pluralize }}
     {% endif %}
   </span>
-
-  {% comment %}
-    TODO: Refactor comments
-    {% if object_owner.allow_comments %}
-      <span class="float-end d-none d-md-block">
-        <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
-      </span>
-    {% endif %}
-  {% endcomment %}
-
-  {% comment %}
-    TODO: Refactor comments
-    {% with trip as object %}
-      <div class="mt-4"></div>
-      {% include "logger/_comments.html" %}
-    {% endwith %}
-  {% endcomment %}
-
 {% endblock %}

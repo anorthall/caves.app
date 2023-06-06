@@ -36,8 +36,3 @@ urlpatterns = [
     path("admin-tools/", views.AdminTools.as_view(), name="admin_tools"),
     path("charts/", include("logger.charts_urls")),
 ]
-
-# TODO: Refactor comments
-# path("comment/add/", views.AddComment.as_view(), name="comment_add"),
-# path("comment/delete/<int:pk>/", views.DeleteComment.as_view(), name="comment_delete"),  # noqa E501
-# path("comment/htmxtrip/<int:pk>/", views.HTMXTripComment.as_view(), name="htmx_trip_comment"),  # noqa E501

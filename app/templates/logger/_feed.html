@@ -16,19 +16,8 @@
           {% include "logger/_htmx_trip_like.html" %}
         {% endwith %}
       </span>
-
-      {% comment %}
-        TODO: Refactor comments
-        {% if trip.user.allow_comments %}
-          <span hx-get="{% url 'log:htmx_trip_comment' trip.uuid %}" hx-target="#comment{{ trip.uuid }}" class="float-end">
-            <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}<span class="d-none d-md-inline"> comment{{ trip.comments_count|pluralize }}</span>
-          </span>
-        {% endif %}
-      {% endcomment %}
     </div>
   </div>
-
-  {% comment %} TODO: Refactor comments  <div class="shadow mb-4" id="comment{{ trip.uuid }}"></div> {% endcomment %}
 {% endfor %}
 
 {% if trips.has_next %}

@@ -289,14 +289,6 @@ class TripModelUnitTests(TestCase):
         """Test the TripReport model __str__ function"""
         self.assertEqual(str(self.report), self.report.title)
 
-    # TODO: Refactor comments
-    # def test_comment_str(self):
-    #     """Test the Comment model __str__ function"""
-    #     c = Comment.objects.create(
-    #         author=self.user, content_object=self.trip, content="This is a comment"
-    #     )
-    #     self.assertEqual(str(c), f"Comment by {c.author} on {c.content_object}")
-
     def test_trip_validates_start_time_before_end_time(self):
         """Test the Trip model validates start time before end time"""
         self.trip.start = tz.now() + td(days=1)
