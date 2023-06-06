@@ -72,9 +72,13 @@ body {
   opacity: 0.8;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 400px) {
   #navbarMobileMenu .bi {
     display: none;
+  }
+
+  #navbarMobileMenu {
+    padding: 0.6rem 1rem 0 1rem !important;
   }
 }
 

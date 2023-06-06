@@ -15,7 +15,7 @@
             <div class="d-flex flex-row justify-content-center align-items-center order-0 ms-auto me-2">
               {% if user.is_staff %}
                 <div class="me-3">
-                  <a href="{% url 'admin:index' %}" class="nav-link text-white">
+                  <a href="{% url 'staff:index' %}" class="nav-link text-white">
                     <i class="bi bi-gear-fill"></i>
                   </a>
                 </div>
@@ -69,7 +69,7 @@
           {% endif %}
         </div>
         <div class="container d-flex flex-row justify-content-center d-lg-none" id="navbarMobileMenu">
-          <ul class="d-flex">
+          <ul class="d-flex flex-row justify-content-between w-100 px-0">
             {% include "_navbar_links.html" %}
           </ul>
         </div>

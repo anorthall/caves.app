@@ -1,0 +1,37 @@
+{% extends "base_staff.html" %}
+
+{% block main %}
+  <h3 class="subtitle">
+    Statistics
+  </h3>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Metric</th>
+          <th>Day</th>
+          <th>Week</th>
+          <th>Month</th>
+          <th>Year</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for stats in statistics %}
+          <tr>
+            <th>{{ stats.model_name|capfirst }}</th>
+            <td>{{ stats.metric }}</td>
+            <td>{{ stats.day }}</td>
+            <td>{{ stats.week }}</td>
+            <td>{{ stats.month }}</td>
+            <td>{{ stats.year }}</td>
+            <td>{{ stats.total }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

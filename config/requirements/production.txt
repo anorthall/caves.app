@@ -1,4 +1,4 @@
-Django==4.2.1
+Django==4.2.2
 django-timezone-field==5.0
 django-widget-tweaks==1.4.12
 django-countries==7.5.1
@@ -12,6 +12,7 @@ django-htmx==1.14.0
 django-imagekit==4.1.0
 crispy-bootstrap5==0.7
 Pillow==9.5.0
+attrs==23.1.0
 itsdangerous==2.1.2
 humanize==4.6.0
 psycopg2==2.9.6
