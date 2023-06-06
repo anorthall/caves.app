@@ -135,3 +135,6 @@ dmypy.json
 # Docker
 data/
 config/docker/production/production.env
+
+# Local production scripts
+bin/
