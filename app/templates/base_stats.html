@@ -1,0 +1,12 @@
+{% extends "base_sidebar.html" %}
+{% load static %}
+
+{% block stylesheets %}
+  <link href="{% static 'css/stats.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Statistics{% endblock %}
+{% block display_title %}Statistics{% endblock %}
+
+{% block sidebar %}{% include "stats/_sidebar_stats.html" %}{% endblock %}
+{% block mobile_menu %}{% include "stats/_sidebar_stats.html" %}{% endblock %}
