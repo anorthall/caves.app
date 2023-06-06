@@ -113,7 +113,7 @@
 
         <tbody>
           {% for trip in trips %}
-            <tr data-href="{% url 'log:trip_detail' pk=trip.pk %}">
+            <tr data-href="{{ trip.get_absolute_url }}">
               <td>{{ trip.start|date:"j M y" }}</td>
 
               <td>
@@ -140,10 +140,10 @@
 
               <td class="text-end">
                 {% if trip.report %}
-                  <a class="text-warning" href="{% url 'log:report_detail' pk=trip.report.pk %}"><i class="bi bi-card-text"></i></a>&nbsp;
+                  <a class="text-warning" href="{{ trip.report.get_absolute_url }}"><i class="bi bi-card-text"></i></a>&nbsp;
                 {% endif %}
                 {% if user == profile_user %}
-                  <a href="{% url 'log:trip_update' pk=trip.pk %}"><i class="bi bi-pencil"></i></a>&nbsp;
+                  <a href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>&nbsp;
                 {% endif %}
               </td>
             </tr>

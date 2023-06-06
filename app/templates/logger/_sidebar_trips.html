@@ -30,11 +30,11 @@
 {% if trip and user == object_owner %}
   {% comment %} Viewing a trip as the owner of it {% endcomment %}
   <span class="nav-item sidebar-header d-none d-lg-block mt-4">This trip</span>
-  <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+  <a class="nav-link {% active_link 'log:trip_detail' uuid=trip.uuid %}" href="{{ trip.get_absolute_url }}">
     <i class="bi bi-info-circle"></i> View trip
   </a>
 
-  <a class="nav-link {% active_link 'log:trip_update' pk=trip.pk %}" href="{% url 'log:trip_update' pk=trip.pk %}">
+  <a class="nav-link {% active_link 'log:trip_update' uuid=trip.uuid %}" href="{% url 'log:trip_update' trip.uuid %}">
     <i class="bi bi-pencil"></i> Edit trip
   </a>
 
@@ -44,11 +44,11 @@
 
   <span class="nav-item sidebar-header d-none d-lg-block mt-4">Report</span>
   {% if trip.report %}
-    <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+    <a class="nav-link {% active_link 'log:report_detail' uuid=trip.uuid %}" href="{{ trip.report.get_absolute_url }}">
       <i class="bi bi-card-text"></i> View trip report
     </a>
 
-    <a class="nav-link {% active_link 'log:report_update' pk=trip.report.pk %}" href="{% url 'log:report_update' pk=trip.report.pk %}">
+    <a class="nav-link {% active_link 'log:report_update' uuid=trip.uuid %}" href="{% url 'log:report_update' trip.uuid %}">
       <i class="bi bi-pencil"></i> Edit trip report
     </a>
 
@@ -56,7 +56,7 @@
       <i class="bi bi-x-lg"></i> Delete trip report
     </a>
   {% else %}
-    <a class="nav-link {% active_link 'log:report_create' pk=trip.pk %}" href="{% url 'log:report_create' pk=trip.pk %}">
+    <a class="nav-link {% active_link 'log:report_create' uuid=trip.uuid %}" href="{% url 'log:report_create' trip.uuid %}">
       <i class="bi bi-card-text"></i> Add trip report
     </a>
   {% endif %}
@@ -71,12 +71,12 @@
     </a>
   {% endif %}
 
-  <a class="nav-link {% active_link 'log:trip_detail' pk=trip.pk %}" href="{% url 'log:trip_detail' pk=trip.pk %}">
+  <a class="nav-link {% active_link 'log:trip_detail' uuid=trip.uuid %}" href="{{ trip.get_absolute_url }}">
     <i class="bi bi-card-text"></i> View trip
   </a>
 
   {% if can_view_report %}
-    <a class="nav-link {% active_link 'log:report_detail' pk=trip.report.pk %}" href="{% url 'log:report_detail' pk=trip.report.pk %}">
+    <a class="nav-link {% active_link 'log:report_detail' uuid=trip.uuid %}" href="{{ trip.report.get_absolute_url }}">
       <i class="bi bi-card-text"></i> View trip report
     </a>
   {% endif %}
@@ -124,7 +124,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <form action="{% url 'log:trip_delete' pk=trip.pk %}" method="post">
+            <form action="{% url 'log:trip_delete' trip.uuid %}" method="post">
               {% csrf_token %}
               <button type="submit" class="btn btn-danger">Delete trip</button>
             </form>
@@ -147,7 +147,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <form action="{% url 'log:report_delete' pk=trip.report.pk %}" method="post">
+              <form action="{% url 'log:report_delete' trip.uuid %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Delete trip report</button>
               </form>

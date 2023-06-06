@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Exists, OuterRef
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -24,7 +25,7 @@ from users.models import Notification
 
 from . import feed, services
 from .forms import AllUserNotificationForm, TripForm, TripReportForm, TripSearchForm
-from .mixins import TripContextMixin, ViewableObjectDetailView
+from .mixins import ReportObjectMixin, TripContextMixin, ViewableObjectDetailView
 from .models import Trip, TripReport
 
 User = get_user_model()
@@ -170,6 +171,8 @@ class UserProfile(ListView):
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Trip
     form_class = TripForm
+    slug_field = "uuid"
+    slug_url_kwarg = "uuid"
     extra_context = {"title": "Edit trip"}
     template_name = "logger/crispy_form.html"
     success_message = "The trip has been updated."
@@ -186,6 +189,8 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 class TripDetail(TripContextMixin, ViewableObjectDetailView):
     model = Trip
     template_name = "logger/trip_detail.html"
+    slug_field = "uuid"
+    slug_url_kwarg = "uuid"
 
     def get_queryset(self):
         qs = (
@@ -260,8 +265,8 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 
 class TripDelete(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        trip = get_object_or_404(Trip, pk=pk)
+    def post(self, request, uuid):
+        trip = get_object_or_404(Trip, uuid=uuid)
         if not trip.user == request.user:
             raise PermissionDenied
         trip.delete()
@@ -331,7 +336,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return context
 
     def get_trip(self):
-        trip = get_object_or_404(Trip, pk=self.kwargs["pk"])
+        trip = get_object_or_404(Trip, uuid=self.kwargs["uuid"])
         if not trip.user == self.request.user:
             raise PermissionDenied
         return trip
@@ -348,34 +353,22 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return kwargs
 
 
-class ReportDetail(TripContextMixin, ViewableObjectDetailView):
+class ReportDetail(ReportObjectMixin, TripContextMixin, ViewableObjectDetailView):
     model = TripReport
     template_name = "logger/trip_report_detail.html"
 
-    def get_queryset(self):
-        qs = (
-            TripReport.objects.all()
-            .select_related("user", "trip")
-            .prefetch_related("user__friends")
-            .annotate(
-                likes_count=Count("likes", distinct=True),
-            )
-        )
-        return qs
 
-
-class ReportUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class ReportUpdate(
+    LoginRequiredMixin, ReportObjectMixin, SuccessMessageMixin, UpdateView
+):
     model = TripReport
     form_class = TripReportForm
     template_name = "logger/trip_report_update.html"
     success_message = "The trip report has been updated."
 
-    def get_queryset(self):
-        return TripReport.objects.filter(user=self.request.user)
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["trip"] = self.get_object().trip
+        context["trip"] = self.trip
         context["object_owner"] = self.get_object().user
         return context
 
@@ -384,10 +377,20 @@ class ReportUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         kwargs["user"] = self.request.user
         return kwargs
 
+    def get_object(self, *args, **kwargs):
+        obj = super().get_object(*args, **kwargs)
+        if obj.user == self.request.user:
+            return obj
+        raise PermissionDenied
+
 
 class ReportDelete(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        report = get_object_or_404(TripReport, pk=pk)
+    def post(self, request, uuid):
+        try:
+            report = get_object_or_404(Trip, uuid=uuid).report
+        except TripReport.DoesNotExist:
+            raise Http404
+
         if not report.user == request.user:
             raise PermissionDenied
 
@@ -397,7 +400,7 @@ class ReportDelete(LoginRequiredMixin, View):
             request,
             f"The trip report for the trip to {trip.cave_name} has been deleted.",
         )
-        return redirect("log:trip_detail", pk=trip.pk)
+        return redirect(trip.get_absolute_url())
 
 
 # TODO: Refactor comments
@@ -437,7 +440,7 @@ class ReportDelete(LoginRequiredMixin, View):
 #         context = super().get_context_data(*args, **kwargs)
 #         trip = self.get_trip()
 
-#         initial = {"pk": trip.pk, "type": "trip"}
+#         initial = {"uuid": trip.uuid, "type": "trip"}
 #         context["add_comment_form"] = AddCommentForm(self.request, initial=initial)
 #         context["display_hide_button"] = True
 #         context["object"] = trip
@@ -480,8 +483,8 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
     template_name = "logger/_htmx_trip_like.html"
 
-    def post(self, request, pk):
-        trip = self.get_trip(request, pk)
+    def post(self, request, uuid):
+        trip = self.get_trip(request, uuid)
 
         if trip.user_liked:
             trip.likes.remove(request.user)
@@ -500,9 +503,9 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)
 
-    def get_trip(self, request, pk):
+    def get_trip(self, request, uuid):
         trip = (
-            Trip.objects.filter(pk=pk)
+            Trip.objects.filter(uuid=uuid)
             .annotate(
                 user_liked=Exists(
                     User.objects.filter(

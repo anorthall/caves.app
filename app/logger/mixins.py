@@ -1,4 +1,6 @@
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
 from .models import Trip, TripReport
@@ -57,3 +59,16 @@ class ViewableObjectDetailView(DetailView):
         """Do not fetch the object here, as it was fetched in dispatch()"""
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+
+class ReportObjectMixin:
+    """Mixin to get report objects from a Trip UUID"""
+
+    def get_object(self, *args, **kwargs):
+        self.trip = get_object_or_404(Trip, uuid=self.kwargs.get("uuid"))
+
+        if hasattr(self.trip, "report"):
+            self.object = self.trip.report
+            return self.object
+        else:
+            raise Http404("No report found for this trip")

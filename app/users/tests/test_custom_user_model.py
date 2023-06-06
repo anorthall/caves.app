@@ -500,7 +500,7 @@ class UserIntegrationTestCase(TestCase):
         )
         trip.save()
 
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "3281ft")
 
@@ -512,7 +512,7 @@ class UserIntegrationTestCase(TestCase):
         self.user.units = self.user.METRIC
         self.user.save()
 
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "1000m")
 

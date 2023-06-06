@@ -67,7 +67,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
         # Test edit links appear
         for trip in self.user.trips.order_by("-start")[:50]:
-            self.assertContains(response, reverse("log:trip_update", args=[trip.pk]))
+            self.assertContains(response, reverse("log:trip_update", args=[trip.uuid]))
 
         # Test the next page
         response = self.client.get(
@@ -174,61 +174,61 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip.save()
 
         self.client.force_login(self.user2)
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
 
         trip.privacy = Trip.FRIENDS
         trip.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
 
         trip.privacy = Trip.PRIVATE
         trip.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
         trip.privacy = Trip.DEFAULT
         trip.save()
         self.user.privacy = User.PRIVATE
         self.user.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
         self.user.privacy = User.PUBLIC
         self.user.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         self.user.privacy = User.FRIENDS
         self.user.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertContains(response, trip.cave_name)
 
         self.user.privacy = User.PUBLIC
         self.user.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertContains(response, trip.cave_name)
 
         self.client.logout()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, trip.cave_name)
 
         self.user.privacy = User.FRIENDS
         self.user.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
         self.user.privacy = User.PRIVATE
         self.user.save()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
     def test_user_profile_page_with_various_privacy_settings(self):
@@ -281,15 +281,15 @@ class SocialFunctionalityIntegrationTests(TestCase):
         """Test that the sidebar displays properly when viewing another user's trip"""
         self.client.force_login(self.user2)
         trip = Trip.objects.filter(user=self.user).first()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertContains(response, trip.cave_name)
         self.assertContains(response, "User profile")
         self.assertContains(response, "View trip")
         self.assertContains(response, "Add as friend")
 
-        self.assertNotContains(response, reverse("log:trip_update", args=[trip.pk]))
-        self.assertNotContains(response, reverse("log:trip_delete", args=[trip.pk]))
-        self.assertNotContains(response, reverse("log:report_create", args=[trip.pk]))
+        self.assertNotContains(response, reverse("log:trip_update", args=[trip.uuid]))
+        self.assertNotContains(response, reverse("log:trip_delete", args=[trip.uuid]))
+        self.assertNotContains(response, reverse("log:report_create", args=[trip.uuid]))
 
     def test_add_as_friend_link_does_not_appear_when_disabled(self):
         """Test that the add as friend link does not appear when disabled"""
@@ -298,7 +298,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
         self.client.force_login(self.user2)
         trip = Trip.objects.filter(user=self.user).first()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertNotContains(response, "Add as friend")
         self.assertNotContains(response, reverse("users:friend_add"))
 
@@ -309,7 +309,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
         self.client.force_login(self.user2)
         trip = Trip.objects.filter(user=self.user).first()
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+        response = self.client.get(trip.get_absolute_url())
         self.assertNotContains(response, "Add as friend")
         self.assertNotContains(response, reverse("users:friend_add"))
 
@@ -322,7 +322,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         content_object=trip,
     #         content="Test comment",
     #     )
-    #     response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+    #     response = self.client.get(trip.get_absolute_url())
     #     self.assertContains(response, comment.content)
 
     # def test_comments_do_not_appear_on_trip_detail_page_when_disabled(self):
@@ -336,7 +336,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         content_object=trip,
     #         content="Test comment",
     #     )
-    #     response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+    #     response = self.client.get(trip.get_absolute_url())
     #     self.assertNotContains(response, comment.content)
 
     # def test_comments_appear_on_trip_report_page(self):
@@ -353,7 +353,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         content_object=report,
     #         content="Test comment",
     #     )
-    #     response = self.client.get(reverse("log:report_detail", args=[report.pk]))
+    #     response = self.client.get(reverse(self.report.get_absolute_url()))
     #     self.assertContains(response, comment.content)
 
     # def test_comments_do_not_appear_on_trip_report_page_when_disabled(self):
@@ -373,7 +373,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         content_object=report,
     #         content="Test comment",
     #     )
-    #     response = self.client.get(reverse("log:report_detail", args=[report.pk]))
+    #     response = self.client.get(reverse(self.report.get_absolute_url()))
     #     self.assertNotContains(response, comment.content)
 
     # def test_user_profile_is_linked_on_comments(self):
@@ -384,7 +384,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         content_object=trip,
     #         content="Test comment",
     #     )
-    #     response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+    #     response = self.client.get(trip.get_absolute_url())
     #     self.assertContains(response, self.user.name)
     #     self.assertContains(response, comment.content)
     #     self.assertContains(response, reverse("log:user", args=[self.user.username]))
@@ -403,7 +403,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         content_object=trip,
     #         content="Test comment",
     #     )
-    #     response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
+    #     response = self.client.get(trip.get_absolute_url())
     #     self.assertContains(response, self.user.name)
     #     self.assertContains(response, comment.content)
     #   self.assertNotContains(response, reverse("log:user", args=[self.user.username]))
@@ -418,8 +418,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
             content="Test report content",
             pub_date=tz.now().date(),
         )
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
-        self.assertContains(response, reverse("log:report_detail", args=[report.pk]))
+        response = self.client.get(trip.get_absolute_url())
+        self.assertContains(response, report.get_absolute_url())
 
     def test_trip_report_link_does_not_appear_in_sidebar_when_private(self):
         """Test that the trip report link does not appear in the sidebar when private"""
@@ -433,8 +433,8 @@ class SocialFunctionalityIntegrationTests(TestCase):
             pub_date=tz.now().date(),
             privacy=TripReport.PRIVATE,
         )
-        response = self.client.get(reverse("log:trip_detail", args=[trip.pk]))
-        self.assertNotContains(response, reverse("log:report_detail", args=[report.pk]))
+        response = self.client.get(trip.get_absolute_url())
+        self.assertNotContains(response, report.get_absolute_url())
 
     # TODO: Refactor comments
     # def test_add_comment_via_post_request(self):
@@ -447,7 +447,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "Test comment",
     #             "type": "trip",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #         follow=True,
     #     )
@@ -468,7 +468,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "Test comment",
     #             "type": "trip",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #     )
     #     self.assertEqual(Comment.objects.count(), 0)
@@ -481,7 +481,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "Test comment",
     #             "type": "trip",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #     )
     #     self.assertEqual(Comment.objects.count(), 0)
@@ -529,7 +529,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip.save()
 
         response = self.client.post(
-            reverse("log:trip_like_htmx_view", args=[trip.pk]),
+            reverse("log:trip_like_htmx_view", args=[trip.uuid]),
         )
         self.assertEqual(response.status_code, 403)
 
@@ -543,7 +543,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #     trip.save()
 
     #     response = self.client.get(
-    #         reverse("log:htmx_trip_comment", args=[trip.pk]),
+    #         reverse("log:htmx_trip_comment", args=[trip.uuid]),
     #     )
     #     self.assertEqual(response.status_code, 403)
 
@@ -557,7 +557,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "Test comment",
     #             "type": "trip",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #         follow=True,
     #     )
@@ -599,7 +599,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "Test comment",
     #             "type": "tripreport",
-    #             "pk": report.pk,
+    #             "uuid": report.trip.uuid,
     #         },
     #         follow=True,
     #     )
@@ -617,7 +617,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "Test comment",
     #             "type": "invalid",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #     )
     #     self.assertEqual(Comment.objects.count(), 0)
@@ -633,7 +633,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "",
     #             "type": "trip",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #         follow=True,
     #     )
@@ -650,7 +650,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "x" * 4000,
     #             "type": "trip",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #     )
     #     self.assertEqual(Comment.objects.count(), 0)
@@ -681,7 +681,7 @@ class SocialFunctionalityIntegrationTests(TestCase):
     #         {
     #             "content": "Test comment",
     #             "type": "trip",
-    #             "pk": trip.pk,
+    #             "uuid": trip.uuid,
     #         },
     #         follow=True,
     #     )
@@ -701,51 +701,37 @@ class SocialFunctionalityIntegrationTests(TestCase):
 
         report.privacy = TripReport.PRIVATE
         report.save()
-        response = self.client.get(
-            reverse("log:report_detail", args=[report.pk]),
-        )
+        response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
         report.privacy = TripReport.FRIENDS
         report.save()
-        response = self.client.get(
-            reverse("log:report_detail", args=[report.pk]),
-        )
+        response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
-        response = self.client.get(
-            reverse("log:report_detail", args=[report.pk]),
-        )
+        response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         report.privacy = TripReport.PUBLIC
         report.save()
-        response = self.client.get(
-            reverse("log:report_detail", args=[report.pk]),
-        )
+        response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         report.privacy = TripReport.DEFAULT
         report.save()
         trip.privacy = Trip.FRIENDS
         trip.save()
-        response = self.client.get(
-            reverse("log:report_detail", args=[report.pk]),
-        )
+        response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         trip.privacy = Trip.PRIVATE
         trip.save()
-        response = self.client.get(
-            reverse("log:report_detail", args=[report.pk]),
-        )
+        response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 403)
 
         trip.privacy = Trip.PUBLIC
         trip.save()
-        response = self.client.get(
-            reverse("log:report_detail", args=[report.pk]),
-        )
+        response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 200)
