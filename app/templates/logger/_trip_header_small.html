@@ -1,5 +1,5 @@
 {% load users_tags %}
-<div data-href="{% url "log:trip_detail" trip.uuid %}"
+<div data-href="{{ trip.get_absolute_url }}"
      class="d-none d-lg-flex flex-row align-items-center justify-content-between">
   <div class="d-flex flex-column align-items-start justify-content-center">
     <div class="d-flex flex-row align-items-center">
@@ -35,7 +35,7 @@
   </div>
 </div>
 
-<div data-href="{% url "log:trip_detail" trip.uuid %}" class="d-flex d-lg-none">
+<div data-href="{{ trip.get_absolute_url }}" class="d-flex d-lg-none">
   <div class="d-flex flex-row align-items-start justify-content-center">
     <div class="d-flex align-items-center">
       <div class="pe-3 me-3 border-end">
