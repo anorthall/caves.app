@@ -246,14 +246,6 @@ class TestAllPagesLoad(TestCase):
         response = self.client.get(reverse("log:export"))
         self.assertEqual(response.status_code, 200)
 
-    def test_admin_tools_page_loads(self):
-        """Test that the admin tools page loads"""
-        self.user.is_superuser = True
-        self.user.save()
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("log:admin_tools"))
-        self.assertEqual(response.status_code, 200)
-
     def test_trip_report_detail_page_loads(self):
         """Test that the trip report detail page loads"""
         self.client.force_login(self.user)

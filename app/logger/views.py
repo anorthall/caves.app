@@ -1,9 +1,8 @@
 import logger.csv
-from core.models import News
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Exists, OuterRef
@@ -21,10 +20,9 @@ from django.views.generic import (
     View,
 )
 from logger import statistics
-from users.models import Notification
 
 from . import feed, services
-from .forms import AllUserNotificationForm, TripForm, TripReportForm, TripSearchForm
+from .forms import TripForm, TripReportForm, TripSearchForm
 from .mixins import ReportObjectMixin, TripContextMixin, ViewableObjectDetailView
 from .models import Trip, TripReport
 
@@ -44,7 +42,6 @@ class Index(TemplateView):
     def get_authenticated_context(self, **kwargs):
         """Return the trip feed for a logged in user"""
         context = super().get_context_data(**kwargs)
-        context["news"] = self.get_news_context()
         context["ordering"] = self.request.user.feed_ordering
         context["trips"] = feed.get_trips_context(self.request, context["ordering"])
         context["liked_str"] = feed.get_liked_str_context(
@@ -58,43 +55,6 @@ class Index(TemplateView):
             self.template_name = "core/new_user.html"
 
         return context
-
-    def get_news_context(self):
-        return (
-            News.objects.filter(is_published=True, posted_at__lte=timezone.now())
-            .prefetch_related("author")
-            .order_by("-posted_at")[:3]
-        )
-
-
-class HTMXFeed(LoginRequiredMixin, TemplateView):
-    """Paginate the trip feed by rendering more trips via HTMX"""
-
-    template_name = "logger/_feed.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["ordering"] = self.request.user.feed_ordering
-        context["trips"] = feed.get_trips_context(
-            request=self.request,
-            ordering=context["ordering"],
-            page=self.request.GET.get("page", 1),
-        )
-        context["liked_str"] = feed.get_liked_str_context(
-            self.request, context["trips"]
-        )
-        return context
-
-
-class SetFeedOrdering(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        """Get the ordering from GET params and save it to the user model
-        if it is valid. Return the ordering to be used in the template."""
-        allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
-        if self.request.POST.get("sort") in allowed_ordering:
-            self.request.user.feed_ordering = self.request.POST.get("sort")
-            self.request.user.save()
-        return redirect(reverse("log:index"))
 
 
 class UserProfile(ListView):
@@ -167,6 +127,13 @@ class UserProfile(ListView):
             return self.profile_user.page_title
         else:
             return f"{self.profile_user.name}'s trips"
+
+
+class TripsRedirect(LoginRequiredMixin, RedirectView):
+    """Redirect from /trips/ to /u/username"""
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse("log:user", kwargs={"username": self.request.user.username})
 
 
 class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -278,38 +245,6 @@ class TripDelete(LoginRequiredMixin, View):
         return redirect("log:user", username=request.user.username)
 
 
-class Search(LoginRequiredMixin, FormView):
-    template_name = "logger/search.html"
-    form_class = TripSearchForm
-
-
-class SearchResults(LoginRequiredMixin, View):
-    def get(self, request):
-        form = TripSearchForm(request.GET)
-        if form.is_valid():
-            trips = services.trip_search(
-                terms=form.cleaned_data["terms"],
-                for_user=request.user,
-                search_user=form.cleaned_data.get("user", None),
-            )
-            context = {
-                "trips": trips,
-                "form": form,
-            }
-            if len(trips) == 0:
-                messages.error(
-                    request, "No trips were found with the provided search terms."
-                )
-
-            return render(request, "logger/search.html", context)
-        else:
-            context = {
-                "form": form,
-                "no_form_error_alert": True,
-            }
-            return render(request, "logger/search.html", context)
-
-
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = TripReport
     form_class = TripReportForm
@@ -404,6 +339,49 @@ class ReportDelete(LoginRequiredMixin, View):
         return redirect(trip.get_absolute_url())
 
 
+class SetFeedOrdering(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        """Get the ordering from GET params and save it to the user model
+        if it is valid. Return the ordering to be used in the template."""
+        allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
+        if self.request.POST.get("sort") in allowed_ordering:
+            self.request.user.feed_ordering = self.request.POST.get("sort")
+            self.request.user.save()
+        return redirect(reverse("log:index"))
+
+
+class Search(LoginRequiredMixin, FormView):
+    template_name = "logger/search.html"
+    form_class = TripSearchForm
+
+
+class SearchResults(LoginRequiredMixin, View):
+    def get(self, request):
+        form = TripSearchForm(request.GET)
+        if form.is_valid():
+            trips = services.trip_search(
+                terms=form.cleaned_data["terms"],
+                for_user=request.user,
+                search_user=form.cleaned_data.get("user", None),
+            )
+            context = {
+                "trips": trips,
+                "form": form,
+            }
+            if len(trips) == 0:
+                messages.error(
+                    request, "No trips were found with the provided search terms."
+                )
+
+            return render(request, "logger/search.html", context)
+        else:
+            context = {
+                "form": form,
+                "no_form_error_alert": True,
+            }
+            return render(request, "logger/search.html", context)
+
+
 class HTMXTripLike(LoginRequiredMixin, TemplateView):
     """HTMX view for toggling a trip like"""
 
@@ -442,10 +420,32 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
             .first()
         )
 
-        if not trip or not trip.is_viewable_by(request.user):
-            raise PermissionDenied
+        if not trip:
+            raise Http404
 
-        return trip
+        if trip.is_viewable_by(request.user):
+            return trip
+
+        raise PermissionDenied
+
+
+class HTMXTripFeed(LoginRequiredMixin, TemplateView):
+    """Render more trips to be inserted into the trip feed via HTMX"""
+
+    template_name = "logger/_feed.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ordering"] = self.request.user.feed_ordering
+        context["trips"] = feed.get_trips_context(
+            request=self.request,
+            ordering=context["ordering"],
+            page=self.request.GET.get("page", 1),
+        )
+        context["liked_str"] = feed.get_liked_str_context(
+            self.request, context["trips"]
+        )
+        return context
 
 
 class CSVExport(LoginRequiredMixin, View):
@@ -530,55 +530,3 @@ def user_statistics(request):
         )[0:10],
     }
     return render(request, "logger/statistics.html", context)
-
-
-class AdminTools(LoginRequiredMixin, UserPassesTestMixin, View):
-    def test_func(self):
-        return self.request.user.is_superuser
-
-    def get(self, request, *args, **kwargs):
-        login_user_list = User.objects.filter(is_active=True).values_list(
-            "email", flat=True
-        )
-        context = {
-            "login_user_list": login_user_list,
-            "notify_form": AllUserNotificationForm(),
-        }
-        return render(request, "logger/admin_tools.html", context)
-
-    def post(self, request, *args, **kwargs):
-        if request.POST.get("login_as", False):
-            self.process_login_as_form(request)
-        elif request.POST.get("notify", False):
-            self.process_notify_form(request)
-        return self.get(request, *args, **kwargs)
-
-    def process_login_as_form(self, request):
-        try:
-            user = User.objects.get(email=request.POST["login_as"])
-            if user.is_superuser:
-                messages.error(request, "Cannot login as a superuser via this page.")
-            elif user:
-                messages.success(request, f"Now logged in as {user.email}.")
-                login(request, user)
-                return redirect("log:index")
-        except User.DoesNotExist:
-            messages.error(request, "User was not found.")
-
-    def process_notify_form(self, request):
-        form = AllUserNotificationForm(request.POST)
-        if form.is_valid():
-            for user in User.objects.all():
-                Notification.objects.create(
-                    user=user,
-                    message=form.cleaned_data["message"],
-                    url=form.cleaned_data["url"],
-                )
-            messages.success(request, "Notifications sent.")
-
-
-class TripsRedirect(LoginRequiredMixin, RedirectView):
-    """Redirect from /trips/ to /u/username"""
-
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse("log:user", kwargs={"username": self.request.user.username})

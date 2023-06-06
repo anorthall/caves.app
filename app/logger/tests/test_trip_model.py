@@ -416,12 +416,6 @@ class TripIntegrationTests(TestCase):
         logger = logging.getLogger("django.request")
         logger.setLevel(self.previous_level)
 
-    def test_non_superuser_cannot_access_admin_tools(self):
-        """Test that a non-superuser cannot access the admin tools"""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("log:admin_tools"))
-        self.assertEqual(response.status_code, 403)
-
     def test_trip_list_view(self):
         """Test the trip list view"""
         self.client.force_login(self.user)

@@ -2,6 +2,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
+from logger.templatetags.logger_tags import distformat
 
 from .models import Trip, TripReport
 
@@ -72,3 +73,35 @@ class ReportObjectMixin:
             return self.object
         else:
             raise Http404("No report found for this trip")
+
+
+class DistanceUnitFormMixin:
+    def __init__(self, *args, **kwargs):
+        """
+        Format all distance units using distformat
+
+        There is a bug(?) in django-distance-field that causes distances
+        to occasionally be rendered as scientific notation. Formatting using
+        distformat fixes this.
+        """
+
+        instance = kwargs.get("instance", None)
+        if not instance:
+            return super().__init__(*args, **kwargs)
+
+        distance_fields = [
+            "horizontal_dist",
+            "vert_dist_down",
+            "vert_dist_up",
+            "surveyed_dist",
+            "resurveyed_dist",
+            "aid_dist",
+        ]
+
+        units = instance.user.units
+        initial = {}
+        for field in distance_fields:
+            initial[field] = distformat(getattr(instance, field), units)
+
+        kwargs.update({"initial": initial})
+        super().__init__(*args, **kwargs)

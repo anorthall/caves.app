@@ -8,44 +8,11 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import timezone
-from logger.templatetags.logger_tags import distformat
-from users.models import Notification
 
+from .mixins import DistanceUnitFormMixin
 from .models import Trip, TripReport
 
 User = get_user_model()
-
-
-class DistanceUnitFormMixin:
-    def __init__(self, *args, **kwargs):
-        """
-        Format all distance units using distformat
-
-        There is a bug(?) in django-distance-field that causes distances
-        to occasionally be rendered as scientific notation. Formatting using
-        distformat fixes this.
-        """
-
-        instance = kwargs.get("instance", None)
-        if not instance:
-            return super().__init__(*args, **kwargs)
-
-        distance_fields = [
-            "horizontal_dist",
-            "vert_dist_down",
-            "vert_dist_up",
-            "surveyed_dist",
-            "resurveyed_dist",
-            "aid_dist",
-        ]
-
-        units = instance.user.units
-        initial = {}
-        for field in distance_fields:
-            initial[field] = distformat(getattr(instance, field), units)
-
-        kwargs.update({"initial": initial})
-        super().__init__(*args, **kwargs)
 
 
 class TripReportForm(forms.ModelForm):
@@ -267,18 +234,6 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
                     "end",
                     "The trip is unrealistically long in duration (over 60 days).",
                 )
-
-
-class AllUserNotificationForm(forms.ModelForm):
-    class Meta:
-        model = Notification
-        fields = ["message", "url"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = "post"
-        self.helper.add_input(Submit("notify", "Send Notification"))
 
 
 class TripSearchForm(forms.Form):
