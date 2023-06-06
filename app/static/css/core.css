@@ -347,12 +347,12 @@ body {
 }
 
 .profile-photo-header {
-  height: 80px;
+  height: 65px;
   max-width: 100vw;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
   .profile-photo-header {
-    height: 100px;
+    height: 80px;
   }
 }

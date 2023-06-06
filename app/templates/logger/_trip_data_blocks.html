@@ -31,6 +31,12 @@
       {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
     </div>
 
+    <!-- Type -->
+    <div class="col">
+      <small class="text-muted trip-field">Trip type</small><br />
+      {{ trip.type }}
+    </div>
+
     {% if trip.clubs %}
     <!-- Clubs -->
       <div class="col-6 col-xl-4">

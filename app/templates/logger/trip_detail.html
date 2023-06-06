@@ -1,21 +1,64 @@
 {% extends "base_trips.html" %}
 {% load logger_tags %}
 {% load users_tags %}
+{% load humanize %}
 
 {% block title %}Trip to {{ trip.cave_name }}{% endblock %}
 {% block display_title %}Trip to {{ trip.cave_name }}{% endblock %}
-{% block display_title_right %}@{{ trip.user.username }}{% endblock %}
+{% block display_title_right %}
+  <div class="d-flex flex-column align-items-center mt-2 mt-lg-0">
+    <div class="text-primary">{{ trip.user.name }}</div>
+    <div>@{{ trip.user.username }}</div>
+  </div>
+{% endblock %}
 
 {% block main %}
-  <div class="mb-2">
-    {% include "logger/_trip_header.html" %}
+  <div class="d-none d-lg-flex flex-row align-items-center justify-content-between border-bottom pb-2 mb-3">
+    <div class="d-flex flex-column align-items-start justify-content-center">
+      <div>
+        <h1 class="cave-name fs-3">{{ trip.cave_name }}</h1>
+        {% if trip.cave_entrance or trip.cave_exit %}
+          <span class="text-primary">
+            via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
+          </span>
+        {% else %}
+          <small class="text-primary">
+            <i class="bi bi-person-fill"></i> {% user trip.user %} &middot; {{ trip.added|naturaltime }}
+          </small>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="d-flex flex-column align-items-end justify-content-center">
+      <span class="text-primary align-self-center">{{ trip.cave_region }}</span>
+      <span class="text-primary align-self-center">{{ trip.cave_country }}</span>
+    </div>
   </div>
 
-  {% include "logger/_trip_data_blocks.html" %}
+  <div class="d-flex flex-row d-lg-none pb-2 align-items-center border-bottom mb-3">
+    <div class="pe-3 me-3 border-end h-100 p-2">
+      {% include "users/_profile_picture_header.html" with photo_user=object_owner %}
+    </div>
+    <div class="d-flex flex-column align-items-start justify-content-center">
+      <small class="text-primary">
+        {% if trip.cave_region %}{{ trip.cave_region }}{% endif %}
+        {% if trip.cave_region and trip.cave_country %}&middot;{% endif %}
+        {% if trip.cave_country %}{{ trip.cave_country }}{% endif %}
+      </small>
+      <h1 class="cave-name fs-3">{{ trip.cave_name }}</h1>
+      <span class="text-primary">
+        {% if trip.cave_entrance or trip.cave_exit %}
+          via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
+        {% else %}
+          {{ trip.added|naturaltime }}
+        {% endif %}
+      </span>
+    </div>
+  </div>
 
-  {% if trip.notes or trip.cave_url %}
-    <hr class="my-4">
-  {% endif %}
+  <div class="border-bottom pb-4 mb-3">
+    {% include "logger/_trip_data_blocks.html" %}
+  </div>
 
   {% if trip.notes %}
     <!-- Notes -->
@@ -39,35 +82,36 @@
     </div>
   {% endif %}
 
-  <hr class="my-4">
-  <span class="float-start">
-    {% if user.is_authenticated %}
-      {% include "logger/_htmx_trip_like.html" %}
-      {% if trip.likes_count > 0 %}
-        <span class="ms-1" data-bs-toggle="modal" data-bs-target="#usersThatLikedTrip{{ trip.uuid }}"><i class="bi bi-info-circle"></i></span>
-        <div class="modal fade" id="usersThatLikedTrip{{ trip.uuid }}" tabindex="-1">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5">Users that liked this trip</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                This trip was liked by
-                {% for user in trip.likes.all %}
-                  {% user user %}{% if forloop.revcounter == 2 %} and {% elif forloop.revcounter > 2 %}, {% endif %}{% if forloop.revcounter == 1 %}.{% endif %}
-                {% endfor %}
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+  <div{% if trip.notes or trip.cave_url %} class="border-top pt-3 mt-4"{% endif %}>
+    <span class="float-start">
+      {% if user.is_authenticated %}
+        {% include "logger/_htmx_trip_like.html" %}
+        {% if trip.likes_count > 0 %}
+          <span class="ms-1" data-bs-toggle="modal" data-bs-target="#usersThatLikedTrip{{ trip.uuid }}"><i class="bi bi-info-circle"></i></span>
+          <div class="modal fade" id="usersThatLikedTrip{{ trip.uuid }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5">Users that liked this trip</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  This trip was liked by
+                  {% for user in trip.likes.all %}
+                    {% user user %}{% if forloop.revcounter == 2 %} and {% elif forloop.revcounter > 2 %}, {% endif %}{% if forloop.revcounter == 1 %}.{% endif %}
+                  {% endfor %}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        {% endif %}
+      {% else %}
+        <i class="bi bi-hand-thumbs-up-fill"></i>
+        {{ trip.likes_count }} like{{ trip.likes_count|pluralize }}
       {% endif %}
-    {% else %}
-      <i class="bi bi-hand-thumbs-up-fill"></i>
-      {{ trip.likes_count }} like{{ trip.likes_count|pluralize }}
-    {% endif %}
-  </span>
+    </span>
+  </div>
 {% endblock %}
