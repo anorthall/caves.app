@@ -26,10 +26,11 @@ services:
     build:
       context: .
       dockerfile: ./config/docker/production/Dockerfile.prod.web
-    command: gunicorn config.django.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn config.django.wsgi:application --bind 0.0.0.0:8000 --log-file /opt/caves/logs/gunicorn/gunicorn.log
     volumes:
       - ./data/production/staticfiles:/opt/caves/staticfiles
-      - ./data/production/media:/opt/caves/media/
+      - ./data/production/media:/opt/caves/media
+      - ./data/production/logs:/opt/caves/logs
       - ./config/django:/opt/caves/config/django
       - ./app:/opt/caves/app
     ports:

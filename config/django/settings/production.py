@@ -6,6 +6,33 @@ from .base import *
 DEBUG = False
 
 
+# Logging
+DEFAULT_LOG_LEVEL = "INFO"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": os.environ.get("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "class": "logging.FileHandler",
+            "filename": "/opt/caves/logs/django/django.log",
+        },
+        "console": {
+            "level": os.environ.get("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": os.environ.get("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "propagate": True,
+        },
+    },
+}
+
+
 # Sentry integration
 if os.environ.get("SENTRY_KEY", None):  # pragma: no cover
     import sentry_sdk
