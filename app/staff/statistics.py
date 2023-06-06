@@ -13,8 +13,7 @@ class Statistics:
     total = field(type=int)
 
 
-def get_time_statistics(model, metric="New", lookup="added__gte"):
-    """Get time-based statistics for a model"""
+def get_time_statistics(queryset, metric="New", lookup="added__gte"):
     now = timezone.now()
     day = now - timezone.timedelta(days=1)
     week = now - timezone.timedelta(days=7)
@@ -22,11 +21,11 @@ def get_time_statistics(model, metric="New", lookup="added__gte"):
     year = now - timezone.timedelta(days=365)
 
     return Statistics(
-        model_name=model._meta.verbose_name_plural,
+        model_name=queryset.model._meta.verbose_name_plural,
         metric=metric,
-        day=model.objects.filter(**{lookup: day}).count(),
-        week=model.objects.filter(**{lookup: week}).count(),
-        month=model.objects.filter(**{lookup: month}).count(),
-        year=model.objects.filter(**{lookup: year}).count(),
-        total=model.objects.count(),
+        day=queryset.filter(**{lookup: day}).count(),
+        week=queryset.filter(**{lookup: week}).count(),
+        month=queryset.filter(**{lookup: month}).count(),
+        year=queryset.filter(**{lookup: year}).count(),
+        total=queryset.count(),
     )
