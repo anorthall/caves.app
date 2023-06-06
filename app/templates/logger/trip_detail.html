@@ -44,8 +44,8 @@
     {% if user.is_authenticated %}
       {% include "logger/_htmx_trip_like.html" %}
       {% if trip.likes_count > 0 %}
-        <span class="ms-1" data-bs-toggle="modal" data-bs-target="#usersThatLikedTrip{{ trip.pk }}"><i class="bi bi-info-circle"></i></span>
-        <div class="modal fade" id="usersThatLikedTrip{{ trip.pk }}" tabindex="-1">
+        <span class="ms-1" data-bs-toggle="modal" data-bs-target="#usersThatLikedTrip{{ trip.uuid }}"><i class="bi bi-info-circle"></i></span>
+        <div class="modal fade" id="usersThatLikedTrip{{ trip.uuid }}" tabindex="-1">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">

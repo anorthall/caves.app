@@ -207,9 +207,7 @@ class TestAllPagesLoad(TestCase):
     def test_user_trip_list_page_loads(self):
         """Test that the user trip list page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("log:user", kwargs={"username": self.user.username})
-        )
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
 
     def test_user_trip_list_page_loads_with_trips(self):
@@ -220,25 +218,19 @@ class TestAllPagesLoad(TestCase):
                 cave_name=f"Test Trip {i}", start=timezone.now(), user=self.user
             )
             t.save()
-        response = self.client.get(
-            reverse("log:user", kwargs={"username": self.user.username})
-        )
+        response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
 
     def test_trip_detail_page_loads(self):
         """Test that the trip detail page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("log:trip_detail", kwargs={"pk": self.trip.pk})
-        )
+        response = self.client.get(self.trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_trip_update_page_loads(self):
         """Test that the trip update page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("log:trip_update", kwargs={"pk": self.trip.pk})
-        )
+        response = self.client.get(reverse("log:trip_update", args=[self.trip.uuid]))
         self.assertEqual(response.status_code, 200)
 
     def test_trip_list_redirect_page_loads(self):
@@ -246,9 +238,7 @@ class TestAllPagesLoad(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:trip_list"), follow=False)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.url, reverse("log:user", kwargs={"username": self.user.username})
-        )
+        self.assertEqual(response.url, reverse("log:user", args=[self.user.username]))
 
     def test_trip_export_page_loads(self):
         """Test that the trip export page loads"""
@@ -267,16 +257,14 @@ class TestAllPagesLoad(TestCase):
     def test_trip_report_detail_page_loads(self):
         """Test that the trip report detail page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("log:report_detail", kwargs={"pk": self.report.pk})
-        )
+        response = self.client.get(self.report.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_trip_report_update_page_loads(self):
         """Test that the trip report update page loads"""
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("log:report_update", kwargs={"pk": self.report.pk})
+            reverse("log:report_update", args=[self.report.trip.uuid])
         )
         self.assertEqual(response.status_code, 200)
 
@@ -291,7 +279,7 @@ class TestAllPagesLoad(TestCase):
     #     """Test that the HTMX comment page loads"""
     #     self.client.force_login(self.user)
     #     response = self.client.get(
-    #         reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
+    #         reverse("log:htmx_trip_comment", args=[self.trip.uuid])
     #     )
     #     self.assertEqual(response.status_code, 200)
 
@@ -307,7 +295,7 @@ class TestAllPagesLoad(TestCase):
     #         c.save()
 
     #     response = self.client.get(
-    #         reverse("log:htmx_trip_comment", kwargs={"pk": self.trip.pk})
+    #         reverse("log:htmx_trip_comment", args=[self.trip.uuid])
     #     )
     #     self.assertEqual(response.status_code, 200)
 
@@ -315,7 +303,7 @@ class TestAllPagesLoad(TestCase):
         """Test that the HTMX trip like toggle page loads"""
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("log:trip_like_htmx_view", kwargs={"pk": self.trip.pk})
+            reverse("log:trip_like_htmx_view", args=[self.trip.uuid])
         )
         self.assertEqual(response.status_code, 200)
 
@@ -324,7 +312,7 @@ class TestAllPagesLoad(TestCase):
         self.client.force_login(self.user)
         self.trip.likes.add(self.user)
         response = self.client.post(
-            reverse("log:trip_like_htmx_view", kwargs={"pk": self.trip.pk})
+            reverse("log:trip_like_htmx_view", args=[self.trip.uuid])
         )
         self.assertEqual(response.status_code, 200)
 

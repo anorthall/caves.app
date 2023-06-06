@@ -281,7 +281,7 @@ class Trip(models.Model):
                 )
 
     def get_absolute_url(self):
-        return reverse("log:trip_detail", kwargs={"pk": self.pk})
+        return reverse("log:trip_detail", args=[self.uuid])
 
     def sanitise(self, user_viewing):
         """Sanitise the trip for viewing by another user"""
@@ -492,7 +492,7 @@ class TripReport(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("log:report_detail", kwargs={"pk": self.pk})
+        return reverse("log:report_detail", args=[self.trip.uuid])
 
     def is_viewable_by(self, user_viewing):
         """Returns whether or not user_viewing can view this report"""

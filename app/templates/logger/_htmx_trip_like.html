@@ -1,9 +1,9 @@
 {% load users_tags %}
 {% load logger_tags %}
-<span id="like-button{{ trip.pk }}">
+<span id="like-button{{ trip.uuid }}">
   <a class="text-decoration-none"
-     hx-post="{% url 'log:trip_like_htmx_view' trip.pk %}"
-     hx-target="#like-button{{ trip.pk }}"
+     hx-post="{% url 'log:trip_like_htmx_view' trip.uuid %}"
+     hx-target="#like-button{{ trip.uuid }}"
      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
      hx-swap="outerHTML"
      href="#">

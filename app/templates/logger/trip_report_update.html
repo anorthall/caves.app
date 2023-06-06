@@ -7,7 +7,7 @@
 {% block main %}
   <div class="alert alert-secondary mb-4">
     You are editing a trip report for the trip to <strong>{{ trip.cave_name }}</strong> on <strong>{{ trip.start|date }}</strong>. Would you
-    like to <a target="_blank" href="{% url 'log:trip_detail' trip.id %}">view the trip</a>?
+    like to <a target="_blank" href="{{ trip.get_absolute_url }}">view the trip</a>?
   </div>
 
   {% crispy form %}

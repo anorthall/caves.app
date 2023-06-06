@@ -482,7 +482,7 @@ class TripIntegrationTests(TestCase):
         )
         trip = Trip.objects.get(cave_name="Test The Form Cave")
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/trip/{trip.pk}/")
+        self.assertEqual(response.url, trip.get_absolute_url())
         self.assertEqual(trip.cave_name, "Test The Form Cave")
         self.assertEqual(trip.cave_region, "Test Region")
         self.assertEqual(trip.cave_country, "Test Country")
@@ -575,7 +575,7 @@ class TripIntegrationTests(TestCase):
     def test_trip_update_form(self):
         """Test the trip update form"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("log:trip_update", args=[self.trip.pk]))
+        response = self.client.get(reverse("log:trip_update", args=[self.trip.uuid]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit trip")
         self.assertContains(response, "Cave name")
@@ -587,7 +587,7 @@ class TripIntegrationTests(TestCase):
         self.assertContains(response, self.trip.cave_name)
 
         response = self.client.post(
-            reverse("log:trip_update", args=[self.trip.pk]),
+            reverse("log:trip_update", args=[self.trip.uuid]),
             {
                 "cave_name": "Test The Form Cave",
                 "cave_region": "Test Region",
@@ -602,7 +602,7 @@ class TripIntegrationTests(TestCase):
         )
         trip = Trip.objects.get(pk=self.trip.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/trip/{trip.pk}/")
+        self.assertEqual(response.url, trip.get_absolute_url())
         self.assertEqual(trip.cave_name, "Test The Form Cave")
         self.assertEqual(trip.cave_region, "Test Region")
         self.assertEqual(trip.cave_country, "Test Country")
@@ -620,7 +620,7 @@ class TripIntegrationTests(TestCase):
         success_str = f"The trip to {self.trip.cave_name} has been deleted"
 
         response = self.client.post(
-            reverse("log:trip_delete", args=[self.trip.pk]), follow=True
+            reverse("log:trip_delete", args=[self.trip.uuid]), follow=True
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, success_str)
@@ -638,6 +638,6 @@ class TripIntegrationTests(TestCase):
         user2.save()
         self.client.force_login(user2)
         response = self.client.post(
-            reverse("log:trip_delete", args=[self.trip.pk]),
+            reverse("log:trip_delete", args=[self.trip.uuid]),
         )
         self.assertEqual(response.status_code, 403)
