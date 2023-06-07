@@ -16,6 +16,7 @@ class Index(LoginRequiredMixin, TemplateView):
         context["stats_yearly"] = statistics.yearly(self.queryset)
         context["stats_most_common"] = statistics.most_common(self.queryset)
         context["stats_biggest_trips"] = statistics.biggest_trips(self.queryset)
+        context["stats_averages"] = statistics.averages(self.queryset)
         return context
 
     def get_queryset(self):

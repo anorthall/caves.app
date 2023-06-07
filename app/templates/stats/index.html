@@ -132,4 +132,38 @@
       {% endfor %}
     </div>
   {% endif %}
+
+  {% if stats_averages %}
+    <h3 class="subtitle mt-5">
+      Averages
+    </h3>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Average</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for stat in stats_averages %}
+            <tr>
+              <td>{{ stat.metric }}</td>
+              <td>
+                {% if stat.is_dist %}
+                  {{ stat.value|distformat:user.units }}
+                {% elif stat.is_time %}
+                  {{ stat.value|naturaldelta:"minutes" }}
+                {% else %}
+                  {{ stat.value|floatformat:2 }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
 {% endblock %}

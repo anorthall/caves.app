@@ -1,0 +1,60 @@
+from attrs import frozen
+from django.contrib.gis.measure import D
+from django.db import models
+from django.utils import timezone
+
+
+@frozen
+class Row:
+    metric: str
+    value: str
+    is_dist: bool = False
+    is_time: bool = False
+
+
+def averages(queryset):
+    rows = [
+        Row(metric="Trips per week", value=trips_per_week(queryset)),
+        Row(metric="Trip duration", value=trip_duration(queryset), is_time=True),
+        Row(metric="Rope climbed", value=dist(queryset, "vert_dist_up"), is_dist=True),
+        Row(
+            metric="Rope descended",
+            value=dist(queryset, "vert_dist_down"),
+            is_dist=True,
+        ),
+        Row(metric="Surveyed", value=dist(queryset, "surveyed_dist"), is_dist=True),
+        Row(
+            metric="Resurveryed", value=dist(queryset, "resurveyed_dist"), is_dist=True
+        ),
+        Row(metric="Aid climbed", value=dist(queryset, "aid_dist"), is_dist=True),
+        Row(metric="Horizontal", value=dist(queryset, "horizontal_dist"), is_dist=True),
+    ]
+    return rows
+
+
+def trips_per_week(queryset):
+    qs = queryset.order_by("start")
+    weeks = (timezone.now() - qs.first().start).days // 7
+
+    if weeks == 0:
+        return 0
+    return qs.count() / weeks
+
+
+def trip_duration(queryset):
+    qs = queryset.filter(end__isnull=False)
+    if qs.count() == 0:
+        return 0
+
+    avg_duration = qs.aggregate(avg_duration=models.Avg("duration"))["avg_duration"]
+    return avg_duration
+
+
+def dist(queryset, field):
+    """Get the average distance for a field, excluding trips with a zero value"""
+    qs = queryset.filter(**{f"{field}__gt": 0})
+    if qs.count() == 0:
+        return D(m=0)
+
+    avg_meters = qs.aggregate(avg_dist=models.Avg(field))["avg_dist"]
+    return D(m=avg_meters)
