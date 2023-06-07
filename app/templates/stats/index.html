@@ -3,42 +3,88 @@
 {% load stats_tags %}
 {% load markdownify %}
 
-{% block main %}
+{% block content %}
   <h3 class="subtitle">
     Annual statistics
   </h3>
 
-  <div class="table-responsive">
-    <table class="table table-sm table-striped">
-      <thead>
-        <tr>
-          <th>Year</th>
-          <th>Climbed</th>
-          <th>Descended</th>
-          <th>Surveyed</th>
-          <th>Resurveyed</th>
-          <th>Horizontal</th>
-          <th>Aid climbed</th>
-          <th>Time</th>
-          <th>Trips</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for year in stats_yearly %}
+  {% if stats_yearly %}
+    <div class="table-responsive">
+      <table class="table table-striped text-center">
+        <thead>
           <tr>
-            <th>{% if year.is_total %}Total{% else %}{{ year.year }}{% endif %}</th>
-            <td>{{ year.climbed|distformat:user.units }}</td>
-            <td>{{ year.descended|distformat:user.units }}</td>
-            <td>{{ year.surveyed|distformat:user.units }}</td>
-            <td>{{ year.resurveyed|distformat:user.units }}</td>
-            <td>{{ year.horizontal|distformat:user.units }}</td>
-            <td>{{ year.aid_climbed|distformat:user.units }}</td>
-            <td>{{ year.time|naturaldelta }}</td>
-            <td>{{ year.trips }}</td>
+            <th>Year</th>
+            <th>Climbed</th>
+            <th>Descended</th>
+            <th>Surveyed</th>
+            <th>Resurveyed</th>
+            <th>Horizontal</th>
+            <th>Aid climbed</th>
+            <th>Time</th>
+            <th>Trips</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+
+        <tbody>
+          {% for year in stats_yearly %}
+            <tr>
+              <th>{% if year.is_total %}Total{% else %}{{ year.year }}{% endif %}</th>
+              <td>{{ year.climbed|distformat:user.units }}</td>
+              <td>{{ year.descended|distformat:user.units }}</td>
+              <td>{{ year.surveyed|distformat:user.units }}</td>
+              <td>{{ year.resurveyed|distformat:user.units }}</td>
+              <td>{{ year.horizontal|distformat:user.units }}</td>
+              <td>{{ year.aid_climbed|distformat:user.units }}</td>
+              <td>{{ year.time|naturaldelta }}</td>
+              <td>{{ year.trips }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">
+      No data available, why not <a href="{% url 'log:trip_create' %}">add a trip</a>?
+    </p>
+  {% endif %}
+
+
+  <h3 class="subtitle mt-5">
+    Most common
+  </h3>
+
+  {% if stats_most_common %}
+    <div class="row row-cols-1 row-cols-lg-2 g-4">
+      {% for stat in stats_most_common %}
+        <div class="col">
+          <h5 class="mb-3">{{ stat.title }}</h5>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{{ stat.metric_name }}</th>
+                  <th>{{ stat.value_name }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for row in stat.rows %}
+                  <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <td>{{ row.metric }}</td>
+                    <td>{{ row.value }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">
+      No data available.
+    </p>
+  {% endif %}
 {% endblock %}

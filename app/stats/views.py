@@ -13,7 +13,8 @@ class Index(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["stats_yearly"] = statistics.get_yearly(self.queryset)
+        context["stats_yearly"] = statistics.yearly(self.queryset)
+        context["stats_most_common"] = statistics.most_common(self.queryset)
         return context
 
     def get_queryset(self):
