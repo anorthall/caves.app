@@ -4,11 +4,11 @@
 {% load markdownify %}
 
 {% block content %}
-  <h3 class="subtitle">
-    Annual statistics
-  </h3>
-
   {% if stats_yearly %}
+    <h3 class="subtitle">
+      Annual statistics
+    </h3>
+
     <div class="table-responsive">
       <table class="table table-striped text-center">
         <thead>
@@ -43,17 +43,25 @@
       </table>
     </div>
   {% else %}
-    <p class="text-muted">
-      No data available, why not <a href="{% url 'log:trip_create' %}">add a trip</a>?
-    </p>
+    <div class="mw-45">
+      <p class="lead">
+        You haven't added any trips, so no statistics are available.
+        Why not <a href="{% url 'log:trip_create' %}">add a trip</a> now?
+      </p>
+
+      <p>
+        As you add trips, more statistics will be added to this page. The statistics
+        shown will vary based on what data is available. To ensure the most interesting
+        statistics, fill out as many fields as possible when adding trips.
+      </p>
+    </div>
   {% endif %}
 
-
-  <h3 class="subtitle mt-5">
-    Most common
-  </h3>
-
   {% if stats_most_common %}
+    <h3 class="subtitle mt-5">
+      Most common
+    </h3>
+
     <div class="row row-cols-1 row-cols-lg-2 g-4">
       {% for stat in stats_most_common %}
         <div class="col">
@@ -82,17 +90,13 @@
         </div>
       {% endfor %}
     </div>
-  {% else %}
-    <p class="text-muted">
-      No data available.
-    </p>
   {% endif %}
 
-  <h3 class="subtitle mt-5">
-    Biggest trips
-  </h3>
-
   {% if stats_biggest_trips %}
+    <h3 class="subtitle mt-5">
+      Biggest trips
+    </h3>
+
     <div class="row row-cols-1 row-cols-lg-2 g-4">
       {% for stat in stats_biggest_trips %}
         <div class="col">
@@ -127,9 +131,5 @@
         </div>
       {% endfor %}
     </div>
-  {% else %}
-    <p class="text-muted">
-      No data available.
-    </p>
   {% endif %}
 {% endblock %}
