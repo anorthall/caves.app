@@ -114,6 +114,25 @@ def most_common_caves(queryset, limit):
     return stats
 
 
+def most_common_trip_types(queryset, limit):
+    stats = MostCommonStatistics(
+        title="Most common trip types",
+        metric_name="Trip type",
+        value_name="Trips",
+    )
+
+    results = (
+        queryset.values("type")
+        .annotate(count=Count("type"))
+        .order_by("-count")[0:limit]
+    )
+
+    for result in results:
+        stats.add_row(result["type"], result["count"])
+
+    return stats
+
+
 def most_common_from_csv(*, queryset, field, title, metric_name, value_name, limit):
     stats = MostCommonStatistics(
         title=title,
@@ -182,6 +201,7 @@ def most_common(queryset, limit=10):
             value_name="Trips",
             limit=limit,
         ),
+        most_common_trip_types(queryset, limit),
     ]
 
     return [stat for stat in stats if stat.rows]
