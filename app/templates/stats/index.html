@@ -87,4 +87,49 @@
       No data available.
     </p>
   {% endif %}
+
+  <h3 class="subtitle mt-5">
+    Biggest trips
+  </h3>
+
+  {% if stats_biggest_trips %}
+    <div class="row row-cols-1 row-cols-lg-2 g-4">
+      {% for stat in stats_biggest_trips %}
+        <div class="col">
+          <h5 class="mb-3">{{ stat.title }}</h5>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Trip</th>
+                  <th>Date</th>
+                  <th>{{ stat.metric }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for row in stat.rows %}
+                  <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <td>
+                      <a href="{{ row.trip.get_absolute_url }}">
+                        {{ row.trip.cave_name }}
+                      </a>
+                    </td>
+                    <td>{{ row.trip.start|date }}</td>
+                    <td>{{ row.value }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">
+      No data available.
+    </p>
+  {% endif %}
 {% endblock %}
