@@ -1,5 +1,5 @@
 import humanize
-from attrs import Factory, define
+from attrs import Factory, define, frozen
 from django.contrib.gis.measure import D, Distance
 from django.db.models import Count
 from django.utils import timezone
@@ -57,7 +57,7 @@ def yearly(queryset, /, max_years=10) -> tuple:
         return None
 
 
-@define
+@frozen
 class MostCommonRow:
     metric: str
     value: str
@@ -207,7 +207,7 @@ def most_common(queryset, limit=10):
     return [stat for stat in stats if stat.rows]
 
 
-@define
+@frozen
 class TripStatsRow:
     trip: Trip
     value: str
