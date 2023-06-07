@@ -1,6 +1,44 @@
 {% extends "base_stats.html" %}
+{% load logger_tags %}
+{% load stats_tags %}
 {% load markdownify %}
 
 {% block main %}
-  <h3 class="subtitle">Statistics</div>
+  <h3 class="subtitle">
+    Annual statistics
+  </h3>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Climbed</th>
+          <th>Descended</th>
+          <th>Surveyed</th>
+          <th>Resurveyed</th>
+          <th>Horizontal</th>
+          <th>Aid climbed</th>
+          <th>Time</th>
+          <th>Trips</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for year in stats_yearly %}
+          <tr>
+            <th>{% if year.is_total %}Total{% else %}{{ year.year }}{% endif %}</th>
+            <td>{{ year.climbed|distformat:user.units }}</td>
+            <td>{{ year.descended|distformat:user.units }}</td>
+            <td>{{ year.surveyed|distformat:user.units }}</td>
+            <td>{{ year.resurveyed|distformat:user.units }}</td>
+            <td>{{ year.horizontal|distformat:user.units }}</td>
+            <td>{{ year.aid_climbed|distformat:user.units }}</td>
+            <td>{{ year.time|naturaldelta }}</td>
+            <td>{{ year.trips }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}
