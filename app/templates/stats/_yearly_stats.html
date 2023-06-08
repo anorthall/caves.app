@@ -1,0 +1,36 @@
+{% load logger_tags %}
+{% load stats_tags %}
+
+<div class="table-responsive">
+  <table class="table table-striped text-center {{ table_class }}">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th class="{{ dist_class }}">Climbed</th>
+        <th class="{{ dist_class }}">Descended</th>
+        <th class="{{ dist_class }}">Surveyed</th>
+        <th class="{{ dist_class }}">Resurveyed</th>
+        <th class="{{ dist_class }}">Horizontal</th>
+        <th class="{{ dist_class }}">Aid climbed</th>
+        <th>Time</th>
+        <th>Trips</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for year in stats %}
+        <tr>
+          <th>{% if year.is_total %}Total{% else %}{{ year.year }}{% endif %}</th>
+          <td class="{{ dist_class }}">{{ year.climbed|distformat:request.units }}</td>
+          <td class="{{ dist_class }}">{{ year.descended|distformat:request.units }}</td>
+          <td class="{{ dist_class }}">{{ year.surveyed|distformat:request.units }}</td>
+          <td class="{{ dist_class }}">{{ year.resurveyed|distformat:request.units }}</td>
+          <td class="{{ dist_class }}">{{ year.horizontal|distformat:request.units }}</td>
+          <td class="{{ dist_class }}">{{ year.aid_climbed|distformat:request.units }}</td>
+          <td>{{ year.time|naturaldelta }}</td>
+          <td>{{ year.trips }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

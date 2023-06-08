@@ -30,6 +30,12 @@
     </p>
   {% endif %}
 
+  {% if stats %}
+    <div class="profile-stats mb-4">
+      {% include "stats/_yearly_stats.html" with stats=stats table_class="table-sm" dist_class="d-none d-md-table-cell" %}
+    </div>
+  {% endif %}
+
   {% if trips %}
     <div class="table-responsive">
       <table class="table table-hover table-striped mb-0">
@@ -130,9 +136,9 @@
                 {% endif %}
               </td>
 
-              <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:dist_format }}</td>
+              <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:request.units }}</td>
 
-              <td class="d-none d-xxl-table-cell">{{ trip.vert_dist_down|distformat:dist_format }}</td>
+              <td class="d-none d-xxl-table-cell">{{ trip.vert_dist_down|distformat:request.units }}</td>
 
               <td class="d-none d-lg-table-cell">
                 {{ trip.type }}

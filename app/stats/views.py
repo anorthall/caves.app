@@ -1,3 +1,4 @@
+from core.utils import get_user
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
@@ -6,6 +7,10 @@ from . import statistics
 
 class Index(LoginRequiredMixin, TemplateView):
     template_name = "stats/index.html"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.queryset = None
 
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
@@ -20,4 +25,4 @@ class Index(LoginRequiredMixin, TemplateView):
         return context
 
     def get_queryset(self):
-        return self.request.user.trips.all()
+        return get_user(self.request).trips.all()

@@ -1,14 +1,8 @@
 from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import (
-    LoginView,
-    LogoutView,
-    PasswordChangeView,
-    PasswordResetConfirmView,
-    PasswordResetView,
-)
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -42,7 +36,7 @@ from .verify import generate_token
 User = get_user_model()
 
 
-class PasswordResetView(SuccessMessageMixin, PasswordResetView):
+class PasswordResetView(SuccessMessageMixin, auth_views.PasswordResetView):
     template_name = "users/crispy_form_center.html"
     email_template_name = "emails/email_password_reset.html"
     html_email_template_name = "emails/email_html_password_reset.html"
@@ -60,7 +54,9 @@ class PasswordResetView(SuccessMessageMixin, PasswordResetView):
     }
 
 
-class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
+class PasswordResetConfirmView(
+    SuccessMessageMixin, auth_views.PasswordResetConfirmView
+):
     template_name = "users/password_reset_confirm.html"
     success_url = reverse_lazy("users:account_detail")
     form_class = SetPasswordForm
@@ -71,7 +67,9 @@ class PasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
     }
 
 
-class PasswordChangeView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
+class PasswordChangeView(
+    LoginRequiredMixin, SuccessMessageMixin, auth_views.PasswordChangeView
+):
     template_name = "users/crispy_form.html"
     extra_context = {"title": "Change your password"}
     success_url = reverse_lazy("users:account_detail")
@@ -95,7 +93,7 @@ class SettingsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     success_message = "Your settings have been updated."
 
     def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs = super().get_form_kwargs()
         kwargs["instance"] = self.request.user
         return kwargs
 
@@ -112,7 +110,7 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     success_message = "Your profile has been updated."
 
     def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs = super().get_form_kwargs()
         kwargs["instance"] = self.request.user
         return kwargs
 
@@ -128,7 +126,7 @@ class AvatarUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     success_message = "Your profile picture has been updated."
 
     def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs = super().get_form_kwargs()
         kwargs["instance"] = self.request.user
         return kwargs
 
@@ -140,8 +138,8 @@ class AvatarUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
 class FriendListView(LoginRequiredMixin, TemplateView):
     template_name = "users/friends.html"
 
-    def get(self, request):
-        if self.request.GET.get("u", None):
+    def get(self, request, **kwargs):
+        if self.request.GET.get("u"):
             initial = {"user": self.request.GET["u"]}
             form = AddFriendForm(request, initial=initial)
         else:
@@ -188,7 +186,7 @@ class FriendAddView(LoginRequiredMixin, View):
             )
             messages.success(request, f"Friend request sent to {user}.")
         else:
-            if form.errors.get("user", None):
+            if form.errors.get("user"):
                 for error in form.errors["user"]:
                     messages.error(request, error)
             else:  # pragma: no cover
@@ -243,19 +241,19 @@ class FriendRemoveView(LoginRequiredMixin, View):
         return redirect("users:friends")
 
 
-class Login(SuccessMessageMixin, LoginView):
+class Login(SuccessMessageMixin, auth_views.LoginView):
     template_name = "users/login.html"
     success_message = "You are now logged in."
     form_class = AuthenticationForm
     redirect_authenticated_user = True
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+        context = super().get_context_data(**kwargs)
         context["no_form_error_alert"] = True  # Silences messages.html
         return context
 
 
-class Logout(LoginRequiredMixin, LogoutView):
+class Logout(LoginRequiredMixin, auth_views.LogoutView):
     def dispatch(self, *args, **kwargs):
         result = super().dispatch(*args, **kwargs)
         messages.success(self.request, "You have been logged out.")
@@ -339,18 +337,18 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
     success_message = "Your email address has been verified and updated."
     success_url = reverse_lazy("users:account_detail")
 
-    def form_valid(self, form, *args, **kwargs):
+    def form_valid(self, form):
         """Set the user's new email address and log them in"""
         verified_user = form.user
         verified_user.email = form.email
         verified_user.save()
         auth.login(self.request, verified_user)
-        return super().form_valid(form, *args, **kwargs)
+        return super().form_valid(form)
 
     def get_initial(self, *args, **kwargs):
         """Add the verify_code from the URL params to the form's initial data"""
-        initial = super().get_initial(*args, **kwargs).copy()
-        initial["verify_code"] = self.request.GET.get("verify_code", "")
+        initial = super().get_initial().copy()
+        initial["verify_code"] = self.request.GET.get("verify_code")
         return initial
 
 
@@ -372,10 +370,10 @@ class UpdateEmail(SuccessMessageMixin, LoginRequiredMixin, FormView):
         verify_url = settings.SITE_ROOT + reverse("users:verify_email_change")
         send_email_change_verification(new_email, user.name, verify_url, verify_code)
         send_email_change_notification(user.email, user.name, new_email)
-        return super().form_valid(form, *args, **kwargs)
+        return super().form_valid(form)
 
     def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
 

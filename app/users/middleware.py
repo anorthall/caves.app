@@ -1,6 +1,20 @@
 from zoneinfo import ZoneInfoNotFoundError
 
 from django.utils import timezone
+from users.models import CavingUser
+
+
+class DistanceUnitsMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.user.is_authenticated:
+            request.units = request.user.units
+        else:
+            request.units = CavingUser.METRIC
+
+        return self.get_response(request)
 
 
 class TimezoneMiddleware:
@@ -8,10 +22,6 @@ class TimezoneMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        """
-        Get and set the user timezone from their profile.
-        This could be later improved by caching the timezone in the session.
-        """
         if request.user.is_authenticated:
             try:
                 tz = request.user.timezone

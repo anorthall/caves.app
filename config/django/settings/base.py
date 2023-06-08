@@ -119,6 +119,7 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "users.middleware.TimezoneMiddleware",
     "users.middleware.LastSeenMiddleware",
+    "users.middleware.DistanceUnitsMiddleware",
 ]
 
 

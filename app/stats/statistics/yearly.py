@@ -28,12 +28,11 @@ class YearlyStatistics:
 
 
 def yearly(queryset, /, max_years=10) -> tuple:
-    qs = queryset.order_by("start")
     earliest_year = timezone.now().year - (max_years - 1)
     total = YearlyStatistics(year=0, is_total=True)
     stats = {}
 
-    for trip in qs:
+    for trip in queryset:
         # First, add to the total
         total.add_trip(trip)
 
@@ -51,4 +50,4 @@ def yearly(queryset, /, max_years=10) -> tuple:
         # Return the stats in a tuple, with the total last
         return tuple(list(stats.values()) + [total])
     else:
-        return None
+        return ()
