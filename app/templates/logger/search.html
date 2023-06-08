@@ -20,10 +20,11 @@
 
     <h2 class="fs-4 mb-3">Results</h2>
     <div class="table-responsive">
-      <table class="table table-sm table-striped">
+      <table class="table">
         <thead>
           <tr>
             <th>#</th>
+            <th>Date</th>
             <th>User</th>
             <th>Cave</th>
             <th>Region</th>
@@ -33,13 +34,31 @@
 
         <tbody>
           {% for trip in trips %}
-            <tr data-href="{{ trip.get_absolute_url }}">
+            <tr class="table-light" data-href="{{ trip.get_absolute_url }}">
               <td>{{ forloop.counter }}</td>
+              <td>{{ trip.start|date:"jS M y" }}</td>
               <td>{% user trip.user %}</td>
               <td><a href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a></td>
               <td>{{ trip.cave_region }}</td>
               <td>{{ trip.cave_country }}</td>
             </tr>
+
+            {% if trip.cave_entrance or trip.cave_exit or trip.cavers%}
+              <tr data-href="{{ trip.get_absolute_url }}">
+                <td colspan="6" class="pb-3 pt-3 px-3">
+                  {% if trip.cave_entrance or trip.cave_exit %}
+                    <div class="text-primary">
+                      via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
+                    </div>
+                  {% endif %}
+                  {% if trip.cavers %}
+                    <div>
+                      with {{ trip.cavers }}
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>

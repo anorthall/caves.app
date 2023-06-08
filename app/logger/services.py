@@ -18,9 +18,12 @@ def trip_search(*, terms, for_user, search_user=None, limit=500):
 
     results = results.filter(
         Q(cave_name__unaccent__trigram_similar=terms)
+        | Q(cave_entrance__unaccent__trigram_similar=terms)  # noqa W504
+        | Q(cave_exit__unaccent__trigram_similar=terms)  # noqa W504
         | Q(cave_region__unaccent__icontains=terms)  # noqa W504
         | Q(cave_country__unaccent__iexact=terms)  # noqa W504
-    )[:limit]
+        | Q(cavers__unaccent__icontains=terms)  # noqa W504
+    ).order_by("-start")[:limit]
 
     results = results.select_related("user").prefetch_related("user__friends")
 
