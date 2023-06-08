@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 )
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
 from imagekit.models import ImageSpecField
@@ -279,6 +280,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("log:user", args=[self.username])
 
     def save(self, *args, **kwargs):
         # Lowercase the username
