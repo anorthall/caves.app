@@ -291,8 +291,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     def notify(self, message, url):
         """Send a notification to this user"""
-        from users.models import Notification
-
         return Notification.objects.create(user=self, message=message, url=url)
 
     def is_viewable_by(self, user_viewing):
