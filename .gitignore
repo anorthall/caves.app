@@ -131,6 +131,7 @@ dmypy.json
 # Applications
 .DS_Store
 .vscode
+.idea
 
 # Docker
 data/
