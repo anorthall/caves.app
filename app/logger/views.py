@@ -11,6 +11,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.safestring import SafeString
 from django.views.generic import (
     CreateView,
     FormView,
@@ -536,4 +537,10 @@ def user_statistics(request):
             "-horizontal_dist"
         )[0:10],
     }
+
+    new_version_msg = SafeString(
+        "A new version of the statistics page is under development. You can "
+        'view it by <a href="/stats/">clicking here</a>.'
+    )
+    messages.info(request, new_version_msg)
     return render(request, "logger/statistics.html", context)
