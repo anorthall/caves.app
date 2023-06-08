@@ -17,4 +17,10 @@ then
     python manage.py migrate
 fi
 
+if [ "$RUN_SERVER" != "no" ]
+then
+    echo "Running server..."
+    python manage.py runserver 0.0.0.0:8000 --insecure
+fi
+
 exec "$@"
