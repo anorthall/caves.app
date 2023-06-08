@@ -80,10 +80,6 @@ class PasswordChangeView(
 class Account(LoginRequiredMixin, TemplateView):
     template_name = "users/account.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
 
 class SettingsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "users/crispy_form.html"
