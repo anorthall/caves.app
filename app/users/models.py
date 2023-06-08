@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -18,8 +19,8 @@ from timezone_field import TimeZoneField
 
 def avatar_upload_path(instance, filename):
     """Returns the path to upload avatars to"""
-    ext = filename.split(".")[-1].lower()
-    return f"avatars/{instance.uuid}/avatar.{ext}"
+    original_filename, ext = os.path.splitext(filename)
+    return f"avatars/{instance.uuid}/avatar{ext}"
 
 
 class CavingUserManager(BaseUserManager):

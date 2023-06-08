@@ -1,9 +1,14 @@
+import uuid
+from unittest import mock
+
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 from logger.models import Trip, TripReport
+
+from ..models import avatar_upload_path
 
 User = get_user_model()
 
@@ -139,6 +144,13 @@ class UserUnitTests(TestCase):
 
         self.assertEqual(self.user.reports.count(), 1)
         self.assertEqual(self.user.reports.first(), trip_report)
+
+    def test_avatar_upload_path(self):
+        instance = mock.MagicMock()
+        instance.uuid = uuid.uuid4()
+        filename = "test.png"
+        path = avatar_upload_path(instance, filename)
+        self.assertEqual(path, f"avatars/{instance.uuid}/avatar.png")
 
 
 @tag("integration", "users", "fast")
