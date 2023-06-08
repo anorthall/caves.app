@@ -474,7 +474,7 @@ class CSVExport(LoginRequiredMixin, View):
 def user_statistics(request):
     trips = get_user(request).trips
     chart_units = "m"
-    if get_user(request).units == User.IMPERIAL:
+    if request.units == User.IMPERIAL:
         chart_units = "ft"
 
     # Generate stats for trips/distances by year
