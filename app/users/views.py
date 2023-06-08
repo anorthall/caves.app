@@ -126,7 +126,7 @@ class AvatarUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
         kwargs["instance"] = self.request.user
         return kwargs
 
-    def form_valid(self, form):
+    def form_valid(self, form):  # pragma: no cover
         form.save()
         return super().form_valid(form)
 

@@ -301,6 +301,9 @@ class TripModelUnitTests(TestCase):
         result = self.trip._build_liked_str(["you"], True)
         self.assertEqual(result, "You liked this")
 
+        result = self.trip._build_liked_str(["Andrew"], False)
+        self.assertEqual(result, "Andrew liked this")
+
         result = self.trip._build_liked_str(["Andrew", "you"], True)
         self.assertEqual(result, "Liked by Andrew and you")
 

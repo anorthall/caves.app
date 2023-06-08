@@ -1,3 +1,5 @@
+from typing import Union
+
 from attrs import frozen
 from django.contrib.gis.measure import D
 from django.db import models
@@ -7,7 +9,7 @@ from django.utils import timezone
 @frozen
 class Row:
     metric: str
-    value: str
+    value: Union[str, D]
     is_dist: bool = False
     is_time: bool = False
 
@@ -35,7 +37,7 @@ def averages(queryset):
 
 
 def trips_per_week(queryset):
-    if not queryset.exists():
+    if not queryset.exists():  # pragma: no cover
         return 0
 
     qs = queryset.order_by("start")

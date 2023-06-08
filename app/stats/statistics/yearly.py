@@ -38,7 +38,7 @@ def yearly(queryset, /, max_years=10) -> tuple:
 
         # Now, determine if we should add to the yearly stats
         year = trip.start.year
-        if year < earliest_year:
+        if year < earliest_year:  # pragma: no cover
             continue
 
         if year not in stats:

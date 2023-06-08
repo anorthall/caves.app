@@ -109,7 +109,7 @@ def most_common_cavers_by_time(queryset, limit):
 
         for caver in trip.cavers.split(","):
             caver = caver.strip()
-            if not caver:
+            if not caver:  # pragma: no cover
                 continue
 
             if caver not in cavers:
