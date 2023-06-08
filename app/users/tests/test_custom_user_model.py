@@ -318,6 +318,7 @@ class UserIntegrationTestCase(TestCase):
 
     def test_user_registration_with_invalid_data(self):
         """Test user registration view with invalid data"""
+        user_count = User.objects.count()
         response = self.client.post(
             reverse("users:register"),
             {
@@ -333,6 +334,25 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, "Enter a valid email address.")
         self.assertContains(response, "Enter a valid “slug” consisting of")
         self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(User.objects.count(), user_count)
+
+    def test_user_registration_with_duplicate_username(self):
+        """Test user registration view with duplicate username"""
+        user_count = User.objects.count()
+        response = self.client.post(
+            reverse("users:register"),
+            {
+                "name": "Test",
+                "email": "dupeusername@caves.app",
+                "username": "testuser",
+                "password1": "this_is_a_password",
+                "password2": "this_is_a_password",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Username already taken.")
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(User.objects.count(), user_count)
 
     def test_change_user_email_with_invalid_password(self):
         self.client.force_login(self.user)
