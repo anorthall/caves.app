@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
+from logger.factories import TripFactory
 from logger.models import Trip, TripReport
 from users.models import FriendRequest
 
@@ -168,6 +169,12 @@ class TestAllPagesLoad(TestCase):
         response = self.client.get(reverse("users:settings_update"))
         self.assertEqual(response.status_code, 200)
 
+    def test_profile_picture_update_page_loads(self):
+        """Test that the profile picture update page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:profile_photo_update"))
+        self.assertEqual(response.status_code, 200)
+
     def test_friends_page_loads_without_friends(self):
         """Test that the friends page loads without friends"""
         self.client.force_login(self.user)
@@ -307,8 +314,22 @@ class TestAllPagesLoad(TestCase):
         response = self.client.get(reverse("log:charts:trip_types_time"))
         self.assertEqual(response.status_code, 200)
 
-    def test_statistics_page_loads(self):
+    def test_old_statistics_page_loads(self):
         """Test that the statistics page loads"""
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:statistics"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_statistics_page_loads(self):
+        """Test that the statistics page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("stats:index"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_statistics_page_loads_with_trips(self):
+        """Test that the statistics page loads with trips"""
+        self.client.force_login(self.user)
+        for i in range(250):
+            TripFactory(user=self.user)
+        response = self.client.get(reverse("stats:index"))
         self.assertEqual(response.status_code, 200)

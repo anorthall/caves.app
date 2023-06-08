@@ -1,4 +1,5 @@
 import logger.csv
+from core.utils import get_user
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -10,6 +11,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.safestring import SafeString
 from django.views.generic import (
     CreateView,
     FormView,
@@ -20,6 +22,7 @@ from django.views.generic import (
     View,
 )
 from logger import statistics
+from stats import statistics as new_stats
 
 from . import feed, services
 from .forms import TripForm, TripReportForm, TripSearchForm
@@ -42,7 +45,7 @@ class Index(TemplateView):
     def get_authenticated_context(self, **kwargs):
         """Return the trip feed for a logged in user"""
         context = super().get_context_data(**kwargs)
-        context["ordering"] = self.request.user.feed_ordering
+        context["ordering"] = get_user(self.request).feed_ordering
         context["trips"] = feed.get_trips_context(self.request, context["ordering"])
         context["liked_str"] = feed.get_liked_str_context(
             self.request, context["trips"]
@@ -66,6 +69,10 @@ class UserProfile(ListView):
     slug_field = "username"
     paginate_by = 50
     ordering = ("-start", "pk")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.profile_user = None
 
     def setup(self, *args, **kwargs):
         """Assign self.profile_user and perform permissions checks"""
@@ -100,18 +107,16 @@ class UserProfile(ListView):
 
         ordering = self.request.GET.get("sort", "")
         if ordering.replace("-", "") in allowed_ordering:
-            return (ordering, "pk")
+            return ordering, "pk"
 
         return self.ordering
 
-    def get_context_data(self):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["profile_user"] = self.profile_user
         context["page_title"] = self.get_page_title()
-        if self.request.user.is_authenticated:
-            context["dist_format"] = self.request.user.units
-        else:
-            context["dist_format"] = User.METRIC
+        if self.profile_user.public_statistics:
+            context["stats"] = new_stats.yearly(self.get_queryset())
 
         # This code provides the current GET parameters as a context variable
         # so that when a pagination link is clicked, the GET parameters are
@@ -149,7 +154,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return Trip.objects.filter(user=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+        context = super().get_context_data(**kwargs)
         context["object_owner"] = self.object.user
         return context
 
@@ -193,7 +198,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
         context = super().get_context_data(*args, **kwargs)
 
         if self.request.user.is_authenticated:
-            friends = self.request.user.friends.all()
+            friends = get_user(self.request).friends.all()
         else:
             friends = None
 
@@ -223,7 +228,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def get_initial(self):
         initial = super(TripCreate, self).get_initial()
         initial = initial.copy()
-        initial["cave_country"] = self.request.user.country.name
+        initial["cave_country"] = get_user(self.request).country.name
         return initial
 
     def get_success_url(self):
@@ -254,6 +259,10 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         "pub_date": timezone.localdate,
     }
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.trip = None
+
     def dispatch(self, request, *args, **kwargs):
         self.trip = self.get_trip()
         return super().dispatch(request, *args, **kwargs)
@@ -266,7 +275,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+        context = super().get_context_data(**kwargs)
         context["trip"] = self.trip
         context["object_owner"] = self.trip.user
         return context
@@ -303,7 +312,7 @@ class ReportUpdate(
     success_message = "The trip report has been updated."
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+        context = super().get_context_data(**kwargs)
         context["trip"] = self.trip
         context["object_owner"] = self.get_object().user
         return context
@@ -436,7 +445,7 @@ class HTMXTripFeed(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ordering"] = self.request.user.feed_ordering
+        context["ordering"] = get_user(self.request).feed_ordering
         context["trips"] = feed.get_trips_context(
             request=self.request,
             ordering=context["ordering"],
@@ -463,9 +472,9 @@ class CSVExport(LoginRequiredMixin, View):
 
 @login_required
 def user_statistics(request):
-    trips = request.user.trips
+    trips = get_user(request).trips
     chart_units = "m"
-    if request.user.units == User.IMPERIAL:
+    if request.units == User.IMPERIAL:
         chart_units = "ft"
 
     # Generate stats for trips/distances by year
@@ -497,7 +506,6 @@ def user_statistics(request):
         "gte_five_trips": len(trips) >= 5,
         "show_time_charts": show_time_charts,
         "user": request.user,
-        "dist_format": request.user.units,
         "chart_units": chart_units,
         "year0": prev_year_2,
         "year1": prev_year,
@@ -511,7 +519,7 @@ def user_statistics(request):
         "common_cavers_by_time": statistics.common_cavers_by_time(trips),
         "common_clubs": statistics.common_clubs(trips),
         "most_duration": trips.exclude(duration=None).order_by("-duration")[0:10],
-        "averages": statistics.trip_averages(trips, request.user.units),
+        "averages": statistics.trip_averages(trips, get_user(request).units),
         "most_vert_up": trips.filter(vert_dist_up__gt=0).order_by("-vert_dist_up")[
             0:10
         ],
@@ -529,4 +537,10 @@ def user_statistics(request):
             "-horizontal_dist"
         )[0:10],
     }
+
+    new_version_msg = SafeString(
+        "A new version of the statistics page is under development. You can "
+        'view it by <a href="/stats/">clicking here</a>.'
+    )
+    messages.info(request, new_version_msg)
     return render(request, "logger/statistics.html", context)

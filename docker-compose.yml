@@ -15,7 +15,6 @@ services:
     build:
       context: .
       dockerfile: ./config/docker/development/Dockerfile.dev.web
-    command: python manage.py runserver 0.0.0.0:8000 --insecure
     volumes:
       - ./app/:/opt/dev/app/
       - ./data/development/media:/opt/dev/media/

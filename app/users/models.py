@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -8,6 +9,7 @@ from django.contrib.auth.models import (
 )
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
 from imagekit.models import ImageSpecField
@@ -18,8 +20,8 @@ from timezone_field import TimeZoneField
 
 def avatar_upload_path(instance, filename):
     """Returns the path to upload avatars to"""
-    ext = filename.split(".")[-1].lower()
-    return f"avatars/{instance.uuid}/avatar.{ext}"
+    original_filename, ext = os.path.splitext(filename)
+    return f"avatars/{instance.uuid}/avatar{ext}"
 
 
 class CavingUserManager(BaseUserManager):
@@ -279,6 +281,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("log:user", args=[self.username])
+
     def save(self, *args, **kwargs):
         # Lowercase the username
         self.username = self.username.lower()
@@ -291,8 +296,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     def notify(self, message, url):
         """Send a notification to this user"""
-        from users.models import Notification
-
         return Notification.objects.create(user=self, message=message, url=url)
 
     def is_viewable_by(self, user_viewing):

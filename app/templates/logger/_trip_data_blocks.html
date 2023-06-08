@@ -59,7 +59,7 @@
       <div class="col">
         <small class="text-muted trip-field">{{ name|capfirst }}</small><br />
         {% if user.is_authenticated %}
-          {{ dist|distformat:user.units }}
+          {{ dist|distformat:request.units }}
         {% else %}
           {{ dist }}
         {% endif %}

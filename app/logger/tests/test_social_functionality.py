@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone as tz
 from django.utils.timezone import timedelta as td
 
+from ..factories import TripFactory
 from ..models import Trip, TripReport
 
 User = get_user_model()
@@ -412,3 +413,21 @@ class SocialFunctionalityIntegrationTests(TestCase):
         trip.save()
         response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+    def test_public_statistics_privacy_setting(self):
+        """Test that the public statistics privacy setting works"""
+        for i in range(0, 50):
+            TripFactory(user=self.user)
+        self.user.public_statistics = False
+        self.user.save()
+
+        response = self.client.get(self.user.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '<div class="profile-stats')
+
+        self.user.public_statistics = True
+        self.user.save()
+
+        response = self.client.get(self.user.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<div class="profile-stats')

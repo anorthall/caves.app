@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "logger.apps.LoggerConfig",
     "staff.apps.StaffConfig",
+    "stats.apps.StatsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -118,6 +119,7 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "users.middleware.TimezoneMiddleware",
     "users.middleware.LastSeenMiddleware",
+    "users.middleware.DistanceUnitsMiddleware",
 ]
 
 

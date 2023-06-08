@@ -1,0 +1,143 @@
+{% extends "base_stats.html" %}
+{% load logger_tags %}
+{% load stats_tags %}
+{% load markdownify %}
+
+{% block content %}
+  {% if stats_yearly %}
+    <h3 class="subtitle">
+      Annual statistics
+    </h3>
+
+    {% include "stats/_yearly_stats.html" with stats=stats_yearly %}
+  {% else %}
+    <div class="mw-45">
+      <p class="lead">
+        You haven't added any trips, so no statistics are available.
+        Why not <a href="{% url 'log:trip_create' %}">add a trip</a> now?
+      </p>
+
+      <p>
+        As you add trips, more statistics will be added to this page. The statistics
+        shown will vary based on what data is available. To ensure the most interesting
+        statistics, fill out as many fields as possible when adding trips.
+      </p>
+    </div>
+  {% endif %}
+
+  {% if stats_most_common %}
+    <h3 class="subtitle mt-5">
+      Most common
+    </h3>
+
+    <div class="row row-cols-1 row-cols-lg-2 g-4">
+      {% for stat in stats_most_common %}
+        <div class="col">
+          <h5 class="mb-3">{{ stat.title }}</h5>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{{ stat.metric_name }}</th>
+                  <th>{{ stat.value_name }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for row in stat.rows %}
+                  <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <td>{{ row.metric }}</td>
+                    <td>{{ row.value }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if stats_biggest_trips %}
+    <h3 class="subtitle mt-5">
+      Biggest trips
+    </h3>
+
+    <div class="row row-cols-1 row-cols-lg-2 g-4">
+      {% for stat in stats_biggest_trips %}
+        <div class="col">
+          <h5 class="mb-3">{{ stat.title }}</h5>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Trip</th>
+                  <th>Date</th>
+                  <th>{{ stat.metric }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for row in stat.rows %}
+                  <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <td>
+                      <a href="{{ row.trip.get_absolute_url }}">
+                        {{ row.trip.cave_name }}
+                      </a>
+                    </td>
+                    <td>{{ row.trip.start|date }}</td>
+                    <td>
+                      {% if row.is_time %}
+                        {{ row.value|naturaldelta }}
+                      {% else %}
+                        {{ row.value|distformat:request.units }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if stats_averages %}
+    <h3 class="subtitle mt-5">
+      Averages
+    </h3>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Average</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for stat in stats_averages %}
+            <tr>
+              <td>{{ stat.metric }}</td>
+              <td>
+                {% if stat.is_dist %}
+                  {{ stat.value|distformat:request.units }}
+                {% elif stat.is_time %}
+                  {{ stat.value|naturaldelta:"minutes" }}
+                {% else %}
+                  {{ stat.value|floatformat:2 }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}

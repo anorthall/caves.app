@@ -132,7 +132,7 @@ class TripPhotoAdmin(admin.ModelAdmin):
         ),
     )
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(self, request, obj=None):  # pragma: no cover
         return False
 
 
