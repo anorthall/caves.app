@@ -90,7 +90,13 @@
                       </a>
                     </td>
                     <td>{{ row.trip.start|date }}</td>
-                    <td>{{ row.value }}</td>
+                    <td>
+                      {% if row.is_time %}
+                        {{ row.value|naturaldelta }}
+                      {% else %}
+                        {{ row.value|distformat:request.units }}
+                      {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
               </tbody>

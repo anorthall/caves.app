@@ -1,12 +1,16 @@
-import humanize
+from datetime import timedelta
+from typing import Union
+
 from attrs import Factory, define, frozen
+from distance import D
 from logger.models import Trip
 
 
 @frozen
 class TripStatsRow:
     trip: Trip
-    value: str
+    value: Union[D, timedelta]
+    is_time: bool = False
 
 
 @define
@@ -15,11 +19,11 @@ class TripStats:
     metric: str
     rows: list = Factory(list)
 
-    def add_row(self, trip, value):
-        self.rows.append(TripStatsRow(trip=trip, value=value))
+    def add_row(self, trip, value, is_time=False):
+        self.rows.append(TripStatsRow(trip=trip, value=value, is_time=is_time))
 
 
-def _build_trip_stats(queryset, title, field, limit, metric=None, duration=False):
+def _build_trip_stats(queryset, title, field, limit, metric=None, is_time=False):
     if metric is None:
         metric = title
 
@@ -27,17 +31,7 @@ def _build_trip_stats(queryset, title, field, limit, metric=None, duration=False
     qs = queryset.exclude(**{field: None}).order_by("-" + field)[:limit]
 
     for trip in qs:
-        if duration:
-            stats.add_row(
-                trip,
-                humanize.precisedelta(
-                    getattr(trip, field),
-                    minimum_unit="minutes",
-                    format="%.0f",
-                ),
-            )
-        else:
-            stats.add_row(trip, getattr(trip, field))
+        stats.add_row(trip, getattr(trip, field), is_time)
 
     return stats
 
@@ -50,7 +44,7 @@ def biggest_trips(queryset, limit=10):
             field="duration",
             metric="Duration",
             limit=limit,
-            duration=True,
+            is_time=True,
         ),
         _build_trip_stats(
             queryset=queryset,

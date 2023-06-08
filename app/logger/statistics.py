@@ -231,9 +231,7 @@ def trip_averages(qs, units):  # noqa C901
     for key, value in results.items():
         if value:
             if type(value) == timezone.timedelta:
-                value = humanize.precisedelta(
-                    value, minimum_unit="minutes", format="%.0f"
-                )
+                humanize.precisedelta(value, minimum_unit="minutes", format="%.0f")
             elif type(value) == Distance:
                 if units == User.IMPERIAL:
                     processed_results[key] = f"{round(value.ft, 2)}ft"
