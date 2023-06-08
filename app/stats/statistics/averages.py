@@ -29,10 +29,15 @@ def averages(queryset):
         Row(metric="Aid climbed", value=dist(queryset, "aid_dist"), is_dist=True),
         Row(metric="Horizontal", value=dist(queryset, "horizontal_dist"), is_dist=True),
     ]
-    return rows
+
+    # Clear out any rows with a zero value
+    return [row for row in rows if row.value]
 
 
 def trips_per_week(queryset):
+    if not queryset.exists():
+        return 0
+
     qs = queryset.order_by("start")
     weeks = (timezone.now() - qs.first().start).days // 7
 
