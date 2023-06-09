@@ -108,6 +108,18 @@ class CavingUserAdmin(BaseUserAdmin):
                 ),
             },
         ),
+        (
+            "Custom fields",
+            {
+                "fields": (
+                    "custom_field_1_label",
+                    "custom_field_2_label",
+                    "custom_field_3_label",
+                    "custom_field_4_label",
+                    "custom_field_5_label",
+                )
+            },
+        ),
     )
 
     readonly_fields = ("last_login", "last_seen", "date_joined", "uuid")
