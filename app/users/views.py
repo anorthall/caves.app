@@ -386,7 +386,7 @@ class NotificationRedirect(LoginRequiredMixin, View):
         return redirect(notification.url)
 
 
-class CustomFieldsUpdate(LoginRequiredMixin, FormView):
+class CustomFieldsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "users/custom_fields.html"
     form_class = CustomFieldsForm
     success_message = "Your custom fields have been updated."

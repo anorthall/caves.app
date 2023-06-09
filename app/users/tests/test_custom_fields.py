@@ -26,6 +26,7 @@ class CustomFieldTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.user.custom_field_1_label, "Test Label")
+        self.assertContains(response, "Your custom fields have been updated.")
 
     def test_submitting_custom_field_value_when_a_trip_holds_that_value(self):
         """Test validation of custom field form when a trip holds that value"""
