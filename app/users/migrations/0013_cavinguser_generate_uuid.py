@@ -4,7 +4,7 @@ import uuid
 from django.db import migrations, models
 
 
-def gen_uuid(apps, schema_editor):
+def gen_uuid(apps, schema_editor):  # pragma: no cover
     User = apps.get_model("users", "CavingUser")
     for user in User.objects.all():
         user.uuid = uuid.uuid4()

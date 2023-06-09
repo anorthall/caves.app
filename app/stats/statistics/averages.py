@@ -43,7 +43,7 @@ def trips_per_week(queryset):
     qs = queryset.order_by("start")
     weeks = (timezone.now() - qs.first().start).days // 7
 
-    if weeks == 0:
+    if weeks == 0:  # pragma: no cover
         return 0
     return qs.count() / weeks
 
