@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.utils import timezone
 from logger.models import Trip, TripReport
 
+from ..factories import TripFactory
+
 User = get_user_model()
 
 
@@ -164,3 +166,23 @@ class TestLoggerPagesLoad(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:statistics"))
         self.assertEqual(response.status_code, 200)
+
+    @tag("search")
+    def test_search_page_loads(self):
+        """Test that the search page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:search"))
+        self.assertEqual(response.status_code, 200)
+
+    @tag("search")
+    def test_search_results_page_loads(self):
+        """Test that the search page loads with results"""
+        self.client.force_login(self.user)
+
+        for i in range(500):
+            TripFactory(user=self.user, cave_name=f"Test Cave {i}")
+
+        response = self.client.get(reverse("log:search_results"), {"terms": "cave"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<h2 class="fs-4 mb-3">Results</h2>')
