@@ -115,6 +115,7 @@ class UserProfile(ListView):
         context = super().get_context_data()
         context["profile_user"] = self.profile_user
         context["page_title"] = self.get_page_title()
+        context["show_cavers"] = self.profile_user.show_cavers_on_trip_list
         if self.profile_user.public_statistics:
             context["stats"] = new_stats.yearly(self.get_queryset())
 

@@ -38,7 +38,7 @@
 
   {% if trips %}
     <div class="table-responsive">
-      <table class="table table-hover table-striped mb-0">
+      <table class="table {% if not show_cavers %}table-hover table-striped{% endif %} mb-0">
         <thead class="border-top">
           <tr>
             <th scope="col">
@@ -121,7 +121,7 @@
 
         <tbody>
           {% for trip in trips %}
-            <tr data-href="{{ trip.get_absolute_url }}">
+            <tr class="{% if show_cavers %}table-light{% endif %}" data-href="{{ trip.get_absolute_url }}">
               <td>{{ trip.start|date:"j M y" }}</td>
 
               <td>
@@ -156,6 +156,14 @@
                 {% endif %}
               </td>
             </tr>
+
+            {% if trip.cavers and show_cavers %}
+              <tr data-href="{{ trip.get_absolute_url }}">
+                <td colspan="{% if profile_user.disable_distance_statistics %}5{% else %}7{% endif %}" class="pb-3 pt-3 px-3 text-primary">
+                  with {{ trip.cavers }}
+                </td>
+              </tr>
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>

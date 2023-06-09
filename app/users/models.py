@@ -233,10 +233,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     public_statistics = models.BooleanField(
         "Show statistics",
         default=True,
-        help_text=(
-            "Check this box to show a statistics table on your "
-            "public profile (if enabled)."
-        ),
+        help_text=("Check this box to show a statistics table on your profile."),
     )
     disable_distance_statistics = models.BooleanField(
         "Disable distance statistics",
@@ -257,12 +254,20 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "displayed on your profile."
         ),
     )
+    show_cavers_on_trip_list = models.BooleanField(
+        "Show cavers on trip list",
+        default=True,
+        help_text=(
+            "Enabling this option will display a list of cavers "
+            "beneath each trip on your profile trip list."
+        ),
+    )
     private_notes = models.BooleanField(
         "Keep notes private",
         default=True,
         help_text=(
-            "Check this box to prevent your trip notes being "
-            "displayed on your public profile (if enabled)."
+            "Enable this option to prevent your trip notes being "
+            "displayed to other users when they view your trips."
         ),
     )
 

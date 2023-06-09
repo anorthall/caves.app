@@ -256,6 +256,7 @@ class SettingsChangeForm(forms.ModelForm):
             "allow_comments",
             "disable_distance_statistics",
             "disable_survey_statistics",
+            "show_cavers_on_trip_list",
         )
 
     def __init__(self, *args, **kwargs):
@@ -279,6 +280,7 @@ class SettingsChangeForm(forms.ModelForm):
                     Div("allow_comments", css_class="col"),
                     Div("disable_distance_statistics", css_class="col"),
                     Div("disable_survey_statistics", css_class="col"),
+                    Div("show_cavers_on_trip_list", css_class="col"),
                     css_class="row row-cols-1 row-cols-lg-3 mt-4",
                 ),
             ),
