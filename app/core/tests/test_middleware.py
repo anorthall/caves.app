@@ -8,7 +8,7 @@ from django.urls import reverse
 User = get_user_model()
 
 
-@tag("fast, middleware", "integration")
+@tag("fast, middleware")
 class TestMiddleware(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -22,7 +22,6 @@ class TestMiddleware(TestCase):
 
         self.client = Client()
 
-    @tag("fast", "middleware")
     def test_timezone_middleware_with_all_timezones(self):
         """
         Test that the timezone middleware does not produce any errors

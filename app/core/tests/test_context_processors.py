@@ -3,7 +3,7 @@ from django.test import TestCase, override_settings, tag
 from ..context_processors import google_analytics
 
 
-@tag("fast, middleware", "unit")
+@tag("fast", "context_processors")
 class TestContextProcessors(TestCase):
     @override_settings(GOOGLE_ANALYTICS_ID="test-google-analytics-id")
     def test_google_analytics_context_processor_returns_id(self):
