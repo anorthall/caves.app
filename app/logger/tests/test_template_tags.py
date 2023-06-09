@@ -7,8 +7,8 @@ from ..templatetags import logger_tags
 User = get_user_model()
 
 
-@tag("unit", "fast", "logger")
-class TemplateTagUnitTests(TestCase):
+@tag("templatetags", "fast", "logger")
+class TemplateTagTests(TestCase):
     def test_format_metric_templatetag_with_small_value(self):
         """Test the format_metric() function with a small value"""
         self.assertEqual(logger_tags.format_metric(D(ft=1000)), "305m")

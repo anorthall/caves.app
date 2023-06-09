@@ -12,8 +12,8 @@ from ..models import Trip, TripReport
 User = get_user_model()
 
 
-@tag("logger", "tripreport", "fast", "integration")
-class TripReportIntegrationTests(TestCase):
+@tag("logger", "tripreports", "fast", "views")
+class TripReportTests(TestCase):
     def setUp(self):
         """Reduce log level to avoid 404 error"""
         logger = logging.getLogger("django.request")
@@ -22,7 +22,6 @@ class TripReportIntegrationTests(TestCase):
 
         self.client = Client()
 
-        # Create an enabled user
         self.user = User.objects.create_user(
             email="enabled@user.app",
             username="enabled",
@@ -31,6 +30,15 @@ class TripReportIntegrationTests(TestCase):
         )
         self.user.is_active = True
         self.user.save()
+
+        self.user2 = User.objects.create_user(
+            email="user2@user.app",
+            username="user2",
+            password="testpassword",
+            name="User 2",
+        )
+        self.user2.is_active = True
+        self.user2.save()
 
         self.trip = Trip.objects.create(
             user=self.user,
@@ -165,6 +173,7 @@ class TripReportIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, report.get_absolute_url())
 
+    @tag("privacy")
     def test_users_cannot_edit_a_trip_report_for_other_users(self):
         """Test users cannot edit a trip report which does not belong to them."""
         user = User.objects.create_user(
@@ -267,23 +276,6 @@ class TripReportIntegrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, report.get_absolute_url())
 
-    def test_trip_report_link_appears_on_trip_detail(self):
-        """Test the trip report link appears on the trip detail page"""
-        self.client.force_login(self.user)
-        report = TripReport.objects.create(
-            title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
-            content="Test content.",
-            privacy=TripReport.PUBLIC,
-            trip=self.trip,
-            user=self.user,
-        )
-
-        response = self.client.get(self.trip.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, report.get_absolute_url())
-
     def test_add_trip_report_link_appears_when_no_report_has_been_added(self):
         """Test the add trip report link appears on the trip detail page"""
         self.client.force_login(self.user)
@@ -331,3 +323,53 @@ class TripReportIntegrationTests(TestCase):
         self.assertContains(
             response, reverse("log:report_update", args=[report.trip.uuid])
         )
+
+    @tag("privacy")
+    def test_trip_report_detail_view_with_various_privacy_settings(self):
+        """Test that the trip report detail view respects privacy settings"""
+        trip = Trip.objects.filter(user=self.user).first()
+        report = TripReport.objects.create(
+            user=self.user,
+            trip=trip,
+            title="Test report",
+            content="Test report content",
+            pub_date=tz.now().date(),
+        )
+        self.client.force_login(self.user2)
+
+        report.privacy = TripReport.PRIVATE
+        report.save()
+        response = self.client.get(report.get_absolute_url())
+        self.assertEqual(response.status_code, 403)
+
+        report.privacy = TripReport.FRIENDS
+        report.save()
+        response = self.client.get(report.get_absolute_url())
+        self.assertEqual(response.status_code, 403)
+
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
+        response = self.client.get(report.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        report.privacy = TripReport.PUBLIC
+        report.save()
+        response = self.client.get(report.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        report.privacy = TripReport.DEFAULT
+        report.save()
+        trip.privacy = Trip.FRIENDS
+        trip.save()
+        response = self.client.get(report.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+        response = self.client.get(report.get_absolute_url())
+        self.assertEqual(response.status_code, 403)
+
+        trip.privacy = Trip.PUBLIC
+        trip.save()
+        response = self.client.get(report.get_absolute_url())
+        self.assertEqual(response.status_code, 200)

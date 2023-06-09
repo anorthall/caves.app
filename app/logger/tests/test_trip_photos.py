@@ -9,8 +9,8 @@ from ..models import Trip, trip_photo_upload_path
 User = get_user_model()
 
 
-@tag("logger", "tripphoto", "fast", "unit")
-class TripPhotoModelUnitTests(TestCase):
+@tag("logger", "tripphotos", "fast")
+class TripPhotoTests(TestCase):
     def setUp(self):
         self.client = Client()
 

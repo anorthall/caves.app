@@ -6,13 +6,14 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .. import feed
+from ..factories import TripFactory
 from ..models import Trip
 
 User = get_user_model()
 
 
-@tag("social", "fast", "integration")
-class FeedIntegrationTests(TestCase):
+@tag("feed", "fast", "views")
+class SocialFeedTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
@@ -41,9 +42,7 @@ class FeedIntegrationTests(TestCase):
         """Test that the load more trips button is displayed"""
         self.client.force_login(self.user)
         for i in range(1, 12):
-            Trip.objects.create(
-                user=self.user, cave_name=f"Test Cave {i}", start=timezone.now()
-            )
+            TripFactory(user=self.user)
 
         response = self.client.get(reverse("log:index"))
         self.assertEqual(response.status_code, 200)
@@ -53,9 +52,7 @@ class FeedIntegrationTests(TestCase):
         """Test that the load more trips button is not displayed"""
         self.client.force_login(self.user)
         for i in range(1, 6):
-            Trip.objects.create(
-                user=self.user, cave_name=f"Test Cave {i}", start=timezone.now()
-            )
+            TripFactory(user=self.user)
 
         response = self.client.get(reverse("log:index"))
         self.assertEqual(response.status_code, 200)
@@ -131,9 +128,6 @@ class FeedIntegrationTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.feed_ordering, User.FEED_DATE)
 
-
-@tag("social", "fast", "unit")
-class FeedUnitTests(TestCase):
     def test_get_trips_context_with_a_user_without_trips(self):
         """Test the get_trips_context method with a user without trips"""
         user = User.objects.create_user(
@@ -143,3 +137,37 @@ class FeedUnitTests(TestCase):
         request.user = user
         result = feed.get_trips_context(request, User.FEED_DATE)
         self.assertEqual(result, [])
+
+    @tag("privacy")
+    def test_that_private_trips_do_not_appear_in_the_trip_feed(self):
+        """Test that private trips do not appear in the trip feed"""
+        self.client.force_login(self.user2)
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
+
+        for i in range(1, 50):
+            TripFactory(user=self.user, cave_name="User1 Cave", privacy=Trip.PUBLIC)
+
+        response = self.client.get(reverse("log:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "User1 Cave")
+
+        # Now set the trips to private and verify they do not appear in the feed
+        for trip in self.user.trips:
+            trip.privacy = Trip.PRIVATE
+            trip.save()
+
+        response = self.client.get(reverse("log:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "User1 Cave")
+
+    @tag("privacy", "htmx")
+    def test_htmx_trip_like_view_on_an_object_the_user_cannot_view(self):
+        """Test that the HTMX like view respects privacy"""
+        trip = TripFactory(user=self.user, privacy=Trip.PRIVATE)
+        self.client.force_login(self.user2)
+
+        response = self.client.post(
+            reverse("log:trip_like_htmx_view", args=[trip.uuid]),
+        )
+        self.assertEqual(response.status_code, 403)
