@@ -16,6 +16,7 @@ from .validators import (
 )
 
 
+# noinspection PyUnresolvedReferences
 class Trip(models.Model):
     """Caving trip model."""
 
@@ -434,6 +435,7 @@ class TripPhoto(models.Model):
         return self.photo.url
 
 
+# noinspection PyUnresolvedReferences
 class TripReport(models.Model):
     class Meta:
         constraints = [
