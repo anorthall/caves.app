@@ -6,12 +6,16 @@
     <thead>
       <tr>
         <th>Year</th>
-        <th class="{{ dist_class }}">Climbed</th>
-        <th class="{{ dist_class }}">Descended</th>
-        <th class="{{ dist_class }}">Surveyed</th>
-        <th class="{{ dist_class }}">Resurveyed</th>
-        <th class="{{ dist_class }}">Horizontal</th>
-        <th class="{{ dist_class }}">Aid climbed</th>
+        {% if not disable_dist %}
+          <th class="{{ dist_class }}">Climbed</th>
+          <th class="{{ dist_class }}">Descended</th>
+          <th class="{{ dist_class }}">Horizontal</th>
+          <th class="{{ dist_class }}">Aid climbed</th>
+        {% endif %}
+        {% if not disable_survey %}
+          <th class="{{ dist_class }}">Surveyed</th>
+          <th class="{{ dist_class }}">Resurveyed</th>
+        {% endif %}
         <th>Time</th>
         <th>Trips</th>
       </tr>
@@ -21,12 +25,16 @@
       {% for year in stats %}
         <tr>
           <th>{% if year.is_total %}Total{% else %}{{ year.year }}{% endif %}</th>
-          <td class="{{ dist_class }}">{{ year.climbed|distformat:request.units }}</td>
-          <td class="{{ dist_class }}">{{ year.descended|distformat:request.units }}</td>
-          <td class="{{ dist_class }}">{{ year.surveyed|distformat:request.units }}</td>
-          <td class="{{ dist_class }}">{{ year.resurveyed|distformat:request.units }}</td>
-          <td class="{{ dist_class }}">{{ year.horizontal|distformat:request.units }}</td>
-          <td class="{{ dist_class }}">{{ year.aid_climbed|distformat:request.units }}</td>
+          {% if not disable_dist %}
+            <td class="{{ dist_class }}">{{ year.climbed|distformat:request.units }}</td>
+            <td class="{{ dist_class }}">{{ year.descended|distformat:request.units }}</td>
+            <td class="{{ dist_class }}">{{ year.horizontal|distformat:request.units }}</td>
+            <td class="{{ dist_class }}">{{ year.aid_climbed|distformat:request.units }}</td>
+          {% endif %}
+          {% if not disable_survey %}
+            <td class="{{ dist_class }}">{{ year.surveyed|distformat:request.units }}</td>
+            <td class="{{ dist_class }}">{{ year.resurveyed|distformat:request.units }}</td>
+          {% endif %}
           <td>{{ year.time|naturaldelta }}</td>
           <td>{{ year.trips }}</td>
         </tr>

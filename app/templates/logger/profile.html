@@ -31,8 +31,8 @@
   {% endif %}
 
   {% if stats %}
-    <div class="profile-stats mt-4 mb-4 border-top">
-      {% include "stats/_yearly_stats.html" with stats=stats table_class="table-sm" dist_class="d-none d-md-table-cell" %}
+    <div class="profile-stats {% if profile_user.bio %}mt-4{% endif %} mb-4 border-top">
+      {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-md-table-cell" %}
     </div>
   {% endif %}
 
@@ -77,29 +77,31 @@
               </small>
             </th>
 
-            <th class="d-none d-lg-table-cell" scope="col">
-              Up
-              <small>
-                <a href="?sort=vert_dist_up" class="text-decoration-none">
-                  <i class="bi bi-sort-up"></i>
-                </a>
-                <a href="?sort=-vert_dist_up" class="text-decoration-none">
-                  <i class="bi bi-sort-down"></i>
-                </a>
-              </small>
-            </th>
+            {% if not profile_user.disable_distance_statistics %}
+              <th class="d-none d-lg-table-cell" scope="col">
+                Up
+                <small>
+                  <a href="?sort=vert_dist_up" class="text-decoration-none">
+                    <i class="bi bi-sort-up"></i>
+                  </a>
+                  <a href="?sort=-vert_dist_up" class="text-decoration-none">
+                    <i class="bi bi-sort-down"></i>
+                  </a>
+                </small>
+              </th>
 
-            <th class="d-none d-xxl-table-cell" scope="col">
-              Down
-              <small>
-                <a href="?sort=vert_dist_down" class="text-decoration-none">
-                  <i class="bi bi-sort-up"></i>
-                </a>
-                <a href="?sort=-vert_dist_down" class="text-decoration-none">
-                  <i class="bi bi-sort-down"></i>
-                </a>
-              </small>
-            </th>
+              <th class="d-none d-xxl-table-cell" scope="col">
+                Down
+                <small>
+                  <a href="?sort=vert_dist_down" class="text-decoration-none">
+                    <i class="bi bi-sort-up"></i>
+                  </a>
+                  <a href="?sort=-vert_dist_down" class="text-decoration-none">
+                    <i class="bi bi-sort-down"></i>
+                  </a>
+                </small>
+              </th>
+            {% endif %}
 
             <th class="d-none d-lg-table-cell" scope="col">
               Trip type
@@ -136,9 +138,10 @@
                 {% endif %}
               </td>
 
-              <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:request.units }}</td>
-
-              <td class="d-none d-xxl-table-cell">{{ trip.vert_dist_down|distformat:request.units }}</td>
+              {% if not profile_user.disable_distance_statistics %}
+                <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:request.units }}</td>
+                <td class="d-none d-xxl-table-cell">{{ trip.vert_dist_down|distformat:request.units }}</td>
+              {% endif %}
 
               <td class="d-none d-lg-table-cell">
                 {{ trip.type }}

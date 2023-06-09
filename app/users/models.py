@@ -238,6 +238,25 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "public profile (if enabled)."
         ),
     )
+    disable_distance_statistics = models.BooleanField(
+        "Disable distance statistics",
+        default=False,
+        help_text=(
+            "Enabling this option will mean that rope climbed, "
+            "rope descended, horizontal distance and aid climbing "
+            "distance statistics will not be displayed on your "
+            "profile."
+        ),
+    )
+    disable_survey_statistics = models.BooleanField(
+        "Disable survey statistics",
+        default=False,
+        help_text=(
+            "Enabling this option will mean that surveying and "
+            "resurveying distance statistics will not be "
+            "displayed on your profile."
+        ),
+    )
     private_notes = models.BooleanField(
         "Keep notes private",
         default=True,

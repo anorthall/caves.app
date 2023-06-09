@@ -15,6 +15,7 @@ from .models import Trip, TripReport
 User = get_user_model()
 
 
+# noinspection PyTypeChecker
 class TripReportForm(forms.ModelForm):
     class Meta:
         model = TripReport
@@ -79,6 +80,7 @@ class TripReportForm(forms.ModelForm):
             return slug
 
 
+# noinspection PyTypeChecker
 class TripForm(DistanceUnitFormMixin, forms.ModelForm):
     class Meta:
         model = Trip

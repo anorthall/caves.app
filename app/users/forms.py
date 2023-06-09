@@ -43,6 +43,7 @@ class AuthenticationForm(auth.forms.AuthenticationForm):
         )
 
 
+# noinspection PyTypeChecker
 class PasswordChangeForm(auth.forms.PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
@@ -240,6 +241,7 @@ class UserAdminChangeForm(forms.ModelForm):
         )
 
 
+# noinspection PyTypeChecker
 class SettingsChangeForm(forms.ModelForm):
     class Meta:
         model = User
@@ -252,6 +254,8 @@ class SettingsChangeForm(forms.ModelForm):
             "allow_friend_username",
             "allow_friend_email",
             "allow_comments",
+            "disable_distance_statistics",
+            "disable_survey_statistics",
         )
 
     def __init__(self, *args, **kwargs):
@@ -273,6 +277,8 @@ class SettingsChangeForm(forms.ModelForm):
                     Div("allow_friend_username", css_class="col"),
                     Div("allow_friend_email", css_class="col"),
                     Div("allow_comments", css_class="col"),
+                    Div("disable_distance_statistics", css_class="col"),
+                    Div("disable_survey_statistics", css_class="col"),
                     css_class="row row-cols-1 row-cols-lg-3 mt-4",
                 ),
             ),
@@ -280,6 +286,7 @@ class SettingsChangeForm(forms.ModelForm):
         )
 
 
+# noinspection PyTypeChecker
 class ProfileChangeForm(forms.ModelForm):
     class Meta:
         model = User
@@ -322,6 +329,7 @@ class ProfileChangeForm(forms.ModelForm):
         )
 
 
+# noinspection PyTypeChecker
 class UserChangeEmailForm(forms.Form):
     email = forms.EmailField(
         label="New email address",

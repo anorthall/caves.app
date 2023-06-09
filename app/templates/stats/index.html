@@ -9,7 +9,7 @@
       Annual statistics
     </h3>
 
-    {% include "stats/_yearly_stats.html" with stats=stats_yearly %}
+    {% include "stats/_yearly_stats.html" with stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}
   {% else %}
     <div class="mw-45">
       <p class="lead">
