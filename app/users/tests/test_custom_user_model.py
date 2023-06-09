@@ -294,7 +294,7 @@ class UserIntegrationTestCase(TestCase):
 
     def test_verifying_email_for_a_deleted_user(self):
         """Test registering a user, then deleting them before they verify their email"""
-        response = self.client.post(
+        self.client.post(
             reverse("users:register"),
             {
                 "name": "Test",
