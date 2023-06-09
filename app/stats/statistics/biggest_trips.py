@@ -36,7 +36,9 @@ def _build_trip_stats(queryset, title, field, limit, metric=None, is_time=False)
     return stats
 
 
-def biggest_trips(queryset, limit=10):
+def biggest_trips(
+    queryset, limit=10, disable_dist_stats=False, disable_survey_stats=False
+):
     stats = [
         _build_trip_stats(
             queryset=queryset,
@@ -46,45 +48,53 @@ def biggest_trips(queryset, limit=10):
             limit=limit,
             is_time=True,
         ),
-        _build_trip_stats(
-            queryset=queryset,
-            title="Rope climbed",
-            field="vert_dist_up",
-            metric="Climbed",
-            limit=limit,
-        ),
-        _build_trip_stats(
-            queryset=queryset,
-            title="Rope descended",
-            field="vert_dist_down",
-            metric="Descended",
-            limit=limit,
-        ),
-        _build_trip_stats(
-            queryset=queryset,
-            title="Surveyed",
-            field="surveyed_dist",
-            limit=limit,
-        ),
-        _build_trip_stats(
-            queryset=queryset,
-            title="Resurveyed",
-            field="resurveyed_dist",
-            limit=limit,
-        ),
-        _build_trip_stats(
-            queryset=queryset,
-            title="Aid climbed",
-            field="aid_dist",
-            limit=limit,
-        ),
-        _build_trip_stats(
-            queryset=queryset,
-            title="Horizontal distance",
-            field="horizontal_dist",
-            metric="Distance",
-            limit=limit,
-        ),
     ]
+
+    if not disable_survey_stats:
+        stats += [
+            _build_trip_stats(
+                queryset=queryset,
+                title="Surveyed",
+                field="surveyed_dist",
+                limit=limit,
+            ),
+            _build_trip_stats(
+                queryset=queryset,
+                title="Resurveyed",
+                field="resurveyed_dist",
+                limit=limit,
+            ),
+        ]
+
+    if not disable_dist_stats:
+        stats += [
+            _build_trip_stats(
+                queryset=queryset,
+                title="Rope climbed",
+                field="vert_dist_up",
+                metric="Climbed",
+                limit=limit,
+            ),
+            _build_trip_stats(
+                queryset=queryset,
+                title="Rope descended",
+                field="vert_dist_down",
+                metric="Descended",
+                limit=limit,
+            ),
+            _build_trip_stats(
+                queryset=queryset,
+                title="Aid climbed",
+                field="aid_dist",
+                limit=limit,
+            ),
+            _build_trip_stats(
+                queryset=queryset,
+                title="Horizontal distance",
+                field="horizontal_dist",
+                metric="Distance",
+                limit=limit,
+            ),
+        ]
 
     return [stat for stat in stats if stat.rows]

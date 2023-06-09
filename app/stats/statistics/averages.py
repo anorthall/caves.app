@@ -14,23 +14,41 @@ class Row:
     is_time: bool = False
 
 
-def averages(queryset):
+def averages(queryset, disable_dist_stats=False, disable_survey_stats=False):
     rows = [
         Row(metric="Trips per week", value=trips_per_week(queryset)),
         Row(metric="Trip duration", value=trip_duration(queryset), is_time=True),
-        Row(metric="Rope climbed", value=dist(queryset, "vert_dist_up"), is_dist=True),
-        Row(
-            metric="Rope descended",
-            value=dist(queryset, "vert_dist_down"),
-            is_dist=True,
-        ),
-        Row(metric="Surveyed", value=dist(queryset, "surveyed_dist"), is_dist=True),
-        Row(
-            metric="Resurveryed", value=dist(queryset, "resurveyed_dist"), is_dist=True
-        ),
-        Row(metric="Aid climbed", value=dist(queryset, "aid_dist"), is_dist=True),
-        Row(metric="Horizontal", value=dist(queryset, "horizontal_dist"), is_dist=True),
     ]
+
+    if not disable_dist_stats:
+        rows += [
+            Row(
+                metric="Rope climbed",
+                value=dist(queryset, "vert_dist_up"),
+                is_dist=True,
+            ),
+            Row(
+                metric="Rope descended",
+                value=dist(queryset, "vert_dist_down"),
+                is_dist=True,
+            ),
+            Row(metric="Aid climbed", value=dist(queryset, "aid_dist"), is_dist=True),
+            Row(
+                metric="Horizontal",
+                value=dist(queryset, "horizontal_dist"),
+                is_dist=True,
+            ),
+        ]
+
+    if not disable_survey_stats:
+        rows += [
+            Row(metric="Surveyed", value=dist(queryset, "surveyed_dist"), is_dist=True),
+            Row(
+                metric="Resurveryed",
+                value=dist(queryset, "resurveyed_dist"),
+                is_dist=True,
+            ),
+        ]
 
     # Clear out any rows with a zero value
     return [row for row in rows if row.value]
