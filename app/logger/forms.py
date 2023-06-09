@@ -105,17 +105,25 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
             "resurveyed_dist",
             "aid_dist",
             "notes",
+            "custom_field_1",
+            "custom_field_2",
+            "custom_field_3",
+            "custom_field_4",
+            "custom_field_5",
         ]
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.user = user
+        self.has_custom_fields = False
         self.fields["notes"].label = ""
         self.helper = FormHelper()
         self.helper.form_method = "post"
+        custom_fields = self._get_custom_fields()
         self.helper.layout = Layout(
             Fieldset(
                 "Cave details",
@@ -143,6 +151,7 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
                 ),
                 css_class="mt-4",
             ),
+            custom_fields,
             Fieldset(
                 "Distances",
                 HTML(
@@ -189,6 +198,42 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
                     css_class="btn-secondary btn-lg w-100 mt-3",
                 )
             )
+
+    def _get_custom_fields(self):
+        valid_field_names = []
+        invalid_field_names = []
+        for field_name, field in self.fields.items():
+            if not field_name.startswith("custom_field_"):
+                continue
+
+            label = getattr(self.user, f"{field_name}_label")
+            if label:
+                field.label = label
+                valid_field_names.append(field_name)
+            else:
+                invalid_field_names.append(field_name)
+
+        for field_name in invalid_field_names:
+            del self.fields[field_name]
+
+        if valid_field_names:
+            custom_fields = Layout(
+                Fieldset(
+                    "Custom fields",
+                    Div(
+                        css_class="row row-cols-1 row-cols-lg-2",
+                    ),
+                    css_class="mt-4",
+                )
+            )
+
+            for field_name in valid_field_names:
+                custom_fields[0][0].append(
+                    Div(Field(field_name), css_class="col"),
+                )
+            return custom_fields
+        else:
+            return None
 
     def clean_start(self):
         """Validate the trip start date/time"""

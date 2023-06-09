@@ -233,7 +233,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     public_statistics = models.BooleanField(
         "Show statistics",
         default=True,
-        help_text=("Check this box to show a statistics table on your profile."),
+        help_text="Check this box to show a statistics table on your profile.",
     )
     disable_distance_statistics = models.BooleanField(
         "Disable distance statistics",
@@ -269,6 +269,33 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "Enable this option to prevent your trip notes being "
             "displayed to other users when they view your trips."
         ),
+    )
+
+    # Custom fields
+    custom_field_1_label = models.CharField(
+        "Custom field 1",
+        max_length=25,
+        blank=True,
+    )
+    custom_field_2_label = models.CharField(
+        "Custom field 2",
+        max_length=25,
+        blank=True,
+    )
+    custom_field_3_label = models.CharField(
+        "Custom field 3",
+        max_length=25,
+        blank=True,
+    )
+    custom_field_4_label = models.CharField(
+        "Custom field 4",
+        max_length=25,
+        blank=True,
+    )
+    custom_field_5_label = models.CharField(
+        "Custom field 5",
+        max_length=25,
+        blank=True,
     )
 
     # Feed settings

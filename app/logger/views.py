@@ -154,6 +154,11 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_queryset(self):
         return Trip.objects.filter(user=self.request.user)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object_owner"] = self.object.user
@@ -225,6 +230,11 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         candidate.user = self.request.user
         candidate.save()
         return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def get_initial(self):
         initial = super(TripCreate, self).get_initial()

@@ -30,29 +30,36 @@
       <small class="text-muted trip-field">Date/time exited</small><br />
       {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
     </div>
-
-    <!-- Type -->
-    <div class="col">
-      <small class="text-muted trip-field">Trip type</small><br />
-      {{ trip.type }}
-    </div>
-
-    {% if trip.clubs %}
-    <!-- Clubs -->
-      <div class="col-6 col-xl-4">
-        <small class="text-muted trip-field">Clubs</small><br />
-        {{ trip.clubs }}
-      </div>
-    {% endif %}
-
-    {% if trip.expedition %}
-    <!-- Expedition -->
-      <div class="col">
-        <small class="text-muted trip-field">Expedition</small><br />
-        {{ trip.expedition }}
-      </div>
-    {% endif %}
   {% endif %}
+
+  <!-- Type -->
+  <div class="col">
+    <small class="text-muted trip-field">Trip type</small><br />
+    {{ trip.type }}
+  </div>
+
+  {% if trip.clubs %}
+  <!-- Clubs -->
+    <div class="col-6 col-xl-4">
+      <small class="text-muted trip-field">Clubs</small><br />
+      {{ trip.clubs }}
+    </div>
+  {% endif %}
+
+  {% if trip.expedition %}
+  <!-- Expedition -->
+    <div class="col">
+      <small class="text-muted trip-field">Expedition</small><br />
+      {{ trip.expedition }}
+    </div>
+  {% endif %}
+
+  {% for label, value in trip.custom_fields %}
+    <div class="col-6 col-xl-4">
+      <small class="text-muted trip-field">{{ label }}</small><br />
+      {{ value }}
+    </div>
+  {% endfor %}
 
   {% if trip.has_distances %}
     {% for name, dist in trip.distances.items %}

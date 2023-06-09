@@ -20,6 +20,7 @@ from .forms import (
     AddFriendForm,
     AuthenticationForm,
     AvatarChangeForm,
+    CustomFieldsForm,
     PasswordChangeForm,
     PasswordResetForm,
     ProfileChangeForm,
@@ -383,3 +384,19 @@ class NotificationRedirect(LoginRequiredMixin, View):
         notification.read = True
         notification.save()
         return redirect(notification.url)
+
+
+class CustomFieldsUpdate(LoginRequiredMixin, FormView):
+    template_name = "users/custom_fields.html"
+    form_class = CustomFieldsForm
+    success_message = "Your custom fields have been updated."
+    success_url = reverse_lazy("users:custom_fields_update")
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)

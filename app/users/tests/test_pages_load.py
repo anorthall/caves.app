@@ -137,3 +137,9 @@ class TestUsersPagesLoad(TestCase):
 
         response = self.client.get(reverse("users:friends"))
         self.assertEqual(response.status_code, 200)
+
+    def test_custom_fields_page_loads(self):
+        """Test that the custom fields page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:custom_fields_update"))
+        self.assertEqual(response.status_code, 200)

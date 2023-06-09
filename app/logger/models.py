@@ -210,6 +210,29 @@ class Trip(models.Model):
     )
     aid_dist_units = DistanceUnitField()
 
+    # Custom fields
+    custom_field_1 = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+    custom_field_2 = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+    custom_field_3 = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+    custom_field_4 = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+    custom_field_5 = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    # Metadata
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="liked_trips"
     )
@@ -407,6 +430,28 @@ class Trip(models.Model):
         qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
+
+    @property
+    def custom_fields(self) -> tuple[(str, str)]:
+        """Returns a tuple of (field_label, value) for valid custom fields"""
+        valid_fields: list[(str, str)] = []
+        for field in self._meta.fields:
+            if not field.name.startswith("custom_field_"):
+                continue
+
+            label_field_name = f"{field.name}_label"
+            if not hasattr(self.user, label_field_name):
+                continue
+
+            label = getattr(self.user, label_field_name)
+            if not label:
+                continue
+
+            value = getattr(self, field.name)
+            if value:
+                valid_fields.append((label, value))
+
+        return tuple(valid_fields)
 
 
 def trip_photo_upload_path(instance, filename):

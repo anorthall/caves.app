@@ -1,3 +1,5 @@
+import copy
+
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Fieldset, Layout, Submit
@@ -9,6 +11,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.urls import reverse
+from logger.models import Trip
 
 from .models import FriendRequest
 from .verify import verify_token
@@ -329,6 +332,72 @@ class ProfileChangeForm(forms.ModelForm):
             ),
             Submit("submit", "Save changes", css_class="btn-lg w-100 mt-4"),
         )
+
+
+# noinspection PyTypeChecker
+class CustomFieldsForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = (
+            "custom_field_1_label",
+            "custom_field_2_label",
+            "custom_field_3_label",
+            "custom_field_4_label",
+            "custom_field_5_label",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Store the original data to determine if it changed
+        self.original = {}
+        for field_name, field in self.fields.items():
+            self.original[field_name] = getattr(self.instance, field_name)
+
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            Div(
+                Div("custom_field_1_label", css_class="col"),
+                Div("custom_field_2_label", css_class="col"),
+                Div("custom_field_3_label", css_class="col"),
+                Div("custom_field_4_label", css_class="col"),
+                Div("custom_field_5_label", css_class="col"),
+                css_class="row row-cols-1 row-cols-xl-2",
+            ),
+            Submit("submit", "Save changes", css_class="btn-lg mt-4"),
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        trips = Trip.objects.filter(user=self.instance)
+        data = copy.deepcopy(cleaned_data)
+
+        for field_name, value in data.items():
+            # Check that a field has not changed whilst
+            # some trips exist with a value for that field.
+            if value == self.original[field_name]:
+                # Field unchanged
+                continue
+
+            trip_field_name = field_name.replace("_label", "")
+            qs = trips.exclude(**{trip_field_name: ""})
+            if qs.exists():
+                self.add_error(
+                    field_name,
+                    (
+                        "This field cannot be removed or changed as some trips have a "
+                        "value for it. Please read the documentation above for more "
+                        "information."
+                    ),
+                )
+
+            if value and len(value) < 3:
+                self.add_error(
+                    field_name, "The field name must be at least 3 characters long."
+                )
+
+        return cleaned_data
 
 
 # noinspection PyTypeChecker

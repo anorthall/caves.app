@@ -10,6 +10,7 @@ urlpatterns = [
     path("email/", views.UpdateEmail.as_view(), name="email"),
     path("view/", views.Account.as_view(), name="account_detail"),
     path("settings/", views.SettingsUpdate.as_view(), name="settings_update"),
+    path("custom-fields/", views.CustomFieldsUpdate.as_view(), name="custom_fields_update"),  # noqa E501
     path("profile/", views.ProfileUpdate.as_view(), name="profile_update"),
     path("profile/photo/", views.AvatarUpdate.as_view(), name="profile_photo_update"),  # noqa E501
     path("password/", views.PasswordChangeView.as_view(), name="password_update"),
