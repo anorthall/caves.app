@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:15.2-alpine
+    build:
+      context: .
+      dockerfile: ./config/docker/production/Dockerfile.prod.db
     restart: always
     volumes:
       - ./data/production/db:/var/lib/postgresql/data
