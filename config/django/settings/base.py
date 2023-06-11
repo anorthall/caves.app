@@ -22,6 +22,10 @@ TIME_FORMAT = "H:i"
 SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
 
 
+# Site title setting for templates
+SITE_TITLE = os.environ.get("SITE_TITLE", "caves.app")
+
+
 # Django admin interface URL path
 ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
 
@@ -137,6 +141,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.notifications",
                 "core.context_processors.site_root",
+                "core.context_processors.site_title",
             ],
         },
     },

@@ -6,7 +6,7 @@
       <!-- Navbar -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2" id="navbarContainer">
         <div class="container">
-          <a class="navbar-brand fs-3 fw-bolder" href="/">{% if debug %}devel.app{% else %}caves.app{% endif %}</a>
+          <a class="navbar-brand fs-3 fw-bolder" href="/">{{ site_title }}</a>
           <ul class="navbar-nav w-100 d-none d-lg-flex mx-5 w-100 {% if user.is_authenticated %}justify-content-center{% else %}justify-content-end{% endif %}" id="mainNavbar">
             {% include "_navbar_links.html" %}
           </ul>
