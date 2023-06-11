@@ -5,8 +5,12 @@ import humanize
 from distance import D, DistanceField, DistanceUnitField
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.files.storage import storages
 from django.db import models
 from django.urls import reverse
+from imagekit.cachefiles import ImageCacheFile
+from imagekit.models import ImageSpecField
+from pilkit.processors import Thumbnail, Transpose
 from tinymce.models import HTMLField
 
 from .validators import (
@@ -453,30 +457,59 @@ class Trip(models.Model):
 
         return tuple(valid_fields)
 
+    @property
+    def valid_photos(self):
+        return [photo for photo in self.photos.all() if photo.is_valid]
+
 
 def trip_photo_upload_path(instance, filename):
     """Returns the path to upload trip photos to"""
     original_filename, ext = os.path.splitext(filename)
-    return f"photos/{instance.user.uuid}/{instance.trip.uuid}/{instance.uuid}{ext}"
+    return f"p/{instance.user.uuid}/{instance.trip.uuid}/{instance.uuid}{ext}"
 
 
 class TripPhoto(models.Model):
-    uuid = models.UUIDField("UUID", default=uuid.uuid4, editable=False, unique=True)
-    trip = models.ForeignKey(
-        Trip, on_delete=models.CASCADE, related_name="photos", editable=False
+    uuid = models.UUIDField("UUID", default=uuid.uuid4, unique=True)
+    trip = models.ForeignKey(Trip, related_name="photos", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    photo = models.ImageField(
+        storage=storages["photos"],
+        upload_to=trip_photo_upload_path,
+        blank=True,
+        null=True,
+        max_length=150,
     )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, editable=False
+    thumbnail = ImageSpecField(
+        source="photo",
+        processors=[Transpose(), Thumbnail(width=200, height=300, crop="center")],
+        format="JPEG",
+        options={"quality": 60},
     )
-    photo = models.ImageField(upload_to=trip_photo_upload_path)
     caption = models.CharField(max_length=100, blank=True)
+    is_valid = models.BooleanField(default=False)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.caption or os.path.basename(self.photo.name)
+        return f"Photo for {self.trip} by {self.user}"
+
+    def save(self, *args, **kwargs):
+        """Generate thumbnails on save"""
+        super().save(*args, **kwargs)
+        if self.is_valid:
+            for attr in dir(self):
+                try:
+                    val = getattr(self, attr)
+                    if isinstance(val, ImageCacheFile):
+                        val.generate(force=True)
+                except:  # noqa E722
+                    pass  # We -really- don't care if this fails.
 
     def get_absolute_url(self):
+        return self.photo.url
+
+    @property
+    def url(self):
         return self.photo.url
 
 

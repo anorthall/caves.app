@@ -105,8 +105,10 @@ class TripAdmin(admin.ModelAdmin):
 
 @admin.register(TripPhoto)
 class TripPhotoAdmin(admin.ModelAdmin):
-    list_display = ("user", "trip", "added", "updated")
-    search_fields = ("user", "trip", "caption")
+    list_display = ("user", "trip", "added", "updated", "is_valid")
+    list_filter = ("is_valid",)
+    search_fields = ("user__username",)
+    autocomplete_fields = ("trip", "user")
     readonly_fields = ("added", "updated", "uuid")
     fieldsets = (
         (
@@ -115,6 +117,7 @@ class TripPhotoAdmin(admin.ModelAdmin):
                 "fields": (
                     "user",
                     "trip",
+                    "is_valid",
                     "uuid",
                     "added",
                     "updated",
@@ -131,9 +134,6 @@ class TripPhotoAdmin(admin.ModelAdmin):
             },
         ),
     )
-
-    def has_add_permission(self, request, obj=None):  # pragma: no cover
-        return False
 
 
 @admin.register(TripReport)

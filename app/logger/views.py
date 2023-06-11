@@ -1,13 +1,18 @@
+import json
+
+import boto3
 import logger.csv
 from core.utils import get_user
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import BadRequest, PermissionDenied
 from django.db.models import Count, Exists, OuterRef
-from django.http import Http404
+from django.db.models.fields.files import ImageFieldFile
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -27,7 +32,7 @@ from stats import statistics as new_stats
 from . import feed, services
 from .forms import TripForm, TripReportForm, TripSearchForm
 from .mixins import ReportObjectMixin, TripContextMixin, ViewableObjectDetailView
-from .models import Trip, TripReport
+from .models import Trip, TripPhoto, TripReport, trip_photo_upload_path
 
 User = get_user_model()
 
@@ -176,6 +181,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             Trip.objects.all()
             .select_related("user", "report")
             .prefetch_related(
+                "photos",
                 "likes",
                 "likes__friends",
                 "user__friends",
@@ -259,6 +265,117 @@ class TripDelete(LoginRequiredMixin, View):
             f"The trip to {trip.cave_name} has been deleted.",
         )
         return redirect("log:user", username=request.user.username)
+
+
+class TripPhotos(LoginRequiredMixin, View):
+    template_name = "logger/trip_photos.html"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.trip = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.trip = get_object_or_404(Trip, uuid=self.kwargs["uuid"])
+        if not self.trip.user == request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context_data(**kwargs))
+
+    def get_context_data(self, *args, **kwargs):
+        context = {
+            "trip": self.trip,
+            "object_owner": self.trip.user,
+        }
+        return context
+
+
+class TripPhotosUpload(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        json_request = json.loads(request.body)
+        filename = json_request.get("filename")
+        content_type = json_request.get("contentType")
+        trip_uuid = json_request.get("tripUUID")
+        if not filename or not content_type or not trip_uuid:
+            raise BadRequest("Missing filename, contentType or tripUUID in request")
+
+        try:
+            trip = Trip.objects.get(uuid=trip_uuid)
+        except Trip.DoesNotExist:
+            raise BadRequest("Trip does not exist")
+
+        if not trip.user == request.user:
+            raise PermissionDenied
+
+        photo = TripPhoto.objects.create(
+            trip=trip,
+            user=request.user,
+            photo=None,
+        )
+
+        upload_path = trip_photo_upload_path(photo, filename)
+        photo.photo = ImageFieldFile(photo, photo.photo.field, upload_path)
+        photo.save()
+
+        session = boto3.session.Session()
+        client = session.client(
+            service_name="s3",
+            region_name=settings.AWS_S3_REGION_NAME,
+            aws_access_key_id=settings.AWS_S3_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_S3_SECRET_ACCESS_KEY,
+        )
+
+        acl = settings.AWS_DEFAULT_ACL
+        expires_in = settings.AWS_PRESIGNED_EXPIRY
+
+        aws_response = client.generate_presigned_post(
+            settings.AWS_STORAGE_BUCKET_NAME,
+            upload_path,
+            Fields={
+                "acl": acl,
+                "Content-Type": content_type,
+            },
+            Conditions=[
+                {"acl": acl},
+                {"Content-Type": content_type},
+                ["content-length-range", 1, 10485760],
+            ],
+            ExpiresIn=expires_in,
+        )
+
+        if not aws_response:
+            raise BadRequest("Failed to generate presigned post")
+
+        return JsonResponse(aws_response)
+
+
+class TripPhotosUploadSuccess(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        json_request = json.loads(request.body)
+        s3_key = json_request.get("s3Key")
+        trip_uuid = json_request.get("tripUUID")
+
+        if not s3_key or not trip_uuid:
+            raise BadRequest("Missing s3Key or tripUUID in request")
+
+        try:
+            trip = Trip.objects.get(uuid=trip_uuid)
+        except Trip.DoesNotExist:
+            raise BadRequest("Trip does not exist")
+
+        try:
+            photo = TripPhoto.objects.get(photo__endswith=s3_key)
+        except TripPhoto.DoesNotExist:
+            raise BadRequest("Trip photo does not exist")
+
+        if not trip.user == request.user or not photo.trip == trip:
+            raise PermissionDenied
+
+        photo.is_valid = True
+        photo.save()
+
+        return JsonResponse({"success": True})
 
 
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):

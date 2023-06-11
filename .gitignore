@@ -139,3 +139,6 @@ config/docker/production/production.env
 
 # Local production scripts
 bin/
+
+# Node
+node_modules/

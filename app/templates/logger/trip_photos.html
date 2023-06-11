@@ -1,0 +1,49 @@
+{% extends "base_trips.html" %}
+{% load static %}
+
+{% block title %}Trip to {{ trip.cave_name }}{% endblock %}
+{% block display_title %}Trip to {{ trip.cave_name }}{% endblock %}
+{% block display_title_right %}
+  <div class="d-flex flex-column align-items-center mt-2 mt-lg-0">
+    <div class="text-primary">{{ trip.user.name }}</div>
+    <div>@{{ trip.user.username }}</div>
+  </div>
+{% endblock %}
+{% block header_scripts %}
+  <script type="text/javascript">
+    // Get the CSRF token from the cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+
+    // Define variables to be used by Uppy to make the presigned URL request
+    const csrftoken = getCookie('csrftoken');
+    const trip_uuid = "{{ trip.uuid }}";
+    const upload_url = "{% url 'log:trip_photos_upload' %}";
+    const upload_success_url = "{% url 'log:trip_photos_upload_success' %}";
+  </script>
+
+  <script type="module" src="{% static 'js/uppy.js/bundle.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+  <h3 class="subtitle">
+    <span class="text-muted">Photos for</span> {{ trip.cave_name }}
+  </h3>
+
+  <div class="d-flex">
+    <div id="uppy"></div>
+  </div>
+{% endblock %}

@@ -72,7 +72,7 @@
 
   {% if trip.cave_url %}
     <!-- External Resources -->
-    <div class="row g-3">
+    <div class="row mb-3">
       <div class="col">
         <small class="text-muted trip-field">External resources</small>
         <ol class="mb-0">
@@ -82,7 +82,20 @@
     </div>
   {% endif %}
 
-  <div{% if trip.notes or trip.cave_url %} class="border-top pt-3 mt-4"{% endif %}>
+  {% if trip.valid_photos %}
+    <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-2 mt-3 {% if trip.cave_url or trip.notes %}border-top pt-3{% endif %}">
+      {% for photo in trip.valid_photos %}
+        <div class="col d-flex align-items-center justify-content-center">
+          <a href="{{ photo.url }}">
+            <img src="{{ photo.thumbnail.url }}" class="img-fluid rounded" alt=
+                "{{ photo.caption }}">
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="{% if trip.notes or trip.cave_url or trip.valid_photos %}border-top pt-3 mt-4{% else %}mt-4{% endif %}">
     <span class="float-start">
       {% if user.is_authenticated %}
         {% include "logger/_htmx_trip_like.html" %}
