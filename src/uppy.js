@@ -8,7 +8,11 @@ import '@uppy/dashboard/dist/style.min.css';
 import '@uppy/image-editor/dist/style.min.css';
 
 const uppy = new Uppy({
-  debug: false,
+  restrictions: {
+    maxFileSize: 10485760,
+    maxNumberOfFiles: 40,
+    allowedFileTypes: ['image/*']
+  }
 })
 
 uppy.use(Dashboard, {

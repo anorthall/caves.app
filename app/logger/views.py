@@ -323,6 +323,9 @@ class TripPhotosUpload(LoginRequiredMixin, View):
         if not filename or not content_type or not trip_uuid:
             raise BadRequest("Missing filename, contentType or tripUUID in request")
 
+        if not content_type.startswith("image/"):
+            raise BadRequest("File is not an image")
+
         try:
             trip = Trip.objects.get(uuid=trip_uuid)
         except Trip.DoesNotExist:
