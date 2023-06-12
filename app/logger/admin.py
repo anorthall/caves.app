@@ -105,11 +105,12 @@ class TripAdmin(admin.ModelAdmin):
 
 @admin.register(TripPhoto)
 class TripPhotoAdmin(admin.ModelAdmin):
-    list_display = ("user", "trip", "added", "updated", "is_valid")
+    list_display = ("user", "trip", "taken", "added", "taken", "is_valid")
     list_filter = ("is_valid",)
     search_fields = ("user__username",)
     autocomplete_fields = ("trip", "user")
-    readonly_fields = ("added", "updated", "uuid")
+    readonly_fields = ("added", "updated", "uuid", "taken")
+    ordering = ("-added",)
     fieldsets = (
         (
             "Internal data",
@@ -119,6 +120,7 @@ class TripPhotoAdmin(admin.ModelAdmin):
                     "trip",
                     "is_valid",
                     "uuid",
+                    "taken",
                     "added",
                     "updated",
                 ),

@@ -467,7 +467,7 @@ class Trip(models.Model):
 
     @property
     def valid_photos(self):
-        return [photo for photo in self.photos.all() if photo.is_valid]
+        return [photo for photo in self.photos.order_by("taken") if photo.is_valid]
 
 
 def trip_photo_upload_path(instance, filename):
@@ -495,6 +495,7 @@ class TripPhoto(models.Model):
     )
     caption = models.CharField(max_length=100, blank=True)
     is_valid = models.BooleanField(default=False)
+    taken = models.DateTimeField(blank=True, null=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

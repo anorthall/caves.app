@@ -1,6 +1,8 @@
 import json
+from datetime import datetime
 
 import boto3
+import exifread
 import logger.csv
 from core.utils import get_user
 from django.conf import settings
@@ -17,6 +19,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import SafeString
+from django.utils.timezone import make_aware
 from django.views.generic import (
     CreateView,
     FormView,
@@ -392,9 +395,17 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
         if not trip.user == request.user or not photo.trip == trip:
             raise PermissionDenied
 
+        with photo.photo.open("rb") as f:
+            tags = exifread.process_file(f, stop_tag="EXIF DateTimeOriginal")
+            if "EXIF DateTimeOriginal" in tags:
+                photo.taken = make_aware(
+                    datetime.strptime(
+                        str(tags["EXIF DateTimeOriginal"]), "%Y:%m:%d %H:%M:%S"
+                    )
+                )
+
         photo.is_valid = True
         photo.save()
-
         return JsonResponse({"success": True})
 
 
