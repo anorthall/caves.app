@@ -82,7 +82,8 @@
             {% if forloop.counter <= 5 %}
               <a href="{{ photo.url }}" class="p-2" data-title="{{ photo.caption }}"
                  data-lightbox="{{ trip.uuid }}" id="{{ photo.uuid }}">
-                <img src="{{ photo.thumbnail.url }}" class="img-fluid rounded" alt="{{ photo.caption }}">
+                <img src="{{ photo.thumbnail.url }}" class="img-fluid shadow-sm rounded"
+                     alt="{{ photo.caption }}">
               </a>
             {% endif %}
           {% endfor %}

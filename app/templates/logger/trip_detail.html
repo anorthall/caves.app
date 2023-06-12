@@ -104,7 +104,7 @@
       {% for photo in trip.valid_photos %}
         <div class="col d-flex flex-column align-items-center justify-content-center">
           <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
-            <img src="{{ photo.thumbnail.url }}" class="img-fluid rounded" alt="{{ photo.caption }}">
+            <img src="{{ photo.thumbnail.url }}" class="img-fluid shadow-sm rounded" alt="{{ photo.caption }}">
           </a>
           {% if user == object_owner %}
             <small class="mt-1 mb-2">
