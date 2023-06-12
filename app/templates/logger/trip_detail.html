@@ -101,7 +101,7 @@
 
   {% if show_photos %}
     <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-2 mt-3 {% if trip.cave_url or trip.notes %}border-top pt-3{% endif %}">
-      {% for photo in trip.valid_photos %}
+      {% for photo in valid_photos %}
         <div class="col d-flex flex-column align-items-center justify-content-center">
           <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
             <img src="{{ photo.thumbnail.url }}" class="img-fluid shadow-sm rounded" alt="{{ photo.caption }}">

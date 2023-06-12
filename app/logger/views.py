@@ -227,9 +227,11 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             self.object.pk: self.object.get_liked_str(self.request.user, friends)
         }
 
-        if self.object.valid_photos:
+        valid_photos = self.object.valid_photos
+        if valid_photos:
             if not self.object.private_photos or self.object.user == self.request.user:
                 context["show_photos"] = True
+                context["valid_photos"] = valid_photos
         return context
 
 
