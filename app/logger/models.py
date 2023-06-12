@@ -467,7 +467,7 @@ class Trip(models.Model):
 
     @property
     def valid_photos(self):
-        return [photo for photo in self.photos.order_by("taken") if photo.is_valid]
+        return self.photos.filter(is_valid=True).order_by("taken", "added")
 
 
 def trip_photo_upload_path(instance, filename):
