@@ -22,6 +22,10 @@ TIME_FORMAT = "H:i"
 SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
 
 
+# Site title setting for templates
+SITE_TITLE = os.environ.get("SITE_TITLE", "caves.app")
+
+
 # Django admin interface URL path
 ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
 
@@ -137,6 +141,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.notifications",
                 "core.context_processors.site_root",
+                "core.context_processors.site_title",
             ],
         },
     },
@@ -188,6 +193,31 @@ STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+# Amazon S3
+AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")
+AWS_S3_ACCESS_KEY_ID = os.environ.get("AWS_S3_ACCESS_KEY_ID")
+AWS_S3_SECRET_ACCESS_KEY = os.environ.get("AWS_S3_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")
+AWS_S3_SIGNATURE_VERSION = os.environ.get("AWS_S3_SIGNATURE_VERSION", "s3v4")
+AWS_DEFAULT_ACL = os.environ.get("AWS_DEFAULT_ACL", "private")
+AWS_PRESIGNED_EXPIRY = int(os.environ.get("AWS_PRESIGNED_EXPIRY", 20))
+
+
+# Storages
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+    "photos": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+}
 
 
 # Default primary key field type

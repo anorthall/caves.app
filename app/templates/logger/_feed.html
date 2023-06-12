@@ -74,6 +74,27 @@
       </div>
 
       {% include "logger/_trip_data_blocks.html" %}
+
+      {% if trip.valid_photos and not trip.private_photos %}
+        <div class="d-flex flex-row align-items-center justify-content-center mt-4
+                    border-top pt-3">
+          {% for photo in trip.valid_photos %}
+            {% if forloop.counter <= 5 %}
+              <a href="{{ photo.url }}" class="p-2" data-title="{{ photo.caption }}"
+                 data-lightbox="{{ trip.uuid }}" id="{{ photo.uuid }}">
+                <img src="{{ photo.thumbnail.url }}" class="img-fluid shadow-sm rounded"
+                     alt="{{ photo.caption }}">
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% if trip.valid_photos|length > 5 %}
+          <div class="trip-field text-center mt-2 mx-2">
+            <a class="btn btn-sm btn-outline-secondary w-100" href=
+                "{{ trip.get_absolute_url }}">view photos</a>
+          </div>
+        {% endif %}
+      {% endif %}
     </div>
 
     <div class="card-footer">

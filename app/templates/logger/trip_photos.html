@@ -1,0 +1,97 @@
+{% extends "base_trips.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Photos for {{ trip.cave_name }}{% endblock %}
+{% block display_title %}Trip to {{ trip.cave_name }}{% endblock %}
+{% block display_title_right %}
+  <div class="d-flex flex-column align-items-center mt-2 mt-lg-0">
+    <div class="text-primary">{{ trip.user.name }}</div>
+    <div>@{{ trip.user.username }}</div>
+  </div>
+{% endblock %}
+{% block header_scripts %}
+  <script type="text/javascript">
+    // Get the CSRF token from the cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+
+    // Define variables to be used by Uppy to make the presigned URL request
+    const csrftoken = getCookie('csrftoken');
+    const trip_uuid = "{{ trip.uuid }}";
+    const upload_url = "{% url 'log:trip_photos_upload' %}";
+    const upload_success_url = "{% url 'log:trip_photos_upload_success' %}";
+
+  </script>
+  <script type="module" src="{% static 'js/uppy.js/bundle.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+  <h3 class="subtitle mb-3">
+    Upload photos
+  </h3>
+
+  <div id="uppy"></div>
+
+  <h3 class="subtitle mt-5 mb-3">
+    Photo privacy
+  </h3>
+
+  <div class="mw-45">
+    {% crispy form %}
+  </div>
+
+  <h3 class="subtitle mt-5 mb-3">
+    Remove photos
+  </h3>
+
+  <p class="mw-45 mb-3">
+    If you'd like to delete all photos that you've uploaded for this trip, click the button below.
+    This will remove <strong>all the photos</strong> for the trip to
+    {{ trip.cave_name }} on {{ trip.start|date }} and is <strong>permanent and
+    cannot be undone</strong>.
+  </p>
+
+  <button data-bs-toggle="modal" data-bs-target="#photoDeleteModal" class="btn btn-danger">Delete all photos</button>
+
+  <div class="modal" tabindex="-1" id="photoDeleteModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete all photos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Are you sure you want to delete <strong>all of the photos</strong>
+            uploaded to the trip to {{ trip.cave_name }} on {{ trip.start|date }}?
+          </p>
+          <p>
+            This is <strong>permanent and cannot be undone</strong>.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="{{ trip.get_absolute_url }}" class="btn btn-info">View trip</a>
+          <form action="{% url 'log:trip_photos_delete_all' trip.uuid %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete all photos</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

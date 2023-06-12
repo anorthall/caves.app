@@ -45,6 +45,16 @@ rm -r data/development/
 docker compose up
 ```
 
+#### Trip photo uploads
+In order to use the photo upload feature of trips (powered by [uppy](https://uppy.io/)),
+you will need to set up details for AWS S3 in the
+`config/docker/development/development.env` file. It is possible to reconfigure Uppy
+and Django to use a different storage backend, but this is beyond the scope of
+this README and would require significant code changes. For more information, check
+out the [django-storages](https://django-storages.readthedocs.io/) and
+[uppy](https://uppy.io/docs/) documentation.
+
+
 ### Hints
 - Any emails generated whilst using the development environment will be printed directly to the console.
 - Python requirements are listed in `config/requirements/development.txt` and can be installed locally (for linting, etc) with `pip install -r config/requirements/development.txt`.

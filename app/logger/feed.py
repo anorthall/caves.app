@@ -14,7 +14,7 @@ def get_trips_context(request, ordering, page=1):
     trips = (
         Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
         .select_related("user")
-        .prefetch_related("likes", "user__friends")
+        .prefetch_related("photos", "likes", "user__friends")
         .annotate(
             likes_count=Count("likes", distinct=True),
             user_liked=Exists(

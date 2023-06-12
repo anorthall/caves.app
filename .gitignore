@@ -136,6 +136,10 @@ dmypy.json
 # Docker
 data/
 config/docker/production/production.env
+config/docker/development/development.env
 
 # Local production scripts
 bin/
+
+# Node
+node_modules/

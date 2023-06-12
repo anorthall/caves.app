@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .mixins import DistanceUnitFormMixin
-from .models import Trip, TripReport
+from .models import Trip, TripPhoto, TripReport
 
 User = get_user_model()
 
@@ -281,6 +281,24 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
                     "end",
                     "The trip is unrealistically long in duration (over 60 days).",
                 )
+
+
+class TripPhotoForm(forms.ModelForm):
+    class Meta:
+        model = TripPhoto
+        fields = ("caption",)
+
+
+class PhotoPrivacyForm(forms.ModelForm):
+    class Meta:
+        model = Trip
+        fields = ("private_photos",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.add_input(Submit("submit", "Save privacy setting"))
 
 
 class TripSearchForm(forms.Form):

@@ -18,6 +18,32 @@ urlpatterns = [
         name="trip_like_htmx_view",
     ),
     path("trip/<uuid:uuid>/", views.TripDetail.as_view(), name="trip_detail"),
+    path("trip/<uuid:uuid>/photos/", views.TripPhotos.as_view(), name="trip_photos"),
+    path(
+        "trip/<uuid:uuid>/photos/delete/all/",
+        views.TripPhotosDeleteAll.as_view(),
+        name="trip_photos_delete_all",
+    ),
+    path(
+        "trip/photos/upload/",
+        views.TripPhotosUpload.as_view(),
+        name="trip_photos_upload",
+    ),
+    path(
+        "trip/photos/upload/success/",
+        views.TripPhotosUploadSuccess.as_view(),
+        name="trip_photos_upload_success",
+    ),
+    path(
+        "trip/photos/delete/",
+        views.TripPhotosDelete.as_view(),
+        name="trip_photos_delete",
+    ),
+    path(
+        "trip/photos/update/",
+        views.TripPhotosUpdate.as_view(),
+        name="trip_photos_update",
+    ),
     path("report/add/<uuid:uuid>/", views.ReportCreate.as_view(), name="report_create"),
     path(
         "report/edit/<uuid:uuid>/", views.ReportUpdate.as_view(), name="report_update"

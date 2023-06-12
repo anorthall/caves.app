@@ -12,6 +12,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   web-dev:
+    command: python manage.py runserver 0.0.0.0:8000 --insecure
     build:
       context: .
       dockerfile: ./config/docker/development/Dockerfile.dev.web
