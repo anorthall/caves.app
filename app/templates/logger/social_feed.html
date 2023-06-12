@@ -4,6 +4,10 @@
 {% block title %}caves.app{% endblock %}
 {% block display_title %}Recent trips{% endblock %}
 
+{% block header_scripts %}
+  {% include "logger/_lightbox.html" %}
+{% endblock %}
+
 {% block main %}
   <div class="d-flex flex-row justify-content-between mb-3">
     <h3 class="fs-5 ms-3 mb-0 align-self-center">

@@ -324,3 +324,19 @@ class TripPhotoTests(TestCase):
 
         response = self.client.get(self.trip.get_absolute_url())
         self.assertNotContains(response, "test-file.jpg")
+
+    @skipIf(aws_not_configured(), "AWS is not configured")
+    @tag("privacy")
+    def test_private_photos_do_not_show_on_trip_feed(self):
+        """Test that private photos do not show on the trip feed"""
+        self.assertEqual(self.photo.trip.private_photos, False)
+
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:index"))
+        self.assertContains(response, "test-file.jpg")
+
+        self.photo.trip.private_photos = True
+        self.photo.trip.save()
+
+        response = self.client.get(reverse("log:index"))
+        self.assertNotContains(response, "test-file.jpg")
