@@ -205,6 +205,7 @@ AWS_S3_SIGNATURE_VERSION = os.environ.get("AWS_S3_SIGNATURE_VERSION", "s3v4")
 AWS_DEFAULT_ACL = os.environ.get("AWS_DEFAULT_ACL", "private")
 AWS_PRESIGNED_EXPIRY = int(os.environ.get("AWS_PRESIGNED_EXPIRY", 20))
 
+
 # Storages
 STORAGES = {
     "default": {
@@ -217,9 +218,6 @@ STORAGES = {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
     },
 }
-
-if not AWS_S3_ACCESS_KEY_ID:
-    STORAGES["photos"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
 
 
 # Default primary key field type
