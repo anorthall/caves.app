@@ -1,5 +1,7 @@
+from unittest import skipIf
 from unittest.mock import MagicMock
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models.fields.files import ImageFieldFile
 from django.test import Client, TestCase, tag
@@ -9,6 +11,15 @@ from django.utils import timezone
 from ..models import Trip, TripPhoto, trip_photo_upload_path
 
 User = get_user_model()
+
+
+def aws_not_configured():
+    """Return True if AWS is not configured"""
+    return (
+        not settings.AWS_S3_ACCESS_KEY_ID
+        or not settings.AWS_S3_SECRET_ACCESS_KEY
+        or not settings.AWS_STORAGE_BUCKET_NAME
+    )
 
 
 @tag("logger", "tripphotos", "fast")
@@ -67,6 +78,7 @@ class TripPhotoTests(TestCase):
         response = self.client.get(reverse("log:trip_photos", args=[self.trip.uuid]))
         self.assertEqual(response.status_code, 200)
 
+    @skipIf(aws_not_configured(), "AWS is not configured")
     @tag("privacy")
     def test_trip_photo_page_does_not_load_for_other_users(self):
         """Test that the trip photo page does not load for other users"""
@@ -81,6 +93,7 @@ class TripPhotoTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
     @tag("privacy")
+    @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_privacy(self):
         """Test that photos do not show for other users when private"""
         self.trip.privacy = Trip.PUBLIC
@@ -115,6 +128,7 @@ class TripPhotoTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "test-file.jpg")
 
+    @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_update_privacy(self):
         """Test updating the privacy of photos for a trip"""
         self.trip.private_photos = False
@@ -201,6 +215,7 @@ class TripPhotoTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_update_caption(self):
         """Test updating the caption of a photo"""
         self.client.force_login(self.user)
@@ -218,6 +233,7 @@ class TripPhotoTests(TestCase):
         self.photo.refresh_from_db()
         self.assertEqual(self.photo.caption, "New caption")
 
+    @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_update_caption_with_a_caption_that_is_too_long(self):
         """Test updating the caption of a photo with a caption that is too long"""
         self.client.force_login(self.user)
@@ -289,10 +305,12 @@ class TripPhotoTests(TestCase):
         """Test the string representation of a trip photo"""
         self.assertEqual(str(self.photo), f"Photo for {self.trip} by {self.trip.user}")
 
+    @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_get_absolute_url(self):
         """Test the get_absolute_url method"""
         self.assertEqual(self.photo.get_absolute_url(), self.photo.url)
 
+    @skipIf(aws_not_configured(), "AWS is not configured")
     def test_invalid_photos_do_not_show_on_trip_detail_page(self):
         """Test that invalid photos do not show on the trip detail page"""
         self.assertEqual(self.photo.is_valid, True)
