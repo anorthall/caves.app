@@ -12,6 +12,23 @@
   </div>
 {% endblock %}
 
+{% block header_scripts %}
+  {% include "logger/_lightbox.html" %}
+
+  <script type="text/javascript">
+    function updateEditModal(photoUUID) {
+      document.getElementById("photoEditUUID").value = photoUUID;
+      document.getElementById("photoEditImage").src = document.getElementById(photoUUID).href;
+      document.getElementById("photoCaption").value = document.getElementById(photoUUID).dataset.title;
+    }
+
+    function updateDeleteModal(photoUUID) {
+      document.getElementById("photoDeleteUUID").value = photoUUID;
+      document.getElementById("photoDeleteImage").src = document.getElementById(photoUUID).href;
+    }
+  </script>
+{% endblock %}
+
 {% block main %}
   <div class="d-none d-lg-flex flex-row align-items-center justify-content-between border-bottom pb-2 mb-3">
     <div class="d-flex flex-column align-items-start justify-content-center">
@@ -82,20 +99,91 @@
     </div>
   {% endif %}
 
-  {% if trip.valid_photos %}
+  {% if show_photos %}
     <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-2 mt-3 {% if trip.cave_url or trip.notes %}border-top pt-3{% endif %}">
       {% for photo in trip.valid_photos %}
-        <div class="col d-flex align-items-center justify-content-center">
-          <a href="{{ photo.url }}">
-            <img src="{{ photo.thumbnail.url }}" class="img-fluid rounded" alt=
-                "{{ photo.caption }}">
+        <div class="col d-flex flex-column align-items-center justify-content-center">
+          <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
+            <img src="{{ photo.thumbnail.url }}" class="img-fluid rounded" alt="{{ photo.caption }}">
           </a>
+          {% if user == object_owner %}
+            <small class="mt-1 mb-2">
+              <a href="#" class="link-success text-decoration-none"
+                 data-bs-toggle="modal" data-bs-target="#photoEditModal"
+                 onclick="updateEditModal('{{ photo.uuid }}',
+                 'photoEditUUID');">edit</a> /
+              <a href="#" class="link-danger text-decoration-none"
+                 data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
+                 onclick="updateDeleteModal('{{ photo.uuid }}',
+                 'photoDeleteUUID');">delete</a>
+            </small>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
+
+    {% if user == object_owner %}
+      <div class="modal" tabindex="-1" id="photoEditModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit photo</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'log:trip_photos_update' %}"
+            id="photoEditForm">
+              {% csrf_token %}
+              <input type="hidden" name="photoUUID" id="photoEditUUID" value="">
+              <div class="modal-body">
+                <img class="img-fluid rounded pb-4 border-bottom mb-3" src=""
+                     alt="Image to edit"
+                id="photoEditImage">
+                <div class="mb-3">
+                  <label for="photoCaption" class="form-label">Caption</label>
+                  <textarea class="form-control" id="photoCaption" name="caption"
+                            rows="3" maxlength="200"></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <input type="submit" value="Save changes" class="btn btn-success">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" tabindex="-1" id="photoDeleteModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Delete photo</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <img class="img-fluid rounded mb-3" src="" alt="Image
+               to delete" id="photoDeleteImage">
+              <p class="text-center mb-0">
+                Are you sure you want to delete this photo? This action is permanent and
+                cannot be undone.
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <form method="post" action="{% url 'log:trip_photos_delete' %}"
+                    id="photoDeleteForm">
+                {% csrf_token %}
+                <input type="hidden" name="photoUUID" id="photoDeleteUUID" value="">
+                <input type="submit" value="Delete photo" class="btn btn-danger">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
   {% endif %}
 
-  <div class="{% if trip.notes or trip.cave_url or trip.valid_photos %}border-top pt-3 mt-4{% else %}mt-4{% endif %}">
+  <div class="{% if trip.notes or trip.cave_url or show_photos %}border-top pt-3 mt-4{% else %}mt-4{% endif %}">
     <span class="float-start">
       {% if user.is_authenticated %}
         {% include "logger/_htmx_trip_like.html" %}

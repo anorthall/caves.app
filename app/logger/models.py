@@ -246,6 +246,14 @@ class Trip(models.Model):
         choices=PRIVACY_CHOICES,
         default=DEFAULT,
     )
+    private_photos = models.BooleanField(
+        "Hide photos from public view?",
+        default=False,
+        help_text=(
+            "If this is ticked, photos uploaded to this trip will only be visible to "
+            "you, regardless of who can view the trip."
+        ),
+    )
     notes = models.TextField(blank=True)
     added = models.DateTimeField("trip added on", auto_now_add=True)
     updated = models.DateTimeField("trip last updated", auto_now=True)

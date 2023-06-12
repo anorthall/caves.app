@@ -30,7 +30,13 @@ from logger import statistics
 from stats import statistics as new_stats
 
 from . import feed, services
-from .forms import TripForm, TripReportForm, TripSearchForm
+from .forms import (
+    PhotoPrivacyForm,
+    TripForm,
+    TripPhotoForm,
+    TripReportForm,
+    TripSearchForm,
+)
 from .mixins import ReportObjectMixin, TripContextMixin, ViewableObjectDetailView
 from .models import Trip, TripPhoto, TripReport, trip_photo_upload_path
 
@@ -217,6 +223,10 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
         context["liked_str"] = {
             self.object.pk: self.object.get_liked_str(self.request.user, friends)
         }
+
+        if self.object.valid_photos:
+            if not self.object.private_photos or self.object.user == self.request.user:
+                context["show_photos"] = True
         return context
 
 
@@ -267,8 +277,10 @@ class TripDelete(LoginRequiredMixin, View):
         return redirect("log:user", username=request.user.username)
 
 
-class TripPhotos(LoginRequiredMixin, View):
+class TripPhotos(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "logger/trip_photos.html"
+    form_class = PhotoPrivacyForm
+    success_message = "The photo privacy setting for this trip has been updated."
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -280,14 +292,22 @@ class TripPhotos(LoginRequiredMixin, View):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.get_context_data(**kwargs))
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = self.trip
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("log:trip_photos", args=[self.trip.uuid])
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
-        context = {
-            "trip": self.trip,
-            "object_owner": self.trip.user,
-        }
+        context = super().get_context_data(**kwargs)
+        context["trip"] = self.trip
+        context["object_owner"] = self.trip.user
         return context
 
 
@@ -376,6 +396,57 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
         photo.save()
 
         return JsonResponse({"success": True})
+
+
+class TripPhotosUpdate(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        photo = get_object_or_404(TripPhoto, uuid=request.POST["photoUUID"])
+        if not photo.user == request.user:
+            raise PermissionDenied
+
+        form = TripPhotoForm(request.POST, instance=photo)
+        if form.is_valid():
+            photo = form.save()
+            messages.success(request, "The photo has been updated.")
+            return redirect(photo.trip.get_absolute_url())
+        else:
+            messages.error(
+                request,
+                "The photo could not be updated. Was the caption over 200 characters?",
+            )
+            return redirect(photo.trip.get_absolute_url())
+
+
+class TripPhotosDelete(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        photo = get_object_or_404(TripPhoto, uuid=request.POST["photoUUID"])
+        if not photo.user == request.user:
+            raise PermissionDenied
+
+        redirect_url = photo.trip.get_absolute_url()
+        photo.delete()
+        messages.success(request, "The photo has been deleted.")
+        return redirect(redirect_url)
+
+
+class TripPhotosDeleteAll(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        trip = get_object_or_404(Trip, uuid=kwargs["uuid"])
+        if not trip.user == request.user:
+            raise PermissionDenied
+
+        qs = TripPhoto.objects.filter(
+            trip=trip,
+            user=request.user,
+        )
+
+        if qs.exists():
+            qs.delete()
+            messages.success(request, "All photos for the trip have been deleted.")
+        else:
+            messages.error(request, "There were no photos to delete.")
+
+        return redirect(trip.get_absolute_url())
 
 
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):

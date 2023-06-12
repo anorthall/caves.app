@@ -1,0 +1,13 @@
+{% load static %}
+<link href="{% static 'lightbox2/css/lightbox.min.css' %}" rel="stylesheet">
+<script src="{% static 'lightbox2/js/lightbox.min.js' %}"></script>
+<script>
+  lightbox.option({
+    'resizeDuration': 300,
+    'fadeDuration': 400,
+    'wrapAround': true,
+    'disableScrolling': true,
+    'alwaysShowNavOnTouchDevices': true,
+    'albumLabel': 'Photo %1 of %2'
+  })
+</script>
