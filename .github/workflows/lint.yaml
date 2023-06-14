@@ -13,7 +13,7 @@ on:
 jobs:
   black:
     runs-on: ubuntu-latest
-    name: Black formatter
+    name: Black
     steps:
       - name: Check out source
         uses: actions/checkout@v3
@@ -24,7 +24,7 @@ jobs:
           src: "app/ config/django/"
   flake8:
     runs-on: ubuntu-latest
-    name: Flake8 linter
+    name: Flake8
     steps:
       - name: Check out source
         uses: actions/checkout@v3
@@ -36,4 +36,5 @@ jobs:
         uses: py-actions/flake8@v2
         with:
           path: "app/ config/django/"
+          args: "-v"
           plugins: "flake8-black"
