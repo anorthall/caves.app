@@ -5,7 +5,7 @@ from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 
-from .. import feed
+from .. import services
 from ..factories import TripFactory
 from ..models import Trip
 
@@ -135,7 +135,7 @@ class SocialFeedTests(TestCase):
         )
         request = MagicMock()
         request.user = user
-        result = feed.get_trips_context(request, User.FEED_DATE)
+        result = services.get_trips_context(request, User.FEED_DATE)
         self.assertEqual(result, [])
 
     @tag("privacy")

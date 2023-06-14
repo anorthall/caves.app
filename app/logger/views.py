@@ -1,11 +1,8 @@
 import json
 from datetime import datetime
 
-import boto3
 import exifread
-import logger.csv
 from core.utils import get_user
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -32,7 +29,7 @@ from django.views.generic import (
 from logger import statistics
 from stats import statistics as new_stats
 
-from . import feed, services
+from . import services
 from .forms import (
     PhotoPrivacyForm,
     TripForm,
@@ -60,8 +57,8 @@ class Index(TemplateView):
         """Return the trip feed for a logged in user"""
         context = super().get_context_data(**kwargs)
         context["ordering"] = get_user(self.request).feed_ordering
-        context["trips"] = feed.get_trips_context(self.request, context["ordering"])
-        context["liked_str"] = feed.get_liked_str_context(
+        context["trips"] = services.get_trips_context(self.request, context["ordering"])
+        context["liked_str"] = services.get_liked_str_context(
             self.request, context["trips"]
         )
 
@@ -322,6 +319,7 @@ class TripPhotosUpload(LoginRequiredMixin, View):
         filename = json_request.get("filename")
         content_type = json_request.get("contentType")
         trip_uuid = json_request.get("tripUUID")
+
         if not filename or not content_type or not trip_uuid:
             raise BadRequest("Missing filename, contentType or tripUUID in request")
 
@@ -346,34 +344,12 @@ class TripPhotosUpload(LoginRequiredMixin, View):
         photo.photo = ImageFieldFile(photo, photo.photo.field, upload_path)
         photo.save()
 
-        session = boto3.session.Session()
-        client = session.client(
-            service_name="s3",
-            region_name=settings.AWS_S3_REGION_NAME,
-            aws_access_key_id=settings.AWS_S3_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_S3_SECRET_ACCESS_KEY,
-        )
-
-        acl = settings.AWS_DEFAULT_ACL
-        expires_in = settings.AWS_PRESIGNED_EXPIRY
-
-        aws_response = client.generate_presigned_post(
-            settings.AWS_STORAGE_BUCKET_NAME,
-            upload_path,
-            Fields={
-                "acl": acl,
-                "Content-Type": content_type,
-            },
-            Conditions=[
-                {"acl": acl},
-                {"Content-Type": content_type},
-                ["content-length-range", 1, 10485760],
-            ],
-            ExpiresIn=expires_in,
-        )
-
-        if not aws_response:
-            raise BadRequest("Failed to generate presigned post")
+        try:
+            aws_response = services.generate_s3_presigned_post(
+                upload_path, content_type
+            )
+        except IOError as e:
+            raise BadRequest(e)
 
         return JsonResponse(aws_response)
 
@@ -661,12 +637,12 @@ class HTMXTripFeed(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["ordering"] = get_user(self.request).feed_ordering
-        context["trips"] = feed.get_trips_context(
+        context["trips"] = services.get_trips_context(
             request=self.request,
             ordering=context["ordering"],
             page=self.request.GET.get("page", 1),
         )
-        context["liked_str"] = feed.get_liked_str_context(
+        context["liked_str"] = services.get_liked_str_context(
             self.request, context["trips"]
         )
         return context
@@ -678,7 +654,7 @@ class CSVExport(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         try:
-            http_response = logger.csv.generate_csv_export(request.user)
+            http_response = services.generate_csv_export(request.user)
         except Trip.DoesNotExist:
             messages.error(request, "You do not have any trips to export.")
             return redirect("log:export")
