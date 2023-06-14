@@ -3,7 +3,7 @@
 ################
 ### Builder ####
 ################
-FROM python:3.11.3-alpine as builder
+FROM python:3.11.4-alpine as builder
 
 # Set working directory
 WORKDIR /usr/src/caves
