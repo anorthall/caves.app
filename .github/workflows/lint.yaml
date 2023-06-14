@@ -1,0 +1,39 @@
+name: Lint
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    name: Black formatter
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v3
+      - name: Run black formatter
+        uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: "app/ config/django/"
+  flake8:
+    runs-on: ubuntu-latest
+    name: Flake8 linter
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v3
+      - name: Set up Python 3.11.4
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.4
+      - name: flake8 Lint
+        uses: py-actions/flake8@v2
+        with:
+          path: "app/ config/django/"
+          plugins: "flake8-black"

@@ -26,10 +26,10 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Set up Python 3.11.3
+      - name: Set up Python 3.11.4
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11.3
+          python-version: 3.11.4
       - name: Upgrade pip
         run: |
           pip install --upgrade pip wheel
