@@ -367,8 +367,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         if not other_user.is_authenticated:
             return self.friends.none()
 
-        friend_pks = self.friends.values_list("pk", flat=True)
-        return self.friends.filter(pk__in=friend_pks)
+        other_user_friends_pks = other_user.friends.values_list("pk", flat=True)
+        return self.friends.filter(pk__in=other_user_friends_pks)
 
     @property
     def trips(self):
