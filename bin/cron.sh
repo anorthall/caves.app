@@ -11,6 +11,6 @@ APP_ROOT=/home/andrew/apps/caves.app
 DOCKER_CMD="docker compose -f docker-compose.prod.yml exec web"
 
 
-cd $APP_ROOT
+cd $APP_ROOT || exit
 $DOCKER_CMD python manage.py prune_inactive_users
 $DOCKER_CMD python manage.py delete_invalid_photos
