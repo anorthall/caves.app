@@ -12,6 +12,7 @@ on:
 
 jobs:
   run-tests:
+    name: Django tests
     runs-on: ubuntu-latest
     env:
       DATABASE: postgres
