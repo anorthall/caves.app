@@ -1,28 +1,29 @@
 # caves.app
+
 [![Run Django Tests](https://github.com/anorthall/caves.app/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/anorthall/caves.app/actions/workflows/run-tests.yaml) [![codecov](https://codecov.io/gh/anorthall/caves.app/branch/main/graph/badge.svg?token=HDZHAETW75)](https://codecov.io/gh/anorthall/caves.app)
 
 A Django web application to log caving trips. Running online at [caves.app](https://caves.app/).
 
-
 ### Features
+
 - Complete trip logbook functionality, including rich text trip reports and detailed nerdy stats.
 - Comprehensive granular statistics and graphs of activity.
 - Interactive social features: commenting and 'liking' other's trips, and following other users.
 - The ability to create a public profile, making your trip log available online (if desired).
 - A minimalist and mobile friendly user interface.
 
-
 ### Planned
+
 - Automatically generated maps of caves visited.
 - The ability to upload photos and surveys to trips.
 - An equipment tracking system - keep track of how many batteries you've got left, or how old your rope is!
 
-
 ## Contributing
+
 The project is written in Python and Django. Pull requests are more than welcome. Check the [GitHub issues](https://github.com/anorthall/caves.app/issues) for some ideas of what to do.
 
-
 ### Development environment
+
 All development is done inside the Docker development environment. To set up the environment, build and run the docker image from the project root directory:
 
 ```
@@ -53,6 +54,7 @@ docker compose up
 ```
 
 #### Trip photo uploads
+
 In order to use the photo upload feature of trips (powered by [uppy](https://uppy.io/)),
 you will need to set up details for AWS S3 in the
 `config/docker/development/development.env` file. It is possible to reconfigure Uppy
@@ -61,14 +63,14 @@ this README and would require significant code changes. For more information, ch
 out the [django-storages](https://django-storages.readthedocs.io/) and
 [uppy](https://uppy.io/docs/) documentation.
 
-
 ### Hints
+
 - Any emails generated whilst using the development environment will be printed directly to the console.
 - Python requirements are listed in `config/requirements/development.txt` and can be installed locally (for linting, etc) with `pip install -r config/requirements/development.txt`.
 - Tests can be run via `docker-compose exec web-dev ./manage.py test`.
 
-
 ## Feedback
+
 Feedback of any kind is more than welcome. Please feel free to open an issue on GitHub, or contact me [directly via email](mailto:andrew@caver.dev) at `andrew@caver.dev`. You are also welcome to
 [join the caves.app Discord server](https://discord.gg/jEvPbR4G4k) to discuss either using the
 application or development.
