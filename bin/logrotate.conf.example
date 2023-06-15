@@ -1,0 +1,7 @@
+/home/andrew/apps/caves.app/data/production/logs/*/*.log {
+	compress
+	weekly
+	rotate 52
+	create
+	olddir old
+}
