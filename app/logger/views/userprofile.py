@@ -16,6 +16,14 @@ class UserProfile(ListView):
     slug_field = "username"
     paginate_by = 50
     ordering = ("-start", "pk")
+    allowed_ordering = [
+        "start",
+        "cave_name",
+        "duration",
+        "type",
+        "vert_dist_up",
+        "vert_dist_down",
+    ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -47,17 +55,8 @@ class UserProfile(ListView):
             return trips
 
     def get_ordering(self):
-        allowed_ordering = [
-            "start",
-            "cave_name",
-            "duration",
-            "type",
-            "vert_dist_up",
-            "vert_dist_down",
-        ]
-
         ordering = self.request.GET.get("sort", "")
-        if ordering.replace("-", "") in allowed_ordering:
+        if ordering.replace("-", "") in self.allowed_ordering:
             return ordering, "pk"
 
         return self.ordering

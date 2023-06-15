@@ -373,3 +373,15 @@ class TripReportTests(TestCase):
         trip.save()
         response = self.client.get(report.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+    def test_deleting_a_trip_report_that_does_not_exist(self):
+        """Test that deleting a trip report that does not exist returns 404"""
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("log:report_delete", args=[self.trip.uuid]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_accessing_a_trip_report_for_a_trip_which_does_not_have_one(self):
+        """Test that accessing a trip report for a trip without a report returns 404"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:report_detail", args=[self.trip.uuid]))
+        self.assertEqual(response.status_code, 404)

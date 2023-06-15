@@ -517,6 +517,23 @@ class TripModelTests(TestCase):
             response, "Trips must not end more than 31 days in the future"
         )
 
+    @tag("views")
+    def test_trip_create_form_addanother_function(self):
+        """Test the trip creation form add another function"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("log:trip_create"),
+            {
+                "cave_name": "Test The Form Cave",
+                "type": Trip.SPORT,
+                "privacy": Trip.DEFAULT,
+                "start": tz.now(),
+                "addanother": True,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("log:trip_create"))
+
     # TODO: Test trip update form with invalid user
     @tag("views")
     def test_trip_update_form(self):

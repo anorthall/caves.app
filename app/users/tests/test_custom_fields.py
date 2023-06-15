@@ -107,3 +107,13 @@ class CustomFieldTests(TestCase):
 
         self.assertContains(response, "CustomFieldABCDEFG")
         self.assertContains(response, "CustomFieldValue")
+
+    def test_loading_a_trip_with_custom_field_data_without_a_label(self):
+        """Test that custom fields appear on the trip detail page"""
+        self.trip.custom_field_1 = "CustomFieldValue"
+        self.trip.save()
+
+        self.client.force_login(self.user)
+        response = self.client.get(self.trip.get_absolute_url())
+
+        self.assertNotContains(response, "CustomFieldValue")

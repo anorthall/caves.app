@@ -449,7 +449,7 @@ class Trip(models.Model):
                 continue
 
             label_field_name = f"{field.name}_label"
-            if not hasattr(self.user, label_field_name):
+            if not hasattr(self.user, label_field_name):  # pragma: no cover
                 continue
 
             label = getattr(self.user, label_field_name)

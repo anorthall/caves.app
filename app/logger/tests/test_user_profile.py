@@ -6,6 +6,7 @@ from django.utils.timezone import timedelta as td
 
 from ..factories import TripFactory
 from ..models import Trip
+from ..views.userprofile import UserProfile as UserProfileView
 
 User = get_user_model()
 
@@ -263,3 +264,15 @@ class UserProfileViewTests(TestCase):
         self.assertNotContains(response, self.user2.get_absolute_url())
         self.assertNotContains(response, self.user3.get_absolute_url())
         self.assertNotContains(response, "Friends")
+
+    def test_user_profile_page_loads_with_all_allowed_ordering(self):
+        """Test that the user profile page loads with all allowed ordering"""
+        self.client.force_login(self.user)
+        for order in UserProfileView.allowed_ordering:
+            # Ascending
+            response = self.client.get(self.user.get_absolute_url() + "?sort=" + order)
+            self.assertEqual(response.status_code, 200)
+
+            # Descending
+            response = self.client.get(self.user.get_absolute_url() + "?sort=-" + order)
+            self.assertEqual(response.status_code, 200)

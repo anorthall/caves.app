@@ -1,3 +1,4 @@
+import uuid
 from unittest.mock import MagicMock
 
 from django.contrib.auth import get_user_model
@@ -171,3 +172,13 @@ class SocialFeedTests(TestCase):
             reverse("log:trip_like_htmx_view", args=[trip.uuid]),
         )
         self.assertEqual(response.status_code, 403)
+
+    @tag("htmx")
+    def test_htmx_trip_like_view_on_an_invalid_uuid(self):
+        """Test that the HTMX like view returns a 404 on an invalid UUID"""
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("log:trip_like_htmx_view", args=[uuid.uuid4()]),
+        )
+        self.assertEqual(response.status_code, 404)
