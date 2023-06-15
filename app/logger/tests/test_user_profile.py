@@ -35,6 +35,16 @@ class UserProfileViewTests(TestCase):
         self.user2.privacy = User.PUBLIC
         self.user2.save()
 
+        self.user3 = User.objects.create_user(
+            email="user3@caves.app",
+            username="user3",
+            password="password",
+            name="User 3 Name",
+        )
+        self.user3.is_active = True
+        self.user3.privacy = User.PUBLIC
+        self.user3.save()
+
         for i in range(1, 200):
             Trip.objects.create(
                 cave_name=f"User1 Cave {i}",
@@ -205,3 +215,51 @@ class UserProfileViewTests(TestCase):
         response = self.client.get(self.user.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<div class="profile-stats')
+
+    def test_friends_appear_on_the_user_profile_page(self):
+        """Test that friends appear on the user profile page when viewed by the user"""
+        self.client.force_login(self.user)
+        response = self.client.get(self.user.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.user2.get_absolute_url())
+        self.assertNotContains(response, self.user3.get_absolute_url())
+
+        for user in [self.user2, self.user3]:
+            self.user.friends.add(user)
+            user.friends.add(self.user)
+
+        response = self.client.get(self.user.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user2.get_absolute_url())
+        self.assertContains(response, self.user3.get_absolute_url())
+
+    def test_mutual_friends_appear_on_the_user_profile_page(self):
+        """Test that mutual friends appear on the user profile page"""
+        self.client.force_login(self.user)
+
+        self.user2.friends.add(self.user3)
+        self.user3.friends.add(self.user2)
+
+        response = self.client.get(self.user2.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.user3.get_absolute_url())
+
+        self.user.friends.add(self.user3)
+        self.user3.friends.add(self.user)
+
+        response = self.client.get(self.user2.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user3.get_absolute_url())
+
+    @tag("privacy")
+    def test_no_friends_appear_for_an_unauthenticated_user(self):
+        """Test that no friends appear on the user profile page when not logged in"""
+        for user in [self.user2, self.user3]:
+            self.user.friends.add(user)
+            user.friends.add(self.user)
+
+        response = self.client.get(self.user.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.user2.get_absolute_url())
+        self.assertNotContains(response, self.user3.get_absolute_url())
+        self.assertNotContains(response, "Friends")
