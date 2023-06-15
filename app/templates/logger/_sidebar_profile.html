@@ -1,3 +1,5 @@
+{% load users_tags %}
+{% load static %}
 <div class="d-flex my-3 my-lg-0 flex-column align-items-center text-center">
   <div class="mb-4">
     {% if profile_user.avatar %}
@@ -17,4 +19,28 @@
   <span class="text-primary">{{ profile_user.location }}</span>
   <span class="text-primary">{{ profile_user.country.name }}</span>
 
+  {% if mutual_friends %}
+    <div class="d-none d-lg-block mt-5">
+      <div class="sidebar-header mb-2">
+        {% if not user == profile_user %}Mutual {% endif %}Friends
+      </div>
+
+      {% for friend in mutual_friends %}
+        <div class="d-flex flex-row align-items-center justify-content-start mb-3">
+          {% if friend.avatar %}
+            <img src="{{ friend.avatar_navbar.url }}"
+                 class="rounded-circle shadow-sm me-3"
+                 alt="{{ friend.name }}'s profile picture"
+                 width="30" height="30">
+          {% else %}
+            <img src="{% static 'images/blank_profile_picture.svg' %}"
+                 class="rounded-circle shadow-sm me-3"
+                 alt="Blank profile picture"
+                 width="30" height="30">
+          {% endif %}
+          <span class="friend-link">{% user friend %}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 </div>

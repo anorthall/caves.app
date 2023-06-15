@@ -3,13 +3,13 @@ import csv
 import boto3
 from django.conf import settings
 from django.core.paginator import EmptyPage, Paginator
-from django.db.models import Count, Exists, OuterRef, Q
+from django.db.models import Case, Count, Exists, OuterRef, Q, Value, When
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.timezone import localtime as lt
 from users.models import CavingUser
 
-from .models import Trip
+from .models import Trip, TripPhoto
 from .templatetags.logger_tags import distformat
 
 User = CavingUser
@@ -172,7 +172,10 @@ def generate_csv_export(user):
 
 
 def get_trips_context(request, ordering, page=1):
-    """Return a paginated list of trips that the user has permission to view"""
+    """
+    Return a paginated list of trips that the user has permission to view
+    Intended for use in the trip feed
+    """
     friends = request.user.friends.all()
 
     trips = (
@@ -185,6 +188,11 @@ def get_trips_context(request, ordering, page=1):
                 User.objects.filter(
                     pk=request.user.pk, liked_trips=OuterRef("pk")
                 ).only("pk")
+            ),
+            has_photos=Exists(TripPhoto.objects.filter(trip=OuterRef("pk")).only("pk")),
+            photo_count=Count("photos", distinct=True),
+            more_than_five_photos=Case(
+                When(photo_count__gt=5, then=Value(True)),
             ),
         )
     ).order_by(ordering)[:100]

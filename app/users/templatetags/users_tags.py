@@ -1,8 +1,8 @@
 from django import template
-from django.contrib.auth import get_user_model
+
+from ..models import CavingUser as User
 
 register = template.Library()
-User = get_user_model()
 
 
 @register.inclusion_tag("users/_user_tag.html", takes_context=True)
@@ -13,5 +13,4 @@ def user(context, user, show_username=False):
     return {
         "user": user,
         "show_username": show_username,
-        "show_profile_link": user.is_viewable_by(context["request"].user),
     }

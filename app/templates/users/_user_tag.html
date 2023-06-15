@@ -1,7 +1,3 @@
 {% spaceless %}
-  {% if show_profile_link %}
-    <a href="{% url 'log:user' user.username %}" class="text-decoration-none link-info">{{ user }}{% if show_username %} <span class="username">({{ user.username }})</span>{% endif %}</a>
-  {% else %}
-    {{ user }}{% if show_username %} <span class="username">({{ user.username }})</span>{% endif %}
-  {% endif %}
+  <a href="{% url 'log:user' user.username %}" class="text-decoration-none link-info">{{ user }}{% if show_username %} <span class="username">({{ user.username }})</span>{% endif %}</a>
 {% endspaceless %}

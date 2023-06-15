@@ -31,13 +31,17 @@ class UserProfile(ListView):
     def get_queryset(self):
         trips = (
             Trip.objects.filter(user=self.profile_user)
-            .select_related("report")
+            .select_related("report", "user")
             .order_by(*self.get_ordering())
         )
 
+        friends = self.profile_user.friends.all()
+
         # Sanitise trips to be privacy aware
         if not self.profile_user == self.request.user:
-            sanitised_trips = [x for x in trips if x.is_viewable_by(self.request.user)]
+            sanitised_trips = [
+                x for x in trips if x.is_viewable_by(self.request.user, friends)
+            ]
             return sanitised_trips
         else:
             return trips
@@ -62,9 +66,10 @@ class UserProfile(ListView):
         context = super().get_context_data()
         context["profile_user"] = self.profile_user
         context["page_title"] = self.get_page_title()
+        context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["show_cavers"] = self.profile_user.show_cavers_on_trip_list
         if self.profile_user.public_statistics:
-            context["stats"] = new_stats.yearly(self.get_queryset())
+            context["stats"] = new_stats.yearly(self.object_list)
 
         # This code provides the current GET parameters as a context variable
         # so that when a pagination link is clicked, the GET parameters are

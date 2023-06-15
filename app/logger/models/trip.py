@@ -319,8 +319,11 @@ class Trip(models.Model):
             self.notes = None
         return self
 
-    def is_viewable_by(self, user_viewing):
+    def is_viewable_by(self, user_viewing, /, friends=None):
         """Returns whether or not user_viewing can view this trip"""
+        if friends is None:
+            friends = self.user.friends.all()
+
         if user_viewing == self.user:
             return True
 
@@ -328,7 +331,7 @@ class Trip(models.Model):
             return True
 
         if self.privacy == self.FRIENDS:
-            if user_viewing in self.user.friends.all():
+            if user_viewing in friends:
                 return True
 
         if self.privacy == self.DEFAULT:
@@ -462,3 +465,7 @@ class Trip(models.Model):
     @property
     def valid_photos(self):
         return self.photos.filter(is_valid=True).order_by("taken", "added")
+
+    @property
+    def feed_photos(self):
+        return self.valid_photos[:5]
