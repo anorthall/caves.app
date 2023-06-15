@@ -21,7 +21,17 @@
                 </div>
               {% endif %}
 
-              <div class="me-3" x-data="{ open: false }">
+              <div class="me-3">
+                <a href="{% url 'users:account_detail' %}" class="nav-link text-white">
+                  {% if user.avatar %}
+                    <img src="{{ user.avatar_navbar.url }}" class="rounded-circle border border-dark" alt="User avatar">
+                  {% else %}
+                    <i class="bi bi-person-circle"></i>
+                  {% endif %}
+                </a>
+              </div>
+
+              <div x-data="{ open: false }">
                 <a class="nav-link" href="#">
                   <span class="icon-badge-container text-white" x-on:click="open = !open">
                     {% if notifications.unread %}
@@ -32,7 +42,6 @@
                     {% endif %}
                   </span>
                 </a>
-
                 <div class="notification-dropdown shadow-lg border border-2 bg-light" x-show="open" x-transition>
                   <div class="item title my-0">
                     Notifications
@@ -54,16 +63,6 @@
                     </div>
                   {% endif %}
                 </div>
-              </div>
-
-              <div>
-                <a href="{% url 'users:account_detail' %}" class="nav-link text-white">
-                  {% if user.avatar %}
-                    <img src="{{ user.avatar_navbar.url }}" class="rounded-circle border border-dark" alt="User avatar">
-                  {% else %}
-                    <i class="bi bi-person-circle"></i>
-                  {% endif %}
-                </a>
               </div>
             </div>
           {% endif %}
