@@ -31,13 +31,20 @@ docker-compose up
 
 Once the database has initialised, the server will be accessible at http://127.0.0.1:8000. An initial superuser account with the email address `admin@caves.app` and the password `admin` is created automatically.
 
-Additional test data can be generated using the `maketestdata` Django management command. You can run the command via docker compose like so:
+Additional test data can be generated using the `make_test_data` Django management
+command. You can run the command via docker compose like so:
 
 ```
-docker-compose exec web-dev ./manage.py maketestdata
+docker-compose exec web-dev ./manage.py make_test_data
 ```
 
-By default, this will create 25 users and 6,000 trips, although this is configurable (see `manage.py maketestdata --help` for more information). Generation of users and trips may take a few minutes on slower systems. Please note that the `maketestdata` command can only create users once, as it will attempt to re-use the same sequential emails on the second attempt. If you wish to re-create users, you can stop the Docker instance and delete the `data/development` directory, before re-initialising the environment:
+By default, this will create 25 users and 6,000 trips, although this is configurable
+(see `manage.py make_test_data --help` for more information). Generation of users
+and trips may take a few minutes on slower systems. Please note that the
+`make_test_data` command can only create users once, as it will attempt to re-use
+the same sequential emails on the second attempt. If you wish to re-create users,
+you can stop the Docker instance and delete the `data/development` directory, before
+re-initialising the environment:
 
 ```
 docker compose down -v
