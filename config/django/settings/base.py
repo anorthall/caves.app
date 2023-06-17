@@ -196,14 +196,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Static files (CSS, JavaScript, Images)
-STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
-STATIC_URL = os.environ.get("STATIC_URL", "/static/")
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
-
 # Amazon S3
 AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")
 AWS_S3_ACCESS_KEY_ID = os.environ.get("AWS_S3_ACCESS_KEY_ID")

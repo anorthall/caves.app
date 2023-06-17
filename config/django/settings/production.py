@@ -73,3 +73,12 @@ MEDIA_URL = os.environ.get("MEDIA_URL", "https://your.cdn.com/media/")
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "django.template.context_processors.media"
 ]
+
+
+# Static files (CSS, JavaScript, Images)
+# STATIC_ROOT should not be needed in production. Everything is in S3.
+# STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
+STATIC_URL = os.environ.get("STATIC_URL", "https://your.cdn.com/static/")
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
