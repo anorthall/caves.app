@@ -12,8 +12,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
 from logger.models import Trip, TripReport
 from timezone_field import TimeZoneField
 
@@ -152,18 +150,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         verbose_name="profile picture",
         blank=True,
         help_text="A profile picture to display on your public profile.",
-    )
-    avatar_profile = ImageSpecField(
-        source="avatar",
-        processors=[ResizeToFill(225, 225)],
-        format="JPEG",
-        options={"quality": 90},
-    )
-    avatar_navbar = ImageSpecField(
-        source="avatar",
-        processors=[ResizeToFill(25, 25)],
-        format="JPEG",
-        options={"quality": 90},
     )
 
     #

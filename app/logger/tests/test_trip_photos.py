@@ -68,7 +68,7 @@ class TripPhotoTests(TestCase):
         instance.uuid = "12345678-1234-5678-1234-567812345678"
         filename = "test-file.jpg"
 
-        expected = f"p/{instance.user.uuid}/{instance.trip.uuid}/{instance.uuid}.jpg"
+        expected = f"{instance.user.uuid}/{instance.trip.uuid}/{instance.uuid}.jpg"
         actual = trip_photo_upload_path(instance, filename)
         self.assertEqual(expected, actual)
 

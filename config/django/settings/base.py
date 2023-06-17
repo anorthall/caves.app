@@ -34,6 +34,16 @@ ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
 STAFF_URL = os.environ.get("STAFF_URL", "staff/")
 
 
+# Imgproxy configuration
+IMGPROXY_URL = os.environ.get("IMGPROXY_URL", "http://127.0.0.1:9000/imgproxy")
+IMGPROXY_KEY = os.environ.get("IMGPROXY_KEY", "")
+IMGPROXY_SALT = os.environ.get("IMGPROXY_SALT", "")
+IMGPROXY_PRESETS = {
+    "tripphoto_thumb": "width=200,height=300,resizing_type=fill",
+    "avatar": "width=225,height=225,resizing_type=fill",
+    "avatar_navbar": "width=25,height=25,resizing_type=fill",
+}
+
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-secret-key")
@@ -89,7 +99,6 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_htmx",
-    "imagekit",
     "markdownify.apps.MarkdownifyConfig",
 ]
 
@@ -187,14 +196,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = "/static/"
-STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
-
 # Amazon S3
 AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")
 AWS_S3_ACCESS_KEY_ID = os.environ.get("AWS_S3_ACCESS_KEY_ID")
@@ -208,14 +209,8 @@ AWS_PRESIGNED_EXPIRY = int(os.environ.get("AWS_PRESIGNED_EXPIRY", 20))
 
 # Storages
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
     "photos": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "BACKEND": "core.custom_storages.PhotosS3Storage",
     },
 }
 
