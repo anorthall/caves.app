@@ -13,7 +13,6 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   imgproxy-dev:
-    restart: always
     image: darthsim/imgproxy:latest
     security_opt:
     - no-new-privileges:true
