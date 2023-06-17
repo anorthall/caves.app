@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 import exifread
+from core.custom_storages import PhotosS3Storage
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -83,9 +84,11 @@ class TripPhotosUpload(LoginRequiredMixin, View):
         photo.photo = ImageFieldFile(photo, photo.photo.field, upload_path)
         photo.save()
 
+        uppy_upload_path = PhotosS3Storage().location + "/" + upload_path
+
         try:
             aws_response = services.generate_s3_presigned_post(
-                upload_path, content_type
+                uppy_upload_path, content_type
             )
         except IOError as e:
             raise BadRequest(e)
@@ -97,6 +100,7 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         json_request = json.loads(request.body)
         s3_key = json_request.get("s3Key")
+        s3_key = s3_key.replace(PhotosS3Storage().location + "/", "")
         trip_uuid = json_request.get("tripUUID")
 
         if not s3_key or not trip_uuid:
