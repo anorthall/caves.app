@@ -1,0 +1,44 @@
+{% extends "base_account.html" %}
+{% load humanize %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block main %}
+  <div class="d-flex flex-row justify-content-between align-items-center subtitle">
+    <h3 class="mb-0" style="font-size: inherit;">Notifications</h3>
+    <a href="{% url 'users:notifications_mark_read' %}"
+       class="btn btn-sm btn-outline-primary">mark all read</a>
+  </div>
+
+  {% if all_notifications %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th class="d-none d-xl-table-cell">Received</th>
+            <th>Message</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody class="align-middle">
+          {% for notification in all_notifications %}
+            <tr class="{% if notification.read %}opacity-75{% else %}fw-bold{% endif %}"
+                data-href="{{ notification.url }}">
+              <td class="d-none d-xl-table-cell">{{ notification.added|naturaltime }}</td>
+              <td>{{ notification.message }}</td>
+              <td class="text-end pe-0">
+                <a class="btn {% if notification.read %}btn-primary{% else %}btn-success{% endif %}"
+                   href="{{ notification.url }}"><i class="bi bi-link-45deg"></i></a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% include "_paginate_bootstrap.html" with page=page_obj %}
+    </div>
+  {% else %}
+    <p class="lead">No notifications.</p>
+  {% endif %}
+{% endblock %}

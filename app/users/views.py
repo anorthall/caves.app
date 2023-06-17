@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, TemplateView, View
+from django.views.generic import FormView, ListView, TemplateView, View
 
 from .emails import (
     send_email_change_notification,
@@ -400,3 +400,20 @@ class CustomFieldsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+class NotificationsList(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = "users/notifications.html"
+    context_object_name = "all_notifications"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user).order_by("-added")
+
+
+class NotificationMarkAllRead(LoginRequiredMixin, View):
+    def get(self, request):
+        Notification.objects.filter(user=request.user, read=False).update(read=True)
+        messages.success(request, "All notifications marked as read.")
+        return redirect("users:notifications")

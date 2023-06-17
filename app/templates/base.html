@@ -58,6 +58,13 @@
                         </small>
                       </div>
                     {% endfor %}
+
+                    <div data-href="{% url 'users:notifications' %}" class="item text-primary">
+                      <a href="{% url 'users:notifications' %}"
+                         class="btn btn-primary">
+                        See all notifications
+                      </a>
+                    </div>
                   {% else %}
                     <div class="item title fw-normal text-primary">
                       <span>You do not have any notifications. Oh well!</span>
