@@ -24,7 +24,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/caves/wheels -r requ
 ##################
 ### Production ###
 ##################
-FROM python:3.11.3-alpine
+FROM python:3.11.4-alpine
 
 # Install psycopg2 depencencies
 RUN apk update && apk add libpq
