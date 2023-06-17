@@ -24,6 +24,7 @@ jobs:
       SQL_PORT: 5432
       PYTHONPATH: ${{ github.workspace }}
       BASE_DIR: ${{ github.workspace }}/app
+      DJANGO_SETTINGS_FILE: config.django.settings.development
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
