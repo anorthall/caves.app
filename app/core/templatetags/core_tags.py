@@ -1,5 +1,8 @@
+import os
+
 from django import template
 from django.conf import settings
+
 from ..images import generate_imgproxy_url
 
 register = template.Library()
@@ -51,8 +54,19 @@ def imgproxy(image, args=None):
         else:
             advanced_params += arg
 
-    return generate_imgproxy_url(
-        image.url,
-        advanced_params,
-        **kwargs
-    )
+    # Rewrite URLs for local development in Docker container
+    if os.environ.get("IMGPROXY_LOCAL_DEV") == "true":
+        url = _rewrite_url_for_local_dev(image.url)
+    else:
+        url = image.url
+
+    return generate_imgproxy_url(url, advanced_params, **kwargs)
+
+
+def _rewrite_url_for_local_dev(url):
+    """Rewrite URLs sent to imgproxy for local development in a Docker container"""
+    # Do not rewrite S3 URLs
+    if settings.AWS_S3_CUSTOM_DOMAIN in url:
+        return url
+
+    return "http://web-dev:8000" + url
