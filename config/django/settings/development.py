@@ -34,11 +34,3 @@ MEDIA_URL = "/media/"
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "django.template.context_processors.media"
 ]
-
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = "/static/"
-STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
