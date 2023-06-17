@@ -7,7 +7,7 @@
 # photos which were not successfully uploaded to S3.
 
 
-APP_ROOT=/home/andrew/apps/caves.app
+APP_ROOT=/home/caves/caves.app
 DOCKER_CMD="docker compose -f docker-compose.prod.yml exec web"
 
 

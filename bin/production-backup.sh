@@ -7,7 +7,7 @@
 
 # Configuration
 
-APP_ROOT=/home/andrew/apps/caves.app
+APP_ROOT=/home/caves/caves.app
 LOG_DIR=$APP_ROOT/data/production/logs/rsync
 REMOTE=andrew@hartfield:/home/andrew/caves.app/backups
 

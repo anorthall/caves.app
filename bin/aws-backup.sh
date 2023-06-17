@@ -6,7 +6,7 @@
 
 
 # Configuration
-APP_ROOT=/home/andrew/apps/caves.app
+APP_ROOT=/home/caves/caves.app
 BUCKET=s3://caves.app-backup
 LOGFILE=$APP_ROOT/data/production/logs/aws/s3-sync.log
 
