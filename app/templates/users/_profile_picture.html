@@ -1,8 +1,10 @@
 {% load static %}
+{% load core_tags %}
+
 {% if photo_user.avatar %}
   <a href="{{ photo_user.avatar.url }}">
       <img class="align-self-center justify-self-center rounded-circle border border-2 shadow profile-photo"
-           src="{{ photo_user.avatar_profile.url }}"
+           src="{{ photo_user.avatar|imgproxy:"preset:avatar" }}"
            alt="{{ photo_user.name }}'s profile picture">
   </a>
 {% else %}

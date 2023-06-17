@@ -1,5 +1,6 @@
 {% load humanize %}
 {% load users_tags %}
+{% load core_tags %}
 
 {% for trip in trips %}
   <div class="card shadow mb-4 mb-lg-5">
@@ -81,7 +82,7 @@
           {% for photo in trip.feed_photos %}
             <a href="{{ photo.url }}" class="p-2" data-title="{{ photo.caption }}"
                data-lightbox="{{ trip.uuid }}" id="{{ photo.uuid }}">
-              <img src="{{ photo.thumbnail.url }}" class="img-fluid shadow-sm rounded"
+              <img src="{{ photo|imgproxy:"preset:tripphoto_thumb" }}" class="img-fluid shadow-sm rounded"
                    alt="{{ photo.caption }}">
             </a>
           {% endfor %}

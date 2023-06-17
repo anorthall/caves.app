@@ -11,13 +11,13 @@ django-tinymce==3.6.1
 django-debug-toolbar==4.1.0
 django-crispy-forms==2.0
 django-htmx==1.15.0
-django-imagekit==4.1.0
 crispy-bootstrap5==0.7
 boto3==1.26.153
 ExifRead==3.0.0
 Pillow==9.5.0
 attrs==23.1.0
 itsdangerous==2.1.2
+imgproxy==1.0.0
 humanize==4.6.0
 psycopg2==2.9.6
 gunicorn==20.1.0

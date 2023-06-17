@@ -11,6 +11,18 @@ services:
     env_file:
       - ./config/docker/production/postgres.env
 
+  imgproxy:
+    restart: always
+    image: darthsim/imgproxy:latest
+    security_opt:
+    - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+    env_file:
+      - ./config/docker/production/production.env
+    ports:
+      - 9000:9000
+
   pgbackups:
     image: prodrigestivill/postgres-backup-local
     restart: always
@@ -18,13 +30,13 @@ services:
     volumes:
       - ./data/production/backups/db:/backups
     env_file:
-      - ./config/docker/production/postgres-backup.env
+      - ./config/docker/production/production.env
     depends_on:
       - db
 
   web:
     restart: always
-    user: 1001:1001
+    user: ${UID}:${GID}
     build:
       context: .
       dockerfile: ./config/docker/production/Dockerfile.prod.web
