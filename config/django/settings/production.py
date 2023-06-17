@@ -76,8 +76,7 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
 
 
 # Static files (CSS, JavaScript, Images)
-# STATIC_ROOT should not be needed in production. Everything is in S3.
-# STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
+STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
 STATIC_URL = os.environ.get("STATIC_URL", "https://your.cdn.com/static/")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
