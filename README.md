@@ -24,9 +24,11 @@ The project is written in Python and Django. Pull requests are more than welcome
 
 ### Development environment
 
-All development is done inside the Docker development environment. To set up the environment, build and run the docker image from the project root directory:
+All development is done inside the Docker development environment. To set up the environment, copy the example
+development.env file and build and run the docker image from the project root directory:
 
 ```
+cp config/docker/development/development.env.example config/docker/development/development.env
 docker-compose up
 ```
 
