@@ -15,8 +15,6 @@ aws s3 sync $APP_ROOT/data/production/backups/db $BUCKET/db \
     --exclude "**/postgres-latest.sql.gz" >> $LOGFILE
 aws s3 sync $APP_ROOT/data/production/backups/crontab $BUCKET/crontab >> $LOGFILE
 aws s3 sync $APP_ROOT/data/production/logs $BUCKET/logs >> $LOGFILE
-aws s3 sync $APP_ROOT/data/production/media $BUCKET/media \
-    --exclude "CACHE/*" >> $LOGFILE
 aws s3 sync $APP_ROOT/bin $BUCKET/bin >> $LOGFILE
 aws s3 sync $APP_ROOT/config $BUCKET/config/app >> $LOGFILE
 aws s3 sync /etc/nginx/sites-available $BUCKET/config/nginx/sites-available >> $LOGFILE
