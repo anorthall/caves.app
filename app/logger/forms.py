@@ -122,7 +122,16 @@ class TripForm(DistanceUnitFormMixin, forms.ModelForm):
         self.fields["notes"].label = ""
         self.helper = FormHelper()
         self.helper.form_method = "post"
+
+        # Initialise custom fields
         custom_fields = self._get_custom_fields()
+
+        # Set timezone help text
+        tz = timezone.get_current_timezone_name()
+        self.fields["start"].help_text = f"Timezone: {tz}"
+        self.fields["end"].help_text = f"Timezone: {tz}"
+
+        # Form layout
         self.helper.layout = Layout(
             Fieldset(
                 "Cave details",
