@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import auth, messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -21,13 +21,13 @@ from .forms import (
     AuthenticationForm,
     AvatarChangeForm,
     CustomFieldsForm,
+    EmailChangeForm,
     PasswordChangeForm,
     PasswordResetForm,
     ProfileChangeForm,
     ResendVerifyEmailForm,
     SetPasswordForm,
     SettingsChangeForm,
-    UserChangeEmailForm,
     UserCreationForm,
     VerifyEmailForm,
 )
@@ -68,35 +68,8 @@ class PasswordResetConfirmView(
     }
 
 
-class PasswordChangeView(
-    LoginRequiredMixin, SuccessMessageMixin, auth_views.PasswordChangeView
-):
-    template_name = "users/crispy_form.html"
-    extra_context = {"title": "Change your password"}
-    success_url = reverse_lazy("users:account_detail")
-    form_class = PasswordChangeForm
-    success_message = "Your password has been updated."
-
-
 class Account(LoginRequiredMixin, TemplateView):
     template_name = "users/account.html"
-
-
-class SettingsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
-    template_name = "users/crispy_form.html"
-    extra_context = {"title": "Update your account"}
-    form_class = SettingsChangeForm
-    success_url = reverse_lazy("users:settings_update")
-    success_message = "Your settings have been updated."
-
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super().get_form_kwargs()
-        kwargs["instance"] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
 
 
 class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
@@ -349,30 +322,75 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
         return initial
 
 
-class UpdateEmail(SuccessMessageMixin, LoginRequiredMixin, FormView):
-    template_name = "users/crispy_form.html"
-    extra_context = {"title": "Change your email address"}
-    form_class = UserChangeEmailForm
-    success_url = reverse_lazy("users:verify_email_change")
-    success_message = (
-        "Please follow the instructions sent to your new email address within "
-        "24 hours to complete the change."
-    )
+class AccountSettings(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        context = {
+            "settings_form": SettingsChangeForm(instance=request.user),
+            "email_form": EmailChangeForm(user=request.user),
+            "password_form": PasswordChangeForm(user=request.user),
+        }
+        return render(request, "users/account_settings.html", context)
 
-    def form_valid(self, form, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
+        settings_form, email_form, password_form = None, None, None
+
+        if request.POST.get("settings_submit"):
+            settings_form = SettingsChangeForm(request.POST, instance=request.user)
+            if settings_form.is_valid():
+                return self.settings_form_valid(request, settings_form)
+        elif request.POST.get("email_submit"):
+            email_form = EmailChangeForm(request.POST, user=request.user)
+            if email_form.is_valid():
+                return self.email_form_valid(request, email_form)
+        elif request.POST.get("password_submit"):
+            password_form = PasswordChangeForm(request.user, request.POST)
+            if password_form.is_valid():
+                return self.password_form_valid(request, password_form)
+
+        messages.error(request, "Please correct the error(s) below.")
+        if not settings_form:
+            settings_form = SettingsChangeForm(instance=request.user)
+        if not email_form:
+            email_form = EmailChangeForm(user=request.user)
+        if not password_form:
+            password_form = PasswordChangeForm(user=request.user)
+
+        context = {
+            "settings_form": settings_form,
+            "email_form": email_form,
+            "password_form": password_form,
+        }
+        return render(request, "users/account_settings.html", context)
+
+    def password_form_valid(self, request, form):
+        """Save the user's new password"""
+        form.save()
+        update_session_auth_hash(request, request.user)
+        messages.success(request, "Your password has been updated.")
+        return redirect("users:account_settings")
+
+    def email_form_valid(self, request, form):
         """Generate verification token and send the email"""
-        user = form.user
+        user = request.user
         new_email = form.cleaned_data["email"]
         verify_code = generate_token(user.pk, new_email)
         verify_url = settings.SITE_ROOT + reverse("users:verify_email_change")
         send_email_change_verification(new_email, user.name, verify_url, verify_code)
         send_email_change_notification(user.email, user.name, new_email)
-        return super().form_valid(form)
+        messages.success(
+            request,
+            (
+                "Please follow the instructions sent to your new email address "
+                "to complete the change."
+            ),
+        )
+        return redirect("users:verify_email_change")
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super().get_form_kwargs()
-        kwargs["user"] = self.request.user
-        return kwargs
+    def settings_form_valid(self, request, form):
+        """Save the user's settings"""
+        form.save()
+        messages.success(request, "Your settings have been updated.")
+        return redirect("users:account_settings")
 
 
 class NotificationRedirect(LoginRequiredMixin, View):

@@ -60,18 +60,6 @@ class TestUsersPagesLoad(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_password_change_page_loads(self):
-        """Test that the password change page loads"""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("users:password_update"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_email_change_page_loads(self):
-        """Test that the email change page loads"""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("users:email"))
-        self.assertEqual(response.status_code, 200)
-
     def test_verify_email_change_page_loads(self):
         """Test that the verify email change page loads"""
         self.client.force_login(self.user)
@@ -93,7 +81,7 @@ class TestUsersPagesLoad(TestCase):
     def test_settings_update_page_loads(self):
         """Test that the settings update page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("users:settings_update"))
+        response = self.client.get(reverse("users:account_settings"))
         self.assertEqual(response.status_code, 200)
 
     def test_profile_picture_update_page_loads(self):

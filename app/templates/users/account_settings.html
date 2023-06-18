@@ -1,0 +1,18 @@
+{% extends "base_account.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Settings{% endblock %}
+
+{% block main %}
+  <div class="mb-5">
+    {% crispy settings_form %}
+  </div>
+
+  <div class="mb-5">
+    {% crispy email_form %}
+  </div>
+
+  <div class="mb-3">
+    {% crispy password_form %}
+  </div>
+{% endblock %}

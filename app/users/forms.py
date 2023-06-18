@@ -2,7 +2,7 @@ import copy
 
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Fieldset, Layout, Submit
+from crispy_forms.layout import Div, Field, Fieldset, Layout, Submit
 from django import forms
 from django.contrib import auth
 from django.contrib.auth import get_user_model
@@ -49,23 +49,23 @@ class AuthenticationForm(auth.forms.AuthenticationForm):
 # noinspection PyTypeChecker
 class PasswordChangeForm(auth.forms.PasswordChangeForm):
     def __init__(self, *args, **kwargs):
-        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self.fields["old_password"].widget.attrs.pop("autofocus", None)
         self.fields["new_password1"].help_text = ""
         self.fields["new_password2"].help_text = (
-            "Your password can't be too similar to your other personal "
-            "information, must contain at least 8 characters, cannot be entirely "
-            "numeric and must not be a commonly used password."
+            "<div class='mw-35'>Your password can't be too similar to your other "
+            "personal information, must contain at least 8 characters, cannot be "
+            "entirely numeric and must not be a commonly used password.</div>"
         )
         self.helper = FormHelper()
         self.helper.form_method = "post"
-        self.helper.form_class = "mw-35"
         self.helper.layout = Layout(
             Fieldset(
                 "Change password",
-                "old_password",
-                "new_password1",
-                "new_password2",
-                Submit("submit", "Change password"),
+                Field("old_password", css_class="mw-35"),
+                Field("new_password1", css_class="mw-35"),
+                Field("new_password2", css_class="mw-35"),
+                Submit("password_submit", "Change password"),
             )
         )
 
@@ -77,7 +77,7 @@ class PasswordResetForm(auth.forms.PasswordResetForm):
         self.helper.form_method = "post"
         self.helper.layout = Layout(
             FloatingField("email"),
-            Submit("submit", "Reset password", css_class="btn-lg w-100"),
+            Submit("password_submit", "Reset password", css_class="btn-lg w-100"),
         )
 
 
@@ -287,7 +287,7 @@ class SettingsChangeForm(forms.ModelForm):
                     css_class="row row-cols-1 row-cols-lg-3 mt-4",
                 ),
             ),
-            Submit("submit", "Save changes", css_class="btn-lg w-100 mt-4"),
+            Submit("settings_submit", "Update settings", css_class="mt-3"),
         )
 
 
@@ -401,7 +401,7 @@ class CustomFieldsForm(forms.ModelForm):
 
 
 # noinspection PyTypeChecker
-class UserChangeEmailForm(forms.Form):
+class EmailChangeForm(forms.Form):
     email = forms.EmailField(
         label="New email address",
         max_length=255,
@@ -418,18 +418,17 @@ class UserChangeEmailForm(forms.Form):
         help_text="For security reasons, please enter your existing password.",
     )
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        self.user = user
         self.helper = FormHelper()
         self.helper.form_method = "post"
-        self.helper.form_class = "mw-35"
         self.helper.layout = Layout(
             Fieldset(
                 "Change email address",
-                "email",
-                "password",
-                Submit("submit", "Update email"),
+                Field("email", css_class="mw-35"),
+                Field("password", css_class="mw-35"),
+                Submit("email_submit", "Update email"),
             )
         )
 

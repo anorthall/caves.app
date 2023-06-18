@@ -357,8 +357,12 @@ class UserIntegrationTestCase(TestCase):
     def test_change_user_email_with_invalid_password(self):
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("users:email"),
-            {"email": "new-email@caves.app", "password": "invalid"},
+            reverse("users:account_settings"),
+            {
+                "email": "new-email@caves.app",
+                "password": "invalid",
+                "email_submit": "Save",
+            },
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -367,8 +371,12 @@ class UserIntegrationTestCase(TestCase):
     def test_change_user_email_with_email_already_in_use(self):
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("users:email"),
-            {"email": self.user.email, "password": "password"},
+            reverse("users:account_settings"),
+            {
+                "email": self.user.email,
+                "password": "password",
+                "email_submit": "Save",
+            },
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -380,8 +388,12 @@ class UserIntegrationTestCase(TestCase):
 
         # Submit the change email form
         response = self.client.post(
-            reverse("users:email"),
-            {"email": "new-email@caves.app", "password": "password"},
+            reverse("users:account_settings"),
+            {
+                "email": "new-email@caves.app",
+                "password": "password",
+                "email_submit": "Save",
+            },
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -467,12 +479,13 @@ class UserIntegrationTestCase(TestCase):
         """Test submitting updates to a user's settings"""
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("users:settings_update"),
+            reverse("users:account_settings"),
             {
                 "privacy": "Friends",
                 "timezone": "US/Central",
                 "units": "Imperial",
                 "public_statistics": True,
+                "settings_submit": "Save",
             },
             follow=True,
         )
@@ -505,11 +518,12 @@ class UserIntegrationTestCase(TestCase):
         """Test changing a user's password"""
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("users:password_update"),
+            reverse("users:account_settings"),
             {
                 "old_password": "password",
                 "new_password1": "new_password",
                 "new_password2": "new_password",
+                "password_submit": "Save",
             },
             follow=True,
         )

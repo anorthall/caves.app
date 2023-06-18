@@ -6,9 +6,8 @@ app_name = "users"
 urlpatterns = [
     path("login/", views.Login.as_view(), name="login"),
     path("logout/", views.Logout.as_view(), name="logout"),
-    path("email/", views.UpdateEmail.as_view(), name="email"),
     path("view/", views.Account.as_view(), name="account_detail"),
-    path("settings/", views.SettingsUpdate.as_view(), name="settings_update"),
+    path("settings/", views.AccountSettings.as_view(), name="account_settings"),
     path(
         "custom-fields/",
         views.CustomFieldsUpdate.as_view(),
@@ -16,7 +15,6 @@ urlpatterns = [
     ),
     path("profile/", views.ProfileUpdate.as_view(), name="profile_update"),
     path("profile/photo/", views.AvatarUpdate.as_view(), name="profile_photo_update"),
-    path("password/", views.PasswordChangeView.as_view(), name="password_update"),
     path("password/reset/", views.PasswordResetView.as_view(), name="password_reset"),
     path(
         "password/reset/confirm/<uidb64>/<token>/",
