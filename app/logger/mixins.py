@@ -22,10 +22,7 @@ class TripContextMixin:
             report = None
             if hasattr(trip, "report"):
                 report = trip.report
-        elif not self.object:
-            # Django will return a 404 shortly, so we can just exit
-            return
-        else:
+        else:  # pragma: no cover
             raise TypeError("Object is not a Trip or TripReport")
 
         object_owner = trip.user

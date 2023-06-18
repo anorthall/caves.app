@@ -38,7 +38,7 @@ class NotificationTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("users:notifications"))
         self.assertEqual(response.status_code, 200)
-        for i in range(20, 10):
+        for i in range(11, 20):
             self.assertContains(response, f"Test {i}")
 
     def test_mark_all_notifications_as_read_view(self):
