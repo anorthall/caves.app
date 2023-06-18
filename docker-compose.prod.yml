@@ -40,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: ./config/docker/production/Dockerfile.prod.web
-    command: gunicorn config.django.wsgi:application --bind 0.0.0.0:8000 --log-file /opt/caves/logs/gunicorn/gunicorn.log
+    command: gunicorn config.django.wsgi:application --bind ${CAVES_BIND_ADDR:0.0.0.0:8000} --log-file /opt/caves/logs/gunicorn/gunicorn.log
     volumes:
       - ./data/production/staticfiles:/opt/caves/staticfiles
       - ./data/production/media:/opt/caves/media
