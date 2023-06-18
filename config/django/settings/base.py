@@ -65,6 +65,7 @@ MAILER_EMPTY_QUEUE_SLEEP = int(os.environ.get("MAILER_EMPTY_QUEUE_SLEEP", 30))
 EMAIL_HOST = os.environ.get("EMAIL_HOST", None)
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 0))
 EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", 0))
+EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", 0))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", None)
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", None)
 
