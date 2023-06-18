@@ -53,7 +53,6 @@ urlpatterns = [
     ),
     path("report/<uuid:uuid>/", views.ReportDetail.as_view(), name="report_detail"),
     path("search/", views.Search.as_view(), name="search"),
-    path("search/r/", views.SearchResults.as_view(), name="search_results"),
     path("feed/htmx/", views.HTMXTripFeed.as_view(), name="feed_htmx_view"),
     path(
         "feed/set_ordering/", views.SetFeedOrdering.as_view(), name="feed_set_ordering"

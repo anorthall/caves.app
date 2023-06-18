@@ -2,71 +2,76 @@
 {% load logger_tags %}
 {% load users_tags %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block title %}Search caves.app{% endblock %}
 {% block display_title %}Search{% endblock %}
 
 {% block main %}
-  <p class="lead">
-    This page allows you to search through your own trips, and trips of other users that you have permission to view.
-  </p>
-
-  <p>
-    The search looks for the terms in the following fields: <em>cave name, entrance, exit, region, country and cavers</em>.
-    The search is case insensitive, and will match partial words. It is planned to improve the search facility in the future.
-  </p>
-
-  <hr class="my-4">
-
-  {% crispy form %}
+  <form method="post" action="{% url 'log:search' %}">
+    {% crispy form %}
+    <button type="submit" class="btn btn-primary w-100 mt-3">Search</button>
+  </form>
 
   {% if trips %}
     <hr class="my-4">
 
-    <h2 class="fs-4 mb-3">Results</h2>
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Date</th>
-            <th>User</th>
-            <th>Cave</th>
-            <th>Region</th>
-            <th>Country</th>
-          </tr>
-        </thead>
+    <h2 class="fs-4 ms-3 mb-4">
+      Results
+      <small class="text-muted">
+        {{ trips.paginator.count|intcomma }} total
+      </small>
+    </h2>
 
-        <tbody>
-          {% for trip in trips %}
-            <tr class="table-light" data-href="{{ trip.get_absolute_url }}">
-              <td>{{ forloop.counter }}</td>
-              <td>{{ trip.start|date:"jS M y" }}</td>
-              <td>{% user trip.user %}</td>
-              <td><a href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a></td>
-              <td>{{ trip.cave_region }}</td>
-              <td>{{ trip.cave_country }}</td>
-            </tr>
-
-            {% if trip.cave_entrance or trip.cave_exit or trip.cavers%}
-              <tr data-href="{{ trip.get_absolute_url }}">
-                <td colspan="6" class="pb-3 pt-3 px-3">
-                  {% if trip.cave_entrance or trip.cave_exit %}
-                    <div class="text-primary">
-                      via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
-                    </div>
-                  {% endif %}
-                  {% if trip.cavers %}
-                    <div>
-                      with {{ trip.cavers }}
-                    </div>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    {% for trip in trips %}
+      <div class="card border-primary-subtle shadow-sm mb-3 mb-lg-4">
+        <div class="card-body bg-light" data-href="{{ trip.get_absolute_url }}">
+          <h4 class="card-title">
+            <a class="link-body-emphasis text-decoration-none" href="{{ trip.get_absolute_url }}">
+              {{ trip.cave_name }}
+            </a>
+          </h4>
+          <div class="card-subtitle text-muted">
+            by {% user trip.user %} &middot; {{ trip.start|date }}
+          </div>
+        </div>
+        <ul class="list-group list-group-flush">
+          {% if trip.cave_entrance or trip.cave_exit %}
+            <li class="list-group-item">
+              <span class="search-field-title">via</span>
+              {{ trip.cave_entrance }}
+              {% if trip.cave_entrance and trip.cave_exit %}and{% endif %}
+              {{ trip.cave_exit }}
+            </li>
+          {% endif %}
+          {% if trip.cave_region or trip.cave_country %}
+            <li class="list-group-item">
+              {{ trip.cave_region }}
+              {% if trip.cave_region and trip.cave_country %}&middot;{% endif %}
+              {{ trip.cave_country }}
+            </li>
+          {% endif %}
+          {% if trip.clubs or trip.expedition %}
+            <li class="list-group-item">
+              {{ trip.clubs }}
+              {% if trip.clubs and trip.expedition %}and{% endif %}
+              {{ trip.expedition }}
+            </li>
+          {% endif %}
+          {% if trip.cavers %}
+            <li class="list-group-item">
+              {{ trip.cavers }}
+            </li>
+          {% endif %}
+          {% if trip.notes %}
+            <li class="list-group-item">
+              {{ trip.notes }}
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endfor %}
   {% endif %}
+
+  {% include "_paginate_bootstrap.html" with page_obj=trips %}
 {% endblock %}

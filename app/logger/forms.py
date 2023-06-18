@@ -4,15 +4,14 @@ from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
 from django import forms
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 from django.utils import timezone
+from users.models import CavingUser
 
 from .mixins import DistanceUnitFormMixin
 from .models import Trip, TripPhoto, TripReport
 
-User = get_user_model()
+User = CavingUser
 
 
 # noinspection PyTypeChecker
@@ -302,29 +301,62 @@ class PhotoPrivacyForm(forms.ModelForm):
 
 
 class TripSearchForm(forms.Form):
+    TRIP_TYPE_CHOICES = [("Any", "Any trip type")] + Trip.TRIP_TYPES
+
     terms = forms.CharField(
-        label="Terms",
+        label="Search terms",
         required=True,
         help_text="Text to search for in trip records.",
     )
     user = forms.CharField(
         label="Username",
         required=False,
-        help_text="Limit search to a specific user (optional).",
+        help_text="Limit search to a specific username.",
     )
+    trip_type = forms.ChoiceField(
+        choices=TRIP_TYPE_CHOICES, help_text="Limit search to a specific trip type."
+    )
+    cave_name = forms.BooleanField(initial=True, required=False)
+    cave_entrance = forms.BooleanField(initial=True, required=False)
+    cave_exit = forms.BooleanField(initial=True, required=False)
+    region = forms.BooleanField(initial=True, required=False)
+    country = forms.BooleanField(initial=False, required=False)
+    cavers = forms.BooleanField(initial=True, required=False)
+    clubs = forms.BooleanField(initial=False, required=False)
+    expedition = forms.BooleanField(initial=False, required=False)
+    notes = forms.BooleanField(initial=False, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_method = "get"
-        self.helper.form_action = reverse("log:search_results")
+        self.helper.form_method = "post"
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
-                Field("terms", wrapper_class="col-12 col-lg-8"),
-                Field("user", wrapper_class="col-12 col-lg-4"),
+                "terms",
                 css_class="row",
             ),
-            Submit("submit", "Search", css_class="btn btn-primary w-100 mt-3"),
+            Div(
+                Div("user", css_class="col"),
+                Div("trip_type", css_class="col"),
+                css_class="row row-cols-1 row-cols-md-2",
+            ),
+            Div(
+                Div(HTML("Search fields"), css_class="col-12"),
+                css_class="row mt-4",
+            ),
+            Div(
+                Div("cave_name", css_class="col"),
+                Div("cave_entrance", css_class="col"),
+                Div("cave_exit", css_class="col"),
+                Div("region", css_class="col"),
+                Div("country", css_class="col"),
+                Div("cavers", css_class="col"),
+                Div("clubs", css_class="col"),
+                Div("expedition", css_class="col"),
+                Div("notes", css_class="col"),
+                css_class="row row-cols-2 row-cols-lg-3 mt-3",
+            ),
         )
 
     def clean_terms(self):
