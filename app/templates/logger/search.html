@@ -65,7 +65,7 @@
           {% endif %}
           {% if trip.notes %}
             <li class="list-group-item">
-              {{ trip.notes }}
+              {{ trip.notes|linebreaks }}
             </li>
           {% endif %}
         </ul>
