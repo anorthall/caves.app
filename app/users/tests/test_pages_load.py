@@ -143,3 +143,9 @@ class TestUsersPagesLoad(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("users:custom_fields_update"))
         self.assertEqual(response.status_code, 200)
+
+    def test_notifications_list_page_loads(self):
+        """Test that the notifications list page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("users:notifications"))
+        self.assertEqual(response.status_code, 200)

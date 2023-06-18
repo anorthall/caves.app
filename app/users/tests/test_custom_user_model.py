@@ -551,25 +551,3 @@ class UserIntegrationTestCase(TestCase):
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "1000m")
-
-    def test_notifications_are_displayed(self):
-        """Test notifications are displayed on the user's profile"""
-        self.client.force_login(self.user)
-
-        for i in range(10):
-            self.user.notify(f"Test {i}", "/")
-
-        response = self.client.get(reverse("users:account_detail"))
-        for i in range(1, 5):
-            self.assertNotContains(response, f"Test {i}")
-
-        for i in range(6, 10):
-            self.assertContains(response, f"Test {i}")
-
-    def test_notification_redirect_view(self):
-        """Test the notification redirect view"""
-        self.client.force_login(self.user)
-        pk = self.user.notify("Test", "/test/").pk
-        response = self.client.get(reverse("users:notification", args=[pk]))
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/test/")
