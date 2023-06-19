@@ -382,3 +382,7 @@ body {
   transition: unset !important;
 
 }
+
+.trip-search-result:hover {
+  background-color: var(--bs-secondary-bg) !important;
+}

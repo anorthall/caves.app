@@ -1,5 +1,5 @@
 <div id="tripListSearch"
-     class="{% if query %}border-primary border-bottom mb-3{% endif %}">
+     class="{% if query %}border-primary border-bottom mb-4{% endif %}">
   {% if query %}
     <div class="card text-bg-primary mb-4">
       <div class="card-header">
@@ -8,11 +8,17 @@
       <ul class="list-group list-group-flush">
         {% if trips %}
           {% for trip in trips %}
-            <li class="list-group-item" data-href="{{ trip.get_absolute_url }}">
-              <a class="link-primary fw-bold text-decoration-none"
-                 href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a>
-              <span class="text-muted">{{ trip.start|date }}</span>
-              {{ trip.cavers }}
+            <li class="list-group-item trip-search-result" data-href="{{ trip.get_absolute_url }}">
+              <div class="row d-flex align-items-center">
+                <small class="col col-auto text-muted font-monospace">
+                  {{ trip.start|date:"Y-m-d" }}
+                </small>
+                <div class="col">
+                  <a class="link-primary fw-bold text-decoration-none me-1"
+                     href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a>
+                  {{ trip.cavers }}
+                </div>
+              </div>
             </li>
           {% endfor %}
         {% else %}

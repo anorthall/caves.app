@@ -120,7 +120,7 @@ class HTMXTripListSearchView(View):
                 | Q(clubs__unaccent__icontains=query)
                 | Q(expedition__unaccent__icontains=query)
             )
-        ).order_by("-start", "pk")[:10]
+        ).order_by("-start", "pk")[:20]
 
         friends = self.profile_user.friends.all()
 
