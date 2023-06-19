@@ -109,7 +109,7 @@ class VerifyEmailForm(forms.Form):
         self.user = None
         self.email = None
         self.helper = FormHelper()
-        self.helper.form_method = "get"
+        self.helper.form_method = "post"
         self.helper.layout = Layout(
             FloatingField("verify_code"),
             Submit("submit", "Verify email", css_class="btn-lg w-100"),
