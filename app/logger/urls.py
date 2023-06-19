@@ -7,6 +7,11 @@ app_name = "log"
 urlpatterns = [
     path("", views.Index.as_view(), name="index"),
     path("u/<slug:username>/", views.UserProfile.as_view(), name="user"),
+    path(
+        "u/<slug:username>/search/,",
+        views.HTMXTripListSearchView.as_view(),
+        name="user_search",
+    ),
     path("trips/", views.TripsRedirect.as_view(), name="trip_list"),
     path("trips/export/", views.CSVExport.as_view(), name="export"),
     path("trip/edit/<uuid:uuid>/", views.TripUpdate.as_view(), name="trip_update"),

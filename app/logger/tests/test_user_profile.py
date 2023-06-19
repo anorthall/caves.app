@@ -276,3 +276,70 @@ class UserProfileViewTests(TestCase):
             # Descending
             response = self.client.get(self.user.get_absolute_url() + "?sort=-" + order)
             self.assertEqual(response.status_code, 200)
+
+    @tag("privacy")
+    def test_user_profile_htmx_search_view_does_not_show_private_trips(self):
+        """Test that the user profile HTMX search view does not show private trips"""
+        self.client.force_login(self.user)
+        trip = TripFactory(user=self.user2, privacy=Trip.PUBLIC)
+        response = self.client.post(
+            reverse("log:user_search", args=[self.user2.username]),
+            {"query": trip.cave_name},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.get_absolute_url())
+
+        trip.privacy = Trip.PRIVATE
+        trip.save()
+        response = self.client.post(
+            reverse("log:user_search", args=[self.user2.username]),
+            {"query": trip.cave_name},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, trip.get_absolute_url())
+
+    @tag("privacy")
+    def test_user_profile_htmx_search_view_does_not_show_friend_only_trips(self):
+        """Test that the user profile search view does not show friend only trips"""
+        # Test the trip is shown when public
+        self.client.force_login(self.user)
+        trip = TripFactory(user=self.user2, privacy=Trip.PUBLIC)
+        response = self.client.post(
+            reverse("log:user_search", args=[self.user2.username]),
+            {"query": trip.cave_name},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.get_absolute_url())
+
+        # Test the trip is not shown when friends only
+        trip.privacy = Trip.FRIENDS
+        trip.save()
+        response = self.client.post(
+            reverse("log:user_search", args=[self.user2.username]),
+            {"query": trip.cave_name},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, trip.get_absolute_url())
+
+        # Test the trip is shown when friends
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
+
+        response = self.client.post(
+            reverse("log:user_search", args=[self.user2.username]),
+            {"query": trip.cave_name},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, trip.get_absolute_url())
+
+    @tag("privacy")
+    def test_user_profile_htmx_search_view_respects_profile_privacy(self):
+        """Test that the user profile search view respects profile privacy"""
+        self.user2.privacy = User.PRIVATE
+        self.user2.save()
+
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("log:user_search", args=[self.user2.username]), {"query": "query"}
+        )
+        self.assertEqual(response.status_code, 403)

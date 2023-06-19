@@ -1,5 +1,7 @@
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, render
+from django.views import View
 from django.views.generic import ListView
 from stats import statistics as new_stats
 from users.models import CavingUser as User
@@ -84,3 +86,53 @@ class UserProfile(ListView):
             return self.profile_user.page_title
         else:
             return f"{self.profile_user.name}'s trips"
+
+
+class HTMXTripListSearchView(View):
+    def __init__(self):
+        super().__init__()
+        self.profile_user = None
+
+    def setup(self, *args, **kwargs):
+        """Assign self.profile_user and perform permissions checks"""
+        super().setup(*args, **kwargs)
+        self.profile_user = get_object_or_404(User, username=self.kwargs["username"])
+        if not self.profile_user.is_viewable_by(self.request.user):
+            raise PermissionDenied
+
+    def post(self, request, *args, **kwargs):
+        """Return a list of trips matching the search query"""
+        query = request.POST.get("query", "")
+        if len(query) < 3:
+            return render(
+                request,
+                "logger/_htmx_trip_list_search.html",
+                {"trips": None, "query": query},
+            )
+
+        trips = Trip.objects.filter(
+            Q(user=self.profile_user)
+            & Q(
+                Q(cave_name__unaccent__icontains=query)
+                | Q(cave_entrance__unaccent__icontains=query)
+                | Q(cave_exit__unaccent__icontains=query)
+                | Q(cavers__unaccent__icontains=query)
+                | Q(clubs__unaccent__icontains=query)
+                | Q(expedition__unaccent__icontains=query)
+            )
+        ).order_by("-start", "pk")[:10]
+
+        friends = self.profile_user.friends.all()
+
+        # Sanitise trips to be privacy aware
+        if not self.profile_user == self.request.user:
+            sanitised_trips = [
+                x for x in trips if x.is_viewable_by(self.request.user, friends)
+            ]
+            trips = sanitised_trips
+
+        return render(
+            request,
+            "logger/_htmx_trip_list_search.html",
+            {"trips": trips, "query": query},
+        )

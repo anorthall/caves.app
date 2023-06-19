@@ -16,6 +16,21 @@
 {% block mobile_menu %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
 
 {% block main %}
+  {% if trips|length > 10 %}
+    <div class="form-floating mb-4">
+      <input type="text" class="form-control" id="searchInput" placeholder="Search"
+             hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+             class="border-success"
+             hx-swap="outerHTML"
+             hx-post="{% url 'log:user_search' profile_user.username %}"
+             hx-trigger="keyup changed delay:100ms"
+             hx-target="#tripListSearch"
+             name="query">
+      <label for="floatingInput">Search</label>
+    </div>
+  {% endif %}
+
+  <div id="tripListSearch"></div>
   {% if profile_user.bio %}
     <div class="mb-4">
       {{ profile_user.bio|markdownify }}
@@ -31,7 +46,7 @@
   {% endif %}
 
   {% if stats %}
-    <div class="profile-stats {% if profile_user.bio %}mt-4{% endif %} mb-4 border-top">
+    <div class="profile-stats {% if profile_user.bio %}mt-4{% endif %} mb-3 border-top">
       {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-md-table-cell" %}
     </div>
   {% endif %}
