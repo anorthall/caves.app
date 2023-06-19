@@ -1,0 +1,24 @@
+Hi {{ name }},
+
+You've recently requested to update the email address on your caves.app account.
+Please verify your new email address by visiting the link below. Until you verify
+this change, your old email will remain in use as your login and notification email.
+
+The link below will be valid for 24 hours from the time this email was sent - after
+that you will need to start the process again by visiting the account settings page.
+
+Visit the following page:
+
+{{ verify_url }}
+
+and enter the following code:
+
+{{ verify_code }}
+
+If you have any issues, please send me a message at admin@caves.app and I will do my
+best to help.
+
+Cheers,
+
+Andrew Northall
+admin@caves.app

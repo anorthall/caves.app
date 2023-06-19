@@ -12,9 +12,9 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView, View
 
 from .emails import (
-    send_email_change_notification,
-    send_email_change_verification,
-    send_verify_email,
+    EmailChangeNotificationEmail,
+    EmailChangeVerificationEmail,
+    NewUserVerificationEmail,
 )
 from .forms import (
     AddFriendForm,
@@ -39,9 +39,9 @@ User = get_user_model()
 
 class PasswordResetView(SuccessMessageMixin, auth_views.PasswordResetView):
     template_name = "users/crispy_form_center.html"
-    email_template_name = "emails/email_password_reset.html"
-    html_email_template_name = "emails/email_html_password_reset.html"
-    subject_template_name = "emails/email_password_reset_subject.txt"
+    email_template_name = "emails/password_reset.txt"
+    html_email_template_name = "emails/password_reset.html"
+    subject_template_name = "emails/password_reset_subject.txt"
     success_url = reverse_lazy("users:login")
     success_message = (
         "If such an email is on record, then a password reset link has been sent."
@@ -242,7 +242,14 @@ def register(request):
             # Generate verification token and send email
             verify_code = generate_token(user.pk, user.email)
             verify_url = settings.SITE_ROOT + reverse("users:verify_new_account")
-            send_verify_email(user.email, user.name, verify_url, verify_code)
+            NewUserVerificationEmail(
+                to=user,
+                context={
+                    "name": user.name,
+                    "verify_url": verify_url,
+                    "verify_code": verify_code,
+                },
+            ).send()
 
             # Redirect to Verify Email page.
             return redirect("users:verify_new_account")
@@ -290,7 +297,14 @@ def resend_verify_email(request):
             user = form.user
             verify_code = generate_token(user.pk, user.email)
             verify_url = settings.SITE_ROOT + reverse("users:verify_new_account")
-            send_verify_email(user.email, user.name, verify_url, verify_code)
+            NewUserVerificationEmail(
+                to=user,
+                context={
+                    "name": user.name,
+                    "verify_url": verify_url,
+                    "verify_code": verify_code,
+                },
+            ).send()
         messages.info(
             request,
             "If the provided email matched an account then the verification email "
@@ -345,6 +359,7 @@ class AccountSettings(LoginRequiredMixin, View):
         elif request.POST.get("password_submit"):
             password_form = PasswordChangeForm(request.user, request.POST)
             if password_form.is_valid():
+                # noinspection PyTypeChecker
                 return self.password_form_valid(request, password_form)
 
         messages.error(request, "Please correct the error(s) below.")
@@ -373,10 +388,29 @@ class AccountSettings(LoginRequiredMixin, View):
         """Generate verification token and send the email"""
         user = request.user
         new_email = form.cleaned_data["email"]
+
+        # Send verification email
         verify_code = generate_token(user.pk, new_email)
         verify_url = settings.SITE_ROOT + reverse("users:verify_email_change")
-        send_email_change_verification(new_email, user.name, verify_url, verify_code)
-        send_email_change_notification(user.email, user.name, new_email)
+        EmailChangeVerificationEmail(
+            to=new_email,
+            context={
+                "name": user.name,
+                "verify_url": verify_url,
+                "verify_code": verify_code,
+            },
+        ).send()
+
+        # Send notification email
+        EmailChangeNotificationEmail(
+            to=user,
+            context={
+                "name": user.name,
+                "new_email": new_email,
+                "old_email": user.email,
+            },
+        ).send()
+
         messages.success(
             request,
             (

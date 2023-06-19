@@ -1,0 +1,24 @@
+Hi {{ name }},
+
+Thanks for signing up to caves.app! Your registration is almost complete. Please verify
+the email you used to sign up by visiting the page below. Your account will remain
+inactive until such time you have completed the verification process.
+
+The link below will be valid for 24 hours from the time this email was sent - after
+that you will need to start the registration process again.
+
+Visit the following page:
+
+{{ verify_url }}
+
+and enter the following code:
+
+{{ verify_code }}
+
+If you have any issues, please send me a message at admin@caves.app and I will do my
+best to help.
+
+Cheers,
+
+Andrew Northall
+admin@caves.app
