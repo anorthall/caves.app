@@ -3,13 +3,28 @@
 {% load stats_tags %}
 {% load markdownify %}
 
+{% block header_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
 {% block content %}
   {% if stats_yearly %}
     <h3 class="subtitle">
       Annual statistics
     </h3>
 
-    {% include "stats/_yearly_stats.html" with stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}
+    <div id="yearly-statistics-table">
+      {% include "stats/_yearly_stats.html" with stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}
+    </div>
+
+
+    <div class="text-center mt-4 mt-lg-5">
+      <canvas id="stats-over-time-chart" data-url="{% url 'stats:chart_stats_over_time' user.username %}"></canvas>
+
+      <div class="text-muted mt-2">
+        <small>Click the legend to toggle data</small>
+      </div>
+    </div>
   {% else %}
     <div class="mw-45">
       <p class="lead">
@@ -64,9 +79,17 @@
         </tbody>
       </table>
     </div>
+
+    <div class="text-center mt-4 mt-lg-5">
+      <canvas id="hours-per-month-chart" data-url="{% url 'stats:chart_hours_per_month' user.username %}"></canvas>
+
+      <div class="text-muted mt-2">
+        <small>Click the legend to toggle data</small>
+      </div>
+    </div>
   {% endif %}
 
-  {% if stats_yearly %}
+  {% if stats_most_common or stats_biggest_trips %}
     <h3 class="subtitle mt-5">
       Rankings
     </h3>
@@ -139,4 +162,205 @@
       {% endfor %}
     </div>
   {% endif %}
-{% endblock %}
+{% endblock content %}
+
+{% block footer_scripts %}
+  <script>
+    $(function () {
+      const $statsTimeChart = $("#stats-over-time-chart");
+      $.ajax({
+        url: $statsTimeChart.data("url"),
+        success: function (data) {
+
+          const ctx = $statsTimeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Hours',
+                borderColor: '#008CBA',
+                backgroundColor: '#008CBA',
+                data: data.duration,
+              },
+                {
+                  label: 'Rope climbed ({% if user.units == "Imperial" %}ft{% else %}m{% endif %})',
+                  borderColor: 'orange',
+                  backgroundColor: 'orange',
+                  data: data.vert_up,
+                },
+                {
+                  label: 'Rope descended ({% if user.units == "Imperial" %}ft{% else %}m{% endif %})',
+                  borderColor: 'red',
+                  backgroundColor: 'red',
+                  data: data.vert_down,
+                },
+                {
+                  label: 'Surveyed ({% if user.units == "Imperial" %}ft{% else %}m{% endif %})',
+                  borderColor: 'green',
+                  backgroundColor: 'green',
+                  data: data.surveyed,
+                },
+                {
+                  label: 'Resurveyed ({% if user.units == "Imperial" %}ft{% else %}m{% endif %})',
+                  borderColor: 'purple',
+                  backgroundColor: 'purple',
+                  data: data.resurveyed,
+                }],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              elements: {
+                point: {
+                  pointStyle: false,
+                },
+                line: {
+                  tension: 0.4,
+                }
+              },
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Statistics over time',
+                  font: {
+                    size: 20,
+                    weight: "normal",
+                  }
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+
+
+    $(function () {
+      const $hoursPerMonthChart = $("#hours-per-month-chart");
+      $.ajax({
+        url: $hoursPerMonthChart.data("url"),
+        success: function (data) {
+
+          const ctx = $hoursPerMonthChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Hours per month',
+                data: data.data,
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.5)',
+                  'rgba(255, 159, 64, 0.5)',
+                  'rgba(255, 205, 86, 0.5)',
+                  'rgba(75, 192, 192, 0.5)',
+                  'rgba(54, 162, 235, 0.5)',
+                  'rgba(153, 102, 255, 0.5)',
+                  'rgba(201, 203, 207, 0.5)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                title: {
+                  display: true,
+                  text: 'Hours per month',
+                  padding: {
+                    bottom: 20,
+                  },
+                  font: {
+                    size: 20,
+                    weight: "normal",
+                  }
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+
+    {% comment %}
+    $(function () {
+      var $tripTypeChart = $("#trip-types-chart");
+      $.ajax({
+        url: $tripTypeChart.data("url"),
+        success: function (data) {
+
+          var ctx = $tripTypeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                data: data.data,
+              }],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Trip types (number of trips)'
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+
+
+    $(function () {
+      var $tripTypeTimeChart = $("#trip-types-time-chart");
+      $.ajax({
+        url: $tripTypeTimeChart.data("url"),
+        success: function (data) {
+
+          var ctx = $tripTypeTimeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                data: data.data,
+              }],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Trip types (hours of trips)'
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+    {% endcomment %}
+  </script>
+{% endblock footer_scripts %}

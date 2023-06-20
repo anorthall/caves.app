@@ -185,15 +185,6 @@ body {
 
 
 /*
-  Statistics
-*/
-
-.statistics-table tbody th {
-  font-weight: normal;
-}
-
-
-/*
   Text
 */
 
@@ -380,9 +371,40 @@ body {
 #searchInput.htmx-request {
   opacity: 100% !important;
   transition: unset !important;
-
 }
 
 .trip-search-result:hover {
   background-color: var(--bs-secondary-bg) !important;
+}
+
+.profile-stats {
+    font-size: 0.8rem;
+}
+
+
+/*
+  Statistics
+*/
+
+#stats-over-time-chart {
+  max-height: 450px;
+}
+
+#hours-per-month-chart {
+  max-height: 450px;
+}
+
+@media (max-width: 992px) {
+  #stats-over-time-chart {
+    max-height: 350px;
+  }
+
+  #hours-per-month-chart {
+    max-height: 350px;
+  }
+
+  #yearly-statistics-table {
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
 }

@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from . import views
 
@@ -62,6 +62,4 @@ urlpatterns = [
     path(
         "feed/set_ordering/", views.SetFeedOrdering.as_view(), name="feed_set_ordering"
     ),
-    path("statistics/", views.user_statistics, name="statistics"),
-    path("charts/", include("logger.charts_urls")),
 ]

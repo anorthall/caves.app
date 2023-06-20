@@ -42,6 +42,7 @@ class TripContextMixin:
         return context
 
 
+# noinspection PyAttributeOutsideInit
 class ViewableObjectDetailView(DetailView):
     """A DetailView that considers permissions for objects like Trip and TripReport"""
 
@@ -59,6 +60,7 @@ class ViewableObjectDetailView(DetailView):
         return self.render_to_response(context)
 
 
+# noinspection PyAttributeOutsideInit
 class ReportObjectMixin:
     """Mixin to get report objects from a Trip UUID"""
 
@@ -84,7 +86,8 @@ class DistanceUnitFormMixin:
 
         instance = kwargs.get("instance", None)
         if not instance:
-            return super().__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
+            return
 
         distance_fields = [
             "horizontal_dist",

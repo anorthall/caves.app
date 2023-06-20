@@ -8,10 +8,6 @@
 {% block display_title_right %}@{{ profile_user.username }}{% endblock %}
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
-{% block stylesheets %}
-  <link href="{% static 'css/trips.css' %}" rel="stylesheet">
-{% endblock %}
-
 {% block sidebar %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
 {% block mobile_menu %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
 
