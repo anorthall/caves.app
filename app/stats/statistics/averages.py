@@ -44,7 +44,7 @@ def averages(queryset, disable_dist_stats=False, disable_survey_stats=False):
         rows += [
             Row(metric="Surveyed", value=dist(queryset, "surveyed_dist"), is_dist=True),
             Row(
-                metric="Resurveryed",
+                metric="Resurveyed",
                 value=dist(queryset, "resurveyed_dist"),
                 is_dist=True,
             ),
