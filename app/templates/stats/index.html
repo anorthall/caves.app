@@ -25,12 +25,53 @@
     </div>
   {% endif %}
 
-  {% if stats_most_common %}
+  {% if stats_averages or stats_metrics %}
     <h3 class="subtitle mt-5">
-      Most common
+      Metrics
     </h3>
 
-    <div class="row row-cols-1 row-cols-lg-2 g-4">
+    <div class="table-responsive">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for stat in stats_metrics %}
+            <tr>
+              <td>{{ stat.metric }}</td>
+              <td>{{ stat.value }}</td>
+            </tr>
+          {% endfor %}
+
+          {% for stat in stats_averages %}
+            <tr>
+              <td>Average {{ stat.metric|lower }}</td>
+              <td>
+                {% if stat.is_dist %}
+                  {{ stat.value|distformat:request.units }}
+                {% elif stat.is_time %}
+                  {{ stat.value|naturaldelta:"minutes" }}
+                {% else %}
+                  {{ stat.value|floatformat:2 }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  {% if stats_yearly %}
+    <h3 class="subtitle mt-5">
+      Rankings
+    </h3>
+
+    <div class="row row-cols-1 row-cols-lg-2 g-5">
       {% for stat in stats_most_common %}
         <div class="col">
           <h5 class="mb-3">{{ stat.title }}</h5>
@@ -57,15 +98,7 @@
           </div>
         </div>
       {% endfor %}
-    </div>
-  {% endif %}
 
-  {% if stats_biggest_trips %}
-    <h3 class="subtitle mt-5">
-      Biggest trips
-    </h3>
-
-    <div class="row row-cols-1 row-cols-lg-2 g-4">
       {% for stat in stats_biggest_trips %}
         <div class="col">
           <h5 class="mb-3">{{ stat.title }}</h5>
@@ -104,40 +137,6 @@
           </div>
         </div>
       {% endfor %}
-    </div>
-  {% endif %}
-
-  {% if stats_averages %}
-    <h3 class="subtitle mt-5">
-      Averages
-    </h3>
-
-    <div class="table-responsive">
-      <table class="table table-sm table-striped">
-        <thead>
-          <tr>
-            <th>Metric</th>
-            <th>Average</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for stat in stats_averages %}
-            <tr>
-              <td>{{ stat.metric }}</td>
-              <td>
-                {% if stat.is_dist %}
-                  {{ stat.value|distformat:request.units }}
-                {% elif stat.is_time %}
-                  {{ stat.value|naturaldelta:"minutes" }}
-                {% else %}
-                  {{ stat.value|floatformat:2 }}
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
   {% endif %}
 {% endblock %}

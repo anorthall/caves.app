@@ -35,6 +35,7 @@ class Index(LoginRequiredMixin, TemplateView):
             disable_dist_stats=disable_dist,
             disable_survey_stats=disable_survey,
         )
+        context["stats_metrics"] = statistics.metrics(self.queryset)
         return context
 
     def get_queryset(self):
