@@ -38,22 +38,32 @@ class FriendRequestRecdInline(admin.TabularInline):
 
 @admin.register(User)
 class CavingUserAdmin(BaseUserAdmin):
+    inlines = [
+        NotificationInline,
+        FriendRequestSentInline,
+        FriendRequestRecdInline,
+    ]
+    readonly_fields = ("last_login", "last_seen", "date_joined", "uuid", "friends")
     form = UserAdminChangeForm
     add_form = UserCreationForm
-
+    search_fields = (
+        "email",
+        "username",
+        "name",
+        "bio",
+    )
+    search_help_text = "Search by email, username, name or bio."
+    ordering = ("-last_seen",)
     autocomplete_fields = ["friends"]
     list_display = (
         "email",
         "username",
-        "name",
         "date_joined",
-        "last_login",
         "last_seen",
-        "is_active",
     )
     list_filter = (
         "is_active",
-        "last_login",
+        "is_superuser",
         "last_seen",
     )
     fieldsets = (
@@ -122,9 +132,6 @@ class CavingUserAdmin(BaseUserAdmin):
             },
         ),
     )
-
-    readonly_fields = ("last_login", "last_seen", "date_joined", "uuid")
-
     add_fieldsets = (
         (
             None,
@@ -141,17 +148,3 @@ class CavingUserAdmin(BaseUserAdmin):
             },
         ),
     )
-
-    search_fields = (
-        "email",
-        "username",
-        "name",
-        "bio",
-    )
-    ordering = ("-last_seen",)
-    filter_horizontal = ()
-    inlines = [
-        NotificationInline,
-        FriendRequestSentInline,
-        FriendRequestRecdInline,
-    ]
