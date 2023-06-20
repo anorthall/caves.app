@@ -1,0 +1,1 @@
+{{ accepter_name }} accepted your friend request

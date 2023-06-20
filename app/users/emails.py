@@ -69,3 +69,13 @@ class EmailChangeVerificationEmail(Email):
 class EmailChangeNotificationEmail(Email):
     template_name = "notify_of_email_change"
     required_context = ["name", "old_email", "new_email"]
+
+
+class FriendRequestReceivedEmail(Email):
+    template_name = "friend_request_received"
+    required_context = ["name", "requester_name", "url"]
+
+
+class FriendRequestAcceptedEmail(Email):
+    template_name = "friend_request_accepted"
+    required_context = ["name", "accepter_name", "url"]

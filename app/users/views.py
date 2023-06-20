@@ -14,6 +14,8 @@ from django.views.generic import FormView, ListView, TemplateView, View
 from .emails import (
     EmailChangeNotificationEmail,
     EmailChangeVerificationEmail,
+    FriendRequestAcceptedEmail,
+    FriendRequestReceivedEmail,
     NewUserVerificationEmail,
 )
 from .forms import (
@@ -150,10 +152,21 @@ class FriendAddView(LoginRequiredMixin, View):
                 user_from=request.user,
                 user_to=user,
             )
+
             user.notify(
                 f"{request.user.name} sent you a friend request",
                 reverse("users:friends"),
             )
+
+            if user.email_friend_requests:
+                FriendRequestReceivedEmail(
+                    to=user,
+                    context={
+                        "name": user.name,
+                        "requester_name": request.user.name,
+                        "url": settings.SITE_ROOT + reverse("users:friends"),
+                    },
+                ).send()
             messages.success(request, f"Friend request sent to {user}.")
         else:
             if form.errors.get("user"):
@@ -191,10 +204,22 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
         f_req.user_from.friends.add(f_req.user_to)
         f_req.user_to.friends.add(f_req.user_from)
         f_req.delete()
+
         f_req.user_from.notify(
             f"{f_req.user_to.name} accepted your friend request",
             reverse("users:friends"),
         )
+
+        if f_req.user_from.email_friend_requests:
+            FriendRequestAcceptedEmail(
+                to=f_req.user_from,
+                context={
+                    "name": f_req.user_from.name,
+                    "accepter_name": f_req.user_to.name,
+                    "url": settings.SITE_ROOT + f_req.user_to.get_absolute_url(),
+                },
+            ).send()
+
         messages.success(request, f"You are now friends with {f_req.user_from}.")
         return redirect("users:friends")
 

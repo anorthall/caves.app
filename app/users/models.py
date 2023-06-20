@@ -306,6 +306,13 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         help_text="Timezone to enter and display dates and times in.",
     )
 
+    # Email settings
+    email_friend_requests = models.BooleanField(
+        "Friend request emails",
+        default=True,
+        help_text="Send an email when another user adds you as a friend.",
+    )
+
     class Meta:
         verbose_name = "user"
 
@@ -389,7 +396,9 @@ User = get_user_model()
 
 
 class Notification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="notifications"
+    )
     message = models.CharField(max_length=255)
     url = models.URLField("URL", max_length=255)
     read = models.BooleanField(

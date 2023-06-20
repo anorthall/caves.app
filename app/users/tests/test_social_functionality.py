@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from users.models import FriendRequest
@@ -75,6 +76,7 @@ class SocialIntegrationTests(TestCase):
         self.client.force_login(self.user)
         self.client.post(reverse("users:friend_add"), {"user": self.user2.username})
         self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(len(self.user2.notifications.all()), 1)
         self.assertEqual(FriendRequest.objects.first().user_from, self.user)
         self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
 
@@ -85,8 +87,79 @@ class SocialIntegrationTests(TestCase):
         self.user2.save()
         self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
         self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(len(self.user2.notifications.all()), 1)
         self.assertEqual(FriendRequest.objects.first().user_from, self.user)
         self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+    def test_friend_request_emails_are_sent_when_enabled(self):
+        """Test friend request emails are sent when enabled"""
+        self.client.force_login(self.user)
+        self.user2.allow_friend_email = True
+        self.user2.email_friend_requests = True
+        self.user2.save()
+
+        self.user.email_friend_requests = True
+        self.user.save()
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        # Send a friend request
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(len(self.user2.notifications.all()), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject, f"{self.user.name} sent you a friend request"
+        )
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        # Now accept the friend request
+        self.client.force_login(self.user2)
+        self.client.post(
+            reverse(
+                "users:friend_request_accept", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertIn(self.user2, self.user.friends.all())
+        self.assertIn(self.user, self.user2.friends.all())
+        self.assertEqual(len(self.user.notifications.all()), 1)
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(FriendRequest.objects.count(), 0)
+        self.assertEqual(
+            mail.outbox[1].subject, f"{self.user2.name} accepted your friend request"
+        )
+
+    def test_friend_request_emails_are_not_sent_when_disabled(self):
+        """Test friend request emails are not sent when disabled"""
+        self.client.force_login(self.user)
+        self.user2.allow_friend_email = True
+        self.user2.email_friend_requests = False
+        self.user2.save()
+
+        self.user.email_friend_requests = False
+        self.user.save()
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        # Send a friend request
+        self.client.post(reverse("users:friend_add"), {"user": self.user2.email})
+        self.assertEqual(FriendRequest.objects.count(), 1)
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(FriendRequest.objects.first().user_from, self.user)
+        self.assertEqual(FriendRequest.objects.first().user_to, self.user2)
+
+        # Now accept the friend request
+        self.client.force_login(self.user2)
+        self.client.post(
+            reverse(
+                "users:friend_request_accept", args=[FriendRequest.objects.first().pk]
+            )
+        )
+        self.assertIn(self.user2, self.user.friends.all())
+        self.assertIn(self.user, self.user2.friends.all())
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(FriendRequest.objects.count(), 0)
 
     def test_friend_request_disallowed_by_email(self):
         """Test sending a friend request by email is disallowed"""

@@ -1,0 +1,18 @@
+Hi {{ name }},
+
+
+Just a quick email to let you know that {{ accepter_name }} has accepted your friend
+request on caves.app. You will now see their trips appear in your feed.
+
+You can view their profile at the following URL:
+
+{{ url }}
+
+
+Thanks for using caves.app!
+
+
+Cheers,
+
+Andrew Northall
+admin@caves.app
