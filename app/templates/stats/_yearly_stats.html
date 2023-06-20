@@ -18,6 +18,7 @@
         {% endif %}
         <th>Time</th>
         <th>Trips</th>
+        <th>Days</th>
       </tr>
     </thead>
 
@@ -37,6 +38,7 @@
           {% endif %}
           <td>{{ year.time|naturaldelta }}</td>
           <td>{{ year.trips }}</td>
+          <td>{{ year.caving_days }}</td>
         </tr>
       {% endfor %}
     </tbody>

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from attrs import Factory, define
 from django.contrib.gis.measure import D, Distance
 from django.utils import timezone
@@ -14,6 +16,7 @@ class YearlyStatistics:
     aid_climbed: Distance = Factory(D)
     time: timezone.timedelta = Factory(timezone.timedelta)
     trips: int = 0
+    dates: list[datetime.date] = Factory(list)
     is_total: bool = False
 
     def add_trip(self, trip):
@@ -25,6 +28,20 @@ class YearlyStatistics:
         self.aid_climbed += trip.aid_dist
         self.time += trip.duration if trip.duration else timezone.timedelta()
         self.trips += 1
+
+        # Collect a list of dates that this trip spans. The start date is always added,
+        # and then if the trip is over 24 hours, we add one additional date for each
+        # 24 hour period. datetime.timedelta.days returns 0 for timedeltas less than
+        # so the loop will not run for trips less than 24 hours.
+
+        self.dates.append(trip.start.date())
+        if trip.duration:
+            for i in range(1, trip.duration.days + 1):
+                self.dates.append((trip.start + timezone.timedelta(days=i)).date())
+
+    @property
+    def caving_days(self):
+        return len(set(self.dates))
 
 
 def yearly(queryset, /, max_years=10) -> tuple:
