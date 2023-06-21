@@ -122,7 +122,13 @@ class TripExporter(Exporter):
         "resurveyed_dist",
         "aid_dist",
         "notes",
+        "added",
+        "updated",
+        "privacy",
     ]
+    field_headers = {
+        "duration_str": "Duration",
+    }
 
     def __init__(self, user: User, queryset: QuerySet):
         self.user = user

@@ -1,0 +1,17 @@
+{% extends "base_account.html" %}
+{% load crispy_forms_tags %}
+{% load users_tags %}
+
+{% block title %}Export data{% endblock %}
+
+{% block main %}
+  <h3 class="subtitle">Export data</h3>
+  <div class="mw-35">
+    <p>
+      Please select the appropriate format below and click the "Export" button
+      to download your trip data.
+    </p>
+
+    {% crispy form %}
+  </div>
+{% endblock %}
