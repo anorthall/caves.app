@@ -8,12 +8,12 @@ from users.models import CavingUser as User
 class Exporter:
     """Export a Django Model to a tabular format for use with tablib"""
 
+    fields = []
     field_headers = {}
     distance_units = "m"
     model: Model = None
 
-    def __init__(self, fields, queryset):
-        self.fields = fields
+    def __init__(self, queryset):
         self.queryset = queryset
 
     def generate(self) -> Dataset:
@@ -96,48 +96,48 @@ class Exporter:
 
 class TripExporter(Exporter):
     model = Trip
+    fields = [
+        "cave_name",
+        "cave_entrance",
+        "cave_exit",
+        "cave_region",
+        "cave_country",
+        "cave_url",
+        "start",
+        "end",
+        "duration_str",
+        "type",
+        "clubs",
+        "expedition",
+        "cavers",
+        "custom_field_1",
+        "custom_field_2",
+        "custom_field_3",
+        "custom_field_4",
+        "custom_field_5",
+        "horizontal_dist",
+        "vert_dist_up",
+        "vert_dist_down",
+        "surveyed_dist",
+        "resurveyed_dist",
+        "aid_dist",
+        "notes",
+    ]
 
     def __init__(self, user: User, queryset: QuerySet):
         self.user = user
-        fields = [
-            "cave_name",
-            "cave_entrance",
-            "cave_exit",
-            "cave_region",
-            "cave_country",
-            "cave_url",
-            "start",
-            "end",
-            "duration_str",
-            "type",
-            "clubs",
-            "expedition",
-            "cavers",
-            "custom_field_1",
-            "custom_field_2",
-            "custom_field_3",
-            "custom_field_4",
-            "custom_field_5",
-            "horizontal_dist",
-            "vert_dist_up",
-            "vert_dist_down",
-            "surveyed_dist",
-            "resurveyed_dist",
-            "aid_dist",
-            "notes",
-        ]
 
         # Handle custom field labels and remove any fields that don't have a label
-        for field in fields.copy():
+        for field in self.fields.copy():
             if field.startswith("custom_field"):
                 if hasattr(self.user, f"{field}_label"):
                     label = getattr(self.user, f"{field}_label")
                     if label:
                         self.field_headers[field] = label
                     else:
-                        fields.remove(field)
+                        self.fields.remove(field)
 
-        super().__init__(fields, queryset)
+        super().__init__(queryset)
 
     def _get_distance_units(self) -> str:
         if self.user.units == User.IMPERIAL:
