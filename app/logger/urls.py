@@ -13,7 +13,6 @@ urlpatterns = [
         name="user_search",
     ),
     path("trips/", views.TripsRedirect.as_view(), name="trip_list"),
-    path("trips/export/", views.CSVExport.as_view(), name="export"),
     path("trip/edit/<uuid:uuid>/", views.TripUpdate.as_view(), name="trip_update"),
     path("trip/delete/<uuid:uuid>/", views.TripDelete.as_view(), name="trip_delete"),
     path("trip/add/", views.TripCreate.as_view(), name="trip_create"),
