@@ -6,6 +6,18 @@ from .base import *
 DEBUG = False
 
 
+# Security
+SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", 0))
+SECURE_SSL_REDIRECT = bool(os.environ.get("SECURE_SSL_REDIRECT", 0))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = bool(os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", 0))
+SECURE_HSTS_PRELOAD = bool(os.environ.get("SECURE_HSTS_PRELOAD", 0))
+SESSION_COOKIE_SECURE = bool(os.environ.get("SESSION_COOKIE_SECURE", 0))
+CSRF_COOKIE_SECURE = bool(os.environ.get("CSRF_COOKIE_SECURE", 0))
+
+# Only enable if required
+if bool(os.environ.get("SECURE_PROXY_SSL_HEADER", 0)):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # Logging
 DEFAULT_LOG_LEVEL = "INFO"
 
