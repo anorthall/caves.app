@@ -9,7 +9,9 @@ DEBUG = False
 # Security
 SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", 0))
 SECURE_SSL_REDIRECT = bool(os.environ.get("SECURE_SSL_REDIRECT", 0))
-SECURE_HSTS_INCLUDE_SUBDOMAINS = bool(os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", 0))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = bool(
+    os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", 0)
+)
 SECURE_HSTS_PRELOAD = bool(os.environ.get("SECURE_HSTS_PRELOAD", 0))
 SESSION_COOKIE_SECURE = bool(os.environ.get("SESSION_COOKIE_SECURE", 0))
 CSRF_COOKIE_SECURE = bool(os.environ.get("CSRF_COOKIE_SECURE", 0))
@@ -102,7 +104,7 @@ CACHES = {
         "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
 }
 
@@ -110,4 +112,3 @@ CACHES = {
 # Use redis for sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-
