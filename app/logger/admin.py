@@ -44,7 +44,8 @@ class TripAdmin(admin.ModelAdmin):
         "cave_region",
         "cave_country",
         "user__username",
-        "user__name" "user__email",
+        "user__name",
+        "user__email",
     )
     search_help_text = (
         "Search by cave name, region and country, or author name, email or username."
