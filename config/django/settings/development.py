@@ -42,3 +42,7 @@ STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+# Django distance field - add to INSTALLED_APPS for tests
+INSTALLED_APPS += ["distancefield"]

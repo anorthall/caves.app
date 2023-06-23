@@ -2,7 +2,7 @@ from datetime import timedelta
 from typing import Union
 
 from attrs import Factory, define, frozen
-from distance import D
+from distancefield import D
 from logger.models import Trip
 
 
