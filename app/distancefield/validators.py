@@ -12,7 +12,7 @@ def valid_unit_type(value):
             value = "0m"
         try:
             r, f = DistanceField.parse_string(value)
-        except Exception:
+        except ValueError:
             raise ValidationError("Please enter a valid measurement.")
 
         if r is None or f is False:
