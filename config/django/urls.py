@@ -8,6 +8,7 @@ urlpatterns = [
     path("statistics/", include("stats.urls")),
     path("account/", include("users.urls")),
     path("export/", include("export.urls")),
+    path("import/", include("import.urls")),
     path(settings.STAFF_URL, include("staff.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
     path("tinymce/", include("tinymce.urls")),

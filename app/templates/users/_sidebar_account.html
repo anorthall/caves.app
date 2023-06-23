@@ -28,6 +28,14 @@
   <i class="bi bi-ui-checks"></i> Trip fields
 </a>
 
+<a class="nav-link {% active_link 'import:index' %}" href="{% url 'import:index' %}">
+  <i class="bi bi-cloud-arrow-up-fill"></i> Import
+</a>
+
+<a class="nav-link {% active_link 'export:index' %}" href="{% url 'export:index' %}">
+  <i class="bi bi-file-earmark-arrow-down-fill"></i> Export
+</a>
+
 <a class="nav-link {% active_link 'users:account_update' %}" href="{% url 'users:account_settings' %}">
   <i class="bi bi-gear-fill"></i> Settings
 </a>

@@ -21,10 +21,6 @@
   <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
     <i class="bi bi-search"></i> Search
   </a>
-
-  <a class="nav-link {% active_link 'export:index' %}" href="{% url 'export:index' %}">
-    <i class="bi bi-save-fill"></i> Export
-  </a>
 {% endif %}
 
 {% if trip and user == object_owner %}

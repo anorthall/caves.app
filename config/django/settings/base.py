@@ -51,7 +51,9 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "http://127.0.0.1").split
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(
     " "
 )
-
+DATA_UPLOAD_MAX_NUMBER_FIELDS = int(
+    os.environ.get("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000)
+)  # need this many for CSV import feature to work - 16 fields per trip
 
 # Email settings
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
