@@ -126,7 +126,7 @@
   </header>
 
   <main class="d-flex flex-column flex-fill my-3 my-lg-4">
-    <div class="container flex-fill mb-4">
+    <div class="{% block main_container_class %}container{% endblock %} flex-fill mb-4">
       {% block content %}{% endblock %}
     </div>
   </main>
