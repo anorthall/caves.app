@@ -20,9 +20,9 @@ class Index(LoginRequiredMixin, TemplateView):
         super().__init__(**kwargs)
         self.queryset = None
 
-    def setup(self, *args, **kwargs):
-        super().setup(*args, **kwargs)
+    def get(self, request, *args, **kwargs):
         self.queryset = self.get_queryset()
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         user = get_user(self.request)
