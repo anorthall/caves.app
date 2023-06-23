@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 
 
 def valid_unit_type(value):
-    from .fields import D, DistanceField
+    from .fields import D, DistanceField  # prevent circular import
 
     if not value:
         return
@@ -12,7 +12,7 @@ def valid_unit_type(value):
             value = "0m"
         try:
             r, f = DistanceField.parse_string(value)
-        except ValueError:
+        except Exception:
             raise ValidationError("Please enter a valid measurement.")
 
         if r is None or f is False:
