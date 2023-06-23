@@ -4,6 +4,7 @@ from django.test import TestCase, tag
 
 from .fields import D, DistanceField, register_aliases, register_units
 from .models import DistanceFieldTestModel as TestModel
+from .validators import valid_unit_type
 
 
 @tag("fast", "distancefield")
@@ -125,3 +126,7 @@ class DistanceFieldTestCase(TestCase):
         for value in self.INVALID_FORM_TEST_VALUES:
             df = TestForm({"dist": value})
             self.assertEqual(df.is_valid(), False)
+
+    def test_validation_with_a_zero(self):
+        """This test is considered to pass if it does not raise an ValidationError"""
+        valid_unit_type("0")
