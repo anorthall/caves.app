@@ -36,7 +36,7 @@ def get_headers():
     return [x[0] for x in FIELD_MAP]
 
 
-def get_formset_with_data(rows):
+def get_formset_with_data(rows, data_only=False):
     """Transform the rows into formset data to allow validation on data upload"""
     from .forms import TripImportFormset  # Avoid circular import
 
@@ -48,18 +48,26 @@ def get_formset_with_data(rows):
         row = clean_row(row)
         for key, value in row.items():
             data[f"form-{i}-{key}"] = value
+
+    if data_only:
+        return data
     return TripImportFormset(data)
 
 
 def clean_row(row):
     """Reformat the row data to be compatible with the formset"""
-    # Reformat the dates to be compatible with HTML datetime-local input
-    row = {k: v.strip() for k, v in row.items()}  # Strip whitespace
-    row["start"] = clean_datetime(row["start"])
-    row["end"] = clean_datetime(row["end"])
-    row["privacy"] = clean_privacy(row["privacy"])
-    row["type"] = clean_type(row["type"])
-    return row
+    cleaned_row = {}
+    for key, value in row.items():
+        if value:
+            cleaned_row[key] = str(value).strip()
+        else:
+            cleaned_row[key] = ""
+
+    cleaned_row["start"] = clean_datetime(cleaned_row["start"])
+    cleaned_row["end"] = clean_datetime(cleaned_row["end"])
+    cleaned_row["privacy"] = clean_privacy(cleaned_row["privacy"])
+    cleaned_row["type"] = clean_type(cleaned_row["type"])
+    return cleaned_row
 
 
 def clean_privacy(privacy: str) -> str:
@@ -74,7 +82,7 @@ def clean_type(trip_type: str) -> str:
 
 def clean_datetime(time: str) -> Union[datetime, None]:
     try:
-        return parser.parse(time)
+        return parser.parse(time, ignoretz=True)
     except parser.ParserError:
         return None
 
