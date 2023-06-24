@@ -92,10 +92,10 @@ class TestLoggerPagesLoad(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("log:user", args=[self.user.username]))
 
-    def test_trip_export_page_loads(self):
-        """Test that the trip export page loads"""
+    def test_export_page_loads(self):
+        """Test that the export page loads"""
         self.client.force_login(self.user)
-        response = self.client.get(reverse("log:export"))
+        response = self.client.get(reverse("export:index"))
         self.assertEqual(response.status_code, 200)
 
     def test_trip_report_detail_page_loads(self):

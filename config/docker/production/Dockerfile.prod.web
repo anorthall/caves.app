@@ -14,7 +14,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Install psycopg2 dependencies
 RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev
+    && apk add postgresql-dev gcc python3-dev musl-dev libmagic
 
 # Python packages
 RUN pip install --upgrade pip

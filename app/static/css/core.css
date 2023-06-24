@@ -408,3 +408,18 @@ body {
     white-space: nowrap;
   }
 }
+
+/*
+  Import and export
+*/
+
+#trip-import-formset {
+  font-size: 0.8rem;
+}
+
+#trip-import-formset .form-control, #trip-import-formset .form-select {
+    min-height: calc(1.5em + 0.5rem + calc(var(--bs-border-width) * 2));
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: var(--bs-border-radius-sm);
+}

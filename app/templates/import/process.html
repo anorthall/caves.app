@@ -1,0 +1,46 @@
+{% extends "base_full_width.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Process import{% endblock %}
+{% block display_title %}Process import{% endblock %}
+
+{% block content %}
+  <div class="mw-45 mb-5">
+    <p class="lead">
+      Your import file has been processed and {{ formset|length }} trips have been found.
+    </p>
+
+    <p>
+      You will now need to review all of the trips below and check that they are correct
+      before importing them into the system. It is best to ensure all of the data is
+      correct now, as changing it later will require editing each trip individually.
+    </p>
+
+    <p>
+      <strong>Please pay particular attention to start and end dates/times</strong> &mdash;
+      the import processor will have tried to guess the format of the times in your
+      spreadsheet and interpret them correctly, but it may have made mistakes. A
+      common error is that the month and day have been swapped around.
+      Please check that these are correct, and resubmit the import file if they are not.
+      The optimal date/time format to provide in your spreadsheet is <code>YYYY-MM-DD HH:MM</code>.
+    </p>
+
+    <p>
+      In some cases it may be easier to change your data in the
+      spreadsheet and re-submit it. If you'd like to cancel the import and start
+      again, you can do so by returning to the <a href="{% url 'import:index' %}">
+      import page</a> &mdash; although you will lose any edits you have made below.
+    </p>
+
+    {% if not formset.is_valid %}
+      <p class="text-danger">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+        <strong>It looks like there are some errors and/or missing fields in
+        your import</strong>. In order to correct these, please review the trips that
+        have been highlighted in red below, and correct the errors as indicated.
+      </p>
+    {% endif %}
+  </div>
+
+  {% crispy formset helper %}
+{% endblock %}

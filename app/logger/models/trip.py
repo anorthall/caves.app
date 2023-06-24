@@ -1,7 +1,7 @@
 import uuid
 
 import humanize
-from distance import D, DistanceField, DistanceUnitField
+from distancefield import D, DistanceField, DistanceUnitField
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models

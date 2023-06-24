@@ -1,0 +1,56 @@
+{% extends "base_account.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Import data{% endblock %}
+
+{% block main %}
+  <h3 class="subtitle">Import data</h3>
+  <div class="mw-45">
+    <p>
+      Data can be imported to the database from a CSV file. This can be useful to add
+      a large number of entries at once. To begin, <a href="{% url "import:sample" %}">
+      download the template file to use as a starting point</a>.
+      </p>
+
+    <p>
+      The template file contains the column headings that are required for the import to
+      work. Leave the header row intact and add your data below it. You must not change
+      the order of the columns, but you can leave columns blank if you do not have data
+      for them.
+    </p>
+
+    <p>
+      <strong>You can add a maximum of 50 trips in any one import.</strong> You are welcome
+      to make multiple imports if you have more than 50 trips to add.
+    </p>
+
+    <p>
+      The following fields are required: <strong>cave name, trip start date/time, and trip
+      type</strong>. All other fields are optional. The available trip types are:
+      <em>{{ trip_types }}</em>.
+    </p>
+
+    <p>
+      Distances (<em>vertical distance up, vertical distance down, horizontal distance, aid
+      climbing distance, survey distance and resurvey distance)</em> must be entered with the
+      unit of measurement. For example, 10 metres would be entered as <code>10 m</code> and
+      10 feet would be entered as <code>10 ft</code>.
+    </p>
+
+    <p>
+      Dates and times work best in the format <code>YYYY-MM-DD HH:MM</code> and with the time
+      in the 24 hour clock. For example, January 1, 2018 at 1:00 PM would be written as
+      <code>2018-01-01 13:00</code>. The easiest option to ensure this formatting is to
+      get your spreadsheet program to format the cells appropriately for you.
+    </p>
+
+    <p>
+      Once you have uploaded the data, you will be able to review and edit it before
+      it is added to the database.
+    </p>
+
+    <hr class="my-4">
+
+    {% crispy form %}
+  </div>
+{% endblock %}
