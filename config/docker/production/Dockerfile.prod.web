@@ -12,7 +12,7 @@ WORKDIR /usr/src/caves
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install psycopg2 dependencies
+# Install dependencies
 RUN apk update \
     && apk add postgresql-dev gcc python3-dev musl-dev libmagic
 
@@ -26,8 +26,8 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/caves/wheels -r requ
 ##################
 FROM python:3.11.4-alpine
 
-# Install psycopg2 depencencies
-RUN apk update && apk add libpq
+# Install depencencies
+RUN apk update && apk add libpq libmagic
 
 # Copy wheels
 COPY --from=builder /usr/src/caves/wheels /opt/caves/wheels
