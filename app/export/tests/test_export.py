@@ -2,17 +2,19 @@ import uuid
 from datetime import datetime
 
 from django.contrib.gis.measure import Distance
+from django.core.exceptions import FieldDoesNotExist
 from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 from logger.factories import TripFactory
+from logger.models import Trip
 from users.models import CavingUser as User
 
-from ..services import TripExporter
+from ..services import Exporter, TripExporter
 
 
 @tag("fast", "export", "pageload")
-class ExportPageloadTestCase(TestCase):
+class ExportPageloadTests(TestCase):
     def setUp(self):
         user = User.objects.create_user(
             username="testuser",
@@ -53,9 +55,21 @@ class ExportPageloadTestCase(TestCase):
             response["Content-Disposition"], "attachment; filename=trips.json"
         )
 
+    def test_export_with_invalid_format(self):
+        """Test exporting with an invalid format"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("export:index"), {"format": "invalid"}, follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "There was an error generating your download.",
+        )
+
 
 @tag("fast", "export")
-class ExportDataTestCase(TestCase):
+class ExportDataTests(TestCase):
     def test_export_with_custom_fields(self):
         """Test exporting a CSV file with custom fields added to trips/user"""
         # Add custom fields to user and trip
@@ -127,3 +141,92 @@ class ExportDataTestCase(TestCase):
                     value = value.m
 
                 self.assertContains(response, value)
+
+
+@tag("exporter", "export", "fast")
+class ExporterTests(TestCase):
+    def test_exporter_get_distance_units_method(self):
+        """Test that the get_distance_units method returns the units property"""
+        exporter = Exporter(Trip.objects.none())
+        self.assertEqual(exporter._get_distance_units(), exporter.distance_units)
+
+    def test_exporter_format_distancefield_method(self):
+        """Test that the format_df method returns the distance in the correct units"""
+        exporter = Exporter(Trip.objects.none())
+
+        exporter.distance_units = "m"
+        self.assertEqual(exporter._format_distancefield(Distance(m=100)), "100.0")
+
+        exporter.distance_units = "km"
+        self.assertEqual(exporter._format_distancefield(Distance(m=100)), "0.1")
+
+        exporter.distance_units = "invalid"
+        self.assertEqual(exporter._format_distancefield(Distance(m=100)), "100.0")
+
+    def test_exporter_distancefield_header(self):
+        """Test that the distancefield_header method returns the correct header"""
+        exporter = Exporter(Trip.objects.none())
+        exporter.model = Trip
+
+        exporter.distance_units = "m"
+        self.assertEqual(
+            exporter._get_distancefield_header("vert_dist_up"),
+            "Rope ascent distance (m)",
+        )
+
+        exporter.distance_units = "km"
+        self.assertEqual(
+            exporter._get_distancefield_header("vert_dist_up"),
+            "Rope ascent distance (km)",
+        )
+
+        exporter.distance_units = "ft"
+        self.assertEqual(
+            exporter._get_distancefield_header("vert_dist_up"),
+            "Rope ascent distance (ft)",
+        )
+
+    def test_exporter_get_field_header_method(self):
+        """Test that the get_field_header method returns the correct header"""
+        exporter = Exporter(Trip.objects.none())
+        exporter.model = Trip
+
+        self.assertEqual(exporter._get_field_header("cave_name"), "Cave name")
+
+        def _get_cave_name_header():
+            return "Test Header"
+
+        exporter._get_cave_name_header = _get_cave_name_header
+        self.assertEqual(exporter._get_field_header("cave_name"), "Test Header")
+
+        with self.assertRaises(FieldDoesNotExist):
+            self.assertEqual(
+                exporter._get_field_header("invalid_field"), "Invalid field"
+            )
+
+
+@tag("exporter", "tripexporter", "export", "fast")
+class TripExporterTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@user.app",
+            password="testpassword",
+            name="Test User",
+        )
+        self.user.is_active = True
+        self.user.save()
+
+        self.trip = TripFactory.create(user=self.user)
+
+    def test_trip_exporter_get_distance_units_method(self):
+        """Test that the get_distance_units method returns the units property"""
+        exporter = TripExporter(self.user, Trip.objects.all())
+        self.assertEqual(self.user.units, User.METRIC)
+        self.assertEqual(exporter._get_distance_units(), "m")
+
+        self.user.units = User.IMPERIAL
+        self.user.save()
+
+        exporter = TripExporter(self.user, Trip.objects.all())
+        self.assertEqual(exporter._get_distance_units(), "ft")

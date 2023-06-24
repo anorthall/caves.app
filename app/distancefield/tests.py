@@ -1,3 +1,5 @@
+import logging
+
 from django import forms
 from django.db.models import Model
 from django.test import TestCase, tag
@@ -8,7 +10,7 @@ from .validators import valid_unit_type
 
 
 @tag("fast", "distancefield")
-class DistanceFieldTestCase(TestCase):
+class DistanceFieldTests(TestCase):
     FORM_TEST_VALUES = [
         ("100mm", "100mm"),
         ("100 mm", "100mm"),
@@ -41,6 +43,23 @@ class DistanceFieldTestCase(TestCase):
             name="large",
         )
 
+    def test_setting(self):
+        tm = TestModel.objects.first()
+        tm.mm_field = ""
+        self.assertEqual(tm.mm_field, None)
+
+        tm.mm_field = ("10m", "200m")
+        self.assertEqual(tm.mm_field, D(m=10))
+
+        tm.mm_field = "20m"
+        self.assertEqual(tm.mm_field, D(m=20))
+
+        tm.mm_field = D(m=30)
+        self.assertEqual(tm.mm_field, D(m=30))
+
+        tm.mm_field = 40
+        self.assertEqual(tm.mm_field, D(mm=40))
+
     def test_unit_registration(self):
         register_units(test_m=2)
 
@@ -48,6 +67,10 @@ class DistanceFieldTestCase(TestCase):
             register_units(invalid="invalid")
 
         register_aliases(new_test="test_m", new_test_m="m")
+
+        logging.disable(logging.CRITICAL)
+        register_aliases(this_should_fail="with_a_warning")
+        logging.disable(logging.NOTSET)
 
         self.assertEqual(D(test_m=1), D(mm=2000))
         self.assertEqual(D(new_test=1), D(test_m=1))
@@ -65,6 +88,7 @@ class DistanceFieldTestCase(TestCase):
         self.assertEqual(D(inch=10.123), abs(-D(inch=-10.123)))
         self.assertEqual(D(inch=10.123), +D(inch=-10.123))
         self.assertEqual(D(inch=-10.123), ~D(inch=10.123))
+        self.assertNotEqual(D(m=5), {})
 
     def test_unit_conversion(self):
         tm = TestModel.objects.get(name="all_metres")
@@ -130,3 +154,18 @@ class DistanceFieldTestCase(TestCase):
     def test_validation_with_a_zero(self):
         """This test is considered to pass if it does not raise an ValidationError"""
         valid_unit_type("0")
+
+    def test_distance_field_test_model_str(self):
+        """Test the distance field test model __str__ method"""
+        tm = TestModel.objects.first()
+        self.assertEqual(str(tm), f"{tm.mm_field}, {tm.inch_field}, {tm.mtr_field}")
+
+    def test_string_parsing(self):
+        self.assertEqual(DistanceField.parse_string("abcdefghijk"), (None, False))
+        self.assertEqual(DistanceField.parse_string("345defghijk"), (None, False))
+
+    def test_distance_to_parts_method(self):
+        """Test the distance_to_parts method"""
+        self.assertEqual(DistanceField.distance_to_parts(None), (None, None, None))
+
+        self.assertEqual(DistanceField.distance_to_parts(D(mm=10)), (10.0, "mm", 0.01))

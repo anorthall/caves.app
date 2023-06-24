@@ -10,11 +10,8 @@ def valid_unit_type(value):
     if isinstance(value, str):
         if value == "0":
             value = "0m"
-        try:
-            r, f = DistanceField.parse_string(value)
-        except Exception:
-            raise ValidationError("Please enter a valid measurement.")
 
+        r, f = DistanceField.parse_string(value)
         if r is None or f is False:
             units = ", ".join([g for g in set(D.ALIAS.values()) if "_" not in g])
 

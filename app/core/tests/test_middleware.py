@@ -8,7 +8,7 @@ from django.urls import reverse
 User = get_user_model()
 
 
-@tag("fast, middleware")
+@tag("middleware", "fast")
 class TestMiddleware(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(

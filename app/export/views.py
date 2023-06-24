@@ -34,7 +34,7 @@ class Index(LoginRequiredMixin, TemplateView):
                 format = "text/csv"
             case "json":
                 format = "application/json"
-            case _:
+            case _:  # pragma: no cover
                 format = "text/plain"
 
         exporter = TripExporter(user=request.user, queryset=request.user.trips)

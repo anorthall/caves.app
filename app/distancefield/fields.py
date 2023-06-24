@@ -63,11 +63,8 @@ class D(_D):
 
     def __eq__(self, other):
         if isinstance(other, str):
-            try:
-                other, units = DistanceField.parse_string(other)
-                if other is None:
-                    return False
-            except ValueError:
+            other, units = DistanceField.parse_string(other)
+            if other is None:
                 return False
 
         if isinstance(other, self.__class__):
@@ -79,11 +76,8 @@ class D(_D):
 
     def __ne__(self, other):
         if isinstance(other, str):
-            try:
-                other, units = DistanceField.parse_string(other)
-                if other is None:
-                    return True
-            except ValueError:
+            other, units = DistanceField.parse_string(other)
+            if other is None:
                 return True
 
         if isinstance(other, self.__class__):
@@ -180,7 +174,7 @@ class DistanceFieldDescriptor(object):
         self.field = field
 
     def __get__(self, instance=None, owner=None):
-        if instance is None:
+        if instance is None:  # pragma: no cover
             return None
 
         return instance.__dict__[self.field.name]
@@ -247,9 +241,6 @@ class DistanceField(models.Field):
         setattr(cls, self.name, self.descriptor_class(self))
         signals.post_init.connect(self.update_after_init, sender=cls)
 
-    def format_number(self, value):
-        return value
-
     @staticmethod
     def parse_string(
         value, default_units="m", max_digits=6
@@ -263,7 +254,7 @@ class DistanceField(models.Field):
             units = default_units
             try:
                 value = float(value)
-            except ValueError:
+            except ValueError:  # pragma: no cover
                 return None, False
         else:
             has_units = True
@@ -272,10 +263,12 @@ class DistanceField(models.Field):
                 value = float(value.replace(units, ""))
             except ValueError:
                 return None, False
+
+        # noinspection PyBroadException
         try:
             kw = {D.unit_attname(units): value, "max_decimal_precision": max_digits}
             return D(**kw), has_units
-        except ValueError:
+        except Exception:
             return None, False
 
     # noinspection PyProtectedMember
@@ -292,7 +285,7 @@ class DistanceField(models.Field):
             try:
                 dist = getattr(instance, self.name)
                 units = getattr(instance, self.unit_field)
-            except KeyError:
+            except KeyError:  # pragma: no cover
                 return
             if not units:
                 return
@@ -312,7 +305,7 @@ class DistanceField(models.Field):
                 setattr(instance, self.unit_field, None)
             else:
                 setattr(instance, self.unit_field, distance[1])
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             raise ImproperlyConfigured(
                 f"DistanceField {self.name} has unit field property {self.unit_field} "
                 f"specified, but field cannot be found on instance."
@@ -343,12 +336,12 @@ class DistanceField(models.Field):
         else:
             try:
                 return float(value)
-            except ValueError:
+            except ValueError:  # pragma: no cover
                 return super(DistanceField, self).get_prep_value(value)
 
         return getattr(dist, self.default_unit)
 
-    def get_prep_lookup(self, lookup_type, value):
+    def get_prep_lookup(self, lookup_type, value):  # pragma: no cover
         if lookup_type in ("exact", "iexact", "gt", "gte", "lt", "lte"):
             return self.get_prep_value(value)
         elif lookup_type == "in":

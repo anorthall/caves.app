@@ -78,9 +78,7 @@ class Exporter:
 
     def _get_distancefield_header(self, field_name) -> str:
         verbose_name = self._get_field_verbose_name(field_name).capitalize()
-        if self._get_distance_units == "ft":
-            return f"{verbose_name} (ft)"
-        return f"{verbose_name} (m)"
+        return f"{verbose_name} ({self._get_distance_units()})"
 
     def _get_distance_units(self) -> str:
         return self.distance_units
