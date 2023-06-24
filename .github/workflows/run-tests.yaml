@@ -42,7 +42,8 @@ jobs:
         working-directory: ./app
         run: |
           touch ${{ github.workspace }}/config/__init__.py
-          coverage run --source=. ./manage.py test -v 2 --noinput
+          coverage run --concurrency=multiprocessing ./manage.py test -v 2 --noinput --parallel auto
+          coverage combine
           coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

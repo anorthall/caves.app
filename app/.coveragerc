@@ -1,0 +1,8 @@
+[run]
+branch = True
+include =
+    /opt/dev/app/*
+    /opt/dev/config/django/*
+omit =
+    /opt/dev/app/*/migrations/*
+    /opt/dev/app/*/tests/*
