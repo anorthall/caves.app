@@ -6,6 +6,20 @@ from .base import *
 DEBUG = False
 
 
+# Security
+SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", 0))
+SECURE_SSL_REDIRECT = bool(os.environ.get("SECURE_SSL_REDIRECT", 0))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = bool(
+    os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", 0)
+)
+SECURE_HSTS_PRELOAD = bool(os.environ.get("SECURE_HSTS_PRELOAD", 0))
+SESSION_COOKIE_SECURE = bool(os.environ.get("SESSION_COOKIE_SECURE", 0))
+CSRF_COOKIE_SECURE = bool(os.environ.get("CSRF_COOKIE_SECURE", 0))
+
+# Only enable if required
+if bool(os.environ.get("SECURE_PROXY_SSL_HEADER", 0)):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # Logging
 DEFAULT_LOG_LEVEL = "INFO"
 
@@ -81,3 +95,20 @@ STATIC_URL = os.environ.get("STATIC_URL", "https://your.cdn.com/static/")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+# Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
+
+# Use redis for sessions
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"

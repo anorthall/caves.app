@@ -11,6 +11,14 @@ services:
     env_file:
       - ./config/docker/production/postgres.env
 
+  redis:
+    restart: always
+    image: redis:7.0.11-alpine
+    volumes:
+      - ./data/production/redis:/data
+    expose:
+      - 6379
+
   imgproxy:
     restart: always
     image: darthsim/imgproxy:latest
@@ -53,3 +61,4 @@ services:
       - ./config/docker/production/production.env
     depends_on:
       - db
+      - redis
