@@ -16,8 +16,7 @@ BUCKET=s3://caves.app-backup
 LOGFILE=$APP_ROOT/data/production/logs/aws/s3-sync.log
 
 
-$AWS s3 sync $APP_ROOT/data/production/backups/db $BUCKET/db \
-    --exclude "**/postgres-latest.sql.gz" >> $LOGFILE
+$AWS s3 sync $APP_ROOT/data/production/backups/database $BUCKET/database >> $LOGFILE
 $AWS s3 sync $APP_ROOT/data/production/backups/crontab $BUCKET/crontab >> $LOGFILE
 $AWS s3 sync $APP_ROOT/data/production/logs $BUCKET/logs >> $LOGFILE
 $AWS s3 sync $APP_ROOT/bin $BUCKET/bin >> $LOGFILE

@@ -1,24 +1,6 @@
 version: "3.8"
 
 services:
-  db:
-    build:
-      context: .
-      dockerfile: ./config/docker/production/Dockerfile.prod.db
-    restart: always
-    volumes:
-      - ./data/production/db:/var/lib/postgresql/data
-    env_file:
-      - ./config/docker/production/postgres.env
-
-  redis:
-    restart: always
-    image: redis:7.0.11-alpine
-    volumes:
-      - ./data/production/redis:/data
-    expose:
-      - 6379
-
   imgproxy:
     restart: always
     image: darthsim/imgproxy:latest
@@ -31,27 +13,15 @@ services:
     ports:
       - ${IMGPROXY_BIND_PORT:-9000}:${IMGPROXY_BIND_PORT:-9000}
 
-  pgbackups:
-    image: prodrigestivill/postgres-backup-local
-    restart: always
-    user: postgres:postgres
-    volumes:
-      - ./data/production/backups/db:/backups
-    env_file:
-      - ./config/docker/production/production.env
-    depends_on:
-      - db
-
   web:
     restart: always
     user: ${UID}:${GID}
     build:
       context: .
       dockerfile: ./config/docker/production/Dockerfile.prod.web
-    command: gunicorn config.django.wsgi:application --bind ${CAVES_BIND_ADDR:-0.0.0.0}:${CAVES_BIND_PORT:-8000} --log-file /opt/caves/logs/gunicorn/gunicorn.log
+    command: gunicorn config.django.wsgi:application --bind ${CAVES_BIND_ADDR:-0.0.0.0}:${CAVES_BIND_PORT:-8000} --log-file /opt/caves/logs/gunicorn/gunicorn.log --workers 17
     volumes:
       - ./data/production/staticfiles:/opt/caves/staticfiles
-      - ./data/production/media:/opt/caves/media
       - ./data/production/logs:/opt/caves/logs
       - ./config/django:/opt/caves/config/django
       - ./app:/opt/caves/app
@@ -59,6 +29,3 @@ services:
       - ${CAVES_BIND_PORT:-8000}:${CAVES_BIND_PORT:-8000}
     env_file:
       - ./config/docker/production/production.env
-    depends_on:
-      - db
-      - redis

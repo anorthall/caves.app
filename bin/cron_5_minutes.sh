@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run caves.app django management commands via cron
-# It is recommended to run this script once per minute
+# It is recommended to run this script every five minutes
 # in production. It will delete users that have not verified
 # their email address in 24 hours, as well as delete trip
 # photos which were not successfully uploaded to S3.

@@ -133,10 +133,12 @@ dmypy.json
 .vscode
 .idea
 
-# Docker
+# Settings and production scripts
 data/
 config/docker/production/production.env
 config/docker/development/development.env
+bin/pg_dump.sh
+bin/staticfiles.sh
 
 # Node
 node_modules/

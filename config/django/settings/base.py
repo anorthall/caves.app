@@ -181,6 +181,7 @@ DATABASES = {
         "ATOMIC_REQUESTS": True,
     }
 }
+CONN_MAX_AGE = int(os.environ.get("CONN_MAX_AGE", 60))
 
 
 # Password validation
