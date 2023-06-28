@@ -6,6 +6,10 @@ from .base import *
 DEBUG = True
 
 
+# Testing
+TEST_RUNNER = "django_rich.test.RichRunner"
+
+
 # Django debug toolbar
 INSTALLED_APPS += ["debug_toolbar"]
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
