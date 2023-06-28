@@ -229,8 +229,8 @@ class UserIntegrationTestCase(TestCase):
         # Load the user
         user = User.objects.get(email="test_register@user.app")
         self.assertFalse(user.is_active)
-        self.assertEquals(user.name, "Test")
-        self.assertEquals(user.username, "testregistration")
+        self.assertEqual(user.name, "Test")
+        self.assertEqual(user.username, "testregistration")
 
         # Test resending verification email with invalid email
         response = self.client.post(
