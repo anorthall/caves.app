@@ -6,30 +6,34 @@ A Django web application to log caving trips. Running online at [caves.app](http
 
 ### Features
 
-- Complete trip logbook functionality, including rich text trip reports and detailed nerdy stats.
-- Comprehensive granular statistics and graphs of activity.
-- Interactive social features: commenting and 'liking' other's trips, and following other users.
-- The ability to create a public profile, making your trip log available online (if desired).
+- Complete trip logbook functionality, with as many or as few data points as you like.
+- Easily upload photos from inside the cave and share them.
+- Add a rich text trip report (like a blog post) to truly capture the experience.
+- View social news feed of your friends' recent caving activity.
+- Comprehensive granular statistics and pretty charts.
+- Search through trips by location, cave, or any other data point.
+- Create a public profile to share your trips with the world (or just your friends, if you prefer).
 - A minimalist and mobile friendly user interface.
 
 ### Planned
 
 - Automatically generated maps of caves visited.
-- The ability to upload photos and surveys to trips.
 - An equipment tracking system - keep track of how many batteries you've got left, or how old your rope is!
+- Comments on trips and photos.
 
 ## Contributing
 
-The project is written in Python and Django. Pull requests are more than welcome. Check the [GitHub issues](https://github.com/anorthall/caves.app/issues) for some ideas of what to do.
+The project is written in Python and Django. Pull requests are more than welcome. Check the
+[GitHub issues](https://github.com/anorthall/caves.app/issues) for some ideas of what to do.
 
 ### Development environment
 
 All development is done inside the Docker development environment. To set up the environment, copy the example
-development.env file and build and run the docker image from the project root directory:
+`development.env` file and build and run the docker image from the project root directory:
 
 ```
-cp config/docker/development/development.env.example config/docker/development/development.env
-docker-compose up
+$ cp config/docker/development/development.env.example config/docker/development/development.env
+$ docker-compose up
 ```
 
 Once the database has initialised, the server will be accessible at http://127.0.0.1:8000. An initial superuser account with the email address `admin@caves.app` and the password `admin` is created automatically.
@@ -38,7 +42,7 @@ Additional test data can be generated using the `make_test_data` Django manageme
 command. You can run the command via docker compose like so:
 
 ```
-docker-compose exec web-dev ./manage.py make_test_data
+$ docker-compose exec web-dev ./manage.py make_test_data
 ```
 
 By default, this will create 25 users and 6,000 trips, although this is configurable
