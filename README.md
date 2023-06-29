@@ -54,9 +54,9 @@ you can stop the Docker instance and delete the `data/development` directory, be
 re-initialising the environment:
 
 ```
-docker compose down -v
-rm -r data/development/
-docker compose up
+$ docker compose down -v
+$ rm -r data/development/
+$ docker compose up
 ```
 
 #### Trip photo uploads
