@@ -25,6 +25,9 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
       BASE_DIR: ${{ github.workspace }}/app
       DJANGO_SETTINGS_MODULE: config.django.settings.development
+      IMGPROXY_KEY: tests
+      IMGPROXY_SALT: tests
+      SECRET_KEY: tests
     steps:
       - name: Checkout source
         uses: actions/checkout@v3

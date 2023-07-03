@@ -70,7 +70,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000, int)
 
 
 # Email settings
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "")
 EMAIL_BACKEND = env("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 MAILER_EMAIL_BACKEND = env(
     "MAILER_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
