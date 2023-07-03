@@ -16,7 +16,7 @@ gunicorn==20.1.0
 humanize==4.6.0
 imgproxy==1.0.0
 itsdangerous==2.1.2
-Pillow==9.5.0
+Pillow==10.0.0
 psycopg2==2.9.6
 python-dateutil==2.8.2
 python-magic==0.4.27
