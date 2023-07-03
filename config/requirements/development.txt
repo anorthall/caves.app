@@ -1,8 +1,8 @@
 attrs==23.1.0
-boto3==1.26.160
+boto3==1.26.165
 coverage==7.2.7
 crispy-bootstrap5==0.7
-Django==4.2.2
+Django==4.2.3
 django-active-link==0.1.8
 django-countries==7.5.1
 django-crispy-forms==2.0
@@ -17,11 +17,11 @@ django-tinymce==3.6.1
 ExifRead==3.0.0
 factory-boy==3.2.1
 gunicorn==20.1.0
-humanize==4.6.0
+humanize==4.7.0
 imgproxy==1.0.0
 isort==5.12.0
 itsdangerous==2.1.2
-Pillow==9.5.0
+Pillow==10.0.0
 pre-commit==3.3.3
 psycopg2==2.9.6
 python-dateutil==2.8.2
