@@ -17,7 +17,7 @@ django-tinymce==3.6.1
 ExifRead==3.0.0
 factory-boy==3.2.1
 gunicorn==20.1.0
-humanize==4.6.0
+humanize==4.7.0
 imgproxy==1.0.0
 isort==5.12.0
 itsdangerous==2.1.2
