@@ -1,11 +1,27 @@
 import os
+
 from pathlib import Path
+from typing import Any
 
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
 
+
+def env(name, default=None, force_type: Any = str):
+    setting = os.environ.get(name, default)
+    if setting is None:
+        raise ImproperlyConfigured(f"{name} environment variable is not set")
+
+    try:
+        return force_type(setting)
+    except ValueError:
+        raise ImproperlyConfigured(
+            f"{name} environment variable is not a valid {force_type.__name__}"
+        )
+
+
 # BASE_DIR should point to where manage.py is
-base_dir = os.environ.get("BASE_DIR", None)
+base_dir = env("BASE_DIR", "")
 if base_dir:
     BASE_DIR = Path(base_dir)
 else:
@@ -19,25 +35,25 @@ TIME_FORMAT = "H:i"
 
 
 # Site root URL with protocol and without a trailing slash
-SITE_ROOT = os.environ.get("SITE_ROOT", "http://127.0.0.1:8000")
+SITE_ROOT = env("SITE_ROOT", "http://127.0.0.1:8000")
 
 
 # Site title setting for templates
-SITE_TITLE = os.environ.get("SITE_TITLE", "caves.app")
+SITE_TITLE = env("SITE_TITLE", "caves.app")
 
 
 # Django admin interface URL path
-ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
+ADMIN_URL = env("ADMIN_URL", "admin/")
 
 
 # Staff pages URL path
-STAFF_URL = os.environ.get("STAFF_URL", "staff/")
+STAFF_URL = env("STAFF_URL", "staff/")
 
 
 # Imgproxy configuration
-IMGPROXY_URL = os.environ.get("IMGPROXY_URL", "http://127.0.0.1:9000/imgproxy")
-IMGPROXY_KEY = os.environ.get("IMGPROXY_KEY", "")
-IMGPROXY_SALT = os.environ.get("IMGPROXY_SALT", "")
+IMGPROXY_URL = env("IMGPROXY_URL", "http://127.0.0.1:9000/imgproxy")
+IMGPROXY_KEY = env("IMGPROXY_KEY")
+IMGPROXY_SALT = env("IMGPROXY_SALT")
 IMGPROXY_PRESETS = {
     "tripphoto_thumb": "width=200,height=300,resizing_type=fill",
     "avatar": "width=225,height=225,resizing_type=fill",
@@ -46,30 +62,26 @@ IMGPROXY_PRESETS = {
 
 # Security keys/options
 # WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-secret-key")
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "http://127.0.0.1").split(" ")
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(
-    " "
-)
-DATA_UPLOAD_MAX_NUMBER_FIELDS = int(
-    os.environ.get("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000)
-)  # need this many for CSV import feature to work - 16 fields per trip
+SECRET_KEY = env("SECRET_KEY")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", "http://127.0.0.1").split(" ")
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(" ")
+# need this many for CSV import feature to work - 16 fields per trip
+DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000, int)
+
 
 # Email settings
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
-EMAIL_BACKEND = os.environ.get(
-    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-)
-MAILER_EMAIL_BACKEND = os.environ.get(
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+EMAIL_BACKEND = env("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+MAILER_EMAIL_BACKEND = env(
     "MAILER_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
-MAILER_EMPTY_QUEUE_SLEEP = int(os.environ.get("MAILER_EMPTY_QUEUE_SLEEP", 30))
-EMAIL_HOST = os.environ.get("EMAIL_HOST", None)
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 0))
-EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", 0))
-EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", 0))
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", None)
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", None)
+MAILER_EMPTY_QUEUE_SLEEP = env("MAILER_EMPTY_QUEUE_SLEEP", 30, int)
+EMAIL_HOST = env("EMAIL_HOST", "")
+EMAIL_PORT = env("EMAIL_PORT", 0, int)
+EMAIL_USE_SSL = env("EMAIL_USE_SSL", False, bool)
+EMAIL_USE_TLS = env("EMAIL_USE_TLS", False, bool)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", "")
 
 
 # Internationalization
@@ -172,16 +184,16 @@ ROOT_URLCONF = "config.django.urls"
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
-        "USER": os.environ.get("SQL_USER", "user"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "5432"),
-        "ATOMIC_REQUESTS": True,
+        "ENGINE": env("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": env("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": env("SQL_USER", "user"),
+        "PASSWORD": env("SQL_PASSWORD", "password"),
+        "HOST": env("SQL_HOST", "localhost"),
+        "PORT": env("SQL_PORT", "5432", int),
+        "ATOMIC_REQUESTS": env("SQL_ATOMIC_REQUESTS", True, bool),
     }
 }
-CONN_MAX_AGE = int(os.environ.get("CONN_MAX_AGE", 30))
+CONN_MAX_AGE = env("CONN_MAX_AGE", 30, int)
 
 
 # Password validation
@@ -202,14 +214,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Amazon S3
-AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")
-AWS_S3_ACCESS_KEY_ID = os.environ.get("AWS_S3_ACCESS_KEY_ID")
-AWS_S3_SECRET_ACCESS_KEY = os.environ.get("AWS_S3_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")
-AWS_S3_SIGNATURE_VERSION = os.environ.get("AWS_S3_SIGNATURE_VERSION", "s3v4")
-AWS_DEFAULT_ACL = os.environ.get("AWS_DEFAULT_ACL", "private")
-AWS_PRESIGNED_EXPIRY = int(os.environ.get("AWS_PRESIGNED_EXPIRY", 20))
+AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN", "")
+AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", "")
+AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", "")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", "")
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", "")
+AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", "s3v4")
+AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL", "private")
+AWS_PRESIGNED_EXPIRY = env("AWS_PRESIGNED_EXPIRY", 20, int)
 
 
 # Storages

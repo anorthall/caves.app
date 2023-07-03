@@ -42,7 +42,7 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
-STATIC_ROOT = os.environ.get("STATIC_ROOT", "/opt/caves/staticfiles")
+STATIC_ROOT = env("STATIC_ROOT", "/opt/caves/staticfiles")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
