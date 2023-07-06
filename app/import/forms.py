@@ -1,12 +1,14 @@
 import copy
 import csv
-
+import chardet
 import magic
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
 from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+
 from logger.forms import BaseTripForm
 from logger.models import Trip
 
@@ -37,13 +39,15 @@ class ImportUploadForm(forms.Form):
         if mime not in ["text/csv", "text/plain"]:
             raise ValidationError("The imported file is not a CSV file.")
 
-        test_data = csv.DictReader(
-            file.read().decode("UTF-8").splitlines(), fieldnames=get_headers()
+        raw_data = file.read()
+        encoding = chardet.detect(raw_data)["encoding"]
+        csv_data = csv.DictReader(
+            raw_data.decode(encoding).splitlines(), fieldnames=get_headers()
         )
 
         # Remove the header row and any blank rows
         cleaned_rows = []
-        for i, row in enumerate(test_data):
+        for i, row in enumerate(csv_data):
             if i == 0:
                 continue
 

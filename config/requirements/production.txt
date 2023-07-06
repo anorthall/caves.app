@@ -1,5 +1,6 @@
 attrs==23.1.0
 boto3==1.26.165
+chardet==5.1.0
 crispy-bootstrap5==0.7
 Django==4.2.3
 django-active-link==0.1.8
