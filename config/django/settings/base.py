@@ -78,8 +78,8 @@ MAILER_EMAIL_BACKEND = env(
 MAILER_EMPTY_QUEUE_SLEEP = env("MAILER_EMPTY_QUEUE_SLEEP", 30, int)
 EMAIL_HOST = env("EMAIL_HOST", "")
 EMAIL_PORT = env("EMAIL_PORT", 0, int)
-EMAIL_USE_SSL = env("EMAIL_USE_SSL", False, bool)
-EMAIL_USE_TLS = env("EMAIL_USE_TLS", False, bool)
+EMAIL_USE_SSL = env("EMAIL_USE_SSL", False, int)
+EMAIL_USE_TLS = env("EMAIL_USE_TLS", False, int)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", "")
 
@@ -190,7 +190,7 @@ DATABASES = {
         "PASSWORD": env("SQL_PASSWORD", "password"),
         "HOST": env("SQL_HOST", "localhost"),
         "PORT": env("SQL_PORT", "5432", int),
-        "ATOMIC_REQUESTS": env("SQL_ATOMIC_REQUESTS", True, bool),
+        "ATOMIC_REQUESTS": env("SQL_ATOMIC_REQUESTS", True, int),
     }
 }
 CONN_MAX_AGE = env("CONN_MAX_AGE", 30, int)
