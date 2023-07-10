@@ -184,7 +184,7 @@ class TripPhotoTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "The photo has been deleted.")
 
-        qs = TripPhoto.objects.filter(uuid=uuid)
+        qs = TripPhoto.objects.valid().filter(uuid=uuid)
         self.assertEqual(qs.count(), 0)
 
     @tag("privacy")
@@ -201,7 +201,7 @@ class TripPhotoTests(TestCase):
         )
         self.assertEqual(response.status_code, 403)
 
-        qs = TripPhoto.objects.filter(uuid=uuid)
+        qs = TripPhoto.objects.valid().filter(uuid=uuid)
         self.assertEqual(qs.count(), 1)
 
     def test_trip_photo_delete_invalid_uuid(self):
@@ -278,7 +278,7 @@ class TripPhotoTests(TestCase):
             )
             photo.is_valid = True
             photo.save()
-        self.assertEqual(TripPhoto.objects.filter(trip=self.trip).count(), 10)
+        self.assertEqual(TripPhoto.objects.valid().filter(trip=self.trip).count(), 10)
 
         self.client.force_login(self.user)
         response = self.client.post(
@@ -287,19 +287,19 @@ class TripPhotoTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "All photos for the trip have been deleted.")
 
-        qs = TripPhoto.objects.filter(trip=self.trip)
+        qs = TripPhoto.objects.valid().filter(trip=self.trip)
         self.assertEqual(qs.count(), 0)
 
     @tag("privacy")
     def test_trip_photo_delete_all_as_other_user(self):
         """Test deleting all photos as another user"""
-        self.assertEqual(TripPhoto.objects.filter(trip=self.trip).count(), 1)
+        self.assertEqual(TripPhoto.objects.valid().filter(trip=self.trip).count(), 1)
         self.client.force_login(self.user2)
         response = self.client.post(
             reverse("log:trip_photos_delete_all", args=[self.trip.uuid]),
         )
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(TripPhoto.objects.filter(trip=self.trip).count(), 1)
+        self.assertEqual(TripPhoto.objects.valid().filter(trip=self.trip).count(), 1)
 
     def test_trip_photo_str_method(self):
         """Test the string representation of a trip photo"""

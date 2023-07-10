@@ -172,7 +172,7 @@ class TripPhotosDeleteAll(LoginRequiredMixin, View):
         if not trip.user == request.user:
             raise PermissionDenied
 
-        qs = TripPhoto.objects.filter(trip=trip, user=request.user, deleted_at=None)
+        qs = TripPhoto.objects.valid().filter(trip=trip, user=request.user)
         if qs.exists():
             qs.update(deleted_at=timezone.now())
             messages.success(request, "All photos for the trip have been deleted.")

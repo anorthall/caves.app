@@ -22,10 +22,7 @@ class Command(BaseCommand):
             seconds=(int(settings.AWS_PRESIGNED_EXPIRY) + 60)
         )
 
-        invalid_photos = TripPhoto.objects.filter(
-            is_valid=False,
-            added__lte=td,
-        )
+        invalid_photos = TripPhoto.objects.invalid().filter(added__lte=td)
 
         count = invalid_photos.count()
         invalid_photos.delete()
