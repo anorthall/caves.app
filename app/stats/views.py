@@ -30,6 +30,7 @@ class Index(LoginRequiredMixin, TemplateView):
         disable_survey = user.disable_survey_statistics
 
         context = super().get_context_data(**kwargs)
+        context["excluded_trip_count"] = user.trips.filter(type=Trip.SURFACE).count()
         context["stats_yearly"] = statistics.yearly(self.queryset)
         context["stats_most_common"] = statistics.most_common(self.queryset)
         context["stats_biggest_trips"] = statistics.biggest_trips(

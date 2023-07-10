@@ -31,7 +31,7 @@ body {
   padding-right: 0 !important;
 }
 
-#messages .message-title {
+.message-title {
   margin-right: 0.5rem;
   font-weight: bold;
 }
