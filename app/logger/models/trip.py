@@ -335,7 +335,7 @@ class Trip(models.Model):
                 return True
 
         if self.privacy == self.DEFAULT:
-            return self.user.is_viewable_by(user_viewing)
+            return self.user.is_viewable_by(user_viewing, friends)
 
         return False
 

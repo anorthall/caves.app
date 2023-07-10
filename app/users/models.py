@@ -342,7 +342,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         """Send a notification to this user"""
         return Notification.objects.create(user=self, message=message, url=url)
 
-    def is_viewable_by(self, user_viewing):
+    def is_viewable_by(self, user_viewing, /, friends=None):
         """Returns whether or not user_viewing can view this profile"""
         if self == user_viewing:
             return True
@@ -351,7 +351,10 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             return True
 
         if self.privacy == User.FRIENDS:
-            if user_viewing in self.friends.all():
+            if friends is None:
+                friends = self.friends.all()
+
+            if user_viewing in friends:
                 return True
 
         return False
