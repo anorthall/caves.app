@@ -28,7 +28,9 @@ class Dashboard(StaffRequiredMixin, TemplateView):
             get_time_statistics(trip_reports, metric="Updated", lookup="updated__gte"),
             get_time_statistics(photos_valid, metric="Valid", lookup="added__gte"),
             get_time_statistics(photos_invalid, metric="Invalid", lookup="added__gte"),
-            get_time_statistics(photos_deleted, metric="Deleted", lookup="added__gte"),
+            get_time_statistics(
+                photos_deleted, metric="Deleted", lookup="deleted_at__gte"
+            ),
             get_time_statistics(users, metric="New", lookup="date_joined__gte"),
             get_time_statistics(users, metric="Active", lookup="last_seen__gte"),
         ]
