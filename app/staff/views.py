@@ -30,7 +30,7 @@ class Dashboard(StaffRequiredMixin, TemplateView):
             get_time_statistics(
                 photos_deleted, metric="Deleted", lookup="deleted_at__gte"
             ),
-            get_integer_field_statistics(photos, "Storage", "filesize"),
+            get_integer_field_statistics(photos, "Total storage", "filesize"),
             get_integer_field_statistics(
                 photos_deleted, "Deleted storage", "filesize", "deleted_at__gte"
             ),
