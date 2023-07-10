@@ -217,9 +217,12 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         ),
     )
     public_statistics = models.BooleanField(
-        "Show statistics",
+        "Show statistics on profile",
         default=True,
-        help_text="Check this box to show a statistics table on your profile.",
+        help_text=(
+            "Enabling this option will show an annual statistics table on your "
+            "profile page which will be visible to anyone who can view your profile."
+        ),
     )
     disable_distance_statistics = models.BooleanField(
         "Disable distance statistics",
@@ -238,6 +241,14 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "Enabling this option will mean that surveying and "
             "resurveying distance statistics will not be "
             "displayed on your profile."
+        ),
+    )
+    disable_stats_over_time = models.BooleanField(
+        "Disable statistics over time chart",
+        default=False,
+        help_text=(
+            "Enabling this option will hide the statistics over "
+            "time chart on the statistics page."
         ),
     )
     show_cavers_on_trip_list = models.BooleanField(

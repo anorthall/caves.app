@@ -2,7 +2,7 @@ import copy
 
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Field, Fieldset, Layout, Submit
+from crispy_forms.layout import Div, Field, Fieldset, Layout, Submit, HTML
 from django import forms
 from django.contrib import auth
 from django.contrib.auth import get_user_model
@@ -253,14 +253,15 @@ class SettingsChangeForm(forms.ModelForm):
             "units",
             "timezone",
             "private_notes",
-            "public_statistics",
             "allow_friend_username",
             "allow_friend_email",
             "allow_comments",
-            "disable_distance_statistics",
-            "disable_survey_statistics",
             "show_cavers_on_trip_list",
             "email_friend_requests",
+            "public_statistics",
+            "disable_distance_statistics",
+            "disable_survey_statistics",
+            "disable_stats_over_time",
         )
 
     def __init__(self, *args, **kwargs):
@@ -278,14 +279,19 @@ class SettingsChangeForm(forms.ModelForm):
                 ),
                 Div(
                     Div("private_notes", css_class="col"),
-                    Div("public_statistics", css_class="col"),
                     Div("allow_friend_username", css_class="col"),
                     Div("allow_friend_email", css_class="col"),
                     Div("allow_comments", css_class="col"),
-                    Div("disable_distance_statistics", css_class="col"),
-                    Div("disable_survey_statistics", css_class="col"),
                     Div("show_cavers_on_trip_list", css_class="col"),
                     Div("email_friend_requests", css_class="col"),
+                    css_class="row row-cols-1 row-cols-lg-3 mt-4",
+                ),
+                HTML('<h5 class="mt-3">Statistics</h5>'),
+                Div(
+                    Div("public_statistics", css_class="col"),
+                    Div("disable_distance_statistics", css_class="col"),
+                    Div("disable_survey_statistics", css_class="col"),
+                    Div("disable_stats_over_time", css_class="col"),
                     css_class="row row-cols-1 row-cols-lg-3 mt-4",
                 ),
             ),
