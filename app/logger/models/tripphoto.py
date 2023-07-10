@@ -48,6 +48,7 @@ class TripPhoto(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
+    filesize = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Photo for {self.trip} by {self.user}"

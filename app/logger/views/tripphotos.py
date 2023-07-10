@@ -129,6 +129,7 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
                     )
                 )
 
+        photo.filesize = photo.photo.size
         photo.is_valid = True
         photo.save()
         return JsonResponse({"success": True})

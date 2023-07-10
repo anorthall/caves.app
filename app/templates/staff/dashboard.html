@@ -21,15 +21,27 @@
 
       <tbody>
         {% for stats in statistics %}
-          <tr>
-            <th>{{ stats.model_name|capfirst }}</th>
-            <td>{{ stats.metric }}</td>
-            <td>{{ stats.day }}</td>
-            <td>{{ stats.week }}</td>
-            <td>{{ stats.month }}</td>
-            <td>{{ stats.year }}</td>
-            <td>{{ stats.total }}</td>
-          </tr>
+          {% if stats.filesize %}
+            <tr>
+              <th>{{ stats.model_name|capfirst }}</th>
+              <td>{{ stats.metric }}</td>
+              <td>{{ stats.day|filesizeformat }}</td>
+              <td>{{ stats.week|filesizeformat }}</td>
+              <td>{{ stats.month|filesizeformat }}</td>
+              <td>{{ stats.year|filesizeformat }}</td>
+              <td>{{ stats.total|filesizeformat }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <th>{{ stats.model_name|capfirst }}</th>
+              <td>{{ stats.metric }}</td>
+              <td>{{ stats.day }}</td>
+              <td>{{ stats.week }}</td>
+              <td>{{ stats.month }}</td>
+              <td>{{ stats.year }}</td>
+              <td>{{ stats.total }}</td>
+            </tr>
+          {% endif %}
         {% endfor %}
       </tbody>
     </table>
