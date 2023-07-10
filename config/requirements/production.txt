@@ -1,5 +1,5 @@
 attrs==23.1.0
-boto3==1.26.165
+boto3==1.28.1
 chardet==5.1.0
 crispy-bootstrap5==0.7
 Django==4.2.3
