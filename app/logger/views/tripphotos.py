@@ -11,6 +11,7 @@ from django.db.models.fields.files import ImageFieldFile
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.views.generic import FormView, View
 
@@ -158,10 +159,11 @@ class TripPhotosDelete(LoginRequiredMixin, View):
         if not photo.user == request.user:
             raise PermissionDenied
 
-        redirect_url = photo.trip.get_absolute_url()
-        photo.delete()
+        photo.deleted_at = timezone.now()
+        photo.save()
+
         messages.success(request, "The photo has been deleted.")
-        return redirect(redirect_url)
+        return redirect(photo.trip.get_absolute_url())
 
 
 class TripPhotosDeleteAll(LoginRequiredMixin, View):
@@ -170,13 +172,9 @@ class TripPhotosDeleteAll(LoginRequiredMixin, View):
         if not trip.user == request.user:
             raise PermissionDenied
 
-        qs = TripPhoto.objects.filter(
-            trip=trip,
-            user=request.user,
-        )
-
+        qs = TripPhoto.objects.filter(trip=trip, user=request.user, deleted_at=None)
         if qs.exists():
-            qs.delete()
+            qs.update(deleted_at=timezone.now())
             messages.success(request, "All photos for the trip have been deleted.")
         else:
             messages.error(request, "There were no photos to delete.")

@@ -15,7 +15,7 @@ class TripPhotoInline(admin.TabularInline):
     extra = 0
     max_num = 0
     show_change_link = True
-    fields = ("photo", "caption", "is_valid", "taken")
+    fields = ("photo", "caption", "is_valid", "deleted_at", "taken")
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -132,9 +132,9 @@ class TripAdmin(admin.ModelAdmin):
 
 @admin.register(TripPhoto)
 class TripPhotoAdmin(admin.ModelAdmin):
-    list_display = ("user", "trip", "taken", "added")
+    list_display = ("user", "trip", "deleted_at", "taken", "added")
     list_display_links = ("taken",)
-    list_filter = ("is_valid", "added")
+    list_filter = ("is_valid", "deleted_at", "added")
     search_fields = ("user__username", "user__name", "user__email", "trip__uuid")
     search_help_text = "Search by author name, email or username, or trip UUID."
     autocomplete_fields = ("trip", "user")
@@ -148,6 +148,7 @@ class TripPhotoAdmin(admin.ModelAdmin):
                     "user",
                     "trip",
                     "is_valid",
+                    "deleted_at",
                     "uuid",
                     "taken",
                     "added",
