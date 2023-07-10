@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.views import View
 from django.views.generic import ListView
-from stats import statistics as new_stats
+from stats import statistics
 from users.models import CavingUser as User
 
 from ..models import Trip
@@ -70,7 +70,9 @@ class UserProfile(ListView):
         context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["show_cavers"] = self.profile_user.show_cavers_on_trip_list
         if self.profile_user.public_statistics:
-            context["stats"] = new_stats.yearly(self.object_list)
+            context["stats"] = statistics.yearly(
+                self.profile_user.trips.exclude(type=Trip.SURFACE)
+            )
 
         # This code provides the current GET parameters as a context variable
         # so that when a pagination link is clicked, the GET parameters are
