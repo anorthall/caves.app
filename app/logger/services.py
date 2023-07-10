@@ -61,8 +61,14 @@ def get_trips_context(request, ordering, page=1):
                     pk=request.user.pk, liked_trips=OuterRef("pk")
                 ).only("pk")
             ),
-            has_photos=Exists(TripPhoto.objects.filter(trip=OuterRef("pk")).only("pk")),
-            photo_count=Count("photos", distinct=True),
+            has_photos=Exists(
+                TripPhoto.objects.valid().filter(trip=OuterRef("pk")).only("pk")
+            ),
+            photo_count=Count(
+                "photos",
+                filter=Q(photos__is_valid=True, photos__deleted_at=None),
+                distinct=True,
+            ),
             more_than_five_photos=Case(
                 When(photo_count__gt=5, then=Value(True)),
             ),

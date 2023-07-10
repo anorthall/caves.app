@@ -464,7 +464,9 @@ class Trip(models.Model):
 
     @property
     def valid_photos(self):
-        return self.photos.filter(is_valid=True).order_by("taken", "added")
+        return self.photos.filter(is_valid=True, deleted_at=None).order_by(
+            "taken", "added"
+        )
 
     @property
     def feed_photos(self):
