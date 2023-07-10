@@ -5,8 +5,8 @@ python library
 https://pypi.org/project/imgproxy/
 """
 
-from imgproxy import ImgProxy
 from django.conf import settings
+from imgproxy import ImgProxy
 
 
 def get_imgproxy():

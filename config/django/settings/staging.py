@@ -13,5 +13,5 @@ MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 # Always show the toolbar in staging as staging should never be exposed
 # to the internet anyway
 DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
 }

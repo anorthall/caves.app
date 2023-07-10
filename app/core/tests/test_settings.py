@@ -3,7 +3,6 @@ from django.test import SimpleTestCase, tag
 
 from config.django.settings.base import env
 
-
 TEST_ENV_VAR = "TEST_ENV_VAR_THAT_DOES_NOT_EXIST"
 
 

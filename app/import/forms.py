@@ -1,14 +1,13 @@
 import copy
 import csv
+
 import chardet
 import magic
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
 from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse
-
 from logger.forms import BaseTripForm
 from logger.models import Trip
 
