@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0027_cavinguser_disable_stats_over_time'),
+        ("users", "0027_cavinguser_disable_stats_over_time"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='cavinguser',
-            name='public_statistics',
-            field=models.BooleanField(default=True, help_text='Enabling this option will show an annual statistics table on your profile page which will be visible to anyone who can view your profile.', verbose_name='Show statistics on profile'),
+            model_name="cavinguser",
+            name="public_statistics",
+            field=models.BooleanField(
+                default=True,
+                help_text="Enabling this option will show an annual statistics table on your profile page which will be visible to anyone who can view your profile.",
+                verbose_name="Show statistics on profile",
+            ),
         ),
     ]
