@@ -184,8 +184,8 @@
     {% endif %}
   {% endif %}
 
-  <div class="{% if trip.notes or trip.cave_url or show_photos %}border-top py-3 mt-4{% else %}mt-4{% endif %}">
-    <span class="float-start">
+  <div class="{% if trip.notes or trip.cave_url or show_photos %}border-top py-3 mt-4{% else %}mt-4{% endif %} row">
+    <div class="{% if object_owner.allow_comments %}col-12 col-md-8{% else %}col-12{% endif %}">
       {% if user.is_authenticated %}
         {% include "logger/_htmx_trip_like.html" %}
         {% if trip.likes_count > 0 %}
@@ -214,12 +214,12 @@
         <i class="bi bi-hand-thumbs-up-fill"></i>
         {{ trip.likes_count }} like{{ trip.likes_count|pluralize }}
       {% endif %}
-    </span>
+    </div>
 
     {% if object_owner.allow_comments %}
-      <span class="float-end d-none d-md-block">
+      <div class="d-none d-md-block col-4 text-end">
         <span class="text-primary"><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
-      </span>
+      </div>
     {% endif %}
   </div>
 
