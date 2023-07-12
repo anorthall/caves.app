@@ -56,6 +56,7 @@ def get_trips_context(request, ordering, page=1):
         .prefetch_related("photos", "likes", "user__friends")
         .annotate(
             likes_count=Count("likes", distinct=True),
+            comments_count=Count("comments", distinct=True),
             user_liked=Exists(
                 User.objects.filter(
                     pk=request.user.pk, liked_trips=OuterRef("pk")

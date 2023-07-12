@@ -1,0 +1,22 @@
+Hi {{ name }},
+
+
+Just a quick email to let you know that {{ commenter_name }} has left
+a new comment on your trip to {{ trip.cave_name }} on {{ trip.start|date }}.
+
+They said:
+
+{{ comment_content }}
+
+You can view the comment here:
+
+{{ SITE_ROOT }}{{ trip.get_absolute_url }}
+
+If you'd like to disable these emails you can do so in your user settings page.
+Thanks for using caves.app!
+
+
+Cheers,
+
+Andrew Northall
+admin@caves.app

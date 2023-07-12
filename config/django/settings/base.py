@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     "stats.apps.StatsConfig",
     "import.apps.ImportConfig",
     "export.apps.ExportConfig",
+    "comments.apps.CommentsConfig",
     "django_countries",
     "tinymce",
     "active_link",

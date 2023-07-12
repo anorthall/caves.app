@@ -3,6 +3,7 @@ import sys
 
 import django.db
 import factory.random
+from comments.factories import CommentFactory
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
@@ -61,7 +62,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--no-comments",
             action="store_true",
-            help="Do not generate comments for trips or trip reports",
+            help="Do not generate comments for trips",
         )
 
         parser.add_argument(
@@ -167,6 +168,9 @@ class Command(BaseCommand):
             if not self.options["no_likes"]:
                 num_likes = self._add_likes_to_trip(trip, users)
 
+            if not self.options["no_comments"]:
+                num_comments = self._add_comments_to_trip(trip, users)
+
             if self.options["verbosity"] >= 2:
                 self.stdout.write(
                     f"Created trip with PK {trip.pk} with {num_likes} likes and "
@@ -175,7 +179,18 @@ class Command(BaseCommand):
 
         return trips
 
-    def _generate_trip_reports(self, user_pks=None, with_comments=True):
+    def _add_comments_to_trip(self, trip, users):
+        if self.options["no_comments"]:
+            return 0
+
+        num_comments = random.randint(0, 6)
+        for _ in range(num_comments):
+            user = random.choice(users)
+            CommentFactory(trip=trip, author=user)
+
+        return num_comments
+
+    def _generate_trip_reports(self, user_pks=None):
         """Generate num_reports amount of trip reports amongst the users specified"""
         num_reports = self.options["reports"]
         if self.options["verbosity"] >= 1:
@@ -194,11 +209,9 @@ class Command(BaseCommand):
             trips.remove(trip)
             reports.append(report)
 
-            num_comments = 0
             if self.options["verbosity"] >= 2:
                 self.stdout.write(
-                    f"Created report with PK {report.pk} with {num_comments} "
-                    f"comments for user {trip.user.email}."
+                    f"Created report with PK {report.pk} for user {trip.user.email}."
                 )
 
         return reports
