@@ -13,7 +13,7 @@ from users.emails import NewCommentEmail
 
 
 class AddComment(LoginRequiredMixin, View):
-    @method_decorator(ratelimit(key="user", rate="4/m", block=True))
+    @method_decorator(ratelimit(key="user", rate="3/m", block=True))
     def post(self, request, uuid):
         trip = get_object_or_404(Trip, uuid=uuid)
         form = CommentForm(self.request, trip, request.POST)
