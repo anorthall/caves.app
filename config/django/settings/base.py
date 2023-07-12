@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     "stats.apps.StatsConfig",
     "import.apps.ImportConfig",
     "export.apps.ExportConfig",
+    "comments.apps.CommentsConfig",
     "django_countries",
     "tinymce",
     "active_link",
@@ -304,3 +305,12 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Django active link
 ACTIVE_LINK_STRICT = True
+
+
+# Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": env("REDIS_URL"),
+    }
+}

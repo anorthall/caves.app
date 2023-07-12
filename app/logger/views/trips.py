@@ -1,3 +1,4 @@
+from comments.forms import CommentForm
 from core.utils import get_user
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -64,6 +65,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             )
             .annotate(
                 likes_count=Count("likes", distinct=True),
+                comments_count=Count("comments", distinct=True),
                 user_liked=Exists(
                     User.objects.filter(
                         pk=self.request.user.pk, liked_trips=OuterRef("pk")
@@ -99,6 +101,10 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             if not self.object.private_photos or self.object.user == self.request.user:
                 context["show_photos"] = True
                 context["valid_photos"] = valid_photos
+
+        if self.object.user.allow_comments:
+            context["comment_form"] = CommentForm(self.request, self.object)
+
         return context
 
 

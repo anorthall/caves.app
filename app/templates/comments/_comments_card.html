@@ -1,0 +1,16 @@
+{% if trip.user.allow_comments %}
+  <div class="card" id="comments{{ trip.uuid }}">
+    <div class="card-header">
+      <div class="d-flex flex-row align-items-center justify-content-between">
+        <span class="float-start">Comments on {{ trip.cave_name }}</span>
+        <small class="float-end text-muted">
+          <button class="btn btn-sm btn-secondary" onclick="document.getElementById('comments{{ trip.uuid }}').remove()">Hide</button>
+        </small>
+      </div>
+    </div>
+
+    <div class="card-body">
+      {% include "comments/_comments.html" %}
+    </div>
+  </div>
+{% endif %}
