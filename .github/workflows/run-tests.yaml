@@ -28,6 +28,7 @@ jobs:
       IMGPROXY_KEY: tests
       IMGPROXY_SALT: tests
       SECRET_KEY: tests
+      REDIS_URL: redis://localhost:6379
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -69,3 +70,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
