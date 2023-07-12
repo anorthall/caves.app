@@ -28,7 +28,7 @@ jobs:
       IMGPROXY_KEY: tests
       IMGPROXY_SALT: tests
       SECRET_KEY: tests
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://localhost:6379
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
