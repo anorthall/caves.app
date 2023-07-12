@@ -59,6 +59,8 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             .prefetch_related(
                 "photos",
                 "likes",
+                "comments",
+                "comments__author",
                 "likes__friends",
                 "user__friends",
             )
