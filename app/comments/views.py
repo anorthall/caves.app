@@ -17,6 +17,10 @@ class AddComment(LoginRequiredMixin, View):
     def post(self, request, uuid):
         trip = get_object_or_404(Trip, uuid=uuid)
         form = CommentForm(self.request, trip, request.POST)
+
+        if not trip.is_viewable_by(self.request.user):
+            raise PermissionDenied
+
         if form.is_valid():
             form.save()
             if form.trip.user != request.user:
