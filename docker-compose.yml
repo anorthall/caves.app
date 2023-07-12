@@ -12,6 +12,13 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  redis-dev:
+    image: redis:7.0.11-alpine
+    volumes:
+      - ./data/development/redis:/data
+    expose:
+      - 6379
+
   imgproxy-dev:
     image: darthsim/imgproxy:latest
     security_opt:
@@ -38,3 +45,4 @@ services:
       - ./config/docker/development/development.env
     depends_on:
       - db-dev
+      - redis-dev

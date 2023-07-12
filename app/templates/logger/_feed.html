@@ -102,8 +102,20 @@
           {% include "logger/_htmx_trip_like.html" %}
         {% endwith %}
       </span>
+
+      {% if trip.user.allow_comments %}
+        <span hx-get="{% url 'comments:htmx_comments' trip.uuid %}" hx-target="#comment{{ trip.uuid }}" class="float-end text-muted">
+          {% if trip.comments_count > 0 %}
+            <span><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}</span>
+          {% else %}
+            <span><i class="bi bi-chat"></i></span>
+          {% endif %}
+        </span>
+      {% endif %}
     </div>
   </div>
+
+  <div class="shadow mb-4 mb-lg-5" id="comment{{ trip.uuid }}"></div>
 {% endfor %}
 
 {% if trips.has_next %}

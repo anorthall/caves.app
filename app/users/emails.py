@@ -20,6 +20,9 @@ class Email:
     def send(self) -> int:
         self._check_required_context_exists()
 
+        # Add SITE_ROOT to context
+        self.context["SITE_ROOT"] = settings.SITE_ROOT
+
         # TODO: use mjml to generate html email templates
         subject_template = f"emails/{self.template_name}_subject.txt"
         plain_template = f"emails/{self.template_name}.txt"
@@ -79,3 +82,8 @@ class FriendRequestReceivedEmail(Email):
 class FriendRequestAcceptedEmail(Email):
     template_name = "friend_request_accepted"
     required_context = ["name", "accepter_name", "url"]
+
+
+class NewCommentEmail(Email):
+    template_name = "new_comment"
+    required_context = ["name", "commenter_name", "trip", "comment_content"]

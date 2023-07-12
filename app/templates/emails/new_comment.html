@@ -1,0 +1,47 @@
+<p>
+  Hi {{ name }},
+</p>
+
+<br />
+
+<p>
+  Just a quick email to let you know that {{ commenter_name }} has left
+  a new comment on your trip to {{ trip.cave_name }} on {{ trip.start|date }}.
+</p>
+
+<p>
+  They said:
+</p>
+
+<p>
+  {{ comment_content }}
+</p>
+
+<p>
+  <a href="{{ SITE_ROOT }}{{ trip.get_absolute_url }}">
+    <strong>
+      Click here to view the trip
+    </strong>
+  </a>
+</p>
+
+<p>
+  If you'd like to disable these emails you can do so in your user settings page.
+</p>
+
+<br />
+
+<p>
+  Thanks for using caves.app!
+</p>
+
+<br />
+
+<p>
+  Cheers,
+</p>
+
+<p>
+  Andrew Northall<br/>
+  admin@caves.app<br/>
+</p>

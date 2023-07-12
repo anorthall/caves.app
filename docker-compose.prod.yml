@@ -13,6 +13,14 @@ services:
     ports:
       - ${IMGPROXY_BIND_PORT:-9000}:${IMGPROXY_BIND_PORT:-9000}
 
+  redis:
+    restart: always
+    image: redis:7.0.11-alpine
+    volumes:
+      - ./data/production/redis:/data
+    expose:
+      - 6379
+
   web:
     restart: always
     user: ${UID}:${GID}
@@ -29,3 +37,5 @@ services:
       - ${CAVES_BIND_PORT:-8000}:${CAVES_BIND_PORT:-8000}
     env_file:
       - ./config/docker/production/production.env
+    depends_on:
+      - redis

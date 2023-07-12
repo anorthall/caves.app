@@ -54,25 +54,36 @@ def get_trips_context(request, ordering, page=1):
         Trip.objects.filter(Q(user__in=friends) | Q(user=request.user))
         .select_related("user")
         .prefetch_related("photos", "likes", "user__friends")
-        .annotate(
-            likes_count=Count("likes", distinct=True),
-            user_liked=Exists(
-                User.objects.filter(
-                    pk=request.user.pk, liked_trips=OuterRef("pk")
-                ).only("pk")
-            ),
-            has_photos=Exists(
-                TripPhoto.objects.valid().filter(trip=OuterRef("pk")).only("pk")
-            ),
-            photo_count=Count(
-                "photos",
-                filter=Q(photos__is_valid=True, photos__deleted_at=None),
-                distinct=True,
-            ),
-            more_than_five_photos=Case(
-                When(photo_count__gt=5, then=Value(True)),
-            ),
-        )
+    )
+
+    # There is a behaviour in Django where the following line:
+    #        comments_count=Count("comments", distinct=True),
+    # will cause the query to take a very long time when no comments exist.
+    # I am not sure why this is the case, but the following line will
+    # prevent this from happening and hence slowing down tests significantly,
+    # at the cost of an extra query.
+    if not trips.exists():
+        return []
+
+    trips = trips.annotate(
+        likes_count=Count("likes", distinct=True),
+        comments_count=Count("comments", distinct=True),
+        user_liked=Exists(
+            User.objects.filter(pk=request.user.pk, liked_trips=OuterRef("pk")).only(
+                "pk"
+            )
+        ),
+        has_photos=Exists(
+            TripPhoto.objects.valid().filter(trip=OuterRef("pk")).only("pk")
+        ),
+        photo_count=Count(
+            "photos",
+            filter=Q(photos__is_valid=True, photos__deleted_at=None),
+            distinct=True,
+        ),
+        more_than_five_photos=Case(
+            When(photo_count__gt=5, then=Value(True)),
+        ),
     ).order_by(ordering)[:100]
 
     # Remove trips that the user does not have permission to view.
