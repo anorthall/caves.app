@@ -44,26 +44,26 @@ class TestCommentViews(TestCase):
 
     def test_comments_appear_on_trip_detail_page(self):
         """Test that comments appear on the trip detail page"""
-        comment = Comment.objects.create(
+        Comment.objects.create(
             author=self.user,
             trip=self.trip,
             content="Test comment 123456",
         )
         response = self.client.get(reverse("log:trip_detail", args=[self.trip.uuid]))
-        self.assertContains(response, comment.content)
+        self.assertContains(response, "Test comment 123456")
 
     def test_comments_do_not_appear_on_trip_detail_page_when_disabled(self):
         """Test that comments do not appear on the trip detail page when disabled"""
         self.user.allow_comments = False
         self.user.save()
 
-        comment = Comment.objects.create(
+        Comment.objects.create(
             author=self.user,
             trip=self.trip,
             content="Test comment 123456",
         )
         response = self.client.get(reverse("log:trip_detail", args=[self.trip.uuid]))
-        self.assertNotContains(response, comment.content)
+        self.assertNotContains(response, "Test comment 123456")
 
     def test_add_comment_via_post_request(self):
         """Test that a comment can be added via a POST request"""
@@ -78,7 +78,7 @@ class TestCommentViews(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Comment.objects.count(), 1)
-        self.assertContains(response, "Test comment")
+        self.assertContains(response, "Test comment 123456")
 
     def test_add_comment_via_post_request_to_object_the_user_cannot_view(self):
         """Test that a comment cannot be added to an object the user cannot view"""
