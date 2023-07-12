@@ -305,3 +305,12 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Django active link
 ACTIVE_LINK_STRICT = True
+
+
+# Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": env("REDIS_URL"),
+    }
+}

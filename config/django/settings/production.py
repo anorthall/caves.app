@@ -4,15 +4,6 @@ from .base import *
 DEBUG = False
 
 
-# Redis
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://redis:6379",
-    }
-}
-
-
 # Security
 SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS", 0, int)
 SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT", False, int)
