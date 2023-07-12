@@ -319,9 +319,14 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     # Email settings
     email_friend_requests = models.BooleanField(
-        "Friend request emails",
+        "Email me new friend requests",
         default=True,
         help_text="Send an email when another user adds you as a friend.",
+    )
+    email_comments = models.BooleanField(
+        "Email me new comments",
+        default=True,
+        help_text="Send an email when another user comments on your trips.",
     )
 
     class Meta:

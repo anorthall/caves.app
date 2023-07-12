@@ -257,11 +257,12 @@ class SettingsChangeForm(forms.ModelForm):
             "allow_friend_email",
             "allow_comments",
             "show_cavers_on_trip_list",
-            "email_friend_requests",
             "public_statistics",
             "disable_distance_statistics",
             "disable_survey_statistics",
             "disable_stats_over_time",
+            "email_friend_requests",
+            "email_comments",
         )
 
     def __init__(self, *args, **kwargs):
@@ -271,11 +272,12 @@ class SettingsChangeForm(forms.ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 "Account settings",
+                HTML('<h5 class="mt-3">General</h5>'),
                 Div(
                     Div("privacy", css_class="col"),
                     Div("units", css_class="col"),
                     Div("timezone", css_class="col"),
-                    css_class="row row-cols-1 row-cols-xl-3",
+                    css_class="row row-cols-1 row-cols-xl-3 mt-4",
                 ),
                 Div(
                     Div("private_notes", css_class="col"),
@@ -283,7 +285,6 @@ class SettingsChangeForm(forms.ModelForm):
                     Div("allow_friend_email", css_class="col"),
                     Div("allow_comments", css_class="col"),
                     Div("show_cavers_on_trip_list", css_class="col"),
-                    Div("email_friend_requests", css_class="col"),
                     css_class="row row-cols-1 row-cols-lg-3 mt-4",
                 ),
                 HTML('<h5 class="mt-3">Statistics</h5>'),
@@ -292,6 +293,12 @@ class SettingsChangeForm(forms.ModelForm):
                     Div("disable_distance_statistics", css_class="col"),
                     Div("disable_survey_statistics", css_class="col"),
                     Div("disable_stats_over_time", css_class="col"),
+                    css_class="row row-cols-1 row-cols-lg-3 mt-4",
+                ),
+                HTML('<h5 class="mt-3">Emails</h5>'),
+                Div(
+                    Div("email_friend_requests", css_class="col"),
+                    Div("email_comments", css_class="col"),
                     css_class="row row-cols-1 row-cols-lg-3 mt-4",
                 ),
             ),
