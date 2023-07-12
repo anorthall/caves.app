@@ -185,7 +185,7 @@
   {% endif %}
 
   <div class="{% if trip.notes or trip.cave_url or show_photos %}border-top py-3 mt-4{% else %}mt-4{% endif %} row">
-    <div class="{% if object_owner.allow_comments %}col-12 col-md-8{% else %}col-12{% endif %}">
+    <div class="col-12{% if object_owner.allow_comments %} col-md-8{% endif %}">
       {% if user.is_authenticated %}
         {% include "logger/_htmx_trip_like.html" %}
         {% if trip.likes_count > 0 %}
