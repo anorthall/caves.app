@@ -13,6 +13,7 @@ You can view the comment here:
 {{ SITE_ROOT }}{{ trip.get_absolute_url }}
 
 If you'd like to disable these emails you can do so in your user settings page.
+
 Thanks for using caves.app!
 
 
