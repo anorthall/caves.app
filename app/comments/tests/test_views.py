@@ -268,3 +268,32 @@ class TestCommentViews(TestCase):
         )
 
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_comments_do_not_send_an_email_to_same_user(self):
+        """Test that a comment does not send an email to the same user"""
+        self.user.email_comments = True
+        self.user.save()
+        self.client.post(
+            reverse("comments:add", args=[self.trip.uuid]),
+            {
+                "content": "Test comment",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(self.trip.comments.first().content, "Test comment")
+
+    def test_comments_do_not_notify_the_same_user(self):
+        """Test that a comment does not notify the same user"""
+        self.client.post(
+            reverse("comments:add", args=[self.trip.uuid]),
+            {
+                "content": "Test comment",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(Notification.objects.count(), 0)
+        self.assertEqual(self.trip.comments.first().content, "Test comment")
+        self.assertEqual(self.user.notifications.count(), 0)
