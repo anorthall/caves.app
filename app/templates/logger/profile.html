@@ -171,7 +171,7 @@
                   <a class="text-warning" href="{{ trip.report.get_absolute_url }}"><i class="bi bi-card-text"></i></a>&nbsp;
                 {% endif %}
                 {% if user == profile_user %}
-                  <a href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>
+                  <a class="text-primary" href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>
                 {% endif %}
               </td>
             </tr>
