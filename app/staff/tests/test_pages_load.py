@@ -51,7 +51,7 @@ class TestStaffPagesLoad(TestCase):
     def test_dashboard_loads_as_moderator(self):
         """Test that the dashboard page loads as a moderator"""
         self.client.force_login(self.superuser)
-        self.superuser.is_moderator = True
+        self.superuser.has_mod_perms = True
         self.superuser.is_superuser = False
         self.superuser.save()
 
