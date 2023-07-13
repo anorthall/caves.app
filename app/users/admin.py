@@ -80,6 +80,7 @@ class CavingUserAdmin(BaseUserAdmin):
                     "date_joined",
                     "is_active",
                     "is_superuser",
+                    "has_mod_perms",
                 )
             },
         ),

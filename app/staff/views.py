@@ -1,14 +1,15 @@
+from comments.models import Comment
 from django.contrib.auth import get_user_model
 from django.views.generic import RedirectView, TemplateView
 from logger.models import Trip, TripPhoto, TripReport
 
-from .mixins import StaffRequiredMixin
+from .mixins import ModeratorRequiredMixin
 from .statistics import get_integer_field_statistics, get_time_statistics
 
 User = get_user_model()
 
 
-class Dashboard(StaffRequiredMixin, TemplateView):
+class Dashboard(ModeratorRequiredMixin, TemplateView):
     template_name = "staff/dashboard.html"
 
     def get_context_data(self, *args, **kwargs):
@@ -17,6 +18,7 @@ class Dashboard(StaffRequiredMixin, TemplateView):
         trips = Trip.objects.all()
         trip_reports = TripReport.objects.all()
         users = User.objects.all()
+        comments = Comment.objects.all()
         photos = TripPhoto.objects.filter(is_valid=True)
         photos_valid = TripPhoto.objects.valid()
         photos_deleted = TripPhoto.objects.deleted()
@@ -26,6 +28,7 @@ class Dashboard(StaffRequiredMixin, TemplateView):
             get_time_statistics(trips, metric="Updated", lookup="updated__gte"),
             get_time_statistics(trip_reports),
             get_time_statistics(trip_reports, metric="Updated", lookup="updated__gte"),
+            get_time_statistics(comments),
             get_time_statistics(photos_valid, metric="Valid", lookup="added__gte"),
             get_time_statistics(
                 photos_deleted, metric="Deleted", lookup="deleted_at__gte"
@@ -42,5 +45,5 @@ class Dashboard(StaffRequiredMixin, TemplateView):
         return context
 
 
-class Index(StaffRequiredMixin, RedirectView):
+class Index(ModeratorRequiredMixin, RedirectView):
     pattern_name = "staff:dashboard"

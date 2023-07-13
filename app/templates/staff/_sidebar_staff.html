@@ -6,6 +6,8 @@
   <i class="bi bi-bar-chart-steps"></i> Dashboard
 </a>
 
-<a class="nav-link" href="{% url 'admin:index' %}">
-  <i class="bi bi-gear-fill"></i> Django Admin
-</a>
+{% if user.is_staff %}
+  <a class="nav-link" href="{% url 'admin:index' %}">
+    <i class="bi bi-gear-fill"></i> Django Admin
+  </a>
+{% endif %}
