@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, render
 from django.views import View
 from django.views.generic import ListView
@@ -42,7 +42,15 @@ class UserProfile(ListView):
         trips = (
             Trip.objects.filter(user=self.profile_user)
             .select_related("report", "user")
+            .prefetch_related("photos")
             .order_by(*self.get_ordering())
+        ).annotate(
+            photo_count=Count(
+                "photos",
+                filter=Q(photos__is_valid=True, photos__deleted_at=None),
+                distinct=True,
+            ),
+            comment_count=Count("comments", distinct=True),
         )
 
         friends = self.profile_user.friends.all()

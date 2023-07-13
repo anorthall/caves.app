@@ -159,11 +159,17 @@
               </td>
 
               <td class="text-end">
+                {% if trip.comment_count > 0 %}
+                  <a class="text-info" href="{{ trip.get_absolute_url }}"><i class="bi bi-chat-dots"></i></a>&nbsp;
+                {% endif %}
+                {% if trip.photo_count > 0 %}
+                  <a class="text-success" href="{{ trip.get_absolute_url }}"><i class="bi bi-images"></i></a>&nbsp;
+                {% endif %}
                 {% if trip.report %}
                   <a class="text-warning" href="{{ trip.report.get_absolute_url }}"><i class="bi bi-card-text"></i></a>&nbsp;
                 {% endif %}
                 {% if user == profile_user %}
-                  <a href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>&nbsp;
+                  <a href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>
                 {% endif %}
               </td>
             </tr>
