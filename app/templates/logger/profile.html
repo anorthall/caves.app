@@ -136,7 +136,9 @@
               <td>{{ trip.start|date:"j M y" }}</td>
 
               <td>
-                {{ trip.cave_name }}
+                <a class="text-decoration-none text-body" href="{{ trip.get_absolute_url }}">
+                  {{ trip.cave_name }}
+                </a>
 
                 {% if trip.cave_url %}
                   <a class="d-none d-md-inline" href="{{ trip.cave_url }}"><i class="bi bi-link-45deg"></i></a>
