@@ -220,12 +220,22 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
                 "Distances",
                 HTML(
                     """
-<p class="text-muted mb-4">
+<p class="text-muted">
     The unit of measurement must be entered in the field, for
     example <code>500ft</code> or <code>150m</code>. Distances recorded are counted
     towards your overall statistics, unless they are added to a 'Surface' trip, in
     which case they will be ignored. Supported units: <code>m km cm ft yd
     inch mi furlong</code>.
+</p>
+                """
+                ),
+                HTML(
+                    """
+<p class="text-muted mb-4">
+    <code>Surveyed distance</code> and <code>resurveyed distance</code>
+    are intended to distinguish between brand new passage which has been surveyed and
+    older passage which has been resurveyed. <code>Surveyed distance</code> should not
+    include data which has also been entered into <code>resurveyed distance</code>.
 </p>
                 """
                 ),

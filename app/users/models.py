@@ -111,6 +111,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "disabled until their email is verified."
         ),
     )
+    has_mod_perms = models.BooleanField(
+        "Moderator privileges",
+        default=False,
+        help_text=("User has access to moderator level privileges."),
+    )
     date_joined = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(default=django_tz.now)
 
@@ -409,6 +414,12 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_superuser
+
+    @property
+    def is_moderator(self):
+        if self.is_superuser or self.has_mod_perms:
+            return True
+        return False
 
 
 User = get_user_model()
