@@ -48,6 +48,16 @@ class TestStaffPagesLoad(TestCase):
         response = self.client.get(reverse("staff:dashboard"))
         self.assertEqual(response.status_code, 200)
 
+    def test_dashboard_loads_as_moderator(self):
+        """Test that the dashboard page loads as a moderator"""
+        self.client.force_login(self.superuser)
+        self.superuser.is_moderator = True
+        self.superuser.is_superuser = False
+        self.superuser.save()
+
+        response = self.client.get(reverse("staff:dashboard"))
+        self.assertEqual(response.status_code, 200)
+
     def test_staff_index_page_redirect_view(self):
         """Test that the staff:index view redirects to the dashboard"""
         self.client.force_login(self.superuser)
