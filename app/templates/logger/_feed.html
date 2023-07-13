@@ -19,7 +19,9 @@
                 <small class="text-muted">{{ trip.added|naturaltime }}</small>
               </div>
 
-              <h1 class="cave-name fs-4 my-1">{{ trip.cave_name }}</h1>
+              <a class="text-body text-decoration-none" href="{{ trip.get_absolute_url }}">
+                <h1 class="cave-name fs-4 my-1">{{ trip.cave_name }}</h1>
+              </a>
               {% if trip.cave_entrance or trip.cave_exit %}
                 <small class="text-primary">
                   via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
