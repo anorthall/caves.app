@@ -258,7 +258,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     )
     show_cavers_on_trip_list = models.BooleanField(
         "Show cavers on trip list",
-        default=True,
+        default=False,
         help_text=(
             "Enabling this option will display a list of cavers "
             "beneath each trip on your profile trip list."

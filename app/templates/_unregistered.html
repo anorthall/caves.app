@@ -1,0 +1,52 @@
+{% extends "_minimal.html" %}
+{% load static %}
+
+{% block theme_color %}#eaf5ff{% endblock %}
+
+{% block body %}
+  <main>
+    <div id="homepage-banner">
+      <div class="container">
+        <div class="row mw-1400">
+          <div class="col-12 col-md-8 mx-auto">
+            <h1 class="display-3 text-primary fw-bold">
+              {% block banner_title %}<a href="/" class="text-decoration-none text-primary">caves.app</a>{% endblock %}
+            </h1>
+            <h2 class="display-4">
+              {% block banner_subtitle %}{% endblock %}
+            </h2>
+          </div>
+          {% block banner_buttons %}{% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row mw-1400 {% if not form.errors and not messages %}my-5{% endif %}">
+        <div class="col-12 col-md-8 mx-auto">
+          {% if form.errors or messages %}
+            <div class="mt-5 mb-4">
+              {% include "_messages.html" %}
+            </div>
+          {% endif %}
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <div class="container mt-auto">
+    <div class="row mw-1400">
+      <div class="col-12 col-md-8 mx-auto">
+        <footer class="mb-5 text-muted">
+          {% block footer %}
+            Created by <a class="text-muted" href="https://buymeacoffee.com/anorthall">Andrew Northall</a>
+            <span class="mx-1">&middot;</span>
+            <a class="text-muted" href="{% url 'core:help' %}">Need help?</a>
+          {% endblock %}
+        </footer>
+      </div>
+    </div>
+  </div>
+{% endblock %}

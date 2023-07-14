@@ -40,7 +40,7 @@ User = get_user_model()
 
 
 class PasswordResetView(SuccessMessageMixin, auth_views.PasswordResetView):
-    template_name = "users/crispy_form_center.html"
+    template_name = "users/password_reset.html"
     email_template_name = "emails/password_reset.txt"
     html_email_template_name = "emails/password_reset.html"
     subject_template_name = "emails/password_reset_subject.txt"
@@ -327,10 +327,10 @@ def resend_verify_email(request):
                     "verify_code": verify_code,
                 },
             ).send()
-        messages.info(
+        messages.success(
             request,
             "If the provided email matched an account then the verification email "
-            "has been resent. Please wait a few minutes and then check your email.",
+            "has been resent.",
         )
     else:
         form = ResendVerifyEmailForm()

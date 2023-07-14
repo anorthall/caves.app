@@ -38,7 +38,7 @@ class AuthenticationForm(auth.forms.AuthenticationForm):
                     css_class="col-12",
                 ),
                 Div(
-                    Submit("submit", "Submit", css_class="btn-lg h-100 w-100"),
+                    Submit("submit", "Submit", css_class="btn-lg w-100"),
                     css_class="col-12",
                 ),
                 css_class="row",
@@ -109,7 +109,7 @@ class VerifyEmailForm(forms.Form):
         self.user = None
         self.email = None
         self.helper = FormHelper()
-        self.helper.form_method = "post"
+        self.helper.form_method = "get"
         self.helper.layout = Layout(
             FloatingField("verify_code"),
             Submit("submit", "Verify email", css_class="btn-lg w-100"),
