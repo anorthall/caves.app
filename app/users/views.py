@@ -249,10 +249,7 @@ class Login(SuccessMessageMixin, auth_views.LoginView):
 
 
 class Logout(LoginRequiredMixin, auth_views.LogoutView):
-    def dispatch(self, *args, **kwargs):
-        result = super().dispatch(*args, **kwargs)
-        messages.success(self.request, "You have been logged out.")
-        return result
+    pass
 
 
 def register(request):
