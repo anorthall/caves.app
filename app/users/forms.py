@@ -145,7 +145,9 @@ class ResendVerifyEmailForm(forms.Form):
         self.helper.form_method = "post"
         self.helper.layout = Layout(
             FloatingField("email"),
-            Submit("submit", "Resend verification email", css_class="btn-lg w-100"),
+            Submit(
+                "submit", "Resend verification email", css_class="btn-lg w-100 mt-3"
+            ),
         )
 
     def clean_email(self):
