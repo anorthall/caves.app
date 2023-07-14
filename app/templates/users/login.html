@@ -1,20 +1,20 @@
-{% extends "base_center.html" %}
+{% extends "_unregistered.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Sign in to caves.app{% endblock %}
-{% block display_title %}Sign in{% endblock %}
+{% block title %}Sign in caves.app{% endblock %}
+{% block banner_subtitle %}Welcome back!{% endblock %}
 
-{% block main %}
+{% block content %}
+  <div class="mw-35">
+    <p class="lead">
+      Enter your account details below to sign in.
+    </p>
+
+    <p class="text-muted mb-5">
+      You may wish to <a class="text-decoration-none" href="{% url 'users:register' %}">create an account</a>
+      or <a class="text-decoration-none" href="{% url 'users:password_reset' %}">reset your password</a> instead.
+    </p>
+
     {% crispy form %}
-
-    <p class="fs-5">
-      Need an account? <a href="{% url 'users:register' %}">Sign up!</a>
-    </p>
-
-    <p>
-      <a class="link-dark" href="{% url 'users:password_reset' %}">
-        <small>Forgotten your password?</small>
-      </a>
-    </p>
   </div>
 {% endblock %}

@@ -409,6 +409,7 @@ body {
   }
 }
 
+
 /*
   Import and export
 */
@@ -422,4 +423,44 @@ body {
     padding: 0.25rem 0.5rem;
     font-size: 0.8rem;
     border-radius: var(--bs-border-radius-sm);
+}
+
+
+/*
+  Homepage
+*/
+
+#homepage-banner {
+  padding-top: 100px;
+  padding-bottom: 100px;
+  background-color: #eaf5ff;
+  background-image: var(--bs-gradient);
+}
+
+
+.feature-block h4 {
+  color: var(--bs-primary);
+}
+
+.mw-1400 {
+  max-width: 1400px;
+}
+
+@media (max-width: 992px) {
+  #homepage-banner {
+    padding-top: 75px;
+    padding-bottom: 75px;
+  }
+}
+
+@media (max-width: 768px) {
+  .feature-block {
+    max-width: 60% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .feature-block {
+    max-width: 80% !important;
+  }
 }

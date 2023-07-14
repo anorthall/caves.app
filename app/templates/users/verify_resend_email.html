@@ -1,26 +1,23 @@
-{% extends "base_center.html" %}
+{% extends "_unregistered.html" %}
 {% load crispy_forms_tags %}
 
 {% block title %}Resend verification email{% endblock %}
-{% block display_title %}Resend verification email{% endblock %}
+{% block banner_subtitle %}Resend verification email{% endblock %}
 
-{% block main %}
-  <div class="mw-45 mb-3">
+{% block content %}
+  <div class="mw-35">
     <p class="lead">
       If you've registered for a new account but have not received an email
       to activate it, or the activation code has expired, you can resend the
       activation email using the form below.
     </p>
 
-    <p>
+    <p class="mb-5">
       Please wait a few minutes for the original email to arrive and check your
       spam folder before using this form. If the email still does not arrive after
       attempting to resend it, please contact me via email on
       <a href="mailto:admin@caves.app">admin@caves.app</a>.
     </p>
 
-    <br />
-
     {% crispy form %}
-  </div>
 {% endblock %}

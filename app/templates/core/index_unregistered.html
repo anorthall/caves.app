@@ -1,30 +1,104 @@
-{% extends "base_center.html" %}
+{% extends "_unregistered.html" %}
+{% load static %}
+
+{% block header_scripts %}
+  {% include "logger/_lightbox.html" %}
+{% endblock %}
 
 {% block title %}caves.app{% endblock %}
-{% block display_title %}A modern approach to cave logging{% endblock %}
-{% block description %}An online tool to log caving trips and activity.{% endblock %}
+{% block description %}caves.app: An online tool to log caving trips and activity.{% endblock %}
+{% block banner_subtitle %}A simple online caving<br>trip tracker{% endblock %}
+{% block banner_buttons %}
+  <div class="col-12 col-md-8 mx-auto mt-3">
+    <a class="btn btn-lg btn-primary me-2 me-md-4" href="{% url 'users:register' %}">Sign up</a>
+    <a class="btn btn-lg btn-outline-success" href="{% url 'users:login' %}">Log in</a>
+  </div>
+{% endblock %}
 
-{% block main %}
-  <div class="text-center mw-35">
-    <p>
-      A streamlined, mobile-friendly interface allows you to record and view your caving trips
-      from anywhere. Keep detailed records of everything you've done &mdash; who was there, the
-      distance you surveyed, how long you spent underground, and more.
-    </p>
-
-    <p>
-      Easily share your activities with anyone via your public profile, and keep up to date with what
-      your friends are up to via the activity feed.
-    </p>
-
-    <p>
-      The service is free to use and you have complete control over your data.
-      Questions? Have a look at the <a href="{% url 'core:help' %}">help page</a>.
-    </p>
-
-    <div class="d-flex flex-column flex-fill text-center">
-      <a class="btn btn-lg btn-primary mt-3" href="{% url 'users:register' %}">Sign up!</a>
-      <a class="btn btn-lg btn-success mt-3" href="{% url 'users:login' %}">Log in</a>
+{% block content %}
+  <h3 class="display-5 mb-4 mb-md-5 text-primary">Features</h3>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 g-md-5 mb-5">
+    <div class="col feature-block">
+      <h4>Trip logbook &nbsp;&#x1F5D2;</h4>
+      <p>
+        See <a class="link-body-emphasis" href="https://caves.app/u/andrew">how many trips you've been on</a>, where you've been, and how many hours you've spent underground.
+      </p>
     </div>
+
+    <div class="col feature-block">
+      <h4>Add your friends &nbsp;&#x2b50;</h4>
+      <p>Follow what your friends have been up to in the social feed, and like/comment on their trips.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Upload photos &nbsp;&#x1F4F8;</h4>
+      <p>No more endless scrolling to find that photo on your phone - locate it easily on caves.app.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Flexible logging &nbsp;&#x1F4DD;</h4>
+      <p>Add as much or as little data as you want, and caves.app will adapt to your usage.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Custom fields &nbsp;&#x1F4A1;</h4>
+      <p>Want to track distance crawled on your side in flowing water on a Tuesday? You can do it!</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Track statistics &nbsp;&#x1F4C8;</h4>
+      <p>See your rope climbed, distance surveyed, unique caves visited, and much more.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Full trip reports &nbsp;&#x1F58B;</h4>
+      <p>
+        Have more to say about a trip? Add a
+        <a class="text-body-emphasis" href="https://caves.app/report/27c34e03-31c4-404f-90a4-386d2d364f27/">rich text trip report</a>
+        in the style of a blog post.
+      </p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Privacy focused &nbsp;&#x1F512;</h4>
+      <p>Locked down by default. Nobody can see any of your activities unless you explicitly allow it.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>No data lock-in &nbsp;&#x1F4BE;</h4>
+      <p>We respect the importance of your data. Download it as a CSV file at any time.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Free to use &nbsp;&#x1F4B8;</h4>
+      <p>No tracking. No selling your data. We will never paywall you out of your logbook.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Mobile friendly &nbsp;&#x1F4F1;</h4>
+      <p>Record your trips from anywhere with a phone signal. No need to wait to open Excel once you get home.</p>
+    </div>
+
+    <div class="col feature-block">
+      <h4>Open source &nbsp;&#x1F4D6;</h4>
+      <p>
+        Proudly built with Python and Django. The full source code for caves.app is available on
+        <a class="text-body-emphasis" href="https://github.com/anorthall/caves.app">GitHub</a>.
+      </p>
+    </div>
+  </div>
+
+  <h3 class="display-5 mb-4 mb-md-5 text-primary">Screenshots</h3>
+
+  <div class="mx-3 mx-md-0">
+    <a href="{% static 'images/homepage/social-feed.png' %}" data-lightbox="screenshots" data-title="The social feed on caves.app">
+      <img class="img-fluid rounded shadow-lg border mb-5" alt="The social feed on caves.app" src="{% static 'images/homepage/social-feed.png' %}">
+    </a>
+    <a href="{% static 'images/homepage/trip-list.png' %}" data-lightbox="screenshots" data-title="The trip list for a user on caves.app">
+      <img class="img-fluid rounded shadow-lg border mb-5" alt="The trip list for a user on caves.app" src="{% static 'images/homepage/trip-list.png' %}">
+    </a>
+    <a href="{% static 'images/homepage/statistics-full.png' %}" data-lightbox="screenshots" data-title="The statistics page on caves.app">
+      <img class="img-fluid rounded shadow-lg border mb-3" alt="The statistics page on caves.app" src="{% static 'images/homepage/statistics-full.png' %}">
+    </a>
   </div>
 {% endblock %}

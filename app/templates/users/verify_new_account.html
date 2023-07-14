@@ -1,26 +1,24 @@
-{% extends "base_center.html" %}
+{% extends "_unregistered.html" %}
 {% load crispy_forms_tags %}
-{% block title %}Complete your registration{% endblock %}
-{% block display_title %}Complete your registration{% endblock %}
 
-{% block main %}
-<div class="mw-45 mb-3">
+{% block title %}Complete your registration{% endblock %}
+{% block banner_subtitle %}Complete your registration{% endblock %}
+
+{% block content %}
+<div class="mw-35">
   <p class="lead">
     You're almost there! Just one more thing - you need to verify your
     email address before you can sign in. You have 24 hours to confirm
     your account.
   </p>
 
-  <p>
+  <p class="mb-4">
     Please check your
     email for a unique code which has been sent to you. You can then click
     the link in the email, or enter the code into the box below. If you
-    did not receive the code, and it isn't in your email spam folder, you
-    can <a href="{% url 'users:verify_resend' %}">
-      attempt to resend it</a>.
+    didn't receive the code, and it isn't in your spam folder, you
+    can <a href="{% url 'users:verify_resend' %}">attempt to resend it</a>.
   </p>
-
-  <br />
 
   {% crispy form %}
 </div>
