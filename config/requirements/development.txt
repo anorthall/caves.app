@@ -1,5 +1,5 @@
 attrs==23.1.0
-boto3==1.28.1
+boto3==1.28.3
 chardet==5.1.0
 coverage==7.2.7
 crispy-bootstrap5==0.7
