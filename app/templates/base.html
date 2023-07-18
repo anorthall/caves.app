@@ -25,7 +25,7 @@
               <div class="me-3">
                 <a href="{% url 'users:account_detail' %}" class="nav-link text-white">
                   {% if user.avatar %}
-                    <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" class="rounded-circle border border-dark" alt="User avatar">
+                    <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="25" height="25" class="rounded-circle border border-dark" alt="User avatar">
                   {% else %}
                     <i class="bi bi-person-circle"></i>
                   {% endif %}

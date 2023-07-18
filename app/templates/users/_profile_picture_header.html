@@ -5,7 +5,8 @@
   {% if photo_user.avatar %}
     <img class="rounded-circle border-1 shadow-sm profile-photo-header"
           src="{{ photo_user.avatar|imgproxy:"preset:avatar" }}"
-          alt="{{ photo_user.name }}'s profile picture">
+          alt="{{ photo_user.name }}'s profile picture"
+          width="225" height="225">
   {% else %}
     <img class="rounded-circle shadow-sm profile-photo-header"
           src="{% static 'images/blank_profile_picture.svg' %}"

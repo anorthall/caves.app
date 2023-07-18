@@ -105,7 +105,7 @@
       {% for photo in valid_photos %}
         <div class="col d-flex flex-column align-items-center justify-content-center">
           <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
-            <img src="{{ photo|imgproxy:"preset:tripphoto_thumb" }}" class="img-fluid shadow-sm rounded" alt="{{ photo.caption }}">
+            <img src="{{ photo|imgproxy:"preset:tripphoto_thumb" }}" width="200" height="300" class="shadow-sm rounded" alt="{{ photo.caption }}">
           </a>
           {% if user == object_owner %}
             <small class="mt-1 mb-2">
