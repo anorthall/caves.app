@@ -4,12 +4,7 @@
 
 {% block title %}Photos for {{ trip.cave_name }}{% endblock %}
 {% block display_title %}Trip to {{ trip.cave_name }}{% endblock %}
-{% block display_title_right %}
-  <div class="d-flex flex-column align-items-center mt-2 mt-lg-0">
-    <div class="text-primary">{{ trip.user.name }}</div>
-    <div>@{{ trip.user.username }}</div>
-  </div>
-{% endblock %}
+
 {% block header_scripts %}
   <script type="text/javascript">
     // Get the CSRF token from the cookie
