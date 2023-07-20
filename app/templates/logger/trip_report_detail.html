@@ -1,7 +1,9 @@
 {% extends "base_trips.html" %}
 
 {% block title %}{{ tripreport.title }}{% endblock %}
-{% block display_title %}Trip report{% endblock %}
+{% block meta_tags %}<meta name="author" content="{{ tripreport.user.name }}">{% endblock %}
+{% block description %}A trip report for a trip to {{ trip.cave_name }} that took place on {{ trip.start|date }}.{% endblock %}
+{% block display_title %}Trip to {{ trip.cave_name }}{% endblock %}
 {% block display_title_right %}@{{ tripreport.user.username }}{% endblock %}
 
 {% block main %}
@@ -9,7 +11,7 @@
 
   {{ tripreport.content|safe }}
 
-  <div class="row text-muted">
+  <div class="row text-muted mt-3">
     <div class="col-12 col-lg-6 text-start">
       <small>
         Created: {{ tripreport.added|date:"jS M Y" }}

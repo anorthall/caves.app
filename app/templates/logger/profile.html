@@ -4,6 +4,7 @@
 {% load markdownify %}
 
 {% block title %}{{ page_title }}{% endblock %}
+{% block meta_tags %}<meta name="author" content="{{ profile_user.name }}">{% endblock %}
 {% block display_title %}{{ page_title }}{% endblock %}
 {% block display_title_right %}@{{ profile_user.username }}{% endblock %}
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
