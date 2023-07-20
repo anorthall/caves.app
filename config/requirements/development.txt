@@ -1,5 +1,5 @@
 attrs==23.1.0
-boto3==1.28.3
+boto3==1.28.7
 chardet==5.1.0
 coverage==7.2.7
 crispy-bootstrap5==0.7
@@ -17,8 +17,9 @@ django-storages==1.13.2
 django-timezone-field==5.1
 django-tinymce==3.6.1
 ExifRead==3.0.0
-factory-boy==3.2.1
-gunicorn==20.1.0
+factory-boy==3.3.0
+Faker==19.1.0
+gunicorn==21.2.0
 hiredis==2.2.3
 humanize==4.7.0
 imgproxy==1.0.0
