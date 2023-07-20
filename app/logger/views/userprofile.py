@@ -77,6 +77,10 @@ class UserProfile(ListView):
         context["page_title"] = self.get_page_title()
         context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["show_cavers"] = self.profile_user.show_cavers_on_trip_list
+        if self.request.user not in self.profile_user.friends.all():
+            if self.profile_user.allow_friend_username:
+                context["can_add_friend"] = True
+
         if self.profile_user.public_statistics:
             context["stats"] = statistics.yearly(
                 self.profile_user.trips.exclude(type=Trip.SURFACE)

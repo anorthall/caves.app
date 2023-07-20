@@ -21,8 +21,12 @@
   <span class="text-primary">{{ profile_user.location }}</span>
   <span class="text-primary">{{ profile_user.country.name }}</span>
 
+  {% if can_add_friend and user.is_authenticated and user != profile_user %}
+    <a href="{% url 'users:friends' %}?u={{ object_owner.username }}" class="btn btn-sm btn-outline-primary mt-4">Add as friend <i class="ms-2 bi bi-person-plus-fill"></i></a>
+  {% endif %}
+
   {% if mutual_friends %}
-    <div class="d-none d-lg-block mt-5">
+    <div class="d-none d-lg-block mt-4 border-top pt-4">
       <div class="sidebar-header mb-2">
         {% if not user == profile_user %}Mutual {% endif %}Friends
       </div>
