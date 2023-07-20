@@ -12,8 +12,10 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.timezone import make_aware
 from django.views.generic import FormView, View
+from django_ratelimit.decorators import ratelimit
 
 from .. import services
 from ..forms import PhotoPrivacyForm, TripPhotoForm
@@ -54,6 +56,9 @@ class TripPhotos(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return context
 
 
+@method_decorator(
+    ratelimit(key="user", rate="500/d", method=ratelimit.UNSAFE), name="dispatch"
+)
 class TripPhotosUpload(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         json_request = json.loads(request.body)

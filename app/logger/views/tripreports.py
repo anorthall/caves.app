@@ -5,14 +5,19 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import CreateView, UpdateView
+from django_ratelimit.decorators import ratelimit
 
 from ..forms import TripReportForm
 from ..mixins import ReportObjectMixin, TripContextMixin, ViewableObjectDetailView
 from ..models import Trip, TripReport
 
 
+@method_decorator(
+    ratelimit(key="user", rate="20/h", method=ratelimit.UNSAFE), name="dispatch"
+)
 class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = TripReport
     form_class = TripReportForm

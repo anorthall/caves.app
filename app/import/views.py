@@ -2,19 +2,26 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.decorators import method_decorator
 from django.utils.safestring import SafeString
 from django.views.generic import FormView, View
+from django_ratelimit.decorators import ratelimit
 
 from . import services
 from .forms import ImportUploadForm, TripImportFormset, TripImportFormsetHelper
 
 
+@method_decorator(
+    ratelimit(key="user", rate="30/h", method=ratelimit.UNSAFE, group="import"),
+    name="dispatch",
+)
 class Index(LoginRequiredMixin, FormView):
     template_name = "import/index.html"
     form_class = ImportUploadForm
     extra_context = {"trip_types": services.get_trip_types()}
 
 
+@method_decorator(ratelimit(key="user", rate="30/h"), name="dispatch")
 class Sample(View):
     def get(self, request, *args, **kwargs):
         response = HttpResponse(services.generate_sample_csv(), content_type="text/csv")
@@ -23,6 +30,10 @@ class Sample(View):
         return response
 
 
+@method_decorator(
+    ratelimit(key="user", rate="30/h", method=ratelimit.UNSAFE, group="import"),
+    name="dispatch",
+)
 class Process(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         form = ImportUploadForm(request.POST, request.FILES)
@@ -42,6 +53,10 @@ class Process(LoginRequiredMixin, View):
         return render(request, "import/process.html", context)
 
 
+@method_decorator(
+    ratelimit(key="user", rate="30/h", method=ratelimit.UNSAFE, group="import"),
+    name="dispatch",
+)
 class Save(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         formset = TripImportFormset(request.POST)

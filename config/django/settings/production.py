@@ -91,3 +91,7 @@ STATIC_URL = env("STATIC_URL")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+# Ratelimiting IP config
+RATELIMIT_IP_META_KEY = "HTTP_X_REAL_IP"

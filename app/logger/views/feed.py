@@ -5,8 +5,10 @@ from django.db.models import Exists, OuterRef
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView
+from django_ratelimit.decorators import ratelimit
 from users.models import CavingUser as User
 
 from .. import services
@@ -14,6 +16,7 @@ from ..models import Trip
 
 
 class Index(TemplateView):
+    @method_decorator(ratelimit(key="user_or_ip", rate="500/h", group="feed"))
     def get(self, request, *args, **kwargs):
         """Determine if the user is logged in and render the appropriate template"""
         if request.user.is_authenticated:
@@ -42,6 +45,7 @@ class Index(TemplateView):
 
 
 class SetFeedOrdering(LoginRequiredMixin, View):
+    @method_decorator(ratelimit(key="user", rate="30/h"))
     def post(self, request, *args, **kwargs):
         """Get the ordering from GET params and save it to the user model
         if it is valid. Return the ordering to be used in the template."""
@@ -57,6 +61,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
     template_name = "logger/_htmx_trip_like.html"
 
+    @method_decorator(ratelimit(key="user", rate="100/h"))
     def post(self, request, uuid):
         trip = self.get_trip(request, uuid)
 
@@ -99,6 +104,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
         raise PermissionDenied
 
 
+@method_decorator(ratelimit(key="user", rate="500/h", group="feed"), name="dispatch")
 class HTMXTripFeed(LoginRequiredMixin, TemplateView):
     """Render more trips to be inserted into the trip feed via HTMX"""
 

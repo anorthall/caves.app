@@ -6,7 +6,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.gis.measure import D
 from django.http import JsonResponse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+from django_ratelimit.decorators import ratelimit
 from logger.models import Trip
 
 from . import statistics
@@ -20,6 +22,7 @@ class Index(LoginRequiredMixin, TemplateView):
         super().__init__(**kwargs)
         self.queryset = None
 
+    @method_decorator(ratelimit(key="user", rate="60/h"))
     def get(self, request, *args, **kwargs):
         self.queryset = self.get_queryset()
         return super().get(request, *args, **kwargs)
@@ -52,6 +55,7 @@ class Index(LoginRequiredMixin, TemplateView):
 
 
 @login_required
+@ratelimit(key="user", rate="60/h")
 def chart_stats_over_time(request, username):
     """
     JSON data for a chart showing stats over time
@@ -134,6 +138,7 @@ def chart_stats_over_time(request, username):
 
 
 @login_required
+@ratelimit(key="user", rate="60/h")
 def chart_hours_per_month(request, username):
     """JSON data for a chart showing hours per month"""
     user = match_and_check_username(request, username)
@@ -167,6 +172,7 @@ def chart_hours_per_month(request, username):
 
 
 @login_required
+@ratelimit(key="user", rate="60/h")
 def chart_trip_types(request):  # TODO: Refactor and add to template
     """JSON data for a chart showing trip types"""
     qs = (
@@ -190,6 +196,7 @@ def chart_trip_types(request):  # TODO: Refactor and add to template
 
 
 @login_required
+@ratelimit(key="user", rate="60/h")
 def chart_trip_types_time(request):  # TODO: Refactor and add to template
     """JSON data for a chart showing trip types by time"""
     qs = (

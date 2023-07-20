@@ -2,12 +2,17 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from django.views.generic import FormView
+from django_ratelimit.decorators import ratelimit
 
 from .. import search
 from ..forms import TripSearchForm
 
 
+@method_decorator(
+    ratelimit(key="user", rate="60/h", method=ratelimit.UNSAFE), name="dispatch"
+)
 class Search(LoginRequiredMixin, FormView):
     form_class = TripSearchForm
     template_name = "logger/search.html"

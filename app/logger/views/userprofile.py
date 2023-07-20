@@ -1,14 +1,17 @@
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, render
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import ListView
+from django_ratelimit.decorators import ratelimit
 from stats import statistics
 from users.models import CavingUser as User
 
 from ..models import Trip
 
 
+@method_decorator(ratelimit(key="user_or_ip", rate="500/h"), name="dispatch")
 class UserProfile(ListView):
     """List all of a user's trips and their profile information"""
 
@@ -102,6 +105,9 @@ class UserProfile(ListView):
             return f"{self.profile_user.name}'s trips"
 
 
+@method_decorator(
+    ratelimit(key="user_or_ip", rate="1000/h", method=ratelimit.UNSAFE), name="dispatch"
+)
 class HTMXTripListSearchView(View):
     def __init__(self):
         super().__init__()

@@ -2,12 +2,17 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+from django_ratelimit.decorators import ratelimit
 
 from .forms import TripExportForm
 from .services import TripExporter
 
 
+@method_decorator(
+    ratelimit(key="user", rate="100/d", method=ratelimit.UNSAFE), name="dispatch"
+)
 class Index(LoginRequiredMixin, TemplateView):
     template_name = "export/index.html"
 

@@ -8,8 +8,10 @@ from django.db.models import Count, Exists, OuterRef
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import CreateView, RedirectView, UpdateView
+from django_ratelimit.decorators import ratelimit
 from users.models import CavingUser as User
 
 from ..forms import TripForm
@@ -110,6 +112,9 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
         return context
 
 
+@method_decorator(
+    ratelimit(key="user", rate="30/h", method=ratelimit.UNSAFE), name="dispatch"
+)
 class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Trip
     form_class = TripForm

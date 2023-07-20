@@ -50,3 +50,7 @@ STATICFILES_DIRS = [
 
 # Django distance field - add to INSTALLED_APPS for tests
 INSTALLED_APPS += ["distancefield"]
+
+
+# Disable rate limiting
+RATELIMIT_ENABLE = False

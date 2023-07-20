@@ -9,7 +9,9 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import FormView, ListView, TemplateView, View
+from django_ratelimit.decorators import ratelimit
 
 from .emails import (
     EmailChangeNotificationEmail,
@@ -39,6 +41,9 @@ from .verify import generate_token
 User = get_user_model()
 
 
+@method_decorator(
+    ratelimit(key="ip", rate="5/h", method=ratelimit.UNSAFE), name="dispatch"
+)
 class PasswordResetView(SuccessMessageMixin, auth_views.PasswordResetView):
     template_name = "users/password_reset.html"
     email_template_name = "emails/password_reset.txt"
@@ -91,6 +96,9 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
+@method_decorator(
+    ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch"
+)
 class AvatarUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "users/profile_photo.html"
     form_class = AvatarChangeForm
@@ -142,6 +150,9 @@ class FriendListView(LoginRequiredMixin, TemplateView):
         return self.render_to_response(context)
 
 
+@method_decorator(
+    ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch"
+)
 class FriendAddView(LoginRequiredMixin, View):
     def post(self, request):
         form = AddFriendForm(request, request.POST)
@@ -236,6 +247,9 @@ class FriendRemoveView(LoginRequiredMixin, View):
         return redirect("users:friends")
 
 
+@method_decorator(
+    ratelimit(key="ip", rate="10/h", method=ratelimit.UNSAFE), name="dispatch"
+)
 class Login(SuccessMessageMixin, auth_views.LoginView):
     template_name = "users/login.html"
     success_message = "You are now logged in."
@@ -252,6 +266,7 @@ class Logout(LoginRequiredMixin, auth_views.LogoutView):
     pass
 
 
+@ratelimit(key="ip", rate="6/h", method=ratelimit.UNSAFE)
 def register(request):
     if request.user.is_authenticated:
         return redirect("users:account_detail")
@@ -281,6 +296,7 @@ def register(request):
     return render(request, "users/register.html", {"form": form})
 
 
+@ratelimit(key="ip", rate="10/h", method=ratelimit.UNSAFE)
 def verify_new_account(request):
     """Verify the email address of a new account"""
     if request.user.is_authenticated:
@@ -306,6 +322,7 @@ def verify_new_account(request):
     return render(request, "users/verify_new_account.html", {"form": form})
 
 
+@ratelimit(key="ip", rate="5/h", method=ratelimit.UNSAFE)
 def resend_verify_email(request):
     """Resend a verification email for a new account"""
     if request.user.is_authenticated:
@@ -337,6 +354,9 @@ def resend_verify_email(request):
     return render(request, "users/verify_resend_email.html", {"form": form})
 
 
+@method_decorator(
+    ratelimit(key="user", rate="5/h", method=ratelimit.UNSAFE), name="dispatch"
+)
 class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
     form_class = VerifyEmailForm
     template_name = "users/verify_email_change.html"
