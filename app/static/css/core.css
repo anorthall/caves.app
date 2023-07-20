@@ -394,6 +394,16 @@ body {
   max-height: 450px;
 }
 
+@media (min-width: 992px) {
+  #stats-over-time-chart {
+    height: 450px;
+  }
+
+  #hours-per-month-chart {
+    height: 450px;
+  }
+}
+
 @media (max-width: 992px) {
   #stats-over-time-chart {
     max-height: 350px;
