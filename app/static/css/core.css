@@ -464,3 +464,13 @@ body {
     max-width: 80% !important;
   }
 }
+
+
+/*
+  Images
+*/
+
+.tripphoto-thumb {
+  max-width: 200px;
+  max-height: 300px;
+}
