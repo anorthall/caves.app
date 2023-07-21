@@ -1,8 +1,11 @@
-from comments.models import Comment
-from django.contrib.admin import ModelAdmin, register
+from django.contrib import admin
+
+from unfold.admin import ModelAdmin
+
+from .models import Comment
 
 
-@register(Comment)
+@admin.register(Comment)
 class CommentAdmin(ModelAdmin):
     list_display = ("author", "trip", "added")
     list_filter = ("added",)

@@ -2,13 +2,15 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+from unfold.admin import ModelAdmin, TabularInline
+
 from .forms import UserAdminChangeForm, UserCreationForm
 from .models import FriendRequest, Notification
 
 User = get_user_model()
 
 
-class NotificationInline(admin.TabularInline):
+class NotificationInline(TabularInline):
     model = Notification
     readonly_fields = ["message", "url", "read"]
     can_delete = False
@@ -16,7 +18,7 @@ class NotificationInline(admin.TabularInline):
     max_num = 0
 
 
-class FriendRequestSentInline(admin.TabularInline):
+class FriendRequestSentInline(TabularInline):
     model = FriendRequest
     readonly_fields = ["user_from"]
     can_delete = False
@@ -26,7 +28,7 @@ class FriendRequestSentInline(admin.TabularInline):
     max_num = 0
 
 
-class FriendRequestRecdInline(admin.TabularInline):
+class FriendRequestRecdInline(TabularInline):
     model = FriendRequest
     readonly_fields = ["user_to"]
     can_delete = False
@@ -37,7 +39,7 @@ class FriendRequestRecdInline(admin.TabularInline):
 
 
 @admin.register(User)
-class CavingUserAdmin(BaseUserAdmin):
+class CavingUserAdmin(BaseUserAdmin, ModelAdmin):
     inlines = [
         NotificationInline,
         FriendRequestSentInline,

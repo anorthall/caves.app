@@ -2,6 +2,10 @@ from django.contrib import admin
 from django.forms import ModelForm
 from logger.forms import DistanceUnitFormMixin
 
+from distancefield import DistanceField
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.widgets import UnfoldAdminTextInputWidget
+
 from .models import Trip, TripPhoto, TripReport
 
 
@@ -9,7 +13,7 @@ class TripAdminForm(DistanceUnitFormMixin, ModelForm):
     pass
 
 
-class TripPhotoInline(admin.TabularInline):
+class TripPhotoInline(TabularInline):
     model = TripPhoto
     fk_name = "trip"
     extra = 0
@@ -21,7 +25,7 @@ class TripPhotoInline(admin.TabularInline):
         return False
 
 
-class TripReportInline(admin.TabularInline):
+class TripReportInline(TabularInline):
     model = TripReport
     fk_name = "trip"
     extra = 0
@@ -34,7 +38,7 @@ class TripReportInline(admin.TabularInline):
 
 
 @admin.register(Trip)
-class TripAdmin(admin.ModelAdmin):
+class TripAdmin(ModelAdmin):
     form = TripAdminForm
     inlines = [TripPhotoInline, TripReportInline]
     search_fields = (
@@ -68,6 +72,11 @@ class TripAdmin(admin.ModelAdmin):
         "updated",
     )
     ordering = ("-added",)
+    formfield_overrides = {
+        DistanceField: {
+            "widget": UnfoldAdminTextInputWidget,
+        }
+    }
     fieldsets = (
         (
             "Internal data",
@@ -131,7 +140,7 @@ class TripAdmin(admin.ModelAdmin):
 
 
 @admin.register(TripPhoto)
-class TripPhotoAdmin(admin.ModelAdmin):
+class TripPhotoAdmin(ModelAdmin):
     list_display = ("user", "trip", "deleted_at", "taken", "added")
     list_display_links = ("taken",)
     list_filter = ("is_valid", "deleted_at", "added")
@@ -169,7 +178,7 @@ class TripPhotoAdmin(admin.ModelAdmin):
 
 
 @admin.register(TripReport)
-class TripReportAdmin(admin.ModelAdmin):
+class TripReportAdmin(ModelAdmin):
     list_display = ("user", "title", "trip", "added")
     list_display_links = ("title",)
     list_filter = ("added", "updated", "pub_date")

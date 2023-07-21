@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_htmx",
     "markdownify.apps.MarkdownifyConfig",
+    "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
