@@ -71,9 +71,13 @@ STORAGES["default"] = {
     "BACKEND": "core.custom_storages.MediaS3Storage",
 }
 
+# Static files should be stored on disc and then uploaded to S3
+# via use of the AWS CLI which is much more efficient than
+# Django's collectstatic command.
 STORAGES["staticfiles"] = {
-    "BACKEND": "core.custom_storages.StaticS3Storage",
+    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
 }
+STATIC_ROOT = "/opt/caves/staticfiles"
 
 
 # Media files
