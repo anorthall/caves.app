@@ -135,8 +135,7 @@ dmypy.json
 
 # Settings and production scripts
 data/
-config/docker/production/production.env
-config/docker/development/development.env
+config/docker/development.env
 bin/pg_dump.sh
 bin/staticfiles.sh
 

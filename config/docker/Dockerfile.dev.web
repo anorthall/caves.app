@@ -23,7 +23,7 @@ COPY ./config/requirements/development.txt ./config/development-requirements.txt
 RUN pip install -r ./config/development-requirements.txt
 
 # Copy entrypoint
-COPY ./config/docker/development/entrypoint.dev.sh config/entrypoint.dev.sh
+COPY ./config/docker/entrypoint.dev.sh config/entrypoint.dev.sh
 RUN chmod +x /opt/dev/config/entrypoint.dev.sh
 
 # Final environment

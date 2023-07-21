@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-  db-dev:
+  postgres:
     build:
       context: .
-      dockerfile: ./config/docker/development/Dockerfile.dev.db
+      dockerfile: config/docker/Dockerfile.dev.db
     volumes:
       - ./data/development/db:/var/lib/postgresql/data
     environment:
@@ -12,29 +12,29 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
-  redis-dev:
+  redis:
     image: redis:7.0.11-alpine
     volumes:
       - ./data/development/redis:/data
     expose:
       - 6379
 
-  imgproxy-dev:
+  imgproxy:
     image: darthsim/imgproxy:latest
     security_opt:
     - no-new-privileges:true
     healthcheck:
       test: ["CMD", "imgproxy", "health"]
     env_file:
-      - ./config/docker/development/development.env
+      - ./config/docker/development.env
     ports:
       - 9000:9000
 
-  web-dev:
+  web:
     command: python manage.py runserver 0.0.0.0:8000 --insecure
     build:
       context: .
-      dockerfile: ./config/docker/development/Dockerfile.dev.web
+      dockerfile: config/docker/Dockerfile.dev.web
     volumes:
       - ./app/:/opt/dev/app/
       - ./data/development/media:/opt/dev/media/
@@ -42,7 +42,8 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./config/docker/development/development.env
+      - ./config/docker/development.env
     depends_on:
-      - db-dev
-      - redis-dev
+      - postgres
+      - redis
+      - imgproxy

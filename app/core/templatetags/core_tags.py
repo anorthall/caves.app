@@ -69,4 +69,4 @@ def _rewrite_url_for_local_dev(url):
     if settings.AWS_S3_CUSTOM_DOMAIN in url:
         return url
 
-    return "http://web-dev:8000" + url
+    return "http://web:8000" + url

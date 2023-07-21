@@ -32,7 +32,7 @@ All development is done inside the Docker development environment. To set up the
 `development.env` file and build and run the docker image from the project root directory:
 
 ```
-$ cp config/docker/development/development.env.example config/docker/development/development.env
+$ cp config/docker/development.env.example config/docker/development.env
 $ docker-compose up
 ```
 
@@ -42,7 +42,7 @@ Additional test data can be generated using the `make_test_data` Django manageme
 command. You can run the command via docker compose like so:
 
 ```
-$ docker-compose exec web-dev ./manage.py make_test_data
+$ docker-compose exec web ./manage.py make_test_data
 ```
 
 By default, this will create 25 users and 6,000 trips, although this is configurable
@@ -63,7 +63,7 @@ $ docker compose up
 
 In order to use the photo upload feature of trips (powered by [uppy](https://uppy.io/)),
 you will need to set up details for AWS S3 in the
-`config/docker/development/development.env` file. It is possible to reconfigure Uppy
+`config/docker/development.env` file. It is possible to reconfigure Uppy
 and Django to use a different storage backend, but this is beyond the scope of
 this README and would require significant code changes. For more information, check
 out the [django-storages](https://django-storages.readthedocs.io/) and
@@ -73,7 +73,7 @@ out the [django-storages](https://django-storages.readthedocs.io/) and
 
 - Any emails generated whilst using the development environment will be printed directly to the console.
 - Python requirements are listed in `config/requirements/development.txt` and can be installed locally (for linting, etc) with `pip install -r config/requirements/development.txt`.
-- Tests can be run via `docker-compose exec web-dev ./manage.py test`.
+- Tests can be run via `docker-compose exec web ./manage.py test`.
 
 ## Feedback
 
