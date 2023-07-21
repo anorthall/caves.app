@@ -3,6 +3,8 @@ from .base import *
 # Debug should always be off in production
 DEBUG = False
 
+# Sessions
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 # Security
 SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS", 0, int)
