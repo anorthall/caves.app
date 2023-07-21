@@ -14,7 +14,7 @@
 
           {% if user.is_authenticated %}
             <div class="d-flex flex-row justify-content-center align-items-center order-0 ms-auto me-2">
-              {% if user.has_mod_perms %}
+              {% if user.has_mod_perms or user.is_superuser %}
                 <div class="me-3">
                   <a href="{% url 'staff:index' %}" class="nav-link text-white">
                     <i class="bi bi-gear-fill"></i>
