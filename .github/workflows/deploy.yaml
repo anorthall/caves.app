@@ -4,7 +4,7 @@ concurrency: deploy
 
 on:
   workflow_run:
-    workflows: [Django tests]
+    workflows: [Tests]
     types:
       - completed
 
