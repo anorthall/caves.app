@@ -28,7 +28,7 @@ def _format_trip_for_logging(trip: Trip) -> str:
 def log_trip_action(user: CavingUser, trip: Trip, verb: str, extra: str = ""):
     trip = _format_trip_for_logging(trip)
     if extra:
-        extra = f": ({extra})"
+        extra = f": {extra}"
 
     _log_action(user, f"{verb} a trip to {trip}{extra}")
 
@@ -38,7 +38,7 @@ def log_tripreport_action(
 ):
     trip = _format_trip_for_logging(report.trip)
     if extra:
-        extra = f": ({extra})"
+        extra = f": {extra}"
 
     _log_action(user, f"{verb} a trip report for the trip to {trip}{extra}")
 
@@ -48,7 +48,7 @@ def log_tripphoto_action(
 ):
     trip = _format_trip_for_logging(photo.trip)
     if extra:
-        extra = f": ({extra})"
+        extra = f": {extra}"
 
     _log_action(user, f"{verb} a photo for the trip to {trip}{extra}")
 
