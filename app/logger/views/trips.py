@@ -17,7 +17,7 @@ from users.models import CavingUser as User
 
 from ..forms import TripForm
 from ..mixins import TripContextMixin, ViewableObjectDetailView
-from ..models import Trip
+from ..models import Trip, TripPhoto
 
 
 class TripsRedirect(LoginRequiredMixin, RedirectView):
@@ -160,6 +160,12 @@ class TripDelete(LoginRequiredMixin, View):
         trip = get_object_or_404(Trip, uuid=uuid)
         if not trip.user == request.user:
             raise PermissionDenied
+
+        # Delete all photos associated with the trip
+        photos = TripPhoto.objects.all().filter(trip=trip)
+        if photos.exists():
+            photos.update(deleted_at=timezone.now())
+
         trip.delete()
         log_trip_action(request.user, trip, "deleted")
         messages.success(
