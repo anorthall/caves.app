@@ -1,3 +1,4 @@
+from core.logging import log_trip_action
 from core.utils import get_user
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -68,9 +69,11 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
         if trip.user_liked:
             trip.likes.remove(request.user)
             trip.user_liked = False
+            log_trip_action(request.user, trip, "unliked")
         else:
             trip.likes.add(request.user)
             trip.user_liked = True
+            log_trip_action(request.user, trip, "liked")
 
         friends = request.user.friends.all()
         liked_str = {trip.pk: trip.get_liked_str(request.user, friends)}
