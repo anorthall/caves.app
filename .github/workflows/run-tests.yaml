@@ -30,6 +30,7 @@ jobs:
       SECRET_KEY: tests
       REDIS_URL: redis://localhost:6379
       DJANGO_LOG_LOCATION: ${{ github.workspace }}/django.log
+      USER_ACTIONS_LOG_LOCATION: ${{ github.workspace }}/user_actions.log
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
