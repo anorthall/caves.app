@@ -339,7 +339,9 @@ LOGGING = {
         "user_actions": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": env("USER_ACTIONS_LOG_LOCATION", "/opt/dev/logs/user_actions.log"),
+            "filename": env(
+                "USER_ACTIONS_LOG_LOCATION", "/opt/dev/logs/user_actions.log"
+            ),
             "formatter": "simple",
         },
         "console": {
@@ -357,6 +359,6 @@ LOGGING = {
         "user_actions": {
             "handlers": ["user_actions"],
             "level": "INFO",
-        }
+        },
     },
 }

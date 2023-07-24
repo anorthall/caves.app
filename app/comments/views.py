@@ -1,5 +1,6 @@
 from comments.forms import CommentForm
 from comments.models import Comment
+from core.logging import log_trip_action
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -10,7 +11,6 @@ from django.views.generic import TemplateView
 from django_ratelimit.decorators import ratelimit
 from logger.models import Trip
 from users.emails import NewCommentEmail
-from core.logging import log_trip_action
 
 
 class AddComment(LoginRequiredMixin, View):

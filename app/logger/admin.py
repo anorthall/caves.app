@@ -1,8 +1,7 @@
+from distancefield import DistanceField
 from django.contrib import admin
 from django.forms import ModelForm
 from logger.forms import DistanceUnitFormMixin
-
-from distancefield import DistanceField
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.widgets import UnfoldAdminTextInputWidget
 

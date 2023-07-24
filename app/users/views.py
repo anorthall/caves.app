@@ -1,3 +1,4 @@
+from core.logging import log_user_action, log_user_interaction
 from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model, update_session_auth_hash
@@ -12,7 +13,6 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, ListView, TemplateView, View
 from django_ratelimit.decorators import ratelimit
-from core.logging import log_user_action, log_user_interaction
 
 from .emails import (
     EmailChangeNotificationEmail,
@@ -214,7 +214,9 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
             other_user = f_req.user_to
             if other_user == request.user:
                 other_user = f_req.user_from
-            log_user_interaction(request.user, "deleted a friend request to/from", other_user),
+            log_user_interaction(
+                request.user, "deleted a friend request to/from", other_user
+            ),
         else:
             raise PermissionDenied
         return redirect("users:friends")
@@ -403,8 +405,7 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
     def form_valid(self, form):
         """Set the user's new email address and log them in"""
         log_user_action(
-            self.request.user,
-            f"verified their new email address {form.email}"
+            self.request.user, f"verified their new email address {form.email}"
         )
         verified_user = form.user
         verified_user.email = form.email

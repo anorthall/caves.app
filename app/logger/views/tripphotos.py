@@ -3,6 +3,7 @@ from datetime import datetime
 
 import exifread
 from core.custom_storages import PhotosS3Storage
+from core.logging import log_trip_action, log_tripphoto_action
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -16,7 +17,6 @@ from django.utils.decorators import method_decorator
 from django.utils.timezone import make_aware
 from django.views.generic import FormView, View
 from django_ratelimit.decorators import ratelimit
-from core.logging import log_tripphoto_action, log_trip_action
 
 from .. import services
 from ..forms import PhotoPrivacyForm, TripPhotoForm
@@ -192,7 +192,7 @@ class TripPhotosDeleteAll(LoginRequiredMixin, View):
                 request.user,
                 trip,
                 "deleted all photos for",
-                f"{deleted_count} photos deleted"
+                f"{deleted_count} photos deleted",
             )
         else:
             messages.error(request, "There were no photos to delete.")

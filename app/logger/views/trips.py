@@ -1,4 +1,5 @@
 from comments.forms import CommentForm
+from core.logging import log_trip_action
 from core.utils import get_user
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,7 +14,6 @@ from django.views import View
 from django.views.generic import CreateView, RedirectView, UpdateView
 from django_ratelimit.decorators import ratelimit
 from users.models import CavingUser as User
-from core.logging import log_trip_action
 
 from ..forms import TripForm
 from ..mixins import TripContextMixin, ViewableObjectDetailView

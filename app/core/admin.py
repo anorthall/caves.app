@@ -1,10 +1,8 @@
 from django.conf import settings
 from django.contrib import admin
-
 from unfold.admin import ModelAdmin
 
 from .models import FAQ, News
-
 
 # Set global admin site headers
 admin.site.site_header = "caves.app"
