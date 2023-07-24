@@ -18,32 +18,6 @@ CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE", False, int)
 if env("SECURE_PROXY_SSL_HEADER", False, int):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# Logging
-DEFAULT_LOG_LEVEL = "INFO"
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
-            "class": "logging.FileHandler",
-            "filename": "/opt/caves/logs/django/django.log",
-        },
-        "console": {
-            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
-            "class": "logging.StreamHandler",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file", "console"],
-            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
-            "propagate": True,
-        },
-    },
-}
-
 
 # Sentry integration
 if env("SENTRY_KEY", ""):  # pragma: no cover

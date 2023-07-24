@@ -315,3 +315,38 @@ CACHES = {
         "LOCATION": env("REDIS_URL"),
     }
 }
+
+
+# Logging
+DEFAULT_LOG_LEVEL = "INFO"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "[{levelname}] [{asctime}] {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "class": "logging.FileHandler",
+            "filename": env("DJANGO_LOG_LOCATION", "/opt/dev/logs/django.log"),
+            "formatter": "simple",
+        },
+        "console": {
+            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "propagate": True,
+        },
+    },
+}

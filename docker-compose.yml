@@ -38,6 +38,7 @@ services:
     volumes:
       - ./app/:/opt/dev/app/
       - ./data/development/media:/opt/dev/media/
+      - ./data/development/logs:/opt/dev/logs/
       - ./config/django/:/opt/dev/config/django/
     ports:
       - "8000:8000"
