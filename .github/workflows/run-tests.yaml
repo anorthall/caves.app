@@ -29,6 +29,7 @@ jobs:
       IMGPROXY_SALT: tests
       SECRET_KEY: tests
       REDIS_URL: redis://localhost:6379
+      DJANGO_LOG_LOCATION: ${{ github.workspace }}/django.log
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
