@@ -1,5 +1,5 @@
 attrs==23.1.0
-boto3==1.28.7
+boto3==1.28.9
 chardet==5.1.0
 crispy-bootstrap5==0.7
 Django==4.2.3
@@ -14,7 +14,7 @@ django-ratelimit==4.0.0
 django-storages==1.13.2
 django-timezone-field==5.1
 django-tinymce==3.6.1
-django-unfold==0.6.9
+django-unfold==0.7.0
 ExifRead==3.0.0
 gunicorn==21.2.0
 hiredis==2.2.3
