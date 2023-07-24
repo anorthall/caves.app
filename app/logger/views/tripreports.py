@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import CreateView, UpdateView
 from django_ratelimit.decorators import ratelimit
+from core.logging import log_tripreport_action
 
 from ..forms import TripReportForm
 from ..mixins import ReportObjectMixin, TripContextMixin, ViewableObjectDetailView
@@ -40,6 +41,7 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         candidate.user = self.request.user
         candidate.trip = self.trip
         candidate.save()
+        log_tripreport_action(self.request.user, candidate, "added")
         return super().form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
@@ -96,6 +98,10 @@ class ReportUpdate(
             return obj
         raise PermissionDenied
 
+    def form_valid(self, form):
+        log_tripreport_action(self.request.user, self.object, "updated")
+        return super().form_valid(form)
+
 
 class ReportDelete(LoginRequiredMixin, View):
     def post(self, request, uuid):
@@ -108,6 +114,7 @@ class ReportDelete(LoginRequiredMixin, View):
             raise PermissionDenied
 
         trip = report.trip
+        log_tripreport_action(request.user, report, "deleted")
         report.delete()
         messages.success(
             request,

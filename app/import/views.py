@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.utils.safestring import SafeString
 from django.views.generic import FormView, View
 from django_ratelimit.decorators import ratelimit
+from core.logging import log_user_action
 
 from . import services
 from .forms import ImportUploadForm, TripImportFormset, TripImportFormsetHelper
@@ -78,4 +79,5 @@ class Save(LoginRequiredMixin, View):
 
         # noinspection PyUnboundLocalVariable
         messages.success(request, f"Successfully imported {count} trips!")
+        log_user_action(request.user, f"imported {count} trips from a CSV file")
         return redirect(request.user.get_absolute_url())

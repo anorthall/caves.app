@@ -330,10 +330,16 @@ LOGGING = {
         },
     },
     "handlers": {
-        "file": {
+        "django_logs": {
             "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
             "class": "logging.FileHandler",
             "filename": env("DJANGO_LOG_LOCATION", "/opt/dev/logs/django.log"),
+            "formatter": "simple",
+        },
+        "user_actions": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": env("USER_ACTIONS_LOG_LOCATION", "/opt/dev/logs/user_actions.log"),
             "formatter": "simple",
         },
         "console": {
@@ -344,9 +350,13 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["file", "console"],
+            "handlers": ["django_logs", "console"],
             "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
             "propagate": True,
         },
+        "user_actions": {
+            "handlers": ["user_actions"],
+            "level": "INFO",
+        }
     },
 }

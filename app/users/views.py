@@ -12,6 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, ListView, TemplateView, View
 from django_ratelimit.decorators import ratelimit
+from core.logging import log_user_action, log_user_interaction
 
 from .emails import (
     EmailChangeNotificationEmail,
@@ -93,6 +94,7 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
 
     def form_valid(self, form):
         form.save()
+        log_user_action(self.request.user, "updated their profile")
         return super().form_valid(form)
 
 
@@ -112,6 +114,7 @@ class AvatarUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
 
     def form_valid(self, form):  # pragma: no cover
         form.save()
+        log_user_action(self.request.user, "uploaded a new avatar")
         return super().form_valid(form)
 
 
@@ -179,6 +182,12 @@ class FriendAddView(LoginRequiredMixin, View):
                     },
                 ).send()
             messages.success(request, f"Friend request sent to {user}.")
+            log_user_interaction(
+                self.request.user,
+                "sent a friend request to",
+                user,
+            )
+
         else:
             if form.errors.get("user"):
                 for error in form.errors["user"]:
@@ -201,6 +210,11 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
                 f"Friend request between {f_req.user_to} and {f_req.user_from} "
                 "deleted.",
             )
+
+            other_user = f_req.user_to
+            if other_user == request.user:
+                other_user = f_req.user_from
+            log_user_interaction(request.user, "deleted a friend request to/from", other_user),
         else:
             raise PermissionDenied
         return redirect("users:friends")
@@ -232,6 +246,10 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
             ).send()
 
         messages.success(request, f"You are now friends with {f_req.user_from}.")
+
+        log_user_interaction(
+            request.user, "accepted a friend request from", f_req.user_from
+        ),
         return redirect("users:friends")
 
 
@@ -244,6 +262,8 @@ class FriendRemoveView(LoginRequiredMixin, View):
         request.user.friends.remove(user)
         user.friends.remove(request.user)
         messages.success(request, f"You are no longer friends with {user}.")
+
+        log_user_interaction(request.user, "removed as a friend", user)
         return redirect("users:friends")
 
 
@@ -261,9 +281,16 @@ class Login(SuccessMessageMixin, auth_views.LoginView):
         context["no_form_error_alert"] = True  # Silences messages.html
         return context
 
+    def form_valid(self, form):
+        user = form.get_user()
+        log_user_action(user, "logged in")
+        return super().form_valid(form)
+
 
 class Logout(LoginRequiredMixin, auth_views.LogoutView):
-    pass
+    def post(self, *args, **kwargs):
+        log_user_action(self.request.user, "logged out")
+        return super().post(*args, **kwargs)
 
 
 @ratelimit(key="ip", rate="6/h", method=ratelimit.UNSAFE)
@@ -287,7 +314,7 @@ def register(request):
                     "verify_code": verify_code,
                 },
             ).send()
-
+            log_user_action(user, "created a new account")
             # Redirect to Verify Email page.
             return redirect("users:verify_new_account")
     else:
@@ -315,6 +342,7 @@ def verify_new_account(request):
                 f"Welcome, {verified_user.name}. Your registration has been completed "
                 "and your email address verified!",
             )
+            log_user_action(verified_user, "verified their new account")
             return redirect("log:index")
     else:
         form = VerifyEmailForm()
@@ -344,6 +372,7 @@ def resend_verify_email(request):
                     "verify_code": verify_code,
                 },
             ).send()
+            log_user_action(user, "resent their verification email")
         messages.success(
             request,
             "If the provided email matched an account then the verification email "
@@ -363,8 +392,20 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
     success_message = "Your email address has been verified and updated."
     success_url = reverse_lazy("users:account_detail")
 
+    def get(self, request, *args, **kwargs):
+        form = VerifyEmailForm(request.GET)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            messages.error(request, "Invalid verification code.")
+            return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         """Set the user's new email address and log them in"""
+        log_user_action(
+            self.request.user,
+            f"verified their new email address {form.email}"
+        )
         verified_user = form.user
         verified_user.email = form.email
         verified_user.save()
@@ -424,6 +465,7 @@ class AccountSettings(LoginRequiredMixin, View):
         form.save()
         update_session_auth_hash(request, request.user)
         messages.success(request, "Your password has been updated.")
+        log_user_action(request.user, "changed their password")
         return redirect("users:account_settings")
 
     def email_form_valid(self, request, form):
@@ -466,6 +508,7 @@ class AccountSettings(LoginRequiredMixin, View):
         """Save the user's settings"""
         form.save()
         messages.success(request, "Your settings have been updated.")
+        log_user_action(request.user, "updated their account settings")
         return redirect("users:account_settings")
 
 
@@ -477,6 +520,7 @@ class NotificationRedirect(LoginRequiredMixin, View):
 
         notification.read = True
         notification.save()
+        log_user_action(request.user, f"read notification: {notification.message}")
         return redirect(notification.url)
 
 
@@ -493,6 +537,7 @@ class CustomFieldsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
 
     def form_valid(self, form):
         form.save()
+        log_user_action(self.request.user, "updated their custom fields")
         return super().form_valid(form)
 
 
@@ -510,4 +555,5 @@ class NotificationMarkAllRead(LoginRequiredMixin, View):
     def get(self, request):
         Notification.objects.filter(user=request.user, read=False).update(read=True)
         messages.success(request, "All notifications marked as read.")
+        log_user_action(request.user, "marked all notifications as read")
         return redirect("users:notifications")

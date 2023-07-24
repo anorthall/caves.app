@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from django_ratelimit.decorators import ratelimit
 from logger.models import Trip
 from users.emails import NewCommentEmail
+from core.logging import log_trip_action
 
 
 class AddComment(LoginRequiredMixin, View):
@@ -43,6 +44,7 @@ class AddComment(LoginRequiredMixin, View):
                 request,
                 "Your comment has been added.",
             )
+            log_trip_action(request.user, form.trip, "commented on")
         else:
             if form.errors.get("content", None):
                 for error in form.errors["content"]:
@@ -92,6 +94,7 @@ class DeleteComment(LoginRequiredMixin, View):
                 request,
                 "The comment has been deleted.",
             )
+            log_trip_action(request.user, comment.trip, "deleted a comment on")
         else:
             raise PermissionDenied
         return redirect(comment.trip.get_absolute_url())

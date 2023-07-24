@@ -16,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.utils.timezone import make_aware
 from django.views.generic import FormView, View
 from django_ratelimit.decorators import ratelimit
+from core.logging import log_tripphoto_action, log_trip_action
 
 from .. import services
 from ..forms import PhotoPrivacyForm, TripPhotoForm
@@ -137,6 +138,7 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
         photo.filesize = photo.photo.size
         photo.is_valid = True
         photo.save()
+        log_tripphoto_action(request.user, photo, "uploaded", f"{photo.filesize} bytes")
         return JsonResponse({"success": True})
 
 
@@ -150,6 +152,9 @@ class TripPhotosUpdate(LoginRequiredMixin, View):
         if form.is_valid():
             photo = form.save()
             messages.success(request, "The photo has been updated.")
+            log_tripphoto_action(
+                request.user, photo, "updated the caption for", photo.caption
+            )
             return redirect(photo.trip.get_absolute_url())
         else:
             messages.error(
@@ -167,7 +172,7 @@ class TripPhotosDelete(LoginRequiredMixin, View):
 
         photo.deleted_at = timezone.now()
         photo.save()
-
+        log_tripphoto_action(request.user, photo, "deleted")
         messages.success(request, "The photo has been deleted.")
         return redirect(photo.trip.get_absolute_url())
 
@@ -180,8 +185,15 @@ class TripPhotosDeleteAll(LoginRequiredMixin, View):
 
         qs = TripPhoto.objects.valid().filter(trip=trip, user=request.user)
         if qs.exists():
+            deleted_count = qs.count()
             qs.update(deleted_at=timezone.now())
             messages.success(request, "All photos for the trip have been deleted.")
+            log_trip_action(
+                request.user,
+                trip,
+                "deleted all photos for",
+                f"{deleted_count} photos deleted"
+            )
         else:
             messages.error(request, "There were no photos to delete.")
 

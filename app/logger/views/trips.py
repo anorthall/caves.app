@@ -13,6 +13,7 @@ from django.views import View
 from django.views.generic import CreateView, RedirectView, UpdateView
 from django_ratelimit.decorators import ratelimit
 from users.models import CavingUser as User
+from core.logging import log_trip_action
 
 from ..forms import TripForm
 from ..mixins import TripContextMixin, ViewableObjectDetailView
@@ -47,6 +48,10 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["object_owner"] = self.object.user
         return context
+
+    def form_valid(self, form):
+        log_trip_action(self.request.user, self.object, "updated")
+        return super().form_valid(form)
 
 
 class TripDetail(TripContextMixin, ViewableObjectDetailView):
@@ -130,6 +135,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         candidate = form.save(commit=False)
         candidate.user = self.request.user
         candidate.save()
+        log_trip_action(self.request.user, candidate, "added")
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -155,6 +161,7 @@ class TripDelete(LoginRequiredMixin, View):
         if not trip.user == request.user:
             raise PermissionDenied
         trip.delete()
+        log_trip_action(request.user, trip, "deleted")
         messages.success(
             request,
             f"The trip to {trip.cave_name} has been deleted.",

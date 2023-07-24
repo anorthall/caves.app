@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django_ratelimit.decorators import ratelimit
+from core.logging import log_user_action
 
 from .forms import TripExportForm
 from .services import TripExporter
@@ -44,6 +45,11 @@ class Index(LoginRequiredMixin, TemplateView):
 
         exporter = TripExporter(user=request.user, queryset=request.user.trips)
         data = exporter.generate().export(file_type)
+
+        num_trips = request.user.trips.count()
+        log_user_action(
+            request.user, f"exported {num_trips} trips to a {file_type.upper()} file"
+        )
         return HttpResponse(
             data,
             content_type=format,
