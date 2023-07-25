@@ -111,10 +111,15 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "disabled until their email is verified."
         ),
     )
+    has_verified_email = models.BooleanField(
+        "Email verified",
+        default=False,
+        help_text="Has the user verified their email address?",
+    )
     has_mod_perms = models.BooleanField(
         "Moderator privileges",
         default=False,
-        help_text=("User has access to moderator level privileges."),
+        help_text="User has access to moderator level privileges.",
     )
     date_joined = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(default=django_tz.now)

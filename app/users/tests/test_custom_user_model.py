@@ -229,6 +229,7 @@ class UserIntegrationTestCase(TestCase):
         # Load the user
         user = User.objects.get(email="test_register@user.app")
         self.assertFalse(user.is_active)
+        self.assertFalse(user.has_verified_email)
         self.assertEqual(user.name, "Test")
         self.assertEqual(user.username, "testregistration")
 
@@ -273,6 +274,7 @@ class UserIntegrationTestCase(TestCase):
         # Test user is now active
         user.refresh_from_db()
         self.assertTrue(user.is_active)
+        self.assertTrue(user.has_verified_email)
 
         # Test verification pages redirect to index when logged in
         response = self.client.get(reverse("users:verify_new_account"))

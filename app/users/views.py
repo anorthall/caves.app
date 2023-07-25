@@ -337,6 +337,7 @@ def verify_new_account(request):
             verified_user = form.user
             verified_user.email = form.email
             verified_user.is_active = True
+            verified_user.has_verified_email = True
             verified_user.save()
             auth.login(request, verified_user)
             messages.success(

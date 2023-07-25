@@ -11,6 +11,7 @@ class Command(BaseCommand):
 
         users_to_delete = User.objects.filter(
             is_active=False,
+            has_verified_email=False,
             date_joined__lte=td,
         )
 

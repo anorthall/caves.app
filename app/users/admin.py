@@ -44,7 +44,14 @@ class CavingUserAdmin(BaseUserAdmin, ModelAdmin):
         FriendRequestSentInline,
         FriendRequestRecdInline,
     ]
-    readonly_fields = ("last_login", "last_seen", "date_joined", "uuid", "friends")
+    readonly_fields = (
+        "last_login",
+        "last_seen",
+        "date_joined",
+        "uuid",
+        "friends",
+        "has_verified_email",
+    )
     form = UserAdminChangeForm
     add_form = UserCreationForm
     search_fields = (
@@ -64,6 +71,7 @@ class CavingUserAdmin(BaseUserAdmin, ModelAdmin):
     )
     list_filter = (
         "is_active",
+        "has_verified_email",
         "is_superuser",
         "last_seen",
     )
@@ -80,8 +88,9 @@ class CavingUserAdmin(BaseUserAdmin, ModelAdmin):
                     "last_seen",
                     "date_joined",
                     "is_active",
-                    "is_superuser",
                     "has_mod_perms",
+                    "is_superuser",
+                    "has_verified_email",
                 )
             },
         ),
