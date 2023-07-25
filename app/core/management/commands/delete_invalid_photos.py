@@ -1,11 +1,12 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 from logger.models import TripPhoto
 
 
 class Command(BaseCommand):
-    help = "Clear all invalid photos older than the AWS presigned post timeout"
+    help = "Clean up invalid and orphaned photos"
 
     def handle(self, *args, **options):
         if not settings.AWS_PRESIGNED_EXPIRY:
@@ -24,7 +25,19 @@ class Command(BaseCommand):
 
         invalid_photos = TripPhoto.objects.invalid().filter(added__lte=td)
 
-        count = invalid_photos.count()
+        deleted_count = invalid_photos.count()
         invalid_photos.delete()
 
-        self.stdout.write(self.style.SUCCESS(f"Deleted {count} invalid photos."))
+        # Mark orphaned photos as deleted
+        orphans = TripPhoto.objects.all().filter(
+            Q(trip__isnull=True) | Q(user__isnull=True), deleted_at__isnull=True
+        )
+        orphan_count = orphans.count()
+        orphans.update(deleted_at=timezone.now())
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Deleted {deleted_count} invalid photos and marked "
+                f"{orphan_count} orphaned photos as deleted."
+            )
+        )
