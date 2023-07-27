@@ -5,7 +5,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
 from django import forms
 from django.core.exceptions import ValidationError
+from django.urls import reverse_lazy
 from django.utils import timezone
+from maps.services import geocode, split_lat_long
 from users.models import CavingUser
 
 from .mixins import DistanceUnitFormMixin
@@ -145,7 +147,7 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
             "cave_exit",
             "cave_region",
             "cave_country",
-            "cave_url",
+            "cave_location",
             "start",
             "end",
             "type",
@@ -169,6 +171,14 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "cave_location": forms.TextInput(
+                attrs={
+                    "hx-post": reverse_lazy("maps:geocoding"),
+                    "hx-target": "#latlong",
+                    "hx-trigger": "load, keyup changed delay:500ms",
+                    "hx-indicator": "",
+                }
+            ),
         }
 
     def __init__(self, user, *args, **kwargs):
@@ -197,7 +207,17 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
                     Div("cave_exit", css_class="col-12 col-lg-6"),
                     Div("cave_region", css_class="col-12 col-lg-6"),
                     Div("cave_country", css_class="col-12 col-lg-6"),
-                    Div("cave_url", css_class="col-12"),
+                    Div("cave_location", css_class="col-12 col-lg-6"),
+                    Div(
+                        HTML(
+                            "{% include 'maps/_htmx_geocoding_results.html' "
+                            "with lat=trip.latitude lng=trip.longitude %}"
+                        ),
+                        css_class=(
+                            "col-12 col-lg-6 d-flex flex-column justify-content-center"
+                        ),
+                        id="latlong",
+                    ),
                     css_class="row",
                 ),
             ),
@@ -272,6 +292,29 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
                     css_class="btn-secondary btn-lg w-100 mt-3",
                 )
             )
+
+    def clean_cave_location(self):
+        """Validate the cave location"""
+        cave_location = self.cleaned_data.get("cave_location")
+
+        # TODO: Abstract to services and combine with geocoding view
+        lat, lng = split_lat_long(cave_location)
+        if lat and lng:
+            self.cleaned_data["latitude"] = float(lat)
+            self.cleaned_data["longitude"] = float(lng)
+            return cave_location
+
+        try:
+            lat, lng = geocode(cave_location)
+        except ValueError:
+            raise ValidationError(
+                "Please ensure that lat/long values are displayed on the page before "
+                "saving, or enter your own lat/long values instead of a place name."
+            )
+
+        self.cleaned_data["latitude"] = lat
+        self.cleaned_data["longitude"] = lng
+        return cave_location
 
     def _get_custom_fields(self):
         valid_field_names = []

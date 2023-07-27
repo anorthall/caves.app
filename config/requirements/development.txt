@@ -20,6 +20,7 @@ django-unfold==0.7.0
 ExifRead==3.0.0
 factory-boy==3.3.0
 Faker==19.2.0
+googlemaps==4.10.0
 gunicorn==21.2.0
 hiredis==2.2.3
 humanize==4.7.0

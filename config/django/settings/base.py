@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     "import.apps.ImportConfig",
     "export.apps.ExportConfig",
     "comments.apps.CommentsConfig",
+    "maps.apps.MapsConfig",
     "django_countries",
     "tinymce",
     "active_link",
@@ -363,3 +364,7 @@ LOGGING = {
         },
     },
 }
+
+
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY = env("GOOGLE_MAPS_API_KEY", "")
