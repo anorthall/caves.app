@@ -14,7 +14,13 @@
 
 {% block content %}
   <div id="googleMap"></div>
-
+  <div class="text-muted text-center my-4">
+    <small>
+      Would you like to
+      <a class="link-body-emphasis" href="{% url 'maps:add_location' %}">
+        add locations to your trips?
+      </a>
+    </small>
   <script>
     let map;
 
