@@ -10,7 +10,7 @@ LAT_LONG_REGEX_PATTERN = re.compile(
 )
 
 
-def geocode(query: str) -> tuple[str, str]:
+def geocode(query: str) -> tuple[float, float]:
     client = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
     geocode_result = client.geocode(query)
     if geocode_result:
@@ -19,9 +19,16 @@ def geocode(query: str) -> tuple[str, str]:
     raise ValueError("Could not geolocate query")
 
 
-def split_lat_long(lat_lng: str) -> Union[tuple[str, str], tuple[None, None]]:
+def split_lat_long(lat_lng: str) -> Union[tuple[float, float]]:
     if LAT_LONG_REGEX_PATTERN.match(lat_lng):
         lat = lat_lng.split(",")[0].strip()
         lng = lat_lng.split(",")[1].strip()
-        return lat, lng
-    return None, None
+        return float(lat), float(lng)
+    raise ValueError("String is not a valid lat and long")
+
+
+def get_lat_long_from(lat_lng: str) -> tuple[float, float]:
+    try:
+        return split_lat_long(lat_lng)
+    except ValueError:
+        return geocode(lat_lng)

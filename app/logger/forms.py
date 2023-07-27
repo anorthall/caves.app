@@ -7,7 +7,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
-from maps.services import geocode, split_lat_long
+from maps.services import get_lat_long_from
 from users.models import CavingUser
 
 from .mixins import DistanceUnitFormMixin
@@ -296,16 +296,11 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
     def clean_cave_location(self):
         """Validate the cave location"""
         cave_location = self.cleaned_data.get("cave_location")
-
-        # TODO: Abstract to services and combine with geocoding view
-        lat, lng = split_lat_long(cave_location)
-        if lat and lng:
-            self.cleaned_data["latitude"] = float(lat)
-            self.cleaned_data["longitude"] = float(lng)
+        if not cave_location:
             return cave_location
 
         try:
-            lat, lng = geocode(cave_location)
+            lat, lng = get_lat_long_from(cave_location)
         except ValueError:
             raise ValidationError(
                 "Please ensure that lat/long values are displayed on the page before "

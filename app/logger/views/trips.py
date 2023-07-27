@@ -52,9 +52,12 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def form_valid(self, form):
         trip = form.save(commit=False)
-        if form.cleaned_data["latitude"] and form.cleaned_data["longitude"]:
-            loc = Point(form.cleaned_data["longitude"], form.cleaned_data["latitude"])
-            trip.cave_coordinates = loc
+
+        lat = form.cleaned_data.get("latitude")
+        lng = form.cleaned_data.get("longitude")
+        if lat and lng:
+            trip.cave_coordinates = Point(lng, lat)
+
         trip.save()
 
         log_trip_action(self.request.user, self.object, "updated")
@@ -142,13 +145,17 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         trip = form.save(commit=False)
         trip.user = self.request.user
 
-        if form.cleaned_data["latitude"] and form.cleaned_data["longitude"]:
-            loc = Point(form.cleaned_data["longitude"], form.cleaned_data["latitude"])
-            trip.cave_coordinates = loc
+        lat = form.cleaned_data.get("latitude")
+        lng = form.cleaned_data.get("longitude")
+        if lat and lng:
+            trip.cave_coordinates = Point(lng, lat)
 
         trip.save()
 
         log_trip_action(self.request.user, trip, "added")
+
+        if self.request.POST.get("addanother", False):
+            return redirect(reverse("log:trip_create"))
         return redirect(trip.get_absolute_url())
 
     def get_form_kwargs(self):
@@ -161,11 +168,6 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         initial = initial.copy()
         initial["cave_country"] = get_user(self.request).country.name
         return initial
-
-    def get_success_url(self):
-        if self.request.POST.get("addanother", False):
-            return reverse("log:trip_create")
-        return super().get_success_url()
 
 
 class TripDelete(LoginRequiredMixin, View):
