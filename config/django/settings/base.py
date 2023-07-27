@@ -107,7 +107,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_htmx",
-    "markdownify.apps.MarkdownifyConfig",
+    "markdownify",
     "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -117,6 +117,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django.contrib.postgres",
+    "django.contrib.gis",
 ]
 
 

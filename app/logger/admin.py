@@ -57,6 +57,7 @@ class TripAdmin(ModelAdmin):
         "added",
         "updated",
         "uuid",
+        "cave_coordinates",
     )
     list_display = (
         "user",
@@ -96,8 +97,10 @@ class TripAdmin(ModelAdmin):
                     "cave_name",
                     "cave_entrance",
                     "cave_exit",
+                    "cave_location",
                     "cave_region",
                     "cave_country",
+                    "cave_coordinates",
                 ),
             },
         ),
