@@ -7,10 +7,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
-from maps.services import get_lat_long_from
 from users.models import CavingUser
 
-from .mixins import DistanceUnitFormMixin
+from .mixins import CleanCaveLocationMixin, DistanceUnitFormMixin
 from .models import Trip, TripPhoto, TripReport
 
 User = CavingUser
@@ -138,7 +137,7 @@ class BaseTripForm(forms.ModelForm):
 
 
 # noinspection PyTypeChecker
-class TripForm(DistanceUnitFormMixin, BaseTripForm):
+class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
     class Meta:
         model = Trip
         fields = [
@@ -292,24 +291,6 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
                     css_class="btn-secondary btn-lg w-100 mt-3",
                 )
             )
-
-    def clean_cave_location(self):
-        """Validate the cave location"""
-        cave_location = self.cleaned_data.get("cave_location")
-        if not cave_location:
-            return cave_location
-
-        try:
-            lat, lng = get_lat_long_from(cave_location)
-        except ValueError:
-            raise ValidationError(
-                "Please ensure that lat/long values are displayed on the page before "
-                "saving, or enter your own lat/long values instead of a place name."
-            )
-
-        self.cleaned_data["latitude"] = lat
-        self.cleaned_data["longitude"] = lng
-        return cave_location
 
     def _get_custom_fields(self):
         valid_field_names = []
