@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE: postgres
-      SQL_ENGINE: django.db.backends.postgis
+      SQL_ENGINE: django.contrib.gis.db.backends.postgis
       SQL_USER: postgres
       SQL_PASSWORD: postgres
       SQL_DATABASE: postgres
