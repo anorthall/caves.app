@@ -105,14 +105,6 @@ class Trip(models.Model):
         blank=True,
         help_text="The country in which the cave is located.",
     )
-    cave_url = models.URLField(
-        "website",
-        blank=True,
-        help_text=(
-            "A website, such as a Wikipedia page, "
-            "giving more information on this cave."
-        ),
-    )
 
     # Trip details
     start = models.DateTimeField("start time")

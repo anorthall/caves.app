@@ -177,7 +177,6 @@ class TripFactory(DjangoModelFactory):
     cave_exit = factory.LazyFunction(_generate_cave_entrance_or_exit)
     cave_region = factory.Faker("city")
     cave_country = factory.Faker("country")
-    cave_url = factory.Faker("url")
     type = factory.Faker(
         "random_element",
         elements=[

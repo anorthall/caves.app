@@ -4,13 +4,13 @@ from typing import Union
 from dateutil import parser
 from logger.models import Trip
 
+# TODO: Add Location/Lat/Long
 FIELD_MAP = (
     ("cave_name", "Cave name"),
     ("cave_entrance", "Cave entrance"),
     ("cave_exit", "Cave exit"),
     ("cave_region", "Cave region"),
     ("cave_country", "Cave country"),
-    ("cave_url", "Cave website"),
     ("start", "Start date/time"),
     ("end", "End date/time"),
     ("type", "Type"),

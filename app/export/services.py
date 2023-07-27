@@ -93,6 +93,7 @@ class Exporter:
 
 
 class TripExporter(Exporter):
+    # TODO: Add Location/Lat/Long
     model = Trip
     fields = [
         "cave_name",
@@ -100,7 +101,6 @@ class TripExporter(Exporter):
         "cave_exit",
         "cave_region",
         "cave_country",
-        "cave_url",
         "start",
         "end",
         "duration_str",
