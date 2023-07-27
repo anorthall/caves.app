@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     "import.apps.ImportConfig",
     "export.apps.ExportConfig",
     "comments.apps.CommentsConfig",
+    "maps.apps.MapsConfig",
     "django_countries",
     "tinymce",
     "active_link",
@@ -107,7 +108,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_htmx",
-    "markdownify.apps.MarkdownifyConfig",
+    "markdownify",
     "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -117,6 +118,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django.contrib.postgres",
+    "django.contrib.gis",
 ]
 
 
@@ -168,6 +170,7 @@ TEMPLATES = [
                 "users.context_processors.notifications",
                 "core.context_processors.site_root",
                 "core.context_processors.site_title",
+                "core.context_processors.api_keys",
             ],
         },
     },
@@ -362,3 +365,7 @@ LOGGING = {
         },
     },
 }
+
+
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY = env("GOOGLE_MAPS_API_KEY", "")

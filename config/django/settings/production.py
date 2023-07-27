@@ -18,7 +18,6 @@ CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE", False, int)
 if env("SECURE_PROXY_SSL_HEADER", False, int):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-
 # Sentry integration
 if env("SENTRY_KEY", ""):  # pragma: no cover
     import sentry_sdk
@@ -33,14 +32,8 @@ if env("SENTRY_KEY", ""):  # pragma: no cover
         send_default_pii=True,
     )
 
-
 # Google Analytics
 GOOGLE_ANALYTICS_ID = env("GOOGLE_ANALYTICS_ID", "")
-if GOOGLE_ANALYTICS_ID:  # pragma: no cover
-    TEMPLATES[0]["OPTIONS"]["context_processors"] += [
-        "core.context_processors.google_analytics"
-    ]
-
 
 # Storages
 STORAGES["default"] = {
@@ -55,7 +48,6 @@ STORAGES["staticfiles"] = {
 }
 STATIC_ROOT = "/opt/caves/staticfiles"
 
-
 # Media files
 # MEDIA_ROOT should not be needed in production. Everything is in S3.
 # MEDIA_ROOT = "/opt/caves/media/"
@@ -64,14 +56,12 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "django.template.context_processors.media"
 ]
 
-
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = env("STATIC_ROOT", "/opt/caves/staticfiles")
 STATIC_URL = env("STATIC_URL")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-
 
 # Ratelimiting IP config
 RATELIMIT_IP_META_KEY = "HTTP_X_REAL_IP"

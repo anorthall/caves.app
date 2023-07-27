@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE: postgres
-      SQL_ENGINE: django.db.backends.postgresql
+      SQL_ENGINE: django.contrib.gis.db.backends.postgis
       SQL_USER: postgres
       SQL_PASSWORD: postgres
       SQL_DATABASE: postgres
@@ -46,6 +46,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r config/requirements/development.txt
+      - name: Install GeoDjango dependencies
+        run: sudo apt-get install gdal-bin libgdal-dev libgeos-dev libproj-dev
       - name: Run Django tests
         working-directory: ./app
         run: |
@@ -60,7 +62,7 @@ jobs:
           files: ./app/coverage.xml
     services:
       postgres:
-        image: postgres:15.3
+        image: postgis/postgis:15-3.3
         env:
           POSTGRES_USER: ${{ env.SQL_USER }}
           POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}

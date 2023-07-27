@@ -15,7 +15,8 @@ ENV PYTHONPATH "/opt/dev/"
 
 # System packages
 RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev libmagic
+    && apk add postgresql-dev gcc python3-dev musl-dev libmagic \
+    proj-dev geos-dev gdal-dev
 
 # Python packages
 RUN pip install --upgrade pip

@@ -77,7 +77,7 @@
 
   {% if trip.notes %}
     <!-- Notes -->
-    <div class="row g-3{% if trip.cave_url %} mb-3{% endif %}">
+    <div class="row g-3">
       <div class="col notes-display">
         <small class="text-muted trip-field">Notes</small><br />
         {{ trip.notes|linebreaks }}
@@ -85,20 +85,8 @@
     </div>
   {% endif %}
 
-  {% if trip.cave_url %}
-    <!-- External Resources -->
-    <div class="row mb-3">
-      <div class="col">
-        <small class="text-muted trip-field">External resources</small>
-        <ol class="mb-0">
-          {% if trip.cave_url %}<li><a href="{{ trip.cave_url }}">Website for {{ trip.cave_name }}</a></li>{% endif %}
-        </ol>
-      </div>
-    </div>
-  {% endif %}
-
   {% if show_photos %}
-    <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-2 mt-3 {% if trip.cave_url or trip.notes %}border-top pt-3{% endif %}">
+    <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-3 mt-3 {% if trip.notes %}border-top pt-3{% endif %}">
       {% for photo in valid_photos %}
         <div class="col d-flex flex-column align-items-center justify-content-center">
           <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
@@ -181,7 +169,9 @@
     {% endif %}
   {% endif %}
 
-  <div class="{% if trip.notes or trip.cave_url or show_photos %}border-top py-3 mt-4{% else %}mt-4{% endif %} row">
+  {% if trip.notes or show_photos %}<div class="border-bottom pb-4"></div>{% endif %}
+
+  <div class="row mt-3">
     <div class="col-12{% if object_owner.allow_comments %} col-md-8{% endif %}">
       {% if user.is_authenticated %}
         {% include "logger/_htmx_trip_like.html" %}

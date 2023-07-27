@@ -91,6 +91,9 @@ class Exporter:
             return str(getattr(value, self._get_distance_units()))
         return str(value.m)
 
+    def _format_pointfield(self, value) -> str:
+        return f"{value.y}, {value.x}"
+
 
 class TripExporter(Exporter):
     model = Trip
@@ -100,7 +103,8 @@ class TripExporter(Exporter):
         "cave_exit",
         "cave_region",
         "cave_country",
-        "cave_url",
+        "cave_location",
+        "cave_coordinates",
         "start",
         "end",
         "duration_str",

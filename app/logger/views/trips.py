@@ -3,6 +3,7 @@ from core.logging import log_trip_action
 from core.utils import get_user
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.gis.geos import Point
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Exists, OuterRef
@@ -50,8 +51,17 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        trip = form.save(commit=False)
+
+        lat = form.cleaned_data.get("latitude")
+        lng = form.cleaned_data.get("longitude")
+        if lat and lng:
+            trip.cave_coordinates = Point(lng, lat)
+
+        trip.save()
+
         log_trip_action(self.request.user, self.object, "updated")
-        return super().form_valid(form)
+        return redirect(trip.get_absolute_url())
 
 
 class TripDetail(TripContextMixin, ViewableObjectDetailView):
@@ -132,11 +142,21 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     }
 
     def form_valid(self, form):
-        candidate = form.save(commit=False)
-        candidate.user = self.request.user
-        candidate.save()
-        log_trip_action(self.request.user, candidate, "added")
-        return super().form_valid(form)
+        trip = form.save(commit=False)
+        trip.user = self.request.user
+
+        lat = form.cleaned_data.get("latitude")
+        lng = form.cleaned_data.get("longitude")
+        if lat and lng:
+            trip.cave_coordinates = Point(lng, lat)
+
+        trip.save()
+
+        log_trip_action(self.request.user, trip, "added")
+
+        if self.request.POST.get("addanother", False):
+            return redirect(reverse("log:trip_create"))
+        return redirect(trip.get_absolute_url())
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -148,11 +168,6 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         initial = initial.copy()
         initial["cave_country"] = get_user(self.request).country.name
         return initial
-
-    def get_success_url(self):
-        if self.request.POST.get("addanother", False):
-            return reverse("log:trip_create")
-        return super().get_success_url()
 
 
 class TripDelete(LoginRequiredMixin, View):

@@ -1,0 +1,21 @@
+<div>
+  <span style="min-width: 7rem; display: inline-block">Latitude</span>
+  <span class="text-muted">{{ lat|default:"" }}</span>
+</div>
+
+<div>
+  <span style="min-width: 7rem; display: inline-block">Longitude</span>
+  <span class="text-muted">{{ lng|default:"" }}</span>
+</div>
+
+<div>
+  <span style="min-width: 7rem; display: inline-block">Google Maps</span>
+  {% if lat and lng %}
+    <a class="link-secondary" target="_blank"
+       href="https://www.google.com/maps/search/?api=1&query={{ lat|urlencode }},{{ lng|urlencode }}">
+      {{ lat }}, {{ lng }}
+    </a>
+  {% else %}
+    <span class="text-muted">Enter a valid location to view</span>
+  {% endif %}
+</div>

@@ -38,6 +38,16 @@
     {{ trip.type }}
   </div>
 
+  {% if trip.cave_coordinates and user == trip.user %}
+    <div class="col">
+      <small class="text-muted trip-field">Cave location <i class="bi bi-lock-fill" title="Visible only to you"></i></small><br />
+      <a target="_blank" class="link-secondary"
+         href="https://www.google.com/maps/search/?api=1&query={{ trip.latitude|urlencode }},{{ trip.longitude|urlencode }}">
+        {{ trip.latitude|floatformat:5 }}, {{ trip.longitude|floatformat:5 }}
+      </a>
+    </div>
+  {% endif %}
+
   {% if trip.clubs %}
   <!-- Clubs -->
     <div class="col-6 col-xl-4">

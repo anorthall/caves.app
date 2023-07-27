@@ -5,10 +5,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
 from django import forms
 from django.core.exceptions import ValidationError
+from django.urls import reverse_lazy
 from django.utils import timezone
 from users.models import CavingUser
 
-from .mixins import DistanceUnitFormMixin
+from .mixins import CleanCaveLocationMixin, DistanceUnitFormMixin
 from .models import Trip, TripPhoto, TripReport
 
 User = CavingUser
@@ -136,7 +137,7 @@ class BaseTripForm(forms.ModelForm):
 
 
 # noinspection PyTypeChecker
-class TripForm(DistanceUnitFormMixin, BaseTripForm):
+class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
     class Meta:
         model = Trip
         fields = [
@@ -145,7 +146,7 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
             "cave_exit",
             "cave_region",
             "cave_country",
-            "cave_url",
+            "cave_location",
             "start",
             "end",
             "type",
@@ -169,6 +170,14 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "cave_location": forms.TextInput(
+                attrs={
+                    "hx-post": reverse_lazy("maps:geocoding"),
+                    "hx-target": "#latlong",
+                    "hx-trigger": "load, keyup changed delay:500ms",
+                    "hx-indicator": "",
+                }
+            ),
         }
 
     def __init__(self, user, *args, **kwargs):
@@ -197,7 +206,17 @@ class TripForm(DistanceUnitFormMixin, BaseTripForm):
                     Div("cave_exit", css_class="col-12 col-lg-6"),
                     Div("cave_region", css_class="col-12 col-lg-6"),
                     Div("cave_country", css_class="col-12 col-lg-6"),
-                    Div("cave_url", css_class="col-12"),
+                    Div("cave_location", css_class="col-12 col-lg-6"),
+                    Div(
+                        HTML(
+                            "{% include 'maps/_htmx_geocoding_results.html' "
+                            "with lat=trip.latitude lng=trip.longitude %}"
+                        ),
+                        css_class=(
+                            "col-12 col-lg-6 d-flex flex-column justify-content-center"
+                        ),
+                        id="latlong",
+                    ),
                     css_class="row",
                 ),
             ),

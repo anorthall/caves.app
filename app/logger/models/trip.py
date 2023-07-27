@@ -3,8 +3,8 @@ import uuid
 import humanize
 from distancefield import D, DistanceField, DistanceUnitField
 from django.conf import settings
+from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
-from django.db import models
 from django.urls import reverse
 
 from ..validators import (
@@ -77,6 +77,22 @@ class Trip(models.Model):
         blank=True,
         help_text="The location at which you exited the cave.",
     )
+    cave_location = models.CharField(
+        "location",
+        max_length=100,
+        blank=True,
+        help_text=(
+            "Enter a decimal latitude and longitude, " "address, or place name."
+        ),
+    )
+    cave_coordinates = models.PointField(
+        "coordinates",
+        blank=True,
+        null=True,
+        default=None,
+        geography=True,
+        help_text="The coordinates of the cave in WGS84 format.",
+    )
     cave_region = models.CharField(
         "region",
         max_length=100,
@@ -88,14 +104,6 @@ class Trip(models.Model):
         max_length=100,
         blank=True,
         help_text="The country in which the cave is located.",
-    )
-    cave_url = models.URLField(
-        "website",
-        blank=True,
-        help_text=(
-            "A website, such as a Wikipedia page, "
-            "giving more information on this cave."
-        ),
     )
 
     # Trip details
@@ -393,6 +401,14 @@ class Trip(models.Model):
             liked_user_names.append("you")
 
         return self._build_liked_str(liked_user_names, self_liked)
+
+    @property
+    def latitude(self):
+        return self.cave_coordinates.y if self.cave_coordinates else None
+
+    @property
+    def longitude(self):
+        return self.cave_coordinates.x if self.cave_coordinates else None
 
     @property
     def has_distances(self):

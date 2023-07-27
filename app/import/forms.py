@@ -74,7 +74,6 @@ class TripImportForm(BaseTripForm):
             "cave_exit",
             "cave_region",
             "cave_country",
-            "cave_url",
             "start",
             "end",
             "type",
@@ -126,7 +125,6 @@ class TripImportFormsetHelper(FormHelper):
                 ),
                 Div(
                     Field("cave_country", wrapper_class="col-3"),
-                    Field("cave_url", wrapper_class="col-3"),
                     Field("start", wrapper_class="col-3"),
                     Field("end", wrapper_class="col-3"),
                     css_class="row mt-2",

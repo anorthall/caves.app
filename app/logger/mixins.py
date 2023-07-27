@@ -1,8 +1,9 @@
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from logger.templatetags.logger_tags import distformat
+from maps.services import get_lat_long_from
 
 from .models import Trip, TripReport
 
@@ -105,3 +106,23 @@ class DistanceUnitFormMixin:
 
         kwargs.update({"initial": initial})
         super().__init__(*args, **kwargs)
+
+
+class CleanCaveLocationMixin:
+    def clean_cave_location(self):
+        """Validate the cave location"""
+        cave_location = self.cleaned_data.get("cave_location")
+        if not cave_location:
+            return cave_location
+
+        try:
+            lat, lng = get_lat_long_from(cave_location)
+        except ValueError:
+            raise ValidationError(
+                "Please ensure that lat/long values are displayed on the page before "
+                "saving, or enter your own lat/long values instead of a place name."
+            )
+
+        self.cleaned_data["latitude"] = lat
+        self.cleaned_data["longitude"] = lng
+        return cave_location

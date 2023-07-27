@@ -1,0 +1,18 @@
+{% extends "base_trips.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add cave locations{% endblock %}
+{% block display_title %}Add locations{% endblock %}
+
+{% block main %}
+  <h3 class="mb-3">Trip to {{ trip.cave_name }}</h3>
+  <p class="lead">
+    You are adding a cave location for the trip to {{ trip.cave_name }} {% if trip.cave_entrance %}via {{ trip.cave_entrance }} {% endif %}on {{ trip.start|date }}.
+  </p>
+
+  <p class="mb-4 pb-3 border-bottom">
+    Would you like to <a class="link-body-emphasis" href="{% url 'maps:add_location' %}">select a different random trip?</a>
+  </p>
+
+  {% crispy form %}
+{% endblock %}
