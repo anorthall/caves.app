@@ -11,8 +11,13 @@ def site_title(request):
     return {"site_title": settings.SITE_TITLE}
 
 
-def google_analytics(request):
-    """Add the GOOGLE_ANALYTICS_ID setting to the context"""
-    if settings.GOOGLE_ANALYTICS_ID:
-        return {"google_analytics_id": settings.GOOGLE_ANALYTICS_ID}
-    return {}
+def api_keys(request):
+    """Add relevant API keys to the context"""
+    context = {}
+    if hasattr(settings, "GOOGLE_ANALYTICS_ID"):
+        context["google_analytics_id"] = settings.GOOGLE_ANALYTICS_ID
+
+    if hasattr(settings, "GOOGLE_MAPS_API_KEY"):
+        context["google_maps_api_key"] = settings.GOOGLE_MAPS_API_KEY
+
+    return context

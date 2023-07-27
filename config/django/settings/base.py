@@ -170,6 +170,7 @@ TEMPLATES = [
                 "users.context_processors.notifications",
                 "core.context_processors.site_root",
                 "core.context_processors.site_title",
+                "core.context_processors.api_keys",
             ],
         },
     },
