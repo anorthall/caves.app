@@ -1,0 +1,71 @@
+{% extends "base_full_width.html" %}
+
+{% block title %}Cave map{% endblock %}
+{% block display_title %}Map{% endblock %}
+
+{% block header_scripts %}
+  <script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+      key: "{{ google_maps_api_key }}",
+      v: "weekly",
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div id="googleMap"></div>
+
+  <script>
+    let map;
+
+    async function initMap() {
+      const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+      const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+      const caves = [
+        {% for trip in user.trips %}
+          {% if trip.cave_coordinates %}
+            {
+              title: "{{ trip.cave_name }}",
+              position: { lat: {{ trip.latitude }}, lng: {{ trip.longitude }}},
+              url: "{{ trip.get_absolute_url }}"
+            },
+          {% endif %}
+        {% endfor %}
+      ];
+
+      map = new Map(document.getElementById("googleMap"), {
+        center: {lat: -34.397, lng: 150.644},
+        zoom: 3,
+        mapId: "8b2e0b131350042a",
+      });
+
+      const infoWindow = new InfoWindow();
+      const bounds = new google.maps.LatLngBounds();
+
+      caves.forEach(({ position, title, url }) => {
+        const marker = new AdvancedMarkerElement({
+          position,
+          map,
+          title: title,
+        });
+        bounds.extend(new google.maps.LatLng(position.lat, position.lng));
+
+        // Add a click listener for each marker, and set up the info window.
+        marker.addListener("click", ({ domEvent, latLng }) => {
+          const { target } = domEvent;
+          let content = `<h5 class='mt-2'>${marker.title}</h5>`;
+
+          infoWindow.close();
+          infoWindow.setContent(content);
+          infoWindow.open(marker.map, marker);
+        });
+      });
+
+      map.fitBounds(bounds);
+    }
+
+    initMap();
+
+  </script>
+{% endblock %}

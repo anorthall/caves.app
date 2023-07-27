@@ -484,3 +484,13 @@ body {
   max-width: 200px;
   max-height: 300px;
 }
+
+
+/*
+  Google Map
+*/
+
+#googleMap {
+  height: 100%;
+  border: 1px solid #ccc;
+}
