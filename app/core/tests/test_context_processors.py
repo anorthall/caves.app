@@ -24,4 +24,10 @@ class TestContextProcessors(TestCase):
     def test_google_analytics_context_processor_returns_empty(self):
         """Test that the Google Analytics context processor when setting unset"""
         result = api_keys(None)
-        self.assertEqual(result, {})
+        self.assertEqual(
+            result,
+            {
+                "google_analytics_id": None,
+                "google_maps_api_key": None,
+            },
+        )
