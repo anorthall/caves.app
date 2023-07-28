@@ -13,6 +13,13 @@
 {% endblock %}
 
 {% block content %}
+  {% if not map_markers %}
+    <div class="alert alert-info text-center">
+      You have not added locations to any of your trips so there are no caves to display on this map!<br>
+      Would you like to <a href="{% url 'maps:add_location' %}">add locations to your trips</a>?
+    </div>
+  {% endif %}
+
   <div id="googleMap"></div>
   <div class="text-muted text-center my-4">
     <small>
@@ -21,6 +28,8 @@
         add locations to your trips?
       </a>
     </small>
+  </div>
+
   <script>
     let map;
 
@@ -29,27 +38,31 @@
       const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
       const caves = [
-        {% for trip in user.trips %}
-          {% if trip.cave_coordinates %}
-            {
-              title: "{{ trip.cave_name }}",
-              position: { lat: {{ trip.latitude }}, lng: {{ trip.longitude }}},
-              url: "{{ trip.get_absolute_url }}"
-            },
-          {% endif %}
+        {% for marker in map_markers %}
+          {
+            title: "{{ marker.title }}",
+            position: { lat: {{ marker.lat }}, lng: {{ marker.lng }}},
+            description: `
+<h5 class='mt-2'>{{ marker.title }}</h5>
+<p>
+  You visited this location {{ marker.visits }} time{{ marker.visits|pluralize }}.<br>
+  The last time you visited was <a href="{{ marker.last_trip_url }}">{{ marker.last_visit|date }}.</a>
+</p>
+`,
+          },
         {% endfor %}
       ];
 
       map = new Map(document.getElementById("googleMap"), {
-        center: {lat: -34.397, lng: 150.644},
-        zoom: 3,
+        center: {lat: 0, lng: 0},
+        zoom: 2,
         mapId: "8b2e0b131350042a",
       });
 
       const infoWindow = new InfoWindow();
       const bounds = new google.maps.LatLngBounds();
 
-      caves.forEach(({ position, title, url }) => {
+      caves.forEach(({ position, title, description }) => {
         const marker = new AdvancedMarkerElement({
           position,
           map,
@@ -60,10 +73,8 @@
         // Add a click listener for each marker, and set up the info window.
         marker.addListener("click", ({ domEvent, latLng }) => {
           const { target } = domEvent;
-          let content = `<h5 class='mt-2'>${marker.title}</h5>`;
-
           infoWindow.close();
-          infoWindow.setContent(content);
+          infoWindow.setContent(description);
           infoWindow.open(marker.map, marker);
         });
       });
