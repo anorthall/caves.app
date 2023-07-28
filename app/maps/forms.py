@@ -58,6 +58,7 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
                 label += f" &mdash; <a href='{ trip.get_absolute_url() }'>View</a>"
 
                 choices.append((trip.uuid, SafeString(label)))
+
             self.fields["additional_caves"].choices = choices
             self.fields["additional_caves"].initial = [
                 trip.uuid for trip in similar_caves
