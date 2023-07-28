@@ -82,7 +82,9 @@ class Trip(models.Model):
         max_length=100,
         blank=True,
         help_text=(
-            "Enter a decimal latitude and longitude, " "address, or place name."
+            "Enter a decimal latitude and longitude, "
+            "address, or place name. "
+            "Cave locations are not visible to other users."
         ),
     )
     cave_coordinates = models.PointField(
