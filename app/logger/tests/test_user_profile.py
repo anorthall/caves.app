@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import Point
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone as tz
@@ -343,3 +344,22 @@ class UserProfileViewTests(TestCase):
             reverse("log:user_search", args=[self.user2.username]), {"query": "query"}
         )
         self.assertEqual(response.status_code, 403)
+
+    @tag("privacy")
+    def test_cave_location_privacy(self):
+        """Test that the cave location shows for a user"""
+        self.client.force_login(self.user)
+        trip = TripFactory(user=self.user2, privacy=Trip.PUBLIC)
+        trip.cave_coordinates = Point(1, 1)
+        trip.save()
+
+        response = self.client.get(trip.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "1.00000, 1.00000")
+        self.assertNotContains(response, "CAVE LOCATION")
+
+        self.client.force_login(self.user2)
+        response = self.client.get(trip.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "1.00000, 1.00000")
+        self.assertContains(response, "CAVE LOCATION")
