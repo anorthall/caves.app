@@ -356,10 +356,10 @@ class UserProfileViewTests(TestCase):
         response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "1.00000, 1.00000")
-        self.assertNotContains(response, "CAVE LOCATION")
+        self.assertNotContains(response, "Cave location")
 
         self.client.force_login(self.user2)
         response = self.client.get(trip.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "1.00000, 1.00000")
-        self.assertContains(response, "CAVE LOCATION")
+        self.assertContains(response, "Cave location")
