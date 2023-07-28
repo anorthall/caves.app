@@ -13,6 +13,13 @@
 {% endblock %}
 
 {% block content %}
+  {% if not map_markers %}
+    <div class="alert alert-info text-center">
+      You have not added locations to any of your trips so there are no caves to display on this map!<br>
+      Would you like to <a href="{% url 'maps:add_location' %}">add locations to your trips</a>?
+    </div>
+  {% endif %}
+
   <div id="googleMap"></div>
   <div class="text-muted text-center my-4">
     <small>
