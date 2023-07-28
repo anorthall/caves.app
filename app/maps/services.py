@@ -7,7 +7,6 @@ from attrs import frozen
 from django.conf import settings
 from users.models import CavingUser
 
-
 LAT_LONG_REGEX_PATTERN = re.compile(
     r"^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)"
     r",\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$"
@@ -36,6 +35,7 @@ def get_lat_long_from(lat_lng: str) -> tuple[float, float]:
         return split_lat_long(lat_lng)
     except ValueError:
         return geocode(lat_lng)
+
 
 @frozen
 class Marker:
