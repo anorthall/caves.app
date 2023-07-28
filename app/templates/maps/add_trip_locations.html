@@ -7,10 +7,14 @@
 {% block main %}
   <h3 class="mb-3">Trip to {{ trip.cave_name }}</h3>
   <p class="lead">
-    You are adding a cave location for the trip to {{ trip.cave_name }} {% if trip.cave_entrance %}via {{ trip.cave_entrance }} {% endif %}on {{ trip.start|date }}.
+    You are adding a cave location for the trip to {{ trip.cave_name }}
+    {% if trip.cave_entrance %}<span class="fw-bold text-danger">via {{ trip.cave_entrance }}</span> {% endif %}
+    on {{ trip.start|date }}.
   </p>
 
   <p class="mb-4 pb-3 border-bottom">
+    You have <strong>{{ remaining_trips_without_location }}</strong> remaining
+    trip{{ remaining_trips_without_location|pluralize }} without a location.
     Would you like to <a class="link-body-emphasis" href="{% url 'maps:add_location' %}">select a different random trip?</a>
   </p>
 

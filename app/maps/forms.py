@@ -2,6 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Fieldset, Layout, Submit
 from django import forms
 from django.urls import reverse_lazy
+from django.utils.html import escape
+from django.utils.safestring import SafeString
 from logger.mixins import CleanCaveLocationMixin
 from logger.models import Trip
 
@@ -36,6 +38,8 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
         cave_name = self.trip.cave_name.strip().lower()
         entrance = self.trip.cave_entrance.strip().lower()
         for other_trip in self.trip.user.trips.exclude(id=self.trip.id):
+            if other_trip.cave_coordinates:
+                continue
             if cave_name == other_trip.cave_name.strip().lower():
                 similar_caves.append(other_trip)
             elif other_trip.cave_entrance and entrance:
@@ -45,12 +49,15 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
         if similar_caves:
             choices = []
             for trip in similar_caves:
+                # Escape the cave name and entrance and then mark the label as safe
+                # after inserting the link to the trip.
                 date = trip.start.strftime("%Y-%m-%d")
-                label = f"Trip to {trip.cave_name} on {date}"
+                label = f"Trip to { escape(trip.cave_name) } on {date}"
                 if trip.cave_entrance:
-                    label += f" via {trip.cave_entrance}"
+                    label += f" via { escape(trip.cave_entrance) }"
+                label += f" &mdash; <a href='{ trip.get_absolute_url() }'>View</a>"
 
-                choices.append((trip.uuid, label))
+                choices.append((trip.uuid, SafeString(label)))
             self.fields["additional_caves"].choices = choices
             self.fields["additional_caves"].initial = [
                 trip.uuid for trip in similar_caves

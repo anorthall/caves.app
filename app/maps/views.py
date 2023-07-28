@@ -79,6 +79,11 @@ class AddTripLocation(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         context["trip"] = self.trip
         context["object_owner"] = self.request.user
+        context["remaining_trips_without_location"] = (
+            get_user(self.request)
+            .trips.filter(Q(cave_coordinates__isnull=True) | Q(cave_location=""))
+            .count()
+        )
         return context
 
     def form_valid(self, form):
