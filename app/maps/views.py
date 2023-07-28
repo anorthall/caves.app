@@ -13,11 +13,16 @@ from django_ratelimit.decorators import ratelimit
 from logger.models import Trip
 
 from .forms import BulkLocationForm
-from .services import get_lat_long_from
+from .services import get_lat_long_from, get_markers_for_user
 
 
 class UserMap(LoginRequiredMixin, TemplateView):
     template_name = "maps/map.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["map_markers"] = get_markers_for_user(self.request.user)
+        return context
 
 
 @method_decorator(cache_page(60 * 60 * 24), name="dispatch")
