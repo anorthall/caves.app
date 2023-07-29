@@ -39,4 +39,6 @@ class UserFactory(DjangoModelFactory):
     @classmethod
     def _adjust_kwargs(cls, **kwargs):
         kwargs["page_title"] = kwargs["page_title"].replace(".", "")
+        if kwargs["is_active"]:
+            kwargs["has_verified_email"] = True
         return kwargs

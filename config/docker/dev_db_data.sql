@@ -1,6 +1,5 @@
 --
 -- Databases
---
 
 --
 -- Database "template1" dump
