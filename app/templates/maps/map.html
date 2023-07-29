@@ -21,7 +21,12 @@
     </div>
   {% endif %}
 
-  <div id="googleMap"></div>
+  {% if not map_markers or can_add_more_locations %}
+    {% comment %}Leave room for the alert and link to add locations to trips{% endcomment %}
+    <div id="googleMap" style="height: 92%;"></div>
+  {% else %}
+    <div id="googleMap" style="height: 100%;"></div>
+  {% endif %}
 
   {% if can_add_more_locations %}
     <div class="text-muted text-center my-4">
