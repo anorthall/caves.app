@@ -1,5 +1,5 @@
 attrs==23.1.0
-boto3==1.28.9
+boto3==1.28.15
 chardet==5.1.0
 crispy-bootstrap5==0.7
 Django==4.2.3
@@ -10,7 +10,7 @@ django-debug-toolbar==4.1.0
 django-htmx==1.16.0
 django-mailer==2.2
 django-markdownify==0.9.3
-django-ratelimit==4.0.0
+django-ratelimit==4.1.0
 django-storages==1.13.2
 django-timezone-field==5.1
 django-tinymce==3.6.1
