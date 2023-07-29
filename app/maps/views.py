@@ -1,4 +1,5 @@
 from core.utils import get_user
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.gis.geos import Point
@@ -22,6 +23,13 @@ class UserMap(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["map_markers"] = get_markers_for_user(self.request.user)
+        context["google_maps_user_map_id"] = settings.GOOGLE_MAPS_USER_MAP_ID
+        context["can_add_more_locations"] = (
+            get_user(self.request)
+            .trips.filter(Q(cave_coordinates__isnull=True) | Q(cave_location=""))
+            .exists()
+            and context["map_markers"]
+        )
         return context
 
 

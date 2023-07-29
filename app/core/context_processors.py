@@ -17,7 +17,7 @@ def api_keys(request):
     if hasattr(settings, "GOOGLE_ANALYTICS_ID"):
         context["google_analytics_id"] = settings.GOOGLE_ANALYTICS_ID
 
-    if hasattr(settings, "GOOGLE_MAPS_API_KEY"):
-        context["google_maps_api_key"] = settings.GOOGLE_MAPS_API_KEY
+    if hasattr(settings, "GOOGLE_MAPS_PUBLIC_API_KEY"):
+        context["google_maps_api_key"] = settings.GOOGLE_MAPS_PUBLIC_API_KEY
 
     return context

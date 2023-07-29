@@ -21,6 +21,10 @@
   <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
     <i class="bi bi-search"></i> Search
   </a>
+
+  <a class="nav-link" href="{% url 'maps:index' %}">
+    <i class="bi bi-map"></i> Maps
+  </a>
 {% endif %}
 
 {% if trip and user == object_owner %}

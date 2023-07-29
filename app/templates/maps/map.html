@@ -1,7 +1,8 @@
 {% extends "base_full_width.html" %}
 
 {% block title %}Cave map{% endblock %}
-{% block display_title %}Cave map{% endblock %}
+{% block description %}A map of all the caves you've logged trips to on caves.app.{% endblock %}
+{% block display_title %}{{ user.name }}'s cave map{% endblock %}
 
 {% block header_scripts %}
   <script>
@@ -21,14 +22,17 @@
   {% endif %}
 
   <div id="googleMap"></div>
-  <div class="text-muted text-center my-4">
-    <small>
-      Would you like to
-      <a class="link-body-emphasis" href="{% url 'maps:add_location' %}">
-        add locations to your trips?
-      </a>
-    </small>
-  </div>
+
+  {% if can_add_more_locations %}
+    <div class="text-muted text-center my-4">
+      <small>
+        Would you like to
+        <a class="link-body-emphasis" href="{% url 'maps:add_location' %}">
+          add locations to your trips?
+        </a>
+      </small>
+    </div>
+  {% endif %}
 
   <script>
     let map;
@@ -56,7 +60,7 @@
       map = new Map(document.getElementById("googleMap"), {
         center: {lat: 0, lng: 0},
         zoom: 2,
-        mapId: "8b2e0b131350042a",
+        mapId: "{{ google_maps_user_map_id }}",
       });
 
       const infoWindow = new InfoWindow();

@@ -14,7 +14,7 @@ LAT_LONG_REGEX_PATTERN = re.compile(
 
 
 def geocode(query: str) -> tuple[float, float]:
-    client = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+    client = googlemaps.Client(key=settings.GOOGLE_MAPS_PRIVATE_API_KEY)
     geocode_result = client.geocode(query)
     if geocode_result:
         lat, lng = geocode_result[0]["geometry"]["location"].values()
