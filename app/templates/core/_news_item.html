@@ -16,5 +16,5 @@
     {% user news.author %}, {{ news.posted_at|naturaltime }}
   </div>
 
-  {{ news.content|markdownify }}
+  {{ news.content|markdownify:"news" }}
 </div>

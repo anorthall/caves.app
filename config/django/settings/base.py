@@ -1,3 +1,4 @@
+import copy
 import os
 from pathlib import Path
 from typing import Any
@@ -290,6 +291,10 @@ MARKDOWNIFY = {
         },
     },
 }
+
+MARKDOWNIFY["news"] = copy.deepcopy(MARKDOWNIFY["default"])
+MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")
+MARKDOWNIFY["news"]["WHITELIST_ATTRS"] = ["src", "alt", "title", "class", "href"]
 
 # TinyMCE configuration
 TINYMCE_DEFAULT_CONFIG = {
