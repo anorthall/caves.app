@@ -8,7 +8,6 @@ on:
 jobs:
   deploy:
     name: Deploy caves.app
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Deploy caves.app
