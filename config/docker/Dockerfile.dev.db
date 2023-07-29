@@ -1,4 +1,4 @@
-FROM postgis/postgis:15-3.3
+FROM kartoza/postgis:15-3.3
 
 # Load blank database with an admin user only
 ADD ./config/docker/dev_db_data.sql /docker-entrypoint-initdb.d
