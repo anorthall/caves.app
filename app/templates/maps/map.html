@@ -79,7 +79,9 @@
         });
       });
 
-      map.fitBounds(bounds);
+      {% if map_markers %}
+        map.fitBounds(bounds);
+      {% endif %}
     }
 
     initMap();
