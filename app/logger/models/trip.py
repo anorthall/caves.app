@@ -308,6 +308,10 @@ class Trip(models.Model):
                 if getattr(self, field.name) == 0:
                     setattr(self, field.name, None)
 
+        # If `trip.cave_location` is not set, unset `trip.cave_coordinates`
+        if not self.cave_location:
+            self.cave_coordinates = None
+
         return super().save(*args, **kwargs)
 
     def clean(self):

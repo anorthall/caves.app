@@ -351,6 +351,7 @@ class UserProfileViewTests(TestCase):
         self.client.force_login(self.user)
         trip = TripFactory(user=self.user2, privacy=Trip.PUBLIC)
         trip.cave_coordinates = Point(1, 1)
+        trip.cave_location = "1, 1"
         trip.save()
 
         response = self.client.get(trip.get_absolute_url())
