@@ -79,8 +79,17 @@
     <!-- Notes -->
     <div class="row g-3">
       <div class="col notes-display">
-        <small class="text-muted trip-field">Notes</small><br />
-        {{ trip.notes|linebreaks }}
+        <small class="text-muted trip-field">
+          Notes
+          {% if user == object_owner %}
+            {% if object_owner.private_notes %}
+              <i class="bi bi-lock-fill" title="Visible only to you"></i>
+            {% else %}
+              <i class="bi bi-globe" title="These notes are visible to anyone who can view the trip. You can change this in your account settings."></i>
+            {% endif %}
+          {% endif %}
+        </small><br />
+        <div class="mt-2">{{ trip.notes|linebreaks }}</div>
       </div>
     </div>
   {% endif %}
