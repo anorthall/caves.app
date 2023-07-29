@@ -10,16 +10,17 @@ A Django web application to log caving trips. Running online at [caves.app](http
 - Easily upload photos from inside the cave and share them.
 - Add a rich text trip report (like a blog post) to truly capture the experience.
 - View social news feed of your friends' recent caving activity.
+- Comment on your friends' trips, or 'like' them.
 - Comprehensive granular statistics and pretty charts.
+- View a map of all the caves you've visited.
+- Automatically import and export data from CSV files.
 - Search through trips by location, cave, or any other data point.
 - Create a public profile to share your trips with the world (or just your friends, if you prefer).
 - A minimalist and mobile friendly user interface.
 
 ### Planned
 
-- Automatically generated maps of caves visited.
 - An equipment tracking system - keep track of how many batteries you've got left, or how old your rope is!
-- Comments on trips and photos.
 
 ## Contributing
 
