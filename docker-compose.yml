@@ -28,7 +28,7 @@ services:
     env_file:
       - ./config/docker/development.env
     ports:
-      - 9000:9000
+      - "9000:9000"
 
   web:
     command: python manage.py runserver 0.0.0.0:8000 --insecure
