@@ -104,10 +104,7 @@ class AddTripLocation(LoginRequiredMixin, FormView):
             longitude = form.cleaned_data.get("longitude")
             trip.cave_coordinates = Point(longitude, latitude)
             trip.cave_location = form.cleaned_data["cave_location"]
-            latlng = f"{latitude}, {longitude}"
-            log_trip_action(
-                get_user(self.request), trip, "Added a cave location to", latlng
-            )
+            log_trip_action(get_user(self.request), trip, "added a cave location to")
             trip.save()
 
         if len(trips_to_update) > 1:
