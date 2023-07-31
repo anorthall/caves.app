@@ -1,3 +1,4 @@
+from core.logging import log_trip_action
 from core.utils import get_user
 from django.conf import settings
 from django.contrib import messages
@@ -22,7 +23,7 @@ class UserMap(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["map_markers"] = get_markers_for_user(self.request.user)
+        context["map_markers"] = get_markers_for_user(get_user(self.request))
         context["google_maps_user_map_id"] = settings.GOOGLE_MAPS_USER_MAP_ID
         context["can_add_more_locations"] = (
             get_user(self.request)
@@ -103,6 +104,10 @@ class AddTripLocation(LoginRequiredMixin, FormView):
             longitude = form.cleaned_data.get("longitude")
             trip.cave_coordinates = Point(longitude, latitude)
             trip.cave_location = form.cleaned_data["cave_location"]
+            latlng = f"{latitude}, {longitude}"
+            log_trip_action(
+                get_user(self.request), trip, "Added a cave location to", latlng
+            )
             trip.save()
 
         if len(trips_to_update) > 1:
