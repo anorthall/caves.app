@@ -1,6 +1,7 @@
 import uuid
 
 import humanize
+from caves.models import CaveEntrance, CaveSystem
 from distancefield import D, DistanceField, DistanceUnitField
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -61,6 +62,18 @@ class Trip(models.Model):
     ]
 
     # Cave details
+    # New
+    system = models.ForeignKey(
+        CaveSystem, on_delete=models.CASCADE, related_name="trips", null=True
+    )
+    entered_by = models.ForeignKey(
+        CaveEntrance, on_delete=models.CASCADE, related_name="trips", null=True
+    )
+    exited_by = models.ForeignKey(
+        CaveEntrance, on_delete=models.CASCADE, related_name="exits", null=True
+    )
+
+    # Old
     cave_name = models.CharField(
         max_length=100,
         help_text="The name of the cave or cave system entered.",

@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "logger.apps.LoggerConfig",
+    "caves.apps.CavesConfig",
     "staff.apps.StaffConfig",
     "stats.apps.StatsConfig",
     "import.apps.ImportConfig",
