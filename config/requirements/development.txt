@@ -1,6 +1,6 @@
 attrs==23.1.0
 boto3==1.28.15
-chardet==5.1.0
+chardet==5.2.0
 coverage==7.2.7
 crispy-bootstrap5==0.7
 Django==4.2.3
