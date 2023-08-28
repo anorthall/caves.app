@@ -19,7 +19,7 @@ ExifRead==3.0.0
 googlemaps==4.10.0
 gunicorn==21.2.0
 hiredis==2.2.3
-humanize==4.7.0
+humanize==4.8.0
 imgproxy==1.0.0
 itsdangerous==2.1.2
 Pillow==10.0.0
