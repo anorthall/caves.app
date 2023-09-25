@@ -14,7 +14,7 @@ django-ratelimit==4.1.0
 django-storages==1.13.2
 django-timezone-field==5.1
 django-tinymce==3.6.1
-django-unfold==0.7.0
+django-unfold==0.10.0
 ExifRead==3.0.0
 googlemaps==4.10.0
 gunicorn==21.2.0
