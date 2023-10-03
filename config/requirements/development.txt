@@ -27,7 +27,7 @@ humanize==4.7.0
 imgproxy==1.0.0
 isort==5.12.0
 itsdangerous==2.1.2
-Pillow==10.0.0
+Pillow==10.0.1
 pre-commit==3.3.3
 psycopg2==2.9.7
 python-dateutil==2.8.2
