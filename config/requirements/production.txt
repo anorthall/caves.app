@@ -2,7 +2,7 @@ attrs==23.1.0
 boto3==1.28
 chardet==5.2.0
 crispy-bootstrap5==0.7
-Django==4.2.4
+Django==4.2.6
 django-active-link==0.1.8
 django-countries==7.5.1
 django-crispy-forms==2.0
