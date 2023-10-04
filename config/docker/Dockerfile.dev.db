@@ -1,4 +1,4 @@
-FROM postgres:15.3
+FROM postgres:15.4
 
 # postgis/postgis docker images do not provide an arm64 build which leads
 # to very poor performance on Apple Silicon. This is a workaround to

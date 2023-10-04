@@ -62,7 +62,7 @@ jobs:
           files: ./app/coverage.xml
     services:
       postgres:
-        image: postgis/postgis:15-3.3
+        image: postgis/postgis:15-3.4
         env:
           POSTGRES_USER: ${{ env.SQL_USER }}
           POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
