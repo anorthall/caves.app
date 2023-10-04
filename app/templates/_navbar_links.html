@@ -2,7 +2,7 @@
 {% if user.is_authenticated %}
   <li class="nav-item">
     <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
-      <i class="bi bi-person-fill"></i> Profile
+      <i class="bi bi-person-fill"></i> Trips
     </a>
   </li>
 
