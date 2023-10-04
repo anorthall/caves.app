@@ -18,7 +18,9 @@ class Migration(migrations.Migration):
                 blank=True,
                 max_length=150,
                 null=True,
-                storage=storages.backends.s3boto3.S3Boto3Storage(location="p"),
+                storage=storages.backends.s3boto3.S3Boto3Storage(
+                    location="p", bucket_name="caves.app"
+                ),
                 upload_to=logger.models.tripphoto.trip_photo_upload_path,
             ),
         ),
