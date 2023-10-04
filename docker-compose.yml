@@ -13,7 +13,7 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   redis:
-    image: redis:7.0.11
+    image: redis:7.2.1
     volumes:
       - ./data/development/redis:/data
     expose:
