@@ -30,4 +30,4 @@ redis==5.0.1
 sentry-sdk==1.29.2
 tablib==3.5.0
 tblib==2.0.0
-tzdata==2023.3.post1
+tzdata==2023.3
