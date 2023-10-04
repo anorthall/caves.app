@@ -23,7 +23,7 @@ humanize==4.8.0
 imgproxy==1.0.0
 itsdangerous==2.1.2
 Pillow==10.0.1
-psycopg2==2.9.7
+psycopg2==2.9.*
 python-dateutil==2.8.2
 python-magic==0.4.27
 redis==5.0.1
