@@ -1,0 +1,47 @@
+{% if trip and user == object_owner %}
+  <div class="modal fade" id="deleteTripModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Delete trip</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete the trip to {{ trip.cave_name }} on
+          {{ trip.start|date }}? This action is permanent and cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form action="{% url 'log:trip_delete' trip.uuid %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete trip</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% if trip.report and user == object_owner %}
+  <div class="modal fade" id="deleteTripReportModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Delete trip report</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete the trip report for the trip to {{ trip.cave_name }} on
+          {{ trip.start|date }}? This action is permanent and cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form action="{% url 'log:report_delete' trip.uuid %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete trip report</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

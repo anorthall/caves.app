@@ -4,5 +4,6 @@
 {% block title %}Trips{% endblock %}
 {% block display_title %}Trips{% endblock %}
 
-{% block sidebar %}{% include "logger/_sidebar_trips.html" with generate_modal="yes" %}{% endblock %}
+{% block sidebar %}{% include "logger/_sidebar_trips.html" %}{% endblock %}
 {% block mobile_menu %}{% include "logger/_sidebar_trips.html" %}{% endblock %}
+{% block modals %}{% include "logger/_trip_and_report_delete_modals.html" %}{% endblock %}
