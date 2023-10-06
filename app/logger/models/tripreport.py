@@ -8,13 +8,6 @@ from .trip import Trip
 
 # noinspection PyUnresolvedReferences
 class TripReport(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["user", "slug"], name="unique_slug_per_user"
-            )
-        ]
-
     # Relationships
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     trip = models.OneToOneField(
@@ -26,16 +19,6 @@ class TripReport(models.Model):
 
     # Content
     title = models.CharField(max_length=100)
-    pub_date = models.DateField(
-        "date published", help_text="The date which will be shown on the report."
-    )
-    slug = models.SlugField(
-        max_length=100,
-        help_text=(
-            "A unique identifier for the URL of the report. "
-            "No spaces or special characters allowed."
-        ),
-    )
     content = HTMLField()
 
     # Metadata

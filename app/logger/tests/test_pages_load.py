@@ -27,9 +27,7 @@ class TestLoggerPagesLoad(TestCase):
             user=self.user,
             trip=self.trip,
             title="Test Report",
-            slug="test",
             content="Test Report Content",
-            pub_date=timezone.now().date(),
         )
 
         self.client = Client()

@@ -100,7 +100,6 @@ class TripModelTests(TestCase):
             trip=self.trip,
             user=self.trip.user,
             title="Test Report",
-            pub_date=tz.now(),
             content="Test Report",
         )
 
@@ -752,7 +751,6 @@ class TripDetailViewTests(TestCase):
             trip=trip,
             title="Test report",
             content="Test report content",
-            pub_date=tz.now().date(),
         )
         response = self.client.get(trip.get_absolute_url())
         self.assertContains(response, report.get_absolute_url())
@@ -767,7 +765,6 @@ class TripDetailViewTests(TestCase):
             trip=trip,
             title="Test report",
             content="Test report content",
-            pub_date=tz.now().date(),
             privacy=TripReport.PRIVATE,
         )
         response = self.client.get(trip.get_absolute_url())

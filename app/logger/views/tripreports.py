@@ -5,7 +5,6 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import CreateView, UpdateView
@@ -24,9 +23,6 @@ class ReportCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = TripReportForm
     template_name = "logger/trip_report_create.html"
     success_message = "The trip report has been created."
-    initial = {
-        "pub_date": timezone.localdate,
-    }
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

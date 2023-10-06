@@ -21,14 +21,9 @@ class TripReportForm(forms.ModelForm):
         model = TripReport
         fields = [
             "title",
-            "pub_date",
-            "slug",
             "content",
             "privacy",
         ]
-        widgets = {
-            "pub_date": forms.DateInput(attrs={"type": "date"}),
-        }
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,22 +33,9 @@ class TripReportForm(forms.ModelForm):
         self.helper.form_method = "post"
         self.helper.layout = Layout(
             Fieldset(
-                "Report",
+                "Trip report",
                 FloatingField("title"),
-                Div(
-                    Div("pub_date", css_class="col-12 col-xl-6"),
-                    Div("slug", css_class="col-12 col-xl-6"),
-                    css_class="row mt-4",
-                ),
-                css_class="mt-4",
-            ),
-            Fieldset(
-                "Content",
                 "content",
-                css_class="mt-4",
-            ),
-            Fieldset(
-                "Privacy",
                 "privacy",
                 css_class="mt-4",
             ),
@@ -67,17 +49,6 @@ class TripReportForm(forms.ModelForm):
             self.helper.add_input(
                 Submit("submit", "Create report", css_class="btn-lg w-100 mt-4")
             )
-
-    def clean_slug(self):
-        """Check that the user does not have another slug with the same value"""
-        slug = self.cleaned_data.get("slug")
-        try:
-            tr = TripReport.objects.get(user=self.user, slug=slug)
-            if tr == self.instance:
-                return slug
-            raise ValidationError("The slug must be unique.")
-        except TripReport.DoesNotExist:
-            return slug
 
 
 # noinspection PyTypeChecker

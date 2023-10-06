@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 import factory
 from django.contrib.auth import get_user_model
-from django.utils.text import slugify
 from factory import random
 from factory.django import DjangoModelFactory
 from faker import Faker
@@ -269,13 +268,8 @@ class TripReportFactory(DjangoModelFactory):
         model = TripReport
 
     title = factory.Faker("sentence", nb_words=5)
-    slug = factory.LazyAttribute(lambda o: slugify(o.title))
     content = factory.Faker("text", max_nb_chars=4000)
     trip = factory.Iterator(Trip.objects.filter(report=None))
-
-    @factory.lazy_attribute
-    def pub_date(self):
-        return (self.trip.start + timedelta(days=random.randgen.randint(1, 60))).date()
 
     @classmethod
     def _adjust_kwargs(cls, **kwargs):

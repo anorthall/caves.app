@@ -1,11 +1,9 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from django.db.utils import IntegrityError
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone as tz
-from django.utils.timezone import datetime as dt
 
 from ..models import Trip, TripReport
 
@@ -51,54 +49,6 @@ class TripReportTests(TestCase):
         logger = logging.getLogger("django.request")
         logger.setLevel(self.previous_level)
 
-    def test_slug_is_unique_for_user_only(self):
-        """Test that the slug is unique for the user only"""
-        TripReport.objects.create(
-            user=self.user,
-            trip=self.trip,
-            title="Test Report",
-            slug="slug",
-            content="Test Content",
-            pub_date=tz.now().date(),
-        )
-
-        # Create another user, trip, and trip report with the same slug.
-        user2 = User.objects.create_user(
-            email="test2@users.app",
-            username="username2",
-            password="password2",
-            name="Test2",
-        )
-        trip2 = Trip.objects.create(
-            user=user2,
-            cave_name="No Duration Trip",
-            start=tz.now(),
-        )
-        TripReport.objects.create(
-            user=user2,
-            trip=trip2,
-            title="Test Report 2",
-            slug="slug",
-            content="Test Content 2",
-            pub_date=tz.now().date(),
-        )
-
-        # Now create a second trip/report for the original user with the same slug
-        with self.assertRaises(IntegrityError):
-            trip = Trip.objects.create(
-                user=self.user,
-                cave_name="Test Cave",
-                start=tz.now(),
-            )
-            TripReport.objects.create(
-                user=self.user,
-                trip=trip,
-                title="Test Report",
-                slug="slug",
-                content="Test Content",
-                pub_date=tz.now().date(),
-            )
-
     def test_trip_report_create_view(self):
         """Test the trip report create view in GET and POST"""
         self.client.force_login(self.user)
@@ -109,8 +59,6 @@ class TripReportTests(TestCase):
             reverse("log:report_create", args=[self.trip.uuid]),
             {
                 "title": "Test Report",
-                "pub_date": dt.now().date(),
-                "slug": "test-report",
                 "content": "Test content.",
                 "privacy": TripReport.PUBLIC,
             },
@@ -123,43 +71,10 @@ class TripReportTests(TestCase):
         self.assertEqual(TripReport.objects.get().privacy, TripReport.PUBLIC)
         self.assertEqual(TripReport.objects.get().trip, self.trip)
 
-    def test_trip_report_create_view_with_a_duplicate_slug(self):
-        """Test the trip report create view with a duplicate slug"""
-        TripReport.objects.create(
-            title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
-            content="Test content.",
-            trip=self.trip,
-            user=self.user,
-        )
-
-        trip = Trip.objects.create(
-            user=self.user,
-            cave_name="Test Cave",
-            start=tz.now(),
-        )
-
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("log:report_create", args=[trip.uuid]),
-            {
-                "title": "Test Report",
-                "pub_date": dt.now().date(),
-                "slug": "test-report",
-                "content": "Test content.",
-            },
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "The slug must be unique.")
-
     def test_trip_report_create_view_redirects_if_a_report_already_exists(self):
         """Test the trip report create view redirects if a report already exists"""
         report = TripReport.objects.create(
             title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
@@ -187,8 +102,6 @@ class TripReportTests(TestCase):
 
         report = TripReport.objects.create(
             title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
@@ -213,8 +126,6 @@ class TripReportTests(TestCase):
         """Test users can view and edit their own trip reports."""
         report = TripReport.objects.create(
             title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
@@ -238,8 +149,6 @@ class TripReportTests(TestCase):
             reverse("log:report_update", args=[report.trip.uuid]),
             {
                 "title": "Test Report Updated",
-                "pub_date": dt.now().date(),
-                "slug": "test-report",
                 "content": "Test content updated.",
                 "privacy": TripReport.PUBLIC,
             },
@@ -249,7 +158,6 @@ class TripReportTests(TestCase):
 
         report.refresh_from_db()
         self.assertEqual(report.title, "Test Report Updated")
-        self.assertEqual(report.slug, "test-report")
         self.assertEqual(report.content, "Test content updated.")
 
         response = self.client.post(
@@ -264,8 +172,6 @@ class TripReportTests(TestCase):
         self.client.force_login(self.user)
         report = TripReport.objects.create(
             title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
@@ -290,8 +196,6 @@ class TripReportTests(TestCase):
         self.client.force_login(self.user)
         TripReport.objects.create(
             title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
@@ -309,8 +213,6 @@ class TripReportTests(TestCase):
         self.client.force_login(self.user)
         report = TripReport.objects.create(
             title="Test Report",
-            pub_date=dt.now().date(),
-            slug="test-report",
             content="Test content.",
             privacy=TripReport.PUBLIC,
             trip=self.trip,
@@ -333,7 +235,6 @@ class TripReportTests(TestCase):
             trip=trip,
             title="Test report",
             content="Test report content",
-            pub_date=tz.now().date(),
         )
         self.client.force_login(self.user2)
 

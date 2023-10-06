@@ -137,8 +137,6 @@ class UserUnitTests(TestCase):
             user=self.user,
             trip=trip,
             title="Test Report",
-            pub_date=timezone.now().date(),
-            slug="test-report",
             content="Test content",
         )
 

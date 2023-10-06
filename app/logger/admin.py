@@ -30,7 +30,7 @@ class TripReportInline(TabularInline):
     extra = 0
     max_num = 0
     show_change_link = True
-    fields = ("title", "pub_date")
+    fields = ("title",)
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -183,7 +183,7 @@ class TripPhotoAdmin(ModelAdmin):
 class TripReportAdmin(ModelAdmin):
     list_display = ("user", "title", "trip", "added")
     list_display_links = ("title",)
-    list_filter = ("added", "updated", "pub_date")
+    list_filter = ("added", "updated")
     ordering = ("-added",)
     search_fields = (
         "title",
@@ -195,5 +195,4 @@ class TripReportAdmin(ModelAdmin):
     search_help_text = (
         "Search by title or trip UUID, or by author name, email or username."
     )
-    prepopulated_fields = {"slug": ("title",)}
     readonly_fields = ("added", "updated")
