@@ -16,7 +16,7 @@ django-rich==1.7.0
 django-storages==1.14.1
 django-timezone-field==6.0.1
 django-tinymce==3.6.1
-django-unfold==0.11.0
+django-unfold==0.12.0
 ExifRead==3.0.0
 factory-boy==3.3.0
 Faker==19.6.*
