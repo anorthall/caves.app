@@ -19,7 +19,8 @@ from timezone_field import TimeZoneField
 def avatar_upload_path(instance, filename):
     """Returns the path to upload avatars to"""
     original_filename, ext = os.path.splitext(filename)
-    return f"avatars/{instance.uuid}/avatar{ext}"
+    avatar_uuid = uuid.uuid4().hex
+    return f"avatars/{instance.uuid}/{avatar_uuid}{ext}"
 
 
 class CavingUserManager(BaseUserManager):
