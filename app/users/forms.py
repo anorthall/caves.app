@@ -336,6 +336,17 @@ class ProfileChangeForm(forms.ModelForm):
                     Div("country", css_class="col"),
                     css_class="row row-cols-1 row-cols-lg-2",
                 ),
+                HTML(
+                    "<p class='text-muted'><strong>Warning:</strong> "
+                    "Changing your username will result in a new profile URL. If you "
+                    "have shared your profile URL with anyone they will no longer be "
+                    "able to access it until you send them a new link. Links from "
+                    "within caves.app will be updated automatically and links to "
+                    "individual trips will not change. After changing your username, "
+                    "other accounts will be free to select your old username for their "
+                    "own use.</p>"
+                ),
+                css_class="col-12",
             ),
             Fieldset(
                 "Profile settings",
