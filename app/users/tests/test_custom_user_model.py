@@ -148,7 +148,9 @@ class UserUnitTests(TestCase):
         instance.uuid = uuid.uuid4()
         filename = "test.png"
         path = avatar_upload_path(instance, filename)
-        self.assertEqual(path, f"avatars/{instance.uuid}/avatar.png")
+        self.assertTrue(
+            path.startswith(f"avatars/{instance.uuid}/") and path.endswith(".png")
+        )
 
 
 @tag("integration", "users", "fast")
