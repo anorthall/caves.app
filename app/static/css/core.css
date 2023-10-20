@@ -20,6 +20,9 @@ body {
   max-width: 38em;
 }
 
+#mainContent {
+  min-width: 0;
+}
 
 /*
   Messages

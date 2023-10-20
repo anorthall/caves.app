@@ -7,7 +7,6 @@ from django.contrib.gis.geos import Point
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Exists, OuterRef
-from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -191,26 +190,7 @@ class TripDelete(LoginRequiredMixin, View):
         return redirect("log:user", username=request.user.username)
 
 
-class TripReportDetail(TripContextMixin, ViewableObjectDetailView):
-    model = Trip
-    template_name = "logger/trip_report_detail.html"
-    slug_field = "uuid"
-    slug_url_kwarg = "uuid"
-
-    def get_object(self, *args, **kwargs):
-        """Check that the trip has a report, otherwise raise 404"""
-        obj = super().get_object(*args, **kwargs)
-        if obj.trip_report.strip():
-            return obj
-        else:
-            raise Http404
-
-    def get_queryset(self):
-        qs = (
-            Trip.objects.all()
-            .select_related("user")
-            .prefetch_related(
-                "photos",
-            )
-        )
-        return qs
+class TripReportDetail(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        trip = get_object_or_404(Trip, uuid=kwargs.get("uuid"))
+        return trip.get_absolute_url()
