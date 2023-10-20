@@ -2,6 +2,8 @@ from distancefield import DistanceField
 from django.contrib import admin
 from django.forms import ModelForm
 from logger.forms import DistanceUnitFormMixin
+from tinymce.models import HTMLField
+from tinymce.widgets import TinyMCE
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.widgets import UnfoldAdminTextInputWidget
 
@@ -63,7 +65,10 @@ class TripAdmin(ModelAdmin):
     formfield_overrides = {
         DistanceField: {
             "widget": UnfoldAdminTextInputWidget,
-        }
+        },
+        HTMLField: {
+            "widget": TinyMCE,
+        },
     }
     fieldsets = (
         (
@@ -126,6 +131,7 @@ class TripAdmin(ModelAdmin):
             },
         ),
         ("Notes", {"fields": ("notes",)}),
+        ("Trip report", {"fields": ("trip_report",)}),
     )
 
 
