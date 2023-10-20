@@ -48,7 +48,9 @@ urlpatterns = [
         views.TripPhotosUpdate.as_view(),
         name="trip_photos_update",
     ),
-    path("report/<uuid:uuid>/", views.TripReportDetail.as_view(), name="report_detail"),
+    path(
+        "report/<uuid:uuid>/", views.TripReportRedirect.as_view(), name="report_detail"
+    ),
     path("search/", views.Search.as_view(), name="search"),
     path("feed/htmx/", views.HTMXTripFeed.as_view(), name="feed_htmx_view"),
     path(

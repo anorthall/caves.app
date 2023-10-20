@@ -190,7 +190,9 @@ class TripDelete(LoginRequiredMixin, View):
         return redirect("log:user", username=request.user.username)
 
 
-class TripReportDetail(RedirectView):
+class TripReportRedirect(RedirectView):
+    """Redirect to support old TripReport Model URLs which are now Trip URLs"""
+
     def get_redirect_url(self, *args, **kwargs):
         trip = get_object_or_404(Trip, uuid=kwargs.get("uuid"))
         return trip.get_absolute_url()
