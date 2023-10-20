@@ -44,7 +44,7 @@ class UserProfile(ListView):
     def get_queryset(self):
         trips = (
             Trip.objects.filter(user=self.profile_user)
-            .select_related("report", "user")
+            .select_related("user")
             .prefetch_related("photos")
             .order_by(*self.get_ordering())
         ).annotate(

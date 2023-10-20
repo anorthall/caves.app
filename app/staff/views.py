@@ -1,7 +1,7 @@
 from comments.models import Comment
 from django.contrib.auth import get_user_model
 from django.views.generic import RedirectView, TemplateView
-from logger.models import Trip, TripPhoto, TripReport
+from logger.models import Trip, TripPhoto
 
 from .mixins import ModeratorRequiredMixin
 from .statistics import get_integer_field_statistics, get_time_statistics
@@ -16,7 +16,6 @@ class Dashboard(ModeratorRequiredMixin, TemplateView):
         context = super().get_context_data(*args, **kwargs)
 
         trips = Trip.objects.all()
-        trip_reports = TripReport.objects.all()
         users = User.objects.all()
         comments = Comment.objects.all()
         photos = TripPhoto.objects.filter(is_valid=True)
@@ -26,8 +25,6 @@ class Dashboard(ModeratorRequiredMixin, TemplateView):
         statistics = [
             get_time_statistics(trips),
             get_time_statistics(trips, metric="Updated", lookup="updated__gte"),
-            get_time_statistics(trip_reports),
-            get_time_statistics(trip_reports, metric="Updated", lookup="updated__gte"),
             get_time_statistics(comments),
             get_time_statistics(photos_valid, metric="Valid", lookup="added__gte"),
             get_time_statistics(

@@ -7,8 +7,7 @@ from comments.factories import CommentFactory
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from logger.factories import TripFactory, TripReportFactory
-from logger.models import Trip
+from logger.factories import TripFactory
 from users.factories import UserFactory
 
 User = get_user_model()
@@ -30,13 +29,6 @@ class Command(BaseCommand):
             type=int,
             default=6000,
             help="Number of trips to generate",
-        )
-
-        parser.add_argument(
-            "--reports",
-            type=int,
-            default=-1,
-            help="Number of trip reports to generate",
         )
 
         parser.add_argument(
@@ -78,9 +70,6 @@ class Command(BaseCommand):
 
         self.options = options
 
-        if options["reports"] < 0:
-            options["reports"] = options["trips"] // 10
-
         if options["seed"] != 0:
             random.seed(options["seed"])
             factory.random.reseed_random(options["seed"])
@@ -94,12 +83,10 @@ class Command(BaseCommand):
 
         self._generate_friendships(user_pks)
         trips = self._generate_trips(user_pks)
-        reports = self._generate_trip_reports(user_pks)
 
         if options["verbosity"] >= 1:
             self.stdout.write(
-                f"Done! Generated {len(user_pks)} users, {len(trips)} "
-                f"trips and {len(reports)} reports."
+                f"Done! Generated {len(user_pks)} users and {len(trips)} trips."
             )
 
     def __get_active_users(self, user_pks=None):
@@ -109,19 +96,6 @@ class Command(BaseCommand):
         else:
             users = list(User.objects.filter(pk__in=user_pks, is_active=True))
         return users
-
-    def __find_trip_without_report(self, trips=None):
-        if trips is None:
-            trips = list(Trip.objects.all())
-
-        trip = None
-        while trip is None:
-            trip = random.choice(trips)
-            if not trip.has_report:
-                trip = trip
-                break
-
-        return trip
 
     def _generate_users(self):
         """Generate num_users amount of users"""
@@ -189,32 +163,6 @@ class Command(BaseCommand):
             CommentFactory(trip=trip, author=user)
 
         return num_comments
-
-    def _generate_trip_reports(self, user_pks=None):
-        """Generate num_reports amount of trip reports amongst the users specified"""
-        num_reports = self.options["reports"]
-        if self.options["verbosity"] >= 1:
-            self.stdout.write(f"Generating {num_reports} reports...")
-        users = self.__get_active_users(user_pks)
-        user_pks = [user.pk for user in users]
-
-        reports = []
-        trips = list(Trip.objects.filter(user__pk__in=user_pks))
-        for _ in range(num_reports):
-            trip = self.__find_trip_without_report(trips)
-            if trip is None:
-                break
-
-            report = TripReportFactory(trip=trip, user=trip.user)
-            trips.remove(trip)
-            reports.append(report)
-
-            if self.options["verbosity"] >= 2:
-                self.stdout.write(
-                    f"Created report with PK {report.pk} for user {trip.user.email}."
-                )
-
-        return reports
 
     def _generate_friendships(self, user_pks=None):
         """Generate friendships between users"""

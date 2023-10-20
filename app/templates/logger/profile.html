@@ -167,9 +167,6 @@
                 {% if trip.cave_coordinates and user == profile_user %}
                   <a title="Trip has a cave location stored" class="text-secondary" href="{{ trip.get_absolute_url }}"><i class="bi bi-geo-alt"></i></a>&nbsp;
                 {% endif %}
-                {% if trip.report %}
-                  <a title="Trip report added" class="text-warning" href="{{ trip.report.get_absolute_url }}"><i class="bi bi-card-text"></i></a>&nbsp;
-                {% endif %}
                 {% if user == profile_user %}
                   <a title="Edit trip" class="text-primary" href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>
                 {% endif %}

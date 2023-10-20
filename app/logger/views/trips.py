@@ -73,7 +73,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
     def get_queryset(self):
         qs = (
             Trip.objects.all()
-            .select_related("user", "report")
+            .select_related("user")
             .prefetch_related(
                 "photos",
                 "likes",
@@ -188,3 +188,11 @@ class TripDelete(LoginRequiredMixin, View):
             f"The trip to {trip.cave_name} has been deleted.",
         )
         return redirect("log:user", username=request.user.username)
+
+
+class TripReportRedirect(RedirectView):
+    """Redirect to support old TripReport Model URLs which are now Trip URLs"""
+
+    def get_redirect_url(self, *args, **kwargs):
+        trip = get_object_or_404(Trip, uuid=kwargs.get("uuid"))
+        return trip.get_absolute_url()

@@ -46,25 +46,6 @@
     <i class="bi bi-images"></i> Photos
   </a>
 
-  <span class="nav-item sidebar-header d-none d-lg-block mt-4">Report</span>
-  {% if trip.report %}
-    <a class="nav-link {% active_link 'log:report_detail' uuid=trip.uuid %}" href="{{ trip.report.get_absolute_url }}">
-      <i class="bi bi-card-text"></i> View trip report
-    </a>
-
-    <a class="nav-link {% active_link 'log:report_update' uuid=trip.uuid %}" href="{% url 'log:report_update' trip.uuid %}">
-      <i class="bi bi-pencil"></i> Edit trip report
-    </a>
-
-    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripReportModal">
-      <i class="bi bi-x-lg"></i> Delete trip report
-    </a>
-  {% else %}
-    <a class="nav-link {% active_link 'log:report_create' uuid=trip.uuid %}" href="{% url 'log:report_create' trip.uuid %}">
-      <i class="bi bi-card-text"></i> Add trip report
-    </a>
-  {% endif %}
-
 {% elif trip and user != object_owner %}
   {% comment %}Viewing a trip but not the owner of it{% endcomment %}
 
@@ -78,12 +59,6 @@
   <a class="nav-link {% active_link 'log:trip_detail' uuid=trip.uuid %}" href="{{ trip.get_absolute_url }}">
     <i class="bi bi-card-text"></i> View trip
   </a>
-
-  {% if can_view_report %}
-    <a class="nav-link {% active_link 'log:report_detail' uuid=trip.uuid %}" href="{{ trip.report.get_absolute_url }}">
-      <i class="bi bi-card-text"></i> View trip report
-    </a>
-  {% endif %}
 
   {% if can_add_friend and user.is_authenticated %}
     <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">

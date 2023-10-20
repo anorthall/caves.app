@@ -6,7 +6,7 @@ from django.core import mail
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
-from logger.models import Trip, TripReport
+from logger.models import Trip
 
 from ..models import avatar_upload_path
 
@@ -124,24 +124,6 @@ class UserUnitTests(TestCase):
     def test_user_get_full_name_function(self):
         """Test the get_full_name function of the CavingUser model"""
         self.assertEqual(self.user.get_full_name(), self.user.name)
-
-    def test_user_trip_reports_function(self):
-        """Test the reports function of the CavingUser model"""
-        trip = Trip.objects.create(
-            user=self.user,
-            cave_name="Test Cave",
-            start=timezone.now(),
-        )
-
-        trip_report = TripReport.objects.create(
-            user=self.user,
-            trip=trip,
-            title="Test Report",
-            content="Test content",
-        )
-
-        self.assertEqual(self.user.reports.count(), 1)
-        self.assertEqual(self.user.reports.first(), trip_report)
 
     def test_avatar_upload_path(self):
         instance = mock.MagicMock()

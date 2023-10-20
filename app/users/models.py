@@ -12,7 +12,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
-from logger.models import Trip, TripReport
+from logger.models import Trip
 from timezone_field import TimeZoneField
 
 
@@ -223,8 +223,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "Allow comments on your trips",
         default=True,
         help_text=(
-            "If enabled, other users will be able to comment on your trips "
-            "and trip reports. Disabling this setting will not delete any existing "
+            "If enabled, other users will be able to comment on your trips. "
+            "Disabling this setting will not delete any existing "
             "comments, but will hide them until it is re-enabled."
         ),
     )
@@ -397,10 +397,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     @property
     def trips(self):
         return Trip.objects.filter(user=self)
-
-    @property
-    def reports(self):
-        return TripReport.objects.filter(user=self)
 
     @property
     def has_trips(self):
