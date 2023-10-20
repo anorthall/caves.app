@@ -5,7 +5,7 @@ from logger.forms import DistanceUnitFormMixin
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.widgets import UnfoldAdminTextInputWidget
 
-from .models import Trip, TripPhoto, TripReport
+from .models import Trip, TripPhoto
 
 
 class TripAdminForm(DistanceUnitFormMixin, ModelForm):
@@ -24,22 +24,10 @@ class TripPhotoInline(TabularInline):
         return False
 
 
-class TripReportInline(TabularInline):
-    model = TripReport
-    fk_name = "trip"
-    extra = 0
-    max_num = 0
-    show_change_link = True
-    fields = ("title",)
-
-    def has_add_permission(self, request, obj=None):
-        return False
-
-
 @admin.register(Trip)
 class TripAdmin(ModelAdmin):
     form = TripAdminForm
-    inlines = [TripPhotoInline, TripReportInline]
+    inlines = [TripPhotoInline]
     search_fields = (
         "cave_name",
         "cave_entrance",
@@ -177,22 +165,3 @@ class TripPhotoAdmin(ModelAdmin):
             },
         ),
     )
-
-
-@admin.register(TripReport)
-class TripReportAdmin(ModelAdmin):
-    list_display = ("user", "title", "trip", "added")
-    list_display_links = ("title",)
-    list_filter = ("added", "updated")
-    ordering = ("-added",)
-    search_fields = (
-        "title",
-        "user__username",
-        "user__name",
-        "user__email",
-        "trip__uuid",
-    )
-    search_help_text = (
-        "Search by title or trip UUID, or by author name, email or username."
-    )
-    readonly_fields = ("added", "updated")

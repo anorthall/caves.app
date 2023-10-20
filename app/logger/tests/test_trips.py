@@ -9,7 +9,7 @@ from django.utils import timezone as tz
 from django.utils.timezone import datetime as dt
 from django.utils.timezone import timedelta as td
 
-from ..models import Trip, TripReport
+from ..models import Trip
 
 User = get_user_model()
 
@@ -93,14 +93,6 @@ class TripModelTests(TestCase):
             surveyed_dist="400m",
             resurveyed_dist="500m",
             aid_dist="600m",
-        )
-
-        # Trip report
-        self.report = TripReport.objects.create(
-            trip=self.trip,
-            user=self.trip.user,
-            title="Test Report",
-            content="Test Report",
         )
 
     def tearDown(self):
@@ -264,36 +256,9 @@ class TripModelTests(TestCase):
         trip_friends.save()
         self.assertTrue(trip_friends.is_viewable_by(self.user2))
 
-    @tag("privacy")
-    def test_trip_report_is_private_and_is_public(self):
-        """Test the trip report is_private and is_public functions"""
-        self.trip.privacy = Trip.PRIVATE
-        self.trip.save()
-
-        self.report.privacy = TripReport.DEFAULT
-        self.report.save()
-
-        self.assertEqual(self.report.trip, self.trip)
-        self.assertTrue(self.report.is_private)
-        self.assertFalse(self.report.is_public)
-
-        self.report.privacy = TripReport.PRIVATE
-        self.report.save()
-        self.assertTrue(self.report.is_private)
-        self.assertFalse(self.report.is_public)
-
-        self.report.privacy = TripReport.PUBLIC
-        self.report.save()
-        self.assertFalse(self.report.is_private)
-        self.assertTrue(self.report.is_public)
-
     def test_trip_str(self):
         """Test the Trip model __str__ function"""
         self.assertEqual(str(self.trip), self.trip.cave_name)
-
-    def test_trip_report_str(self):
-        """Test the TripReport model __str__ function"""
-        self.assertEqual(str(self.report), self.report.title)
 
     def test_trip_validates_start_time_before_end_time(self):
         """Test the Trip model validates start time before end time"""
@@ -718,7 +683,6 @@ class TripDetailViewTests(TestCase):
 
         self.assertNotContains(response, reverse("log:trip_update", args=[trip.uuid]))
         self.assertNotContains(response, reverse("log:trip_delete", args=[trip.uuid]))
-        self.assertNotContains(response, reverse("log:report_create", args=[trip.uuid]))
 
     @tag("privacy")
     def test_add_as_friend_link_does_not_appear_when_disabled(self):
@@ -742,30 +706,3 @@ class TripDetailViewTests(TestCase):
         response = self.client.get(trip.get_absolute_url())
         self.assertNotContains(response, "Add as friend")
         self.assertNotContains(response, reverse("users:friend_add"))
-
-    def test_trip_report_link_appears_in_sidebar_for_other_users(self):
-        """Test that the trip report link appears in the sidebar for other users"""
-        trip = Trip.objects.filter(user=self.user).first()
-        report = TripReport.objects.create(
-            user=self.user,
-            trip=trip,
-            title="Test report",
-            content="Test report content",
-        )
-        response = self.client.get(trip.get_absolute_url())
-        self.assertContains(response, report.get_absolute_url())
-
-    @tag("privacy")
-    def test_trip_report_link_does_not_appear_in_sidebar_when_private(self):
-        """Test that the trip report link does not appear in the sidebar when private"""
-        trip = Trip.objects.filter(user=self.user).first()
-
-        report = TripReport.objects.create(
-            user=self.user,
-            trip=trip,
-            title="Test report",
-            content="Test report content",
-            privacy=TripReport.PRIVATE,
-        )
-        response = self.client.get(trip.get_absolute_url())
-        self.assertNotContains(response, report.get_absolute_url())

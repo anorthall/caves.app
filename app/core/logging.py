@@ -1,6 +1,6 @@
 import logging
 
-from logger.models import Trip, TripPhoto, TripReport
+from logger.models import Trip, TripPhoto
 from users.models import CavingUser
 
 ActionLogger = logging.getLogger("user_actions")
@@ -31,16 +31,6 @@ def log_trip_action(user: CavingUser, trip: Trip, verb: str, extra: str = ""):
         extra = f": {extra}"
 
     _log_action(user, f"{verb} a trip to {trip}{extra}")
-
-
-def log_tripreport_action(
-    user: CavingUser, report: TripReport, verb: str, extra: str = ""
-):
-    trip = _format_trip_for_logging(report.trip)
-    if extra:
-        extra = f": {extra}"
-
-    _log_action(user, f"{verb} a trip report for the trip to {trip}{extra}")
 
 
 def log_tripphoto_action(

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
-from logger.models import Trip, TripReport
+from logger.models import Trip
 
 User = get_user_model()
 
@@ -21,13 +21,6 @@ class TestLoggerPagesLoad(TestCase):
 
         self.trip = Trip.objects.create(
             user=self.user, cave_name="Test Trip", start=timezone.now()
-        )
-
-        self.report = TripReport.objects.create(
-            user=self.user,
-            trip=self.trip,
-            title="Test Report",
-            content="Test Report Content",
         )
 
         self.client = Client()
@@ -94,20 +87,6 @@ class TestLoggerPagesLoad(TestCase):
         """Test that the export page loads"""
         self.client.force_login(self.user)
         response = self.client.get(reverse("export:index"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_trip_report_detail_page_loads(self):
-        """Test that the trip report detail page loads"""
-        self.client.force_login(self.user)
-        response = self.client.get(self.report.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-
-    def test_trip_report_update_page_loads(self):
-        """Test that the trip report update page loads"""
-        self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("log:report_update", args=[self.report.trip.uuid])
-        )
         self.assertEqual(response.status_code, 200)
 
     def test_htmx_feed_page_loads(self):

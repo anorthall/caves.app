@@ -7,7 +7,7 @@ from factory import random
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from .models import Trip, TripReport
+from .models import Trip
 
 fake = Faker()
 
@@ -260,23 +260,4 @@ class TripFactory(DjangoModelFactory):
     @classmethod
     def _adjust_kwargs(cls, **kwargs):
         kwargs["cave_name"] = kwargs["cave_name"].replace(".", "")
-        return kwargs
-
-
-class TripReportFactory(DjangoModelFactory):
-    class Meta:
-        model = TripReport
-
-    title = factory.Faker("sentence", nb_words=5)
-    content = factory.Faker("text", max_nb_chars=4000)
-    trip = factory.Iterator(Trip.objects.filter(report=None))
-
-    @classmethod
-    def _adjust_kwargs(cls, **kwargs):
-        kwargs["title"] = kwargs["title"].replace(".", "")
-
-        user = kwargs.get("user", None)
-        if user is None:
-            kwargs["user"] = kwargs["trip"].user
-
         return kwargs

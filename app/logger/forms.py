@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
 from django import forms
@@ -10,45 +9,9 @@ from django.utils import timezone
 from users.models import CavingUser
 
 from .mixins import CleanCaveLocationMixin, DistanceUnitFormMixin
-from .models import Trip, TripPhoto, TripReport
+from .models import Trip, TripPhoto
 
 User = CavingUser
-
-
-# noinspection PyTypeChecker
-class TripReportForm(forms.ModelForm):
-    class Meta:
-        model = TripReport
-        fields = [
-            "title",
-            "content",
-            "privacy",
-        ]
-
-    def __init__(self, user, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.user = user
-        self.fields["content"].label = ""
-        self.helper = FormHelper()
-        self.helper.form_method = "post"
-        self.helper.layout = Layout(
-            Fieldset(
-                "Trip report",
-                FloatingField("title"),
-                "content",
-                "privacy",
-                css_class="mt-4",
-            ),
-        )
-
-        if self.instance.pk:
-            self.helper.add_input(
-                Submit("submit", "Update report", css_class="btn-lg w-100 mt-4")
-            )
-        else:
-            self.helper.add_input(
-                Submit("submit", "Create report", css_class="btn-lg w-100 mt-4")
-            )
 
 
 # noinspection PyTypeChecker
@@ -137,6 +100,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
             "custom_field_3",
             "custom_field_4",
             "custom_field_5",
+            "trip_report",
         ]
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
@@ -156,6 +120,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
         self.user = user
         self.has_custom_fields = False
         self.fields["notes"].label = ""
+        self.fields["trip_report"].label = ""
         self.helper = FormHelper()
         self.helper.form_method = "post"
 
@@ -243,6 +208,11 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
             Fieldset(
                 "Trip notes",
                 "notes",
+                css_class="mt-4",
+            ),
+            Fieldset(
+                "Trip report",
+                "trip_report",
                 css_class="mt-4",
             ),
         )
