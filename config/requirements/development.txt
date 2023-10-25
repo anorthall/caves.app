@@ -8,7 +8,7 @@ django-active-link==0.1.8
 django-countries==7.5.1
 django-crispy-forms==2.1
 django-debug-toolbar==4.2.0
-django-htmx==1.16.0
+django-htmx==1.17.0
 django-mailer==2.3
 django-markdownify==0.9.3
 django-ratelimit==4.1.0
