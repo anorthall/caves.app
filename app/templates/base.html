@@ -54,7 +54,7 @@
                         <span{% if not notification.read %} class="fw-bold"{% endif %}>{{ notification.get_message }}</span>
                         <br />
                         <small class="text-muted">
-                          {{ notification.added|timesince }} ago
+                          {{ notification.updated|timesince }} ago
                         </small>
                       </div>
                     {% endfor %}

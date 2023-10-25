@@ -25,7 +25,7 @@
           {% for notification in all_notifications %}
             <tr class="{% if notification.read %}opacity-75{% else %}fw-bold{% endif %}"
                 data-href="{% url 'users:notification' pk=notification.pk %}">
-              <td class="d-none d-xl-table-cell">{{ notification.added|naturaltime }}</td>
+              <td class="d-none d-xl-table-cell">{{ notification.updated|naturaltime }}</td>
               <td>{{ notification.get_message }}</td>
               <td class="text-end pe-0">
                 <a class="btn {% if notification.read %}btn-primary{% else %}btn-success{% endif %}"

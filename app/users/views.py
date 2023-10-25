@@ -525,7 +525,7 @@ class NotificationRedirect(LoginRequiredMixin, View):
         log_user_action(
             request.user, f"read notification: {notification.get_message()}"
         )
-        return redirect(notification.url)
+        return redirect(notification.get_url())
 
 
 class CustomFieldsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
@@ -552,7 +552,7 @@ class NotificationsList(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user).order_by("-added")
+        return Notification.objects.filter(user=self.request.user).order_by("-updated")
 
 
 class NotificationMarkAllRead(LoginRequiredMixin, View):
