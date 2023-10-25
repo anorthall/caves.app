@@ -1,3 +1,5 @@
+from typing import Union
+
 from core.logging import log_trip_action
 from core.utils import get_user
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,6 +13,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from django_ratelimit.decorators import ratelimit
 from users.models import CavingUser as User
+from users.models import Notification
 
 from .. import services
 from ..models import Trip
@@ -64,16 +67,34 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
     @method_decorator(ratelimit(key="user", rate="100/h"))
     def post(self, request, uuid):
-        trip = self.get_trip(request, uuid)
+        trip = self._get_trip(request, uuid)
 
-        if trip.user_liked:
+        if trip.user_liked:  # User already liked, so remove the existing like
             trip.likes.remove(request.user)
             trip.user_liked = False
             log_trip_action(request.user, trip, "unliked")
-        else:
+
+            if not trip.likes.exists():
+                # Delete the notification if there are no likes left
+                notification = self._get_trip_like_notification(trip)
+                if notification:
+                    notification.delete()
+
+        else:  # A new like, so add it
             trip.likes.add(request.user)
             trip.user_liked = True
             log_trip_action(request.user, trip, "liked")
+
+            # Create a notification for the trip owner if one doesn't already exist
+            if request.user != trip.user:
+                notification = self._get_trip_like_notification(trip)
+                if notification:
+                    notification.read = False
+                    notification.save()
+                else:
+                    Notification.objects.create(
+                        trip=trip, user=trip.user, type=Notification.TRIP_LIKE
+                    )
 
         friends = request.user.friends.all()
         liked_str = {trip.pk: trip.get_liked_str(request.user, friends)}
@@ -85,7 +106,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)
 
-    def get_trip(self, request, uuid):
+    def _get_trip(self, request, uuid):
         trip = (
             Trip.objects.filter(uuid=uuid)
             .annotate(
@@ -105,6 +126,16 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
             return trip
 
         raise PermissionDenied
+
+    def _get_trip_like_notification(self, trip) -> Union[Notification, None]:
+        """Get the notification for the trip like, if it exists"""
+        try:
+            return Notification.objects.get(
+                trip=trip, user=trip.user, type=Notification.TRIP_LIKE
+            )
+        except Notification.DoesNotExist:
+            pass
+        return None
 
 
 @method_decorator(ratelimit(key="user", rate="500/h", group="feed"), name="dispatch")

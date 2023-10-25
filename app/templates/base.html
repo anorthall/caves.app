@@ -51,10 +51,10 @@
                   {% if notifications.list %}
                     {% for notification in notifications.list %}
                       <div data-href="{% url 'users:notification' pk=notification.pk %}" class="item text-primary">
-                        <span{% if not notification.read %} class="fw-bold"{% endif %}>{{ notification.message }}</span>
+                        <span{% if not notification.read %} class="fw-bold"{% endif %}>{{ notification.get_message }}</span>
                         <br />
                         <small class="text-muted">
-                          {{ notification.added|timesince }} ago
+                          {{ notification.updated|timesince }} ago
                         </small>
                       </div>
                     {% endfor %}

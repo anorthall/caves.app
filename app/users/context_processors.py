@@ -5,15 +5,15 @@ def notifications(request):
     if not request.user.is_authenticated:
         return {}
 
-    notifications = {
+    n_context = {
         "unread": 0,
         "list": [],
     }
 
-    list = Notification.objects.filter(user=request.user).order_by("-added")[0:5]
-    if bool(list):
-        for notification in list:
+    n_list = Notification.objects.filter(user=request.user).order_by("-updated")[0:5]
+    if bool(n_list):
+        for notification in n_list:
             if not notification.read:
-                notifications["unread"] += 1
-            notifications["list"].append(notification)
-    return {"notifications": notifications}
+                n_context["unread"] += 1
+            n_context["list"].append(notification)
+    return {"notifications": n_context}

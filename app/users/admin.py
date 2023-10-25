@@ -4,17 +4,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from unfold.admin import ModelAdmin, TabularInline
 
 from .forms import UserAdminChangeForm, UserCreationForm
-from .models import FriendRequest, Notification
+from .models import FriendRequest
 
 User = get_user_model()
-
-
-class NotificationInline(TabularInline):
-    model = Notification
-    readonly_fields = ["message", "url", "read"]
-    can_delete = False
-    extra = 0
-    max_num = 0
 
 
 class FriendRequestSentInline(TabularInline):
@@ -40,7 +32,6 @@ class FriendRequestRecdInline(TabularInline):
 @admin.register(User)
 class CavingUserAdmin(BaseUserAdmin, ModelAdmin):
     inlines = [
-        NotificationInline,
         FriendRequestSentInline,
         FriendRequestRecdInline,
     ]

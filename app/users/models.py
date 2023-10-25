@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.urls import reverse
@@ -429,18 +430,119 @@ User = get_user_model()
 
 
 class Notification(models.Model):
+    FREE_TEXT = "A"
+    TRIP_LIKE = "B"
+    TRIP_COMMENT = "C"
+    TYPE_CHOICES = [
+        (FREE_TEXT, "Free text"),
+        (TRIP_LIKE, "Trip like"),
+        (TRIP_COMMENT, "Trip comment"),
+    ]
+
+    type = models.CharField(max_length=2, default="A", choices=TYPE_CHOICES)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"
     )
-    message = models.CharField(max_length=255)
-    url = models.URLField("URL", max_length=255)
     read = models.BooleanField(
         default=False, help_text="Has the notification been read by the user?"
     )
     added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    # Freeform specific fields
+    message = models.CharField(max_length=255, blank=True)
+    url = models.URLField("URL", max_length=255, blank=True)
+
+    # Trip specific fields
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.message
+        return self.get_message()
+
+    def clean(self):
+        """Ensure that different types of notifications have the correct fields"""
+        if self.type == self.FREE_TEXT:
+            if not self.message or not self.url:
+                raise ValidationError(
+                    "Free text notifications must have both a message and a URL."
+                )
+        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
+            if not self.trip:
+                raise ValidationError(
+                    "Trip like or trip comment notifications "
+                    "must have a trip associated with them."
+                )
+
+            if self.message or self.url:
+                raise ValidationError(
+                    "Trip like or trip comment notifications "
+                    "must not have a message or URL."
+                )
+
+            if self.type == self.TRIP_COMMENT:
+                raise NotImplementedError
+        else:
+            raise ValidationError("Invalid notification type")
+
+    def get_url(self) -> str:
+        if self.type == self.FREE_TEXT:
+            return self.url
+        elif self.type == self.TRIP_LIKE:
+            return self.trip.get_absolute_url()
+        elif self.type == self.TRIP_COMMENT:
+            raise NotImplementedError
+        raise RuntimeError("Invalid notification type")
+
+    def get_message(self) -> str:
+        if self.type == self.FREE_TEXT:
+            return self.message
+        elif self.type == self.TRIP_LIKE:
+            return self._get_trip_like_message()
+        elif self.type == self.TRIP_COMMENT:
+            raise NotImplementedError
+        raise RuntimeError("Invalid notification type")
+
+    def _get_trip_like_message(self) -> str:
+        assert self.type == self.TRIP_LIKE
+        liked_users = self.trip.likes.exclude(pk=self.user.pk)
+        liked_count = liked_users.count()
+
+        # A liked_count of < 1 should only occur when a user likes a trip, then
+        # unlikes it and the notification is not deleted. This should never
+        # happen, but if it does, we don't want to raise an exception.
+        if liked_count < 1:
+            return f"Your trip to {self.trip.cave_name} received likes."
+
+        if liked_count == 1:
+            user = liked_users.first().name
+            return f"Your trip to {self.trip.cave_name} was liked by {user}."
+
+        if liked_count == 2:
+            user1 = liked_users.first().name
+            user2 = liked_users.last().name
+            return (
+                f"Your trip to {self.trip.cave_name} was liked by {user1} and {user2}."
+            )
+
+        if liked_count > 2:
+            liked_users = list(liked_users)
+            user1 = liked_users[0].name
+            user2 = liked_users[1].name
+
+            others = liked_count - 2
+            liked_str = (
+                f"Your trip to {self.trip.cave_name} was liked by "
+                f"{user1}, {user2} and {liked_count - 2}"
+            )
+
+            if others == 1:
+                return liked_str + " other person."
+            else:
+                return liked_str + " others."
+
+        raise RuntimeError(
+            "Impossible state reached in TripLikeNotification.get_message()"
+        )
 
 
 class FriendRequest(models.Model):
