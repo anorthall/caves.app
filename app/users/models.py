@@ -466,32 +466,83 @@ class Notification(models.Model):
                 raise ValidationError(
                     "Free text notifications must have both a message and a URL."
                 )
+        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
+            if not self.trip:
+                raise ValidationError(
+                    "Trip like or trip comment notifications "
+                    "must have a trip associated with them."
+                )
+
+            if self.message or self.url:
+                raise ValidationError(
+                    "Trip like or trip comment notifications "
+                    "must not have a message or URL."
+                )
+
+            if self.type == self.TRIP_COMMENT:
+                raise NotImplementedError
+        else:
+            raise ValidationError("Invalid notification type")
+
+    def get_url(self) -> str:
+        if self.type == self.FREE_TEXT:
+            return self.url
         elif self.type == self.TRIP_LIKE:
-            if not self.trip:
-                raise ValidationError(
-                    "Trip like notifications must have a trip associated with them."
-                )
+            return self.trip.get_absolute_url()
         elif self.type == self.TRIP_COMMENT:
-            if not self.trip:
-                raise ValidationError(
-                    "Trip comment notifications must have a trip associated with them."
-                )
+            raise NotImplementedError
+        raise RuntimeError("Invalid notification type")
 
     def get_message(self) -> str:
         if self.type == self.FREE_TEXT:
             return self.message
         elif self.type == self.TRIP_LIKE:
-            raise NotImplementedError
+            return self._get_trip_like_message()
         elif self.type == self.TRIP_COMMENT:
             raise NotImplementedError
         raise RuntimeError("Invalid notification type")
 
-    def get_url(self) -> str:
-        if self.type == self.FREE_TEXT:
-            return self.url
-        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
-            return self.trip.get_absolute_url()
-        raise RuntimeError("Invalid notification type")
+    def _get_trip_like_message(self) -> str:
+        assert self.type == self.TRIP_LIKE
+        liked_users = self.trip.likes.exclude(pk=self.user.pk)
+        liked_count = liked_users.count()
+
+        # A liked_count of < 1 should only occur when a user likes a trip, then
+        # unlikes it and the notification is not deleted. This should never
+        # happen, but if it does, we don't want to raise an exception.
+        if liked_count < 1:
+            return f"Your trip to {self.trip.cave_name} received likes."
+
+        if liked_count == 1:
+            user = liked_users.first().name
+            return f"Your trip to {self.trip.cave_name} was liked by {user}."
+
+        if liked_count == 2:
+            user1 = liked_users.first().name
+            user2 = liked_users.last().name
+            return (
+                f"Your trip to {self.trip.cave_name} was liked by {user1} and {user2}."
+            )
+
+        if liked_count > 2:
+            liked_users = list(liked_users)
+            user1 = liked_users[0].name
+            user2 = liked_users[1].name
+
+            others = liked_count - 2
+            liked_str = (
+                f"Your trip to {self.trip.cave_name} was liked by "
+                f"{user1}, {user2} and {liked_count - 2}"
+            )
+
+            if others == 1:
+                return liked_str + " other person."
+            else:
+                return liked_str + " others."
+
+        raise RuntimeError(
+            "Impossible state reached in TripLikeNotification.get_message()"
+        )
 
 
 class FriendRequest(models.Model):
