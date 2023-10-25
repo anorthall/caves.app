@@ -522,7 +522,9 @@ class NotificationRedirect(LoginRequiredMixin, View):
 
         notification.read = True
         notification.save()
-        log_user_action(request.user, f"read notification: {notification.message}")
+        log_user_action(
+            request.user, f"read notification: {notification.get_message()}"
+        )
         return redirect(notification.url)
 
 

@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.urls import reverse
@@ -429,18 +430,68 @@ User = get_user_model()
 
 
 class Notification(models.Model):
+    FREE_TEXT = "A"
+    TRIP_LIKE = "B"
+    TRIP_COMMENT = "C"
+    TYPE_CHOICES = [
+        (FREE_TEXT, "Free text"),
+        (TRIP_LIKE, "Trip like"),
+        (TRIP_COMMENT, "Trip comment"),
+    ]
+
+    type = models.CharField(max_length=2, default="A", choices=TYPE_CHOICES)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"
     )
-    message = models.CharField(max_length=255)
-    url = models.URLField("URL", max_length=255)
     read = models.BooleanField(
         default=False, help_text="Has the notification been read by the user?"
     )
     added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    # Freeform specific fields
+    message = models.CharField(max_length=255, blank=True)
+    url = models.URLField("URL", max_length=255, blank=True)
+
+    # Trip specific fields
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.message
+        return self.get_message()
+
+    def clean(self):
+        """Ensure that different types of notifications have the correct fields"""
+        if self.type == self.FREE_TEXT:
+            if not self.message or not self.url:
+                raise ValidationError(
+                    "Free text notifications must have both a message and a URL."
+                )
+        elif self.type == self.TRIP_LIKE:
+            if not self.trip:
+                raise ValidationError(
+                    "Trip like notifications must have a trip associated with them."
+                )
+        elif self.type == self.TRIP_COMMENT:
+            if not self.trip:
+                raise ValidationError(
+                    "Trip comment notifications must have a trip associated with them."
+                )
+
+    def get_message(self) -> str:
+        if self.type == self.FREE_TEXT:
+            return self.message
+        elif self.type == self.TRIP_LIKE:
+            raise NotImplementedError
+        elif self.type == self.TRIP_COMMENT:
+            raise NotImplementedError
+        raise RuntimeError("Invalid notification type")
+
+    def get_url(self) -> str:
+        if self.type == self.FREE_TEXT:
+            return self.url
+        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
+            return self.trip.get_absolute_url()
+        raise RuntimeError("Invalid notification type")
 
 
 class FriendRequest(models.Model):

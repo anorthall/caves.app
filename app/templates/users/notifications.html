@@ -24,12 +24,12 @@
         <tbody class="align-middle">
           {% for notification in all_notifications %}
             <tr class="{% if notification.read %}opacity-75{% else %}fw-bold{% endif %}"
-                data-href="{{ notification.url }}">
+                data-href="{% url 'users:notification' pk=notification.pk %}">
               <td class="d-none d-xl-table-cell">{{ notification.added|naturaltime }}</td>
-              <td>{{ notification.message }}</td>
+              <td>{{ notification.get_message }}</td>
               <td class="text-end pe-0">
                 <a class="btn {% if notification.read %}btn-primary{% else %}btn-success{% endif %}"
-                   href="{{ notification.url }}"><i class="bi bi-link-45deg"></i></a>
+                   href="{% url 'users:notification' pk=notification.pk %}"><i class="bi bi-link-45deg"></i></a>
               </td>
             </tr>
           {% endfor %}
