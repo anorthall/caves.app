@@ -26,6 +26,8 @@ class AddComment(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
 
+            trip.followers.add(request.user)
+
             # Send emails and notifications to followers of the trip
             for user in trip.followers.all():
                 # Send the email
@@ -54,7 +56,7 @@ class AddComment(LoginRequiredMixin, View):
                         )
             messages.success(
                 request,
-                "Your comment has been added.",
+                "Your comment has been added and you are now following this trip.",
             )
             log_trip_action(request.user, form.trip, "commented on")
         else:
