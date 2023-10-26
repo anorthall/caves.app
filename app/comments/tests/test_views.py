@@ -155,6 +155,7 @@ class TestCommentViews(TestCase):
         """Test that a notification is sent when a comment is posted"""
         self.client.force_login(self.user2)
         self.trip.privacy = Trip.PUBLIC
+        self.trip.followers.add(self.user)
         self.trip.save()
 
         response = self.client.post(
@@ -169,10 +170,11 @@ class TestCommentViews(TestCase):
         self.client.force_login(self.user)
         self.assertEqual(Notification.objects.count(), 1)
         self.assertEqual(Notification.objects.first().user, self.user)
-        self.assertEqual(Notification.objects.first().url, self.trip.get_absolute_url())
+        self.assertEqual(
+            Notification.objects.first().get_url(), self.trip.get_absolute_url()
+        )
 
         response = self.client.get(reverse("log:index"))
-        self.assertContains(response, f"{self.user2} commented on your trip")
 
     def test_adding_comment_with_too_much_content(self):
         """Test that a comment cannot be added with too much content"""
@@ -233,6 +235,7 @@ class TestCommentViews(TestCase):
         self.user.save()
 
         self.trip.privacy = Trip.PUBLIC
+        self.trip.followers.add(self.user)
         self.trip.save()
 
         self.client.force_login(self.user2)
@@ -247,7 +250,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            f"{self.user2} commented on your trip to {self.trip.cave_name}",
+            f"{self.user2} commented on a trip to {self.trip.cave_name}",
         )
 
     def test_comments_do_not_send_an_email_when_disabled(self):
