@@ -21,6 +21,11 @@ urlpatterns = [
         views.HTMXTripLike.as_view(),
         name="trip_like_htmx_view",
     ),
+    path(
+        "trip/follow/<uuid:uuid>/",
+        views.HTMXTripFollow.as_view(),
+        name="trip_follow_htmx_view",
+    ),
     path("trip/<uuid:uuid>/", views.TripDetail.as_view(), name="trip_detail"),
     path("trip/<uuid:uuid>/photos/", views.TripPhotos.as_view(), name="trip_photos"),
     path(

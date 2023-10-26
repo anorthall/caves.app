@@ -237,7 +237,12 @@
   </div>
 
   {% if object_owner.allow_comments %}
-    <h5 class="mb-3 mt-5">Comments</h5>
+    <div class="d-flex flex-row justify-content-between align-items-center mb-3 mt-5">
+      <h5 class="m-0">
+        Comments
+      </h5>
+      {% include "logger/_htmx_trip_follow.html" %}
+    </div>
     {% include "comments/_comments.html" %}
   {% endif %}
 {% endblock %}
