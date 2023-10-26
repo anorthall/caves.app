@@ -339,7 +339,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     email_comments = models.BooleanField(
         "Email me new comments",
         default=True,
-        help_text="Send an email when another user comments on your trips.",
+        help_text=(
+            "Send an email when another user comments on a trip you are following."
+        ),
     )
 
     class Meta:

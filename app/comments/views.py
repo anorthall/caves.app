@@ -24,22 +24,26 @@ class AddComment(LoginRequiredMixin, View):
 
         if form.is_valid():
             form.save()
-            if form.trip.user != request.user:
-                form.trip.user.notify(
-                    f"{request.user} commented on your trip.",
-                    form.trip.get_absolute_url(),
-                )
 
-                if form.trip.user.email_comments:
+            # Send emails and notifications to followers of the trip
+            for user in form.trip.followers.all():
+                # Send the email
+                if user.email_comments and user != request.user:
                     NewCommentEmail(
-                        to=form.trip.user.email,
+                        to=user.email,
                         context={
-                            "name": form.trip.user.name,
+                            "name": user.name,
                             "commenter_name": request.user.name,
                             "trip": form.trip,
                             "comment_content": form.cleaned_data["content"],
                         },
                     ).send()
+
+                # Send the notification
+                if user != request.user:
+                    # TODO: Send notification
+                    pass
+
             messages.success(
                 request,
                 "Your comment has been added.",
