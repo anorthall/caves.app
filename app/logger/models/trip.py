@@ -263,6 +263,9 @@ class Trip(models.Model):
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="liked_trips"
     )
+    followers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, blank=True, related_name="followed_trips"
+    )
     privacy = models.CharField(
         "Who can view this trip?",
         max_length=10,
