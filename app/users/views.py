@@ -80,6 +80,7 @@ class Account(LoginRequiredMixin, TemplateView):
     template_name = "users/account.html"
 
 
+# noinspection PyTypeChecker
 class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "users/crispy_form.html"
     extra_context = {"title": "Update your profile"}
@@ -98,6 +99,7 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
+# noinspection PyTypeChecker
 @method_decorator(
     ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch"
 )
@@ -153,6 +155,7 @@ class FriendListView(LoginRequiredMixin, TemplateView):
         return self.render_to_response(context)
 
 
+# noinspection PyTypeChecker
 @method_decorator(
     ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch"
 )
@@ -289,6 +292,7 @@ class Login(SuccessMessageMixin, auth_views.LoginView):
         return super().form_valid(form)
 
 
+# noinspection PyTypeChecker
 class Logout(LoginRequiredMixin, auth_views.LogoutView):
     def post(self, *args, **kwargs):
         log_user_action(self.request.user, "logged out")
@@ -386,6 +390,7 @@ def resend_verify_email(request):
     return render(request, "users/verify_resend_email.html", {"form": form})
 
 
+# noinspection PyTypeChecker
 @method_decorator(
     ratelimit(key="user", rate="5/h", method=ratelimit.UNSAFE), name="dispatch"
 )
@@ -528,6 +533,7 @@ class NotificationRedirect(LoginRequiredMixin, View):
         return redirect(notification.get_url())
 
 
+# noinspection PyTypeChecker
 class CustomFieldsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "users/custom_fields.html"
     form_class = CustomFieldsForm
