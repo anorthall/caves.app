@@ -152,6 +152,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             trip.cave_coordinates = Point(lng, lat)
 
         trip.save()
+        trip.followers.add(self.request.user)
 
         log_trip_action(self.request.user, trip, "added")
 

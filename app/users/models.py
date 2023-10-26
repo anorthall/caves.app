@@ -489,10 +489,8 @@ class Notification(models.Model):
     def get_url(self) -> str:
         if self.type == self.FREE_TEXT:
             return self.url
-        elif self.type == self.TRIP_LIKE:
+        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
             return self.trip.get_absolute_url()
-        elif self.type == self.TRIP_COMMENT:
-            raise NotImplementedError
         raise RuntimeError("Invalid notification type")
 
     def get_message(self) -> str:
@@ -501,34 +499,57 @@ class Notification(models.Model):
         elif self.type == self.TRIP_LIKE:
             return self._get_trip_like_message()
         elif self.type == self.TRIP_COMMENT:
-            raise NotImplementedError
+            return self._get_trip_comment_message()
         raise RuntimeError("Invalid notification type")
 
     def _get_trip_like_message(self) -> str:
         assert self.type == self.TRIP_LIKE
-        liked_users = self.trip.likes.exclude(pk=self.user.pk)
+        users = list(self.trip.likes.exclude(pk=self.user.pk))
         return self._get_trip_action_message(
-            users=liked_users,
+            users=users,
             action="like",
             action_str="liked by",
         )
 
-    def _get_trip_action_message(self, /, users, action, action_str) -> str:
-        user_count = users.count()
-        users = list(users)
+    def _get_trip_comment_message(self) -> str:
+        assert self.type == self.TRIP_COMMENT
+
+        users = []
+        for comment in self.trip.comments.all():
+            if comment.author == self.user:
+                continue
+            if comment.author in users:
+                continue
+
+            users.append(comment.author)
+
+        return self._get_trip_action_message(
+            users=users,
+            action="comment",
+            action_str="commented on by",
+        )
+
+    def _get_trip_action_message(
+        self, /, users: list[CavingUser], action: str, action_str: str
+    ) -> str:
+        user_count = len(users)
+
+        prefix = f"{self.trip.user.name}'s trip to"
+        if self.user == self.trip.user:
+            prefix = "Your trip to"
 
         if user_count < 1:
-            return f"Your trip to {self.trip.cave_name} received {action}s."
+            return f"{prefix} {self.trip.cave_name} received {action}s."
 
         if user_count == 1:
             user = users[0].name
-            return f"Your trip to {self.trip.cave_name} was {action_str} {user}."
+            return f"{prefix} {self.trip.cave_name} was {action_str} {user}."
 
         if user_count == 2:
             user1 = users[0].name
             user2 = users[1].name
             return (
-                f"Your trip to {self.trip.cave_name} was {action_str} "
+                f"{prefix} {self.trip.cave_name} was {action_str} "
                 f"{user1} and {user2}."
             )
 
@@ -538,7 +559,7 @@ class Notification(models.Model):
 
             num_others = user_count - 2
             result = (
-                f"Your trip to {self.trip.cave_name} was {action_str} "
+                f"{prefix} {self.trip.cave_name} was {action_str} "
                 f"{user1}, {user2} and {num_others} "
             )
 
