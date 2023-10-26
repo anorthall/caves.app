@@ -11,6 +11,7 @@ from django.views.generic import TemplateView
 from django_ratelimit.decorators import ratelimit
 from logger.models import Trip
 from users.emails import NewCommentEmail
+from users.models import Notification
 
 
 class AddComment(LoginRequiredMixin, View):
@@ -24,25 +25,38 @@ class AddComment(LoginRequiredMixin, View):
 
         if form.is_valid():
             form.save()
-            if form.trip.user != request.user:
-                form.trip.user.notify(
-                    f"{request.user} commented on your trip.",
-                    form.trip.get_absolute_url(),
-                )
 
-                if form.trip.user.email_comments:
+            trip.followers.add(request.user)
+
+            # Send emails and notifications to followers of the trip
+            for user in trip.followers.all():
+                # Send the email
+                if user.email_comments and user != request.user:
                     NewCommentEmail(
-                        to=form.trip.user.email,
+                        to=user.email,
                         context={
-                            "name": form.trip.user.name,
+                            "name": user.name,
                             "commenter_name": request.user.name,
-                            "trip": form.trip,
+                            "trip": trip,
                             "comment_content": form.cleaned_data["content"],
                         },
                     ).send()
+
+                # Send the notification
+                if user != request.user:
+                    try:
+                        notification = Notification.objects.get(
+                            trip=trip, user=user, type=Notification.TRIP_COMMENT
+                        )
+                        notification.read = False
+                        notification.save()
+                    except Notification.DoesNotExist:
+                        Notification.objects.create(
+                            trip=trip, user=user, type=Notification.TRIP_COMMENT
+                        )
             messages.success(
                 request,
-                "Your comment has been added.",
+                "Your comment has been added and you are now following this trip.",
             )
             log_trip_action(request.user, form.trip, "commented on")
         else:
@@ -60,8 +74,8 @@ class AddComment(LoginRequiredMixin, View):
 class HTMXTripComment(LoginRequiredMixin, TemplateView):
     template_name = "comments/_comments_card.html"
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         trip = self.get_trip()
 
         context["comment_form"] = CommentForm(self.request, trip)

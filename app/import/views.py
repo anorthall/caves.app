@@ -76,6 +76,7 @@ class Save(LoginRequiredMixin, View):
             trip = form.save(commit=False)
             trip.user = request.user
             trip.save()
+            trip.followers.add(request.user)
 
         # noinspection PyUnboundLocalVariable
         messages.success(request, f"Successfully imported {count} trips!")

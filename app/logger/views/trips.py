@@ -7,12 +7,13 @@ from django.contrib.gis.geos import Point
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Exists, OuterRef
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import CreateView, RedirectView, UpdateView
+from django.views.generic import CreateView, RedirectView, TemplateView, UpdateView
 from django_ratelimit.decorators import ratelimit
 from users.models import CavingUser as User
 
@@ -151,6 +152,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             trip.cave_coordinates = Point(lng, lat)
 
         trip.save()
+        trip.followers.add(self.request.user)
 
         log_trip_action(self.request.user, trip, "added")
 
@@ -196,3 +198,44 @@ class TripReportRedirect(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         trip = get_object_or_404(Trip, uuid=kwargs.get("uuid"))
         return trip.get_absolute_url()
+
+
+class HTMXTripFollow(LoginRequiredMixin, TemplateView):
+    """HTMX view for toggling following a trip"""
+
+    template_name = "logger/_htmx_trip_follow.html"
+
+    @method_decorator(ratelimit(key="user", rate="20/h"))
+    def post(self, request, uuid):
+        trip = self._get_trip(request, uuid)
+        context = {"trip": trip, "user": request.user}
+
+        if trip.user_followed:  # User already follows, so unfollow the trip
+            trip.followers.remove(request.user)
+            log_trip_action(request.user, trip, "unfollowed")
+        else:  # User doesn't follow, so follow the trip
+            trip.followers.add(request.user)
+            log_trip_action(request.user, trip, "followed")
+
+        return self.render_to_response(context)
+
+    def _get_trip(self, request, uuid):
+        trip = (
+            Trip.objects.filter(uuid=uuid)
+            .annotate(
+                user_followed=Exists(
+                    User.objects.filter(
+                        pk=request.user.pk, followed_trips=OuterRef("pk")
+                    ).only("pk")
+                )
+            )
+            .first()
+        )
+
+        if not trip:
+            raise Http404
+
+        if trip.is_viewable_by(request.user):
+            return trip
+
+        raise PermissionDenied

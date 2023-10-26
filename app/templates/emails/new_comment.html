@@ -6,7 +6,7 @@
 
 <p>
   Just a quick email to let you know that {{ commenter_name }} has left
-  a new comment on your trip to {{ trip.cave_name }} on {{ trip.start|date }}.
+  a new comment on a trip to {{ trip.cave_name }} on {{ trip.start|date }}.
 </p>
 
 <p>
@@ -26,7 +26,10 @@
 </p>
 
 <p>
-  If you'd like to disable these emails you can do so in your user settings page.
+  If you'd like to disable email notifications for this trip you can do so
+  by clicking 'Unfollow' on the trip page. Alternatively, you can disable all
+  email notifications of new comments by visiting the
+  <a href="{{ SITE_ROOT }}{% url 'users:account_settings' %}">account settings</a> page.
 </p>
 
 <br />

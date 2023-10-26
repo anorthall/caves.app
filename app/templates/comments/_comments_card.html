@@ -4,7 +4,8 @@
       <div class="d-flex flex-row align-items-center justify-content-between">
         <span class="float-start">Comments on {{ trip.cave_name }}</span>
         <small class="float-end text-muted">
-          <button class="btn btn-sm btn-secondary" onclick="document.getElementById('comments{{ trip.uuid }}').remove()">Hide</button>
+          {% include "logger/_htmx_trip_follow.html" %}
+          <button class="ms-1 btn btn-sm btn-secondary" onclick="document.getElementById('comments{{ trip.uuid }}').remove()">Hide</button>
         </small>
       </div>
     </div>
