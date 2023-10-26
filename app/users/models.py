@@ -507,40 +507,45 @@ class Notification(models.Model):
     def _get_trip_like_message(self) -> str:
         assert self.type == self.TRIP_LIKE
         liked_users = self.trip.likes.exclude(pk=self.user.pk)
-        liked_count = liked_users.count()
+        return self._get_trip_action_message(
+            users=liked_users,
+            action="like",
+            action_str="liked by",
+        )
 
-        # A liked_count of < 1 should only occur when a user likes a trip, then
-        # unlikes it and the notification is not deleted. This should never
-        # happen, but if it does, we don't want to raise an exception.
-        if liked_count < 1:
-            return f"Your trip to {self.trip.cave_name} received likes."
+    def _get_trip_action_message(self, /, users, action, action_str) -> str:
+        user_count = users.count()
+        users = list(users)
 
-        if liked_count == 1:
-            user = liked_users.first().name
-            return f"Your trip to {self.trip.cave_name} was liked by {user}."
+        if user_count < 1:
+            return f"Your trip to {self.trip.cave_name} received {action}s."
 
-        if liked_count == 2:
-            user1 = liked_users.first().name
-            user2 = liked_users.last().name
+        if user_count == 1:
+            user = users[0].name
+            return f"Your trip to {self.trip.cave_name} was {action_str} {user}."
+
+        if user_count == 2:
+            user1 = users[0].name
+            user2 = users[1].name
             return (
-                f"Your trip to {self.trip.cave_name} was liked by {user1} and {user2}."
+                f"Your trip to {self.trip.cave_name} was {action_str} "
+                f"{user1} and {user2}."
             )
 
-        if liked_count > 2:
-            liked_users = list(liked_users)
-            user1 = liked_users[0].name
-            user2 = liked_users[1].name
+        if user_count > 2:
+            user1 = users[0].name
+            user2 = users[1].name
 
-            others = liked_count - 2
-            liked_str = (
-                f"Your trip to {self.trip.cave_name} was liked by "
-                f"{user1}, {user2} and {liked_count - 2}"
+            num_others = user_count - 2
+            result = (
+                f"Your trip to {self.trip.cave_name} was {action_str} "
+                f"{user1}, {user2} and {num_others} "
             )
 
-            if others == 1:
-                return liked_str + " other person."
+            if num_others == 1:
+                return result + "other person."
             else:
-                return liked_str + " others."
+                return result + "others."
 
         raise RuntimeError(
             "Impossible state reached in TripLikeNotification.get_message()"
