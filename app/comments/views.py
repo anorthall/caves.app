@@ -64,8 +64,8 @@ class AddComment(LoginRequiredMixin, View):
 class HTMXTripComment(LoginRequiredMixin, TemplateView):
     template_name = "comments/_comments_card.html"
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         trip = self.get_trip()
 
         context["comment_form"] = CommentForm(self.request, trip)
