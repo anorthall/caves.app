@@ -10,7 +10,19 @@
 {% block main %}
   <div class="mw-45">
     {% for item in news %}
-      {% include "core/_news_item.html" with news=item %}
+      <article class="mb-5">
+        {% include "core/_news_item.html" with news=item %}
+
+        <a class="link-primary text-decoration-none" href="{{ item.get_absolute_url }}">
+          <i class="bi bi-box-arrow-up-right me-1"></i> View article
+        </a>
+
+        <span class="mx-2">&middot;</span>
+
+        <a class="link-primary text-decoration-none" href="{{ item.get_absolute_url }}">
+          <i class="bi bi-chat me-1"></i> {{ item.comments.all|length }} comment{{ item.comments.all|length|pluralize }}
+        </a>
+      </article>
     {% endfor %}
   </div>
 {% endblock %}

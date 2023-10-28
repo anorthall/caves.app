@@ -4,13 +4,16 @@
 {% load markdownify %}
 
 {% block title %}{{ news.title }}{% endblock %}
-{% block display_title %}News{% endblock %}
+{% block display_title_container %}{% endblock %}
 {% block description %}Information about the latest updates to caves.app.{% endblock %}
 
 {% block main %}
   <div class="mw-45">
     {% include "core/_news_item.html" %}
 
-    <a href="{% url 'core:news' %}" class="btn btn-primary"><i class="bi bi-arrow-left"></i>&nbsp; Back to all news</a>
+    <h5 class="mb-3 mt-5">Comments</h5>
+    {% include "comments/_comments.html" with comment_obj=news comment_obj_type="news" %}
+
+    <a href="{% url 'core:news' %}" class="btn btn-outline-primary mt-3"><i class="bi bi-arrow-left"></i>&nbsp; Back to all news</a>
   </div>
 {% endblock %}

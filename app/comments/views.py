@@ -1,6 +1,7 @@
-from comments.forms import CommentForm
-from comments.models import Comment
+from comments.forms import CommentForm, NewsCommentForm
+from comments.models import Comment, NewsComment
 from core.logging import log_trip_action
+from core.models import News
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -112,3 +113,41 @@ class DeleteComment(LoginRequiredMixin, View):
         else:
             raise PermissionDenied
         return redirect(comment.trip.get_absolute_url())
+
+
+class AddNewsComment(LoginRequiredMixin, View):
+    def post(self, request, slug):
+        news = get_object_or_404(News, slug=slug)
+        form = NewsCommentForm(self.request, news, request.POST)
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                "Your comment has been added.",
+            )
+        else:
+            if form.errors.get("content", None):
+                for error in form.errors["content"]:
+                    messages.error(request, error)
+            else:
+                messages.error(
+                    request,
+                    "There was an error adding your comment. Please try again.",
+                )
+
+        return redirect(news.get_absolute_url())
+
+
+class DeleteNewsComment(LoginRequiredMixin, View):
+    def post(self, request, uuid):
+        comment = get_object_or_404(NewsComment, uuid=uuid)
+        if comment.author == request.user or request.user.is_superuser:
+            comment.delete()
+            messages.success(
+                request,
+                "The comment has been deleted.",
+            )
+        else:
+            raise PermissionDenied
+        return redirect(comment.news.get_absolute_url())

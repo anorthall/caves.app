@@ -2,9 +2,9 @@
 {% load crispy_forms_tags %}
 {% load markdownify %}
 
-{% if trip.user.allow_comments %}
-  {% if trip.comments.count > 0 %}
-    {% for comment in trip.comments.all %}
+{% if comment_obj.user.allow_comments or comment_obj_type == "news" %}
+  {% if comment_obj.comments.count > 0 %}
+    {% for comment in comment_obj.comments.all %}
       {% if forloop.counter > 1 %}<hr class="my-4">{% endif %}
 
       <div class="m-0 comment-display">
@@ -23,7 +23,7 @@
         </p>
       </div>
       {% if user.is_authenticated %}
-        {% if user == comment.author or user == trip.user or user.is_superuser %}
+        {% if user == comment.author or user == comment_obj.user or user.is_superuser %}
           <div class="modal fade" id="deleteComment{{ comment.uuid }}" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -36,7 +36,7 @@
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <form action="{% url 'comments:delete' comment.uuid %}" method="post">
+                  {% if comment_obj_type == "news" %}<form action="{% url 'comments:news_delete' comment.uuid %}" method="post">{% else %}<form action="{% url 'comments:delete' comment.uuid %}" method="post">{% endif %}
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Delete comment</button>
                   </form>

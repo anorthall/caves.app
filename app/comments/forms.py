@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from .models import Comment
+from .models import Comment, NewsComment
 
 User = get_user_model()
 
@@ -50,6 +50,42 @@ class CommentForm(forms.Form):
         content = self.cleaned_data.get("content")
         new = Comment.objects.create(
             content=content, trip=self.trip, author=self.request.user
+        )
+        if commit:
+            new.save()
+        return new
+
+
+class NewsCommentForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows": 4}))
+
+    def __init__(self, request, news, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+        self.news = news
+
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = ""
+        self.helper.form_show_errors = False
+        self.helper.form_show_labels = False
+        self.helper.form_action = reverse(
+            "comments:news_add", kwargs={"slug": news.slug}
+        )
+        self.helper.add_input(Submit("submit", "Add comment"))
+
+    def clean_content(self) -> str:
+        content = self.cleaned_data.get("content")
+        if len(content) > 2000:
+            raise ValidationError(
+                "Your comment must be less than 2000 characters long."
+            )
+        return content
+
+    def save(self, commit=True) -> Comment:
+        content = self.cleaned_data.get("content")
+        new = NewsComment.objects.create(
+            content=content, news=self.news, author=self.request.user
         )
         if commit:
             new.save()
