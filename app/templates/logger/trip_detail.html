@@ -243,6 +243,6 @@
       </h5>
       {% include "logger/_htmx_trip_follow.html" %}
     </div>
-    {% include "comments/_comments.html" %}
+    {% include "comments/_comments.html" with comment_obj=trip %}
   {% endif %}
 {% endblock %}

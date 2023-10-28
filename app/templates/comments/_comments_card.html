@@ -11,7 +11,7 @@
     </div>
 
     <div class="card-body">
-      {% include "comments/_comments.html" %}
+      {% include "comments/_comments.html" with comment_obj=trip %}
     </div>
   </div>
 {% endif %}
