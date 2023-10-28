@@ -13,11 +13,11 @@
   </p>
 
   <p class="mb-4">
-    Please check your
-    email for a unique code which has been sent to you. You can then click
-    the link in the email, or enter the code into the box below. If you
-    didn't receive the code, and it isn't in your spam folder, you
-    can <a href="{% url 'users:verify_resend' %}">attempt to resend it</a>.
+    Please check your email for a unique link that can be used to activate
+    your account. Alternatively, if you only receive text based emails, you
+    can copy and paste the code you received into the field below.
+    If you didn't receive the email, you can
+    <a href="{% url 'users:verify_resend' %}">attempt to resend it</a>.
   </p>
 
   {% crispy form %}

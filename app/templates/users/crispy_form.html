@@ -5,5 +5,8 @@
 
 {% block main %}
   {% block text %}{% endblock %}
-  {% crispy form %}
+
+  <div class="{% block form_class %}{% endblock %}">
+    {% crispy form %}
+  </div>
 {% endblock %}

@@ -405,7 +405,8 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
         if form.is_valid():
             return self.form_valid(form)
         else:
-            messages.error(request, "Invalid verification code.")
+            if form.has_code:
+                messages.error(request, "Invalid verification code.")
             return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):

@@ -108,6 +108,7 @@ class VerifyEmailForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.user = None
         self.email = None
+        self.has_code = False
         self.helper = FormHelper()
         self.helper.form_method = "get"
         self.helper.layout = Layout(
@@ -116,6 +117,7 @@ class VerifyEmailForm(forms.Form):
         )
 
     def clean_verify_code(self):
+        self.has_code = True
         verify_code = self.cleaned_data["verify_code"]
         user_pk, email = verify_token(verify_code)
         try:
