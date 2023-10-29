@@ -43,7 +43,7 @@
                     {% endif %}
                   </span>
                 </a>
-                <div class="notification-dropdown shadow-lg border border-2 bg-light" x-show="open" @click.outside="open = false" x-transition>
+                <div class="notification-dropdown shadow-lg border border-2 bg-light" x-show="open" @click.outside="open = false" x-cloak x-transition>
                   <div class="item title my-0">
                     Notifications
                   </div>
