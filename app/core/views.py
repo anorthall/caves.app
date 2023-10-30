@@ -1,8 +1,9 @@
 from comments.forms import NewsCommentForm
 from django.contrib.auth import get_user_model
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, ListView, TemplateView
 
 from .models import FAQ
+from .models import News
 from .models import News as NewsModel
 
 User = get_user_model()
@@ -17,15 +18,14 @@ class Help(TemplateView):
         return context
 
 
-class News(TemplateView):
+class NewsList(ListView):
     template_name = "core/news.html"
+    model = News
+    context_object_name = "news"
+    paginate_by = 4
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context["news"] = NewsModel.objects.filter(is_published=True).order_by(
-            "-posted_at"
-        )
-        return context
+    def get_queryset(self):
+        return News.objects.all().order_by("-posted_at")
 
 
 class NewsDetail(DetailView):
