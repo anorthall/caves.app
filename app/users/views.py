@@ -552,6 +552,10 @@ class CustomFieldsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
+class HTMXNotificationsDropdown(LoginRequiredMixin, TemplateView):
+    template_name = "users/htmx_notifications_dropdown.html"
+
+
 class NotificationsList(LoginRequiredMixin, ListView):
     model = Notification
     template_name = "users/notifications.html"

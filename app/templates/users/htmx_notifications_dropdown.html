@@ -1,0 +1,41 @@
+{# <div hx-target="this" hx-ext="alpine-morph" hx-swap="morph" hx-get="{% url 'users:htmx_notifications_dropdown' %}" hx-trigger="every 15s" x-data="{ open: false }"> #}
+<div x-data="{ open: false }">
+  <a class="nav-link" href="#">
+    <span class="icon-badge-container text-white" x-on:click="open = !open">
+      {% if notifications.unread %}
+        <i class="bi bi-bell-fill icon-badge-icon"></i>
+        <span class="icon-badge">{{ notifications.unread }}</span>
+      {% else %}
+        <i class="bi bi-bell"></i>
+      {% endif %}
+    </span>
+  </a>
+  <div class="notification-dropdown shadow-lg border border-2 bg-light" x-show="open" @click.outside="open = false" x-cloak x-transition>
+    <div class="item title my-0">
+      Notifications
+    </div>
+
+    {% if notifications.list %}
+      {% for notification in notifications.list %}
+        <div data-href="{% url 'users:notification' pk=notification.pk %}" class="item text-primary">
+          <span{% if not notification.read %} class="fw-bold"{% endif %}>{{ notification.get_message }}</span>
+          <br />
+          <small class="text-muted">
+            {{ notification.updated|timesince }} ago
+          </small>
+        </div>
+      {% endfor %}
+
+      <div data-href="{% url 'users:notifications' %}" class="item text-primary">
+        <a href="{% url 'users:notifications' %}"
+           class="btn btn-primary">
+          See all notifications
+        </a>
+      </div>
+    {% else %}
+      <div class="item title fw-normal text-primary">
+        <span>You do not have any notifications. Oh well!</span>
+      </div>
+    {% endif %}
+  </div>
+</div>
