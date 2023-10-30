@@ -153,6 +153,7 @@ MIDDLEWARE = [
     "users.middleware.TimezoneMiddleware",
     "users.middleware.LastSeenMiddleware",
     "users.middleware.DistanceUnitsMiddleware",
+    "users.middleware.NotificationsMiddleware",
 ]
 
 
