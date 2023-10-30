@@ -30,13 +30,15 @@
 
     <!-- HTMX -->
     <script src="{% static "js/htmx.min.js" %}"></script>
+    <script src="{% static "js/htmx-alpine-morph.js" %}"></script>
     {% django_htmx_script %}
 
     <!-- Bootstrap v5.3.0 JS -->
     <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
 
     <!-- Alpine 3.12.2 JS -->
-    <script src="{% static "js/alpine.min.js" %}" defer></script>
+    <script defer src="{% static "js/alpine-morph-plugin.min.js" %}"></script>
+    <script defer src="{% static "js/alpine.min.js" %}"></script>
 
     <!-- jQuery v3.7.0 JS -->
     <script src="{% static "js/jquery-3.7.0.min.js" %}"></script>
