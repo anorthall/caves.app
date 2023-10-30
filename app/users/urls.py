@@ -45,6 +45,11 @@ urlpatterns = [
         name="friend_request_accept",
     ),
     path(
+        "notifications/dropdown/",
+        views.HTMXNotificationsDropdown.as_view(),
+        name="htmx_notifications_dropdown",
+    ),
+    path(
         "notifications/<int:pk>/",
         views.NotificationRedirect.as_view(),
         name="notification",
