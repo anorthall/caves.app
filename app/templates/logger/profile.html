@@ -5,187 +5,204 @@
 
 {% block title %}{{ page_title }}{% endblock %}
 {% block meta_tags %}<meta name="author" content="{{ profile_user.name }}">{% endblock %}
+
 {% block display_title %}{{ page_title }}{% endblock %}
 {% block display_title_right %}@{{ profile_user.username }}{% endblock %}
+{% if private_profile %}
+  {% block display_title_container %}{% endblock %}
+{% endif %}
+
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
 {% block sidebar %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
 {% block mobile_menu %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
 
 {% block main %}
-  {% if trips|length > 10 %}
-    <div class="form-floating mb-4">
-      <input type="text" class="form-control" id="searchInput" placeholder="Search"
-             hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-             class="border-success"
-             hx-swap="outerHTML"
-             hx-post="{% url 'log:user_search' profile_user.username %}"
-             hx-trigger="keyup changed delay:100ms"
-             hx-target="#tripListSearch"
-             name="query">
-      <label for="floatingInput">Search</label>
-    </div>
-  {% endif %}
+  {% if not private_profile %}
+    {% if trips|length > 10 %}
+      <div class="form-floating mb-4">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               class="border-success"
+               hx-swap="outerHTML"
+               hx-post="{% url 'log:user_search' profile_user.username %}"
+               hx-trigger="keyup changed delay:100ms"
+               hx-target="#tripListSearch"
+               name="query">
+        <label for="floatingInput">Search</label>
+      </div>
+    {% endif %}
 
-  <div id="tripListSearch"></div>
-  {% if profile_user.bio %}
-    <div class="mb-4">
-      {{ profile_user.bio|markdownify }}
-    </div>
-  {% elif not profile_user.bio and not trips %}
-    <p class="lead mb-4">
-      There is nothing here &mdash; yet.
-      {% if user == profile_user %}
-        Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
-        <a href="{% url 'users:profile_update' %}">update your profile</a>?
-      {% endif %}
-    </p>
-  {% endif %}
+    <div id="tripListSearch"></div>
+    {% if profile_user.bio %}
+      <div class="mb-4">
+        {{ profile_user.bio|markdownify }}
+      </div>
+    {% elif not profile_user.bio and not trips %}
+      <p class="lead mb-4">
+        There is nothing here &mdash; yet.
+        {% if user == profile_user %}
+          Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
+          <a href="{% url 'users:profile_update' %}">update your profile</a>?
+        {% endif %}
+      </p>
+    {% endif %}
 
-  {% if stats %}
-    <div class="profile-stats {% if profile_user.bio %}mt-4{% endif %} mb-3 border-top">
-      {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-md-table-cell" %}
-    </div>
-  {% endif %}
+    {% if stats %}
+      <div class="profile-stats {% if profile_user.bio %}mt-4{% endif %} mb-3 border-top">
+        {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-md-table-cell" %}
+      </div>
+    {% endif %}
 
-  {% if trips %}
-    <div class="table-responsive">
-      <table id="trip-list-table" class="table{% if not show_cavers %} table-hover table-striped{% endif %} mb-0">
-        <thead class="border-top">
-          <tr>
-            <th scope="col">
-              Date
-              <small>
-                <a href="?sort=start" class="text-decoration-none">
-                  <i class="bi bi-sort-up"></i>
-                </a>
-                <a href="?sort=-start" class="text-decoration-none">
-                  <i class="bi bi-sort-down"></i>
-                </a>
-              </small>
-            </th>
-
-            <th scope="col">
-              Cave
-              <small>
-                <a href="?sort=cave_name" class="text-decoration-none">
-                  <i class="bi bi-sort-alpha-up"></i>
-                </a>
-                <a href="?sort=-cave_name" class="text-decoration-none">
-                  <i class="bi bi-sort-alpha-down"></i>
-                </a>
-              </small>
-            </th>
-
-            <th class="d-none d-xl-table-cell" scope="col">
-              Duration
-              <small>
-                <a href="?sort=duration" class="text-decoration-none">
-                  <i class="bi bi-sort-up"></i>
-                </a>
-                <a href="?sort=-duration" class="text-decoration-none">
-                  <i class="bi bi-sort-down"></i>
-                </a>
-              </small>
-            </th>
-
-            {% if not profile_user.disable_distance_statistics %}
-              <th class="d-none d-lg-table-cell" scope="col">
-                Up
+    {% if trips %}
+      <div class="table-responsive">
+        <table id="trip-list-table" class="table{% if not show_cavers %} table-hover table-striped{% endif %} mb-0">
+          <thead class="border-top">
+            <tr>
+              <th scope="col">
+                Date
                 <small>
-                  <a href="?sort=vert_dist_up" class="text-decoration-none">
+                  <a href="?sort=start" class="text-decoration-none">
                     <i class="bi bi-sort-up"></i>
                   </a>
-                  <a href="?sort=-vert_dist_up" class="text-decoration-none">
+                  <a href="?sort=-start" class="text-decoration-none">
                     <i class="bi bi-sort-down"></i>
                   </a>
                 </small>
               </th>
 
-              <th class="d-none d-xxl-table-cell" scope="col">
-                Down
+              <th scope="col">
+                Cave
                 <small>
-                  <a href="?sort=vert_dist_down" class="text-decoration-none">
+                  <a href="?sort=cave_name" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-up"></i>
+                  </a>
+                  <a href="?sort=-cave_name" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-down"></i>
+                  </a>
+                </small>
+              </th>
+
+              <th class="d-none d-xl-table-cell" scope="col">
+                Duration
+                <small>
+                  <a href="?sort=duration" class="text-decoration-none">
                     <i class="bi bi-sort-up"></i>
                   </a>
-                  <a href="?sort=-vert_dist_down" class="text-decoration-none">
+                  <a href="?sort=-duration" class="text-decoration-none">
                     <i class="bi bi-sort-down"></i>
                   </a>
                 </small>
               </th>
-            {% endif %}
-
-            <th class="d-none d-lg-table-cell" scope="col">
-              Trip type
-              <small>
-                <a href="?sort=type" class="text-decoration-none">
-                  <i class="bi bi-sort-alpha-up"></i>
-                </a>
-                <a href="?sort=-type" class="text-decoration-none">
-                  <i class="bi bi-sort-alpha-down"></i>
-                </a>
-              </small>
-            </th>
-
-            <th class="d-none d-md-table-cell"></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for trip in trips %}
-            <tr class="{% if show_cavers %}table-light{% endif %}" data-href="{{ trip.get_absolute_url }}">
-              <td>{{ trip.start|date:"j M y" }}</td>
-
-              <td>
-                <a class="text-decoration-none text-body" href="{{ trip.get_absolute_url }}">
-                  {{ trip.cave_name }}
-                </a>
-              </td>
-
-              <td class="d-none d-xl-table-cell">
-                {% if trip.duration_str %}
-                  {{ trip.duration_str }}
-                {% endif %}
-              </td>
 
               {% if not profile_user.disable_distance_statistics %}
-                <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:request.units }}</td>
-                <td class="d-none d-xxl-table-cell">{{ trip.vert_dist_down|distformat:request.units }}</td>
+                <th class="d-none d-lg-table-cell" scope="col">
+                  Up
+                  <small>
+                    <a href="?sort=vert_dist_up" class="text-decoration-none">
+                      <i class="bi bi-sort-up"></i>
+                    </a>
+                    <a href="?sort=-vert_dist_up" class="text-decoration-none">
+                      <i class="bi bi-sort-down"></i>
+                    </a>
+                  </small>
+                </th>
+
+                <th class="d-none d-xxl-table-cell" scope="col">
+                  Down
+                  <small>
+                    <a href="?sort=vert_dist_down" class="text-decoration-none">
+                      <i class="bi bi-sort-up"></i>
+                    </a>
+                    <a href="?sort=-vert_dist_down" class="text-decoration-none">
+                      <i class="bi bi-sort-down"></i>
+                    </a>
+                  </small>
+                </th>
               {% endif %}
 
-              <td class="d-none d-lg-table-cell">
-                {{ trip.type }}
-              </td>
+              <th class="d-none d-lg-table-cell" scope="col">
+                Trip type
+                <small>
+                  <a href="?sort=type" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-up"></i>
+                  </a>
+                  <a href="?sort=-type" class="text-decoration-none">
+                    <i class="bi bi-sort-alpha-down"></i>
+                  </a>
+                </small>
+              </th>
 
-              <td class="text-end d-none d-md-table-cell">
-                {% if trip.comment_count > 0 %}
-                  <a title="Trip has comments" class="text-info" href="{{ trip.get_absolute_url }}"><i class="bi bi-chat-dots"></i></a>&nbsp;
-                {% endif %}
-                {% if trip.photo_count > 0 %}
-                  <a title="Trip has photos" class="text-success" href="{{ trip.get_absolute_url }}"><i class="bi bi-images"></i></a>&nbsp;
-                {% endif %}
-                {% if trip.cave_coordinates and user == profile_user %}
-                  <a title="Trip has a cave location stored" class="text-secondary" href="{{ trip.get_absolute_url }}"><i class="bi bi-geo-alt"></i></a>&nbsp;
-                {% endif %}
-                {% if user == profile_user %}
-                  <a title="Edit trip" class="text-primary" href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>
-                {% endif %}
-              </td>
+              <th class="d-none d-md-table-cell"></th>
             </tr>
+          </thead>
 
-            {% if trip.cavers and show_cavers %}
-              <tr id="caver-list" data-href="{{ trip.get_absolute_url }}">
-                <td colspan="{% if profile_user.disable_distance_statistics %}5{% else %}7{% endif %}" class="pb-3 pt-3 px-3 text-primary">
-                  with {{ trip.cavers }}
+          <tbody>
+            {% for trip in trips %}
+              <tr class="{% if show_cavers %}table-light{% endif %}" data-href="{{ trip.get_absolute_url }}">
+                <td>{{ trip.start|date:"j M y" }}</td>
+
+                <td>
+                  <a class="text-decoration-none text-body" href="{{ trip.get_absolute_url }}">
+                    {{ trip.cave_name }}
+                  </a>
+                </td>
+
+                <td class="d-none d-xl-table-cell">
+                  {% if trip.duration_str %}
+                    {{ trip.duration_str }}
+                  {% endif %}
+                </td>
+
+                {% if not profile_user.disable_distance_statistics %}
+                  <td class="d-none d-lg-table-cell">{{ trip.vert_dist_up|distformat:request.units }}</td>
+                  <td class="d-none d-xxl-table-cell">{{ trip.vert_dist_down|distformat:request.units }}</td>
+                {% endif %}
+
+                <td class="d-none d-lg-table-cell">
+                  {{ trip.type }}
+                </td>
+
+                <td class="text-end d-none d-md-table-cell">
+                  {% if trip.comment_count > 0 %}
+                    <a title="Trip has comments" class="text-info" href="{{ trip.get_absolute_url }}"><i class="bi bi-chat-dots"></i></a>&nbsp;
+                  {% endif %}
+                  {% if trip.photo_count > 0 %}
+                    <a title="Trip has photos" class="text-success" href="{{ trip.get_absolute_url }}"><i class="bi bi-images"></i></a>&nbsp;
+                  {% endif %}
+                  {% if trip.cave_coordinates and user == profile_user %}
+                    <a title="Trip has a cave location stored" class="text-secondary" href="{{ trip.get_absolute_url }}"><i class="bi bi-geo-alt"></i></a>&nbsp;
+                  {% endif %}
+                  {% if user == profile_user %}
+                    <a title="Edit trip" class="text-primary" href="{% url 'log:trip_update' trip.uuid %}"><i class="bi bi-pencil"></i></a>
+                  {% endif %}
                 </td>
               </tr>
-            {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
 
-      {% include "_paginate_bootstrap.html" %}
+              {% if trip.cavers and show_cavers %}
+                <tr id="caver-list" data-href="{{ trip.get_absolute_url }}">
+                  <td colspan="{% if profile_user.disable_distance_statistics %}5{% else %}7{% endif %}" class="pb-3 pt-3 px-3 text-primary">
+                    with {{ trip.cavers }}
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% include "_paginate_bootstrap.html" %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="card bg-info-subtle text-center">
+      <div class="card-body">
+        <h4 class="card-title">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          You do not have permission to view this profile
+        </h4>
+
+        <p class="mt-3 mb-0">{{ profile_user.name }}'s privacy settings do not permit it. Sorry about that! &#128532;</p>
+      </div>
     </div>
   {% endif %}
-
 {% endblock %}

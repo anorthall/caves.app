@@ -38,8 +38,6 @@ class UserProfile(ListView):
         """Assign self.profile_user and perform permissions checks"""
         super().setup(*args, **kwargs)
         self.profile_user = get_object_or_404(User, username=self.kwargs["username"])
-        if not self.profile_user.is_viewable_by(self.request.user):
-            raise PermissionDenied
 
     def get_queryset(self):
         trips = (
@@ -88,6 +86,9 @@ class UserProfile(ListView):
             context["stats"] = statistics.yearly(
                 self.profile_user.trips.exclude(type=Trip.SURFACE)
             )
+
+        if not self.profile_user.is_viewable_by(self.request.user):
+            context["private_profile"] = True
 
         # This code provides the current GET parameters as a context variable
         # so that when a pagination link is clicked, the GET parameters are

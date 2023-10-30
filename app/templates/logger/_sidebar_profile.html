@@ -14,18 +14,20 @@
   <strong>{{ profile_user.name }}</strong>
   <span class="text-muted mb-2">@{{ profile_user.username }}</span>
 
-  {% if profile_user.clubs %}
-    <span class="mb-2 fst-italic">{{ profile_user.clubs }}</span>
-  {% endif %}
+  {% if not private_profile %}
+    {% if profile_user.clubs %}
+      <span class="mb-2 fst-italic">{{ profile_user.clubs }}</span>
+    {% endif %}
 
-  <span class="text-primary">{{ profile_user.location }}</span>
-  <span class="text-primary">{{ profile_user.country.name }}</span>
+    <span class="text-primary">{{ profile_user.location }}</span>
+    <span class="text-primary">{{ profile_user.country.name }}</span>
+  {% endif %}
 
   {% if can_add_friend and user.is_authenticated and user != profile_user %}
     <a href="{% url 'users:friends' %}?u={{ object_owner.username }}" class="btn btn-sm btn-outline-primary mt-4">Add as friend <i class="ms-2 bi bi-person-plus-fill"></i></a>
   {% endif %}
 
-  {% if mutual_friends %}
+  {% if mutual_friends and not private_profile %}
     <div class="d-none d-lg-block mt-4 border-top pt-4">
       <div class="sidebar-header mb-2">
         {% if not user == profile_user %}Mutual {% endif %}Friends

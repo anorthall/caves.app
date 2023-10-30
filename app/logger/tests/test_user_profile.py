@@ -163,12 +163,16 @@ class UserProfileViewTests(TestCase):
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, "You do not have permission to view this profile")
 
         self.user.privacy = User.FRIENDS
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, "You do not have permission to view this profile")
 
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
@@ -186,12 +190,16 @@ class UserProfileViewTests(TestCase):
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, "You do not have permission to view this profile")
 
         self.user.privacy = User.FRIENDS
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, "You do not have permission to view this profile")
 
         self.user.privacy = User.PUBLIC
         self.user.save()
