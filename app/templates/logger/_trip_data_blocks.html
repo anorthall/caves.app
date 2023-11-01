@@ -1,11 +1,11 @@
 {% load users_tags %}
 {% load logger_tags %}
 
-{% if trip.cavers %}
+{% if trip.cavers.all %}
   <div class="row mb-3">
     <div class="col">
       <small class="text-muted trip-field">Cavers</small><br />
-      {{ trip.cavers }}
+      {{ trip.cavers.all|join:", " }}
     </div>
   </div>
 {% endif %}

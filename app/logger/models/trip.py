@@ -15,6 +15,29 @@ from ..validators import (
 )
 
 
+class Caver(models.Model):
+    """A caver that was on a trip"""
+
+    name = models.CharField(max_length=40)
+    added = models.DateTimeField("caver added on", auto_now_add=True)
+    updated = models.DateTimeField("caver last updated", auto_now=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    uuid = models.UUIDField(
+        verbose_name="UUID",
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text="A unique identifier for this caver.",
+    )
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.strip()
+        super().save(*args, **kwargs)
+
+
 # noinspection PyUnresolvedReferences
 class Trip(models.Model):
     """Caving trip model."""
@@ -119,13 +142,18 @@ class Trip(models.Model):
         choices=TRIP_TYPES,
         default=SPORT,
     )
-    cavers = models.CharField(
+    cavers_old = models.CharField(
         max_length=250,
         blank=True,
         help_text=(
             "A comma-separated list of cavers that were on this trip. "
             "Avoid adding yourself to this list."
         ),
+    )
+    cavers = models.ManyToManyField(
+        Caver,
+        blank=True,
+        help_text="A list of cavers that were on this trip.",
     )
     clubs = models.CharField(
         max_length=100,
