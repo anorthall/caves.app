@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.utils.safestring import SafeString
 from django.views.generic import FormView, View
 from django_ratelimit.decorators import ratelimit
+from logger.models import Caver
 
 from . import services
 from .forms import ImportUploadForm, TripImportFormset, TripImportFormsetHelper
@@ -76,7 +77,18 @@ class Save(LoginRequiredMixin, View):
             trip = form.save(commit=False)
             trip.user = request.user
             trip.save()
+
             trip.followers.add(request.user)
+
+            cavers = form.cleaned_data["cavers"]
+            cavers = cavers.split(",")
+            for caver in cavers:
+                caver = caver.strip()
+                if caver:
+                    caver_obj, _ = Caver.objects.get_or_create(
+                        name=caver, user=request.user
+                    )
+                    trip.cavers.add(caver_obj)
 
         # noinspection PyUnboundLocalVariable
         messages.success(request, f"Successfully imported {count} trips!")

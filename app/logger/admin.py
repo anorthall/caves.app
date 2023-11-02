@@ -14,6 +14,17 @@ class TripAdminForm(DistanceUnitFormMixin, ModelForm):
     pass
 
 
+class CaverInline(TabularInline):
+    model = Trip.cavers.through
+    extra = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 class TripPhotoInline(TabularInline):
     model = TripPhoto
     fk_name = "trip"
@@ -29,7 +40,7 @@ class TripPhotoInline(TabularInline):
 @admin.register(Trip)
 class TripAdmin(ModelAdmin):
     form = TripAdminForm
-    inlines = [TripPhotoInline]
+    inlines = [CaverInline, TripPhotoInline]
     search_fields = (
         "cave_name",
         "cave_entrance",
@@ -108,10 +119,9 @@ class TripAdmin(ModelAdmin):
             },
         ),
         (
-            "Attendees",
+            "Organisations",
             {
                 "fields": (
-                    "cavers",
                     "clubs",
                     "expedition",
                 ),

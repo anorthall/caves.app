@@ -113,7 +113,13 @@
                 {% for row in stat.rows %}
                   <tr>
                     <th>{{ forloop.counter }}</th>
-                    <td>{{ row.metric }}</td>
+                    <td>
+                      {% if row.url %}
+                        <a href="{{ row.url }}">{{ row.metric }}</a>
+                      {% else %}
+                        {{ row.metric }}
+                      {% endif %}
+                    </td>
                     <td>{{ row.value }}</td>
                   </tr>
                 {% endfor %}

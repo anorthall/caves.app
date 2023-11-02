@@ -144,7 +144,7 @@ class TripSearchTests(TestCase):
         test_finder = str(uuid.uuid4())
         test_identifier = str(uuid.uuid4())
         trip = TripFactory(
-            user=self.user, cave_name=test_finder, cavers=test_identifier
+            user=self.user, cave_name=test_finder, cave_entrance=test_identifier
         )
         trip.privacy = Trip.PUBLIC
         trip.save()
@@ -181,9 +181,7 @@ class TripSearchTests(TestCase):
 
         test_finder = str(uuid.uuid4())
         test_identifier = str(uuid.uuid4())
-        trip = TripFactory(
-            user=self.user, cave_name=test_finder, cavers=test_identifier
-        )
+        trip = TripFactory(user=self.user, cave_name=test_finder, notes=test_identifier)
 
         trip.privacy = Trip.PRIVATE
         trip.save()
@@ -265,8 +263,8 @@ class TripSearchTests(TestCase):
         for i in range(11):
             TripFactory(
                 user=self.user,
-                cavers="Testing Pagination",
                 cave_name=f"Pagination Test {i}",
+                cave_entrance="Testing Pagination",
             )
 
         # Check that the first page contains 10 trips

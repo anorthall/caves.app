@@ -1,11 +1,17 @@
 {% load users_tags %}
 {% load logger_tags %}
 
-{% if trip.cavers %}
+{% if trip.cavers.all %}
   <div class="row mb-3">
     <div class="col">
       <small class="text-muted trip-field">Cavers</small><br />
-      {{ trip.cavers }}
+      {% if user == trip.user %}
+        {% for caver in trip.cavers.all %}
+          <a class="text-body text-decoration-none" href="{{ caver.get_absolute_url }}">{{ caver.name }}</a>{% if forloop.counter < trip.cavers.all|length %},{% endif %}
+        {% endfor %}
+      {% else %}
+        {{ trip.cavers.all|join:", " }}
+      {% endif %}
     </div>
   </div>
 {% endif %}

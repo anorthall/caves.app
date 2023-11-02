@@ -5,6 +5,7 @@ from distancefield import D, DistanceField, DistanceUnitField
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
 from django.urls import reverse
 from tinymce.models import HTMLField
 
@@ -13,6 +14,54 @@ from ..validators import (
     horizontal_dist_validator,
     vertical_dist_validator,
 )
+
+
+class Caver(models.Model):
+    """A caver that was on a trip"""
+
+    name = models.CharField(max_length=40)
+    added = models.DateTimeField("caver added on", auto_now_add=True)
+    updated = models.DateTimeField("caver last updated", auto_now=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    linked_account = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="linked_cavers",
+    )
+    uuid = models.UUIDField(
+        verbose_name="UUID",
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text="A unique identifier for this caver.",
+    )
+
+    def __str__(self):
+        return self.name
+
+    def total_trip_duration(self):
+        return self.trip_set.aggregate(Sum("duration"))["duration__sum"]
+
+    def total_trip_duration_str(self):
+        td = self.total_trip_duration()
+        if td:
+            return humanize.precisedelta(
+                td, minimum_unit="minutes", suppress=["months", "years"]
+            )
+        else:
+            return None
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.strip()
+
+        if self.linked_account not in self.user.friends.all():
+            self.linked_account = None
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("log:caver_detail", args=[self.uuid])
 
 
 # noinspection PyUnresolvedReferences
@@ -119,13 +168,18 @@ class Trip(models.Model):
         choices=TRIP_TYPES,
         default=SPORT,
     )
-    cavers = models.CharField(
+    cavers_old = models.CharField(
         max_length=250,
         blank=True,
         help_text=(
             "A comma-separated list of cavers that were on this trip. "
             "Avoid adding yourself to this list."
         ),
+    )
+    cavers = models.ManyToManyField(
+        Caver,
+        blank=True,
+        help_text="A list of cavers that were on this trip.",
     )
     clubs = models.CharField(
         max_length=100,

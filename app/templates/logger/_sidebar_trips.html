@@ -14,8 +14,8 @@
   {% comment %} Authenticated user links {% endcomment %}
   <span class="nav-item sidebar-header d-none d-lg-block">Trips</span>
 
-  <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
-    <i class="bi bi-people-fill"></i> Recent
+  <a class="nav-link {% active_link 'log:caver_list' %}" href="{% url 'log:caver_list' %}">
+    <i class="bi bi-people-fill"></i> Cavers
   </a>
 
   <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">

@@ -137,7 +137,7 @@ class HTMXTripListSearchView(View):
                 Q(cave_name__unaccent__icontains=query)
                 | Q(cave_entrance__unaccent__icontains=query)
                 | Q(cave_exit__unaccent__icontains=query)
-                | Q(cavers__unaccent__icontains=query)
+                | Q(cavers__name__unaccent__icontains=query)
                 | Q(clubs__unaccent__icontains=query)
                 | Q(expedition__unaccent__icontains=query)
             )

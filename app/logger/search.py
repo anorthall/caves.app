@@ -48,7 +48,7 @@ def trip_search(*, terms, for_user, search_user=None, type=None, fields=None) ->
 def _build_search_field_queries(terms, fields, for_user) -> Q:
     queries = Q()
     if "cavers" in fields or not fields:
-        queries |= Q(cavers__unaccent__icontains=terms)
+        queries |= Q(cavers__name__unaccent__icontains=terms)
     if "cave_name" in fields or not fields:
         queries |= Q(cave_name__unaccent__icontains=terms)
     if "cave_entrance" in fields or not fields:

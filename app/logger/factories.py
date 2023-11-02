@@ -7,7 +7,7 @@ from factory import random
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from .models import Trip
+from .models import Caver, Trip
 
 fake = Faker()
 
@@ -19,13 +19,6 @@ MAX_LONG_TRIP_LENGTH_IN_MINUTES = MAX_LONG_TRIP_LENGTH_IN_HOURS * 60
 # Configuration for maximum length of shorter trips
 MAX_SHORT_TRIP_LENGTH_IN_HOURS = 14
 MAX_SHORT_TRIP_LENGTH_IN_MINUTES = MAX_SHORT_TRIP_LENGTH_IN_HOURS * 60
-
-
-def _get_caver_list():
-    names_list = []
-    for _ in range(random.randgen.randint(0, 5)):
-        names_list.append(fake.name())
-    return ", ".join(names_list)
 
 
 def _generate_distance(min, max, chance_of_none=0.2):
@@ -166,6 +159,13 @@ def generate_club():
     return f"{city} {middle} {suffix}"
 
 
+class CaverFactory(DjangoModelFactory):
+    class Meta:
+        model = Caver
+
+    name = factory.Faker("name")
+
+
 class TripFactory(DjangoModelFactory):
     class Meta:
         model = Trip
@@ -205,7 +205,6 @@ class TripFactory(DjangoModelFactory):
         start_date=datetime.now() - timedelta(days=365 * 5),
     )
     clubs = factory.LazyFunction(generate_club)
-    cavers = factory.LazyFunction(_get_caver_list)
     expedition = factory.LazyFunction(_generate_expedition)
     privacy = factory.Faker(
         "random_element",
@@ -256,6 +255,17 @@ class TripFactory(DjangoModelFactory):
             return f"{random.randgen.randint(min, max)}m"
 
         return self.vert_dist_up
+
+    @factory.post_generation
+    def add_cavers(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            return
+
+        num_cavers = random.randgen.randint(1, 10)
+        cavers = CaverFactory.create_batch(num_cavers, user=self.user)
+
+        for caver in cavers:
+            self.cavers.add(caver)
 
     @classmethod
     def _adjust_kwargs(cls, **kwargs):

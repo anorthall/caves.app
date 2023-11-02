@@ -58,9 +58,9 @@
               {{ trip.expedition }}
             </li>
           {% endif %}
-          {% if trip.cavers %}
+          {% if trip.cavers.all %}
             <li class="list-group-item">
-              {{ trip.cavers }}
+              {{ trip.cavers.all|join:", " }}
             </li>
           {% endif %}
           {% if trip.notes %}

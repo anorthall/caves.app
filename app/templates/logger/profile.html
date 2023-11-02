@@ -179,10 +179,10 @@
                 </td>
               </tr>
 
-              {% if trip.cavers and show_cavers %}
+              {% if trip.cavers.all and show_cavers %}
                 <tr id="caver-list" data-href="{{ trip.get_absolute_url }}">
                   <td colspan="{% if profile_user.disable_distance_statistics %}5{% else %}7{% endif %}" class="pb-3 pt-3 px-3 text-primary">
-                    with {{ trip.cavers }}
+                    with {{ trip.cavers.all|join:", " }}
                   </td>
                 </tr>
               {% endif %}
