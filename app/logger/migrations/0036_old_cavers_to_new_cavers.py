@@ -14,7 +14,7 @@ def migrate_old_cavers_to_new_cavers(apps, schema_editor):
 
         caver_names = trip.cavers.split(",")
         for caver_name in caver_names:
-            caver_name = caver_name.strip()
+            caver_name = caver_name.strip()[0:39]
             if not caver_name:
                 continue
 
