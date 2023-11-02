@@ -47,7 +47,7 @@ class Caver(models.Model):
         td = self.total_trip_duration()
         if td:
             return humanize.precisedelta(
-                td, minimum_unit="minutes", suppress=["days", "months", "years"]
+                td, minimum_unit="minutes", suppress=["months", "years"]
             )
         else:
             return None

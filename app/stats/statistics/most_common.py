@@ -8,6 +8,7 @@ from logger.models import Caver
 class MostCommonRow:
     metric: str
     value: str
+    url: str
 
 
 @define
@@ -17,8 +18,8 @@ class MostCommonStatistics:
     value_name: str
     rows: list = Factory(list)
 
-    def add_row(self, metric, value):
-        self.rows.append(MostCommonRow(metric=metric, value=value))
+    def add_row(self, metric, value, url=None):
+        self.rows.append(MostCommonRow(metric=metric, value=value, url=url))
 
 
 def _sort_comma_separated_list(qs, value, limit=10):
@@ -102,14 +103,14 @@ def most_common_cavers_by_trips(queryset, limit):
         value_name="Trips",
     )
 
-    results = (
-        queryset.values("cavers__name")
-        .annotate(count=Count("cavers__name"))
-        .order_by("-count")[0:limit]
+    cavers = (
+        Caver.objects.filter(trip__in=queryset)
+        .annotate(trip_count=Count("trip"))
+        .order_by("-trip_count")[0:limit]
     )
 
-    for result in results:
-        stats.add_row(result["cavers__name"], result["count"])
+    for caver in cavers:
+        stats.add_row(caver.name, caver.trip_count, caver.get_absolute_url())
 
     return stats
 
@@ -126,13 +127,15 @@ def most_common_cavers_by_time(queryset, limit):
         .annotate(duration=Sum("trip__duration"))
         .exclude(duration__isnull=True)
         .order_by("-duration")[0:limit]
-        .values_list("name", "duration")
     )
 
-    for row in cavers:
+    for caver in cavers:
         stats.add_row(
-            row[0],
-            humanize.precisedelta(row[1], minimum_unit="minutes", format="%.0f"),
+            caver.name,
+            humanize.precisedelta(
+                caver.duration, minimum_unit="minutes", format="%.0f"
+            ),
+            caver.get_absolute_url(),
         )
 
     return stats
