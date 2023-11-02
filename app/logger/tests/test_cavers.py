@@ -43,9 +43,18 @@ class CaverModelTests(TestCase):
             end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
         )
 
+        self.trip2 = Trip.objects.create(
+            user=self.user,
+            cave_name="Test Trip 2",
+            start=dt.fromisoformat("2010-01-01T12:00:00+00:00"),
+            end=dt.fromisoformat("2010-01-01T14:00:00+00:00"),
+        )
+
         self.caver = Caver.objects.create(name="Test Caver", user=self.user)
+        self.caver2 = Caver.objects.create(name="Test Caver 2", user=self.user)
 
         self.trip.cavers.add(self.caver)
+        self.trip2.cavers.add(self.caver2)
 
     def test_caver_model_str(self):
         """Test that the Caver model returns the correct string representation"""
@@ -125,6 +134,63 @@ class CaverModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Please enter at least three characters.")
         self.assertEqual(self.caver.name, "Test Caver")
+
+    def test_caver_merge_view(self):
+        """Test that the Caver merge view returns a 200"""
+        self.client.force_login(self.user)
+        self.assertEqual(self.caver.trip_set.count(), 1)
+        self.assertEqual(self.caver2.trip_set.count(), 1)
+
+        response = self.client.post(
+            reverse("log:caver_merge", args=[self.caver.uuid]),
+            data={"caver": self.caver2.uuid},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.caver.refresh_from_db()
+        self.assertEqual(self.caver.trip_set.count(), 2)
+        self.assertEqual(self.caver.name, "Test Caver")
+
+        with self.assertRaises(Caver.DoesNotExist):
+            self.caver2.refresh_from_db()
+
+    def test_caver_merge_view_as_invalid_user(self):
+        """Test that the Caver merge view returns a 404 for an invalid user"""
+        self.client.force_login(self.user2)
+        response = self.client.post(
+            reverse("log:caver_merge", args=[self.caver.uuid]),
+            data={"caver": self.caver2.uuid},
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.caver.name, "Test Caver")
+        self.assertEqual(self.caver2.name, "Test Caver 2")
+
+    def test_caver_merge_view_as_anonymous_user(self):
+        """Test that the Caver merge view returns a 302 for an anonymous user"""
+        response = self.client.post(
+            reverse("log:caver_merge", args=[self.caver.uuid]),
+            data={"caver": self.caver2.uuid},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.caver.name, "Test Caver")
+        self.assertEqual(self.caver2.name, "Test Caver 2")
+
+    def test_caver_merge_view_with_invalid_data(self):
+        """Test that the Caver merge view does not merge with invalid data"""
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("log:caver_merge", args=[self.caver.uuid]),
+            data={"caver": "invalid-uuid"},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a valid choice.")
+        self.assertEqual(self.caver.name, "Test Caver")
+        self.assertEqual(self.caver2.name, "Test Caver 2")
 
     def tearDown(self):
         """Reset the log level back to normal"""
