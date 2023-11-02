@@ -6,7 +6,7 @@ from django.utils import timezone as tz
 from django.utils.timezone import timedelta as td
 
 from ..factories import TripFactory
-from ..models import Trip
+from ..models import Caver, Trip
 from ..views.userprofile import UserProfile as UserProfileView
 
 User = get_user_model()
@@ -372,3 +372,25 @@ class UserProfileViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "1.00000, 1.00000")
         self.assertContains(response, "Cave location")
+
+    def test_caver_links_shown_when_viewed_by_owner(self):
+        """Test that caver links are shown when viewed by the owner"""
+        self.client.force_login(self.user)
+        trip = TripFactory(user=self.user, privacy=Trip.PUBLIC)
+        caver = Caver.objects.create(name="Test Caver", user=self.user)
+        trip.cavers.add(caver)
+
+        response = self.client.get(trip.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, caver.get_absolute_url())
+
+    def test_caver_links_not_shown_when_viewed_by_other_users(self):
+        """Test that caver links are not shown when viewed by other users"""
+        self.client.force_login(self.user2)
+        trip = TripFactory(user=self.user, privacy=Trip.PUBLIC)
+        caver = Caver.objects.create(name="Test Caver", user=self.user)
+        trip.cavers.add(caver)
+
+        response = self.client.get(trip.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, caver.get_absolute_url())
