@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
-from logger.models import Trip
+from logger.models import Caver, Trip
 
 User = get_user_model()
 
@@ -145,4 +145,25 @@ class TestLoggerPagesLoad(TestCase):
         """Test that the search page loads"""
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:search"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_caver_list_page_loads(self):
+        """Test that the caver list page loads"""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("log:caver_list"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_caver_list_page_loads_with_cavers(self):
+        """Test that the caver list page loads with cavers"""
+        self.client.force_login(self.user)
+        for i in range(250):
+            Caver.objects.create(name=f"Test Caver {i}", user=self.user)
+        response = self.client.get(reverse("log:caver_list"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_caver_detail_page_loads(self):
+        """Test that the caver detail page loads"""
+        self.client.force_login(self.user)
+        caver = Caver.objects.create(name="Test Caver", user=self.user)
+        response = self.client.get(caver.get_absolute_url())
         self.assertEqual(response.status_code, 200)

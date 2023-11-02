@@ -143,7 +143,9 @@ class TripSearchTests(TestCase):
         # First check the trip appears when the trip is public
         test_finder = str(uuid.uuid4())
         test_identifier = str(uuid.uuid4())
-        trip = TripFactory(user=self.user, cave_name=test_finder, notes=test_identifier)
+        trip = TripFactory(
+            user=self.user, cave_name=test_finder, cave_entrance=test_identifier
+        )
         trip.privacy = Trip.PUBLIC
         trip.save()
 
