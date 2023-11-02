@@ -23,6 +23,9 @@ class CaverAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def create_object(self, text):
         return self.get_queryset().get_or_create(name=text, user=self.request.user)[0]
 
+    def has_add_permission(self, request):
+        return True
+
 
 class CaverList(LoginRequiredMixin, ListView):
     model = Caver
