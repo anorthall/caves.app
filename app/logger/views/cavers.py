@@ -2,6 +2,7 @@ from dal import autocomplete
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.db.models import Count, Max
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
@@ -140,11 +141,12 @@ class CaverMerge(LoginRequiredMixin, View):
             if not merge_caver.user == request.user:
                 raise PermissionDenied
 
-            for trip in merge_caver.trip_set.all():
-                trip.cavers.add(caver)
-                trip.save()
+            with transaction.atomic():
+                for trip in merge_caver.trip_set.all():
+                    trip.cavers.add(caver)
+                    trip.save()
 
-            merge_caver.delete()
+                merge_caver.delete()
 
             messages.success(
                 request,
