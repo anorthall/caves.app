@@ -390,7 +390,9 @@ class LinkCaverForm(forms.Form):
 
         for friend in self.user.friends.all():
             if friend not in already_linked:
-                choices.append([friend.pk, f"{friend.name} -- @{friend.username}"])
+                choices.append(
+                    [friend.username, f"{friend.name} -- @{friend.username}"]
+                )
 
         return choices
 
@@ -400,7 +402,7 @@ class LinkCaverForm(forms.Form):
             raise ValidationError("Please select an account.")
 
         try:
-            account = User.objects.get(pk=account)
+            account = User.objects.get(username=account)
         except User.DoesNotExist:
             raise ValidationError("Account not found.")
 

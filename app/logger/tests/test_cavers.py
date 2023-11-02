@@ -75,12 +75,14 @@ class CaverModelTests(TestCase):
         self.assertContains(response, "Test Trip")
         self.assertContains(response, "Link caves.app account")
 
+    @tag("privacy")
     def test_caver_detail_view_as_invalid_user(self):
         """Test that the Caver detail view returns a 403 for an invalid user"""
         self.client.force_login(self.user2)
         response = self.client.get(self.caver.get_absolute_url())
         self.assertEqual(response.status_code, 404)
 
+    @tag("privacy")
     def test_caver_detail_view_as_anonymous_user(self):
         """Test that the Caver detail view returns a 403 for an anonymous user"""
         response = self.client.get(self.caver.get_absolute_url(), follow=False)
@@ -101,6 +103,7 @@ class CaverModelTests(TestCase):
         self.caver.refresh_from_db()
         self.assertEqual(self.caver.name, "Rename Test Caver")
 
+    @tag("privacy")
     def test_caver_rename_view_as_invalid_user(self):
         """Test that the Caver rename view returns a 404 for an invalid user"""
         self.client.force_login(self.user2)
@@ -112,6 +115,7 @@ class CaverModelTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(self.caver.name, "Test Caver")
 
+    @tag("privacy")
     def test_caver_rename_view_as_anonymous_user(self):
         """Test that the Caver rename view returns a 302 for an anonymous user"""
         response = self.client.post(
@@ -155,6 +159,7 @@ class CaverModelTests(TestCase):
         with self.assertRaises(Caver.DoesNotExist):
             self.caver2.refresh_from_db()
 
+    @tag("privacy")
     def test_caver_merge_view_as_invalid_user(self):
         """Test that the Caver merge view returns a 404 for an invalid user"""
         self.client.force_login(self.user2)
@@ -167,6 +172,7 @@ class CaverModelTests(TestCase):
         self.assertEqual(self.caver.name, "Test Caver")
         self.assertEqual(self.caver2.name, "Test Caver 2")
 
+    @tag("privacy")
     def test_caver_merge_view_as_anonymous_user(self):
         """Test that the Caver merge view returns a 302 for an anonymous user"""
         response = self.client.post(
@@ -191,6 +197,86 @@ class CaverModelTests(TestCase):
         self.assertContains(response, "Select a valid choice.")
         self.assertEqual(self.caver.name, "Test Caver")
         self.assertEqual(self.caver2.name, "Test Caver 2")
+
+    def test_caver_link_and_unlink_views(self):
+        """Test that the Caver link and unlink views"""
+        self.client.force_login(self.user)
+        self.assertEqual(self.caver.linked_account, None)
+
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
+
+        response = self.client.post(
+            reverse("log:caver_link", args=[self.caver.uuid]),
+            data={"account": self.user2.username},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.caver.refresh_from_db()
+        self.assertEqual(self.caver.linked_account, self.user2)
+
+        response = self.client.post(
+            reverse("log:caver_unlink", args=[self.caver.uuid]),
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.caver.refresh_from_db()
+        self.assertEqual(self.caver.linked_account, None)
+
+    @tag("privacy")
+    def test_caver_link_and_unlink_views_as_invalid_user(self):
+        """Test that the Caver link and unlink views return a 404 for an invalid user"""
+        self.client.force_login(self.user2)
+        response = self.client.post(
+            reverse("log:caver_link", args=[self.caver.uuid]),
+            data={"account": self.user2.username},
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.caver.linked_account, None)
+
+        response = self.client.post(
+            reverse("log:caver_unlink", args=[self.caver.uuid]),
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.caver.linked_account, None)
+
+    def test_caver_link_message_appears_on_caver_detail_view(self):
+        """Test that the Caver link message appears on the Caver detail view"""
+        self.client.force_login(self.user)
+        self.assertEqual(self.caver.linked_account, None)
+
+        self.user.friends.add(self.user2)
+        self.user2.friends.add(self.user)
+
+        response = self.client.get(self.caver.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(
+            response, "This caver record is linked to the caves.app account of"
+        )
+
+        response = self.client.post(
+            reverse("log:caver_link", args=[self.caver.uuid]),
+            data={"account": self.user2.username},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "The caver record for Test Caver has been linked to @testuser2."
+        )
+        self.caver.refresh_from_db()
+        self.assertEqual(self.caver.linked_account, self.user2)
+
+        response = self.client.get(self.caver.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user2.get_absolute_url())
+        self.assertContains(
+            response, "This caver record is linked to the caves.app account of"
+        )
 
     def tearDown(self):
         """Reset the log level back to normal"""
