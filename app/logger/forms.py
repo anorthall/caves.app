@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Submit
+from dal import autocomplete
 from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
@@ -9,7 +10,7 @@ from django.utils import timezone
 from users.models import CavingUser
 
 from .mixins import CleanCaveLocationMixin, DistanceUnitFormMixin
-from .models import Trip, TripPhoto
+from .models import Caver, Trip, TripPhoto
 
 User = CavingUser
 
@@ -113,6 +114,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
                     "hx-indicator": "",
                 }
             ),
+            "cavers": autocomplete.ModelSelect2Multiple("log:caver_autocomplete"),
         }
 
     def __init__(self, user, *args, **kwargs):
@@ -361,3 +363,106 @@ class TripSearchForm(forms.Form):
             except User.DoesNotExist:
                 raise ValidationError("Username not found.")
         return user
+
+
+class LinkCaverForm(forms.Form):
+    account = forms.ChoiceField(
+        label="Account to link",
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+        self.fields["account"].choices = self._get_account_choices()
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.add_input(Submit("submit", "Save linked account"))
+
+    def _get_account_choices(self):
+        choices = []
+        already_linked = []
+
+        cavers = Caver.objects.filter(user=self.user)
+        for caver in cavers:
+            if caver.linked_account:
+                already_linked.append(caver.linked_account)
+
+        for friend in self.user.friends.all():
+            if friend not in already_linked:
+                choices.append([friend.pk, f"{friend.name} -- @{friend.username}"])
+
+        return choices
+
+    def clean_account(self):
+        account = self.cleaned_data.get("account")
+        if not account:
+            raise ValidationError("Please select an account.")
+
+        try:
+            account = User.objects.get(pk=account)
+        except User.DoesNotExist:
+            raise ValidationError("Account not found.")
+
+        if account == self.user:
+            raise ValidationError("You cannot link your own account.")
+
+        if account not in self.user.friends.all():
+            raise ValidationError("You can only link accounts of your friends.")
+
+        return account
+
+
+class RenameCaverForm(forms.Form):
+    name = forms.CharField(
+        label="New name",
+        required=True,
+        help_text="The new name of this caver as it will appear on your trips.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name").strip()
+        if len(name) < 3:
+            raise ValidationError("Please enter at least three characters.")
+        return name
+
+
+class MergeCaverForm(forms.Form):
+    caver = forms.ChoiceField(
+        label="Record to merge",
+        required=True,
+        widget=forms.Select,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+        self.fields["caver"].choices = self._get_caver_choices()
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.add_input(Submit("submit", "Merge caver"))
+
+    def _get_caver_choices(self):
+        choices = []
+
+        cavers = Caver.objects.filter(user=self.user).order_by("name")
+        for caver in cavers:
+            choices.append([caver.uuid, f"{caver.name}"])
+
+        return choices
+
+    def clean_caver(self):
+        caver = self.cleaned_data.get("caver")
+        if not caver:
+            raise ValidationError("Please select a caver record to merge.")
+
+        try:
+            caver = Caver.objects.get(uuid=caver, user=self.user)
+        except Caver.DoesNotExist:
+            raise ValidationError("Caver record not found.")
+
+        return caver

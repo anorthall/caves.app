@@ -16,7 +16,7 @@
                 <div class="col">
                   <a class="link-primary fw-bold text-decoration-none me-1"
                      href="{{ trip.get_absolute_url }}">{{ trip.cave_name }}</a>
-                  {{ trip.cavers }}
+                  {{ trip.cavers.all|join:", " }}
                 </div>
               </div>
             </li>

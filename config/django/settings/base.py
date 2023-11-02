@@ -102,6 +102,8 @@ INSTALLED_APPS = [
     "export.apps.ExportConfig",
     "comments.apps.CommentsConfig",
     "maps.apps.MapsConfig",
+    "dal",
+    "dal_select2",
     "django_countries",
     "tinymce",
     "active_link",

@@ -1,7 +1,7 @@
 import humanize
 from attrs import Factory, define, frozen
-from django.db.models import Count
-from django.utils import timezone
+from django.db.models import Count, Sum
+from logger.models import Caver
 
 
 @frozen
@@ -95,6 +95,25 @@ def most_common_from_csv(*, queryset, field, title, metric_name, value_name, lim
     return stats
 
 
+def most_common_cavers_by_trips(queryset, limit):
+    stats = MostCommonStatistics(
+        title="Most common cavers by trips",
+        metric_name="Caver",
+        value_name="Trips",
+    )
+
+    results = (
+        queryset.values("cavers__name")
+        .annotate(count=Count("cavers__name"))
+        .order_by("-count")[0:limit]
+    )
+
+    for result in results:
+        stats.add_row(result["cavers__name"], result["count"])
+
+    return stats
+
+
 def most_common_cavers_by_time(queryset, limit):
     stats = MostCommonStatistics(
         title="Most common cavers by time",
@@ -102,24 +121,15 @@ def most_common_cavers_by_time(queryset, limit):
         value_name="Time",
     )
 
-    cavers = {}
-    for trip in queryset:
-        if not trip.cavers:
-            continue
+    cavers = (
+        Caver.objects.filter(trip__in=queryset)
+        .annotate(duration=Sum("trip__duration"))
+        .exclude(duration__isnull=True)
+        .order_by("-duration")[0:limit]
+        .values_list("name", "duration")
+    )
 
-        for caver in trip.cavers.split(","):
-            caver = caver.strip()
-            if not caver:  # pragma: no cover
-                continue
-
-            if caver not in cavers:
-                cavers[caver] = timezone.timedelta()
-
-            cavers[caver] += trip.duration if trip.duration else timezone.timedelta()
-
-    results = sorted(cavers.items(), key=lambda x: x[1], reverse=True)[0:limit]
-
-    for row in results:
+    for row in cavers:
         stats.add_row(
             row[0],
             humanize.precisedelta(row[1], minimum_unit="minutes", format="%.0f"),
@@ -130,14 +140,7 @@ def most_common_cavers_by_time(queryset, limit):
 
 def most_common(queryset, limit=10):
     stats = [
-        most_common_from_csv(
-            queryset=queryset,
-            field="cavers",
-            title="Most common cavers by trips",
-            metric_name="Caver",
-            value_name="Trips",
-            limit=limit,
-        ),
+        most_common_cavers_by_trips(queryset=queryset, limit=limit),
         most_common_cavers_by_time(queryset, limit),
         most_common_caves(queryset, limit),
         most_common_from_csv(

@@ -66,6 +66,13 @@ class ImportUploadForm(forms.Form):
 
 
 class TripImportForm(BaseTripForm):
+    cavers = forms.CharField(
+        max_length=255,
+        label="Cavers",
+        help_text="A comma separated list of cavers.",
+        required=False,
+    )
+
     class Meta:
         model = Trip
         fields = [
@@ -80,7 +87,6 @@ class TripImportForm(BaseTripForm):
             "privacy",
             "clubs",
             "expedition",
-            "cavers",
             "horizontal_dist",
             "vert_dist_down",
             "vert_dist_up",

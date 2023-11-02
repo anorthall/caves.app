@@ -1,0 +1,49 @@
+{% extends "base_trips.html" %}
+{% load logger_tags %}
+{% load humanize %}
+
+{% block title %}Caver list{% endblock %}
+{% block description %}A list of cavers that you've been on trips with{% endblock %}
+{% block display_title_container %}{% endblock %}
+
+{% block main %}
+  <header class="subtitle">
+    <h3 class="mb-0" style="font-size: inherit;">Caver list</h3>
+  </header>
+
+  {% if cavers %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Trips</th>
+            <th class="d-none d-md-table-cell">Last trip</th>
+            <th class="d-none d-lg-table-cell">Total duration</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody class="align-middle">
+          {% for caver in cavers %}
+            <tr>
+              <td>{{ caver.name }}</td>
+              <td>{{ caver.trip_count }}</td>
+              <td class="d-none d-md-table-cell">{{ caver.last_trip_date|date }}</td>
+              <td class="d-none d-lg-table-cell">{{ caver.total_trip_duration_str|default_if_none:"" }}</td>
+              <td class="text-end pe-0">
+                <a class="btn btn-sm btn-primary" href="{{ caver.get_absolute_url }}">
+                  View
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% include "_paginate_bootstrap.html" with page=cavers %}
+    </div>
+  {% else %}
+    <p class="lead">You've not added any cavers yet!</p>
+  {% endif %}
+{% endblock %}

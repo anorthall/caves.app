@@ -50,15 +50,4 @@ def unique_regions(queryset):
 
 
 def unique_cavers(queryset):
-    caver_values = queryset.values_list("cavers", flat=True)
-    if not caver_values:
-        return 0
-
-    cavers = set()
-    for cavers_list in caver_values:
-        for caver in cavers_list.split(","):
-            caver = caver.strip().lower()
-            if caver:
-                cavers.add(caver)
-
-    return len(cavers)
+    return len(queryset.values_list("cavers", flat=True))

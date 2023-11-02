@@ -53,6 +53,32 @@ urlpatterns = [
         views.TripPhotosUpdate.as_view(),
         name="trip_photos_update",
     ),
+    path("log/cavers/", views.CaverList.as_view(), name="caver_list"),
+    path("log/cavers/<uuid:uuid>/", views.CaverDetail.as_view(), name="caver_detail"),
+    path(
+        "log/cavers/<uuid:uuid>/delete/",
+        views.CaverDelete.as_view(),
+        name="caver_delete",
+    ),
+    path(
+        "log/cavers/<uuid:uuid>/rename/",
+        views.CaverRename.as_view(),
+        name="caver_rename",
+    ),
+    path("log/cavers/<uuid:uuid>/link/", views.CaverLink.as_view(), name="caver_link"),
+    path(
+        "log/cavers/<uuid:uuid>/unlink/",
+        views.CaverUnlink.as_view(),
+        name="caver_unlink",
+    ),
+    path(
+        "log/cavers/<uuid:uuid>/merge/", views.CaverMerge.as_view(), name="caver_merge"
+    ),
+    path(
+        "log/cavers/autocomplete",
+        views.CaverAutocomplete.as_view(create_field="name", validate_create=True),
+        name="caver_autocomplete",
+    ),
     path(
         "report/<uuid:uuid>/", views.TripReportRedirect.as_view(), name="report_detail"
     ),

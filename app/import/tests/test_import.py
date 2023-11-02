@@ -174,7 +174,8 @@ class ImportTests(TestCase):
         self.assertEqual(
             trip.end, datetime(2022, 6, 17, 17, 0, 0, tzinfo=ZoneInfo("UTC"))
         )
-        self.assertEqual(trip.cavers, "Andrew Northall")
+        self.assertEqual(trip.cavers.all()[0].name, "Andrew Northall")
+        self.assertEqual(trip.cavers.all()[1].name, "John Smith")
 
         trip = Trip.objects.get(cave_name="Trip 2")
         self.assertEqual(trip.privacy, Trip.DEFAULT)

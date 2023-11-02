@@ -1,0 +1,195 @@
+{% extends "base_trips.html" %}
+{% load logger_tags %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load users_tags %}
+
+{% block title %}{{ caver.name }}{% endblock %}
+{% block description %}A list of trips you've been on with {{ caver.name }}{% endblock %}
+{% block display_title_container %}{% endblock %}
+
+{% block main %}
+  <header class="subtitle">
+    <h3 class="mb-0" style="font-size: inherit;">{{ caver.name }}</h3>
+  </header>
+
+  {% if trips %}
+    <p>
+      You've caved with {{ caver.name }} {% if trip_count == 1 %}once{% else %}{{ trip_count|apnumber }} time{% endif %}{{ trip_count|pluralize }}{% if caver.total_trip_duration_str %} for a total of {{ caver.total_trip_duration_str }} underground.{% else %}.{% endif %}
+    </p>
+
+    {% if caver.linked_account %}
+      <p>
+        This caver record is linked to the caves.app account of {% user caver.linked_account %}.
+      </p>
+    {% endif %}
+
+    <div class="d-flex flex-md-row flex-column mt-4">
+      <button data-bs-toggle="modal" data-bs-target="#renameCaverModal" class="btn btn-outline-primary me-2 mb-2">Rename caver</button>
+      <button data-bs-toggle="modal" data-bs-target="#mergeCaverModal" class="btn btn-outline-primary me-2 mb-2">Merge caver</button>
+
+      {% if caver.linked_account %}
+        <form method="post" action="{% url "log:caver_unlink" caver.uuid %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger me-2 mb-2">Unlink caves.app account</button>
+        </form>
+      {% else %}
+        <button data-bs-toggle="modal" data-bs-target="#linkCaverModal" class="btn btn-outline-primary me-2 mb-2">Link caves.app account</button>
+      {% endif %}
+
+      <button data-bs-toggle="modal" data-bs-target="#deleteCaverModal" class="btn btn-outline-danger me-2 mb-2">Delete caver</button>
+    </div>
+
+    <form method="post" action="{% url "log:caver_rename" caver.uuid %}">
+      <div class="modal" tabindex="-1" id="renameCaverModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5>Rename caver record</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <p class="mb-4">
+                Changing the name of this caver record will update all of the trips that you
+                have added them to. What would you like to rename {{ caver.name }} to?
+              </p>
+
+              {{ rename_caver_form|crispy }}
+            </div>
+
+            <div class="modal-footer">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Rename caver record</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <form method="post" action="{% url "log:caver_merge" caver.uuid %}">
+      <div class="modal" tabindex="-1" id="mergeCaverModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5>Merge caver records</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <p>
+                You can merge this caver record with another one that you have created. This will
+                combine the two records into one, and update all of the trips that you have added
+                them to.
+              </p>
+
+              <p>
+                This action is irreversible and should you wish to restore them, you will
+                need to re-add them to each trip individually.
+              </p>
+
+              <p class="mb-4">
+                Which caver record would you like to merge?
+              </p>
+
+              {{ merge_caver_form|crispy }}
+            </div>
+
+            <div class="modal-footer">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Merge caver records</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <form method="post" action="{% url "log:caver_link" caver.uuid %}">
+      <div class="modal" tabindex="-1" id="linkCaverModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5>Link caver record</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <p class="mb-4">
+                If this caver has a caves.app account, and you are friends with them, you can link
+                their account to this caver record. Friends which are already linked to one of your
+                other caver records will not be shown in the selection below.
+              </p>
+
+              {{ link_caver_form|crispy }}
+            </div>
+
+            <div class="modal-footer">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Link caver record</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <form method="post" action="{% url "log:caver_delete" caver.uuid %}">
+      <div class="modal" tabindex="-1" id="deleteCaverModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5>Delete caver record</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <p>
+                Deleting this caver record will remove it from all of the trips
+                that it has been added to. This action is irreversible and should you
+                wish to restore them, you will need to re-add them to each trip individually.
+              </p>
+              <p class="mb-0">
+                Are you sure you want to delete the caver record for {{ caver.name }}?
+              </p>
+            </div>
+
+            <div class="modal-footer">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete caver record</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <header class="subtitle mt-5">
+      <h5 class="mb-0">Trips with {{ caver.name }}</h5>
+    </header>
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Cave</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for trip in trips %}
+            <tr class="align-middle">
+              <td>{{ trip.start|date }}</td>
+              <td>{{ trip.cave_name }}</td>
+              <td class="text-end pe-0">
+                <a class="btn btn-sm btn-primary" href="{{ trip.get_absolute_url }}">
+                  View
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>You haven't been on any trips with {{ caver.name }}.</p>
+  {% endif %}
+{% endblock %}

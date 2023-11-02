@@ -60,6 +60,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             trip.cave_coordinates = Point(lng, lat)
 
         trip.save()
+        form.save_m2m()
 
         log_trip_action(self.request.user, self.object, "updated")
         return redirect(trip.get_absolute_url())
@@ -152,6 +153,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             trip.cave_coordinates = Point(lng, lat)
 
         trip.save()
+        form.save_m2m()
         trip.followers.add(self.request.user)
 
         log_trip_action(self.request.user, trip, "added")

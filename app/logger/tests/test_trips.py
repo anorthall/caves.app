@@ -370,7 +370,6 @@ class TripModelTests(TestCase):
         self.assertContains(response, "Cave name")
         self.assertContains(response, "Region")
         self.assertContains(response, "Country")
-        self.assertContains(response, "Cavers")
         self.assertContains(response, "Trip notes")
         self.assertContains(response, "Create trip")
 
@@ -381,7 +380,6 @@ class TripModelTests(TestCase):
                 "cave_region": "Test Region",
                 "cave_country": "Test Country",
                 "type": Trip.SPORT,
-                "cavers": "Test Cavers",
                 "start": tz.now(),
                 "end": tz.now() + td(days=1),
                 "privacy": Trip.DEFAULT,
@@ -395,7 +393,6 @@ class TripModelTests(TestCase):
         self.assertEqual(trip.cave_region, "Test Region")
         self.assertEqual(trip.cave_country, "Test Country")
         self.assertEqual(trip.type, Trip.SPORT)
-        self.assertEqual(trip.cavers, "Test Cavers")
         self.assertEqual(trip.notes, "Test Notes")
         self.assertEqual(trip.privacy, Trip.DEFAULT)
 
@@ -436,7 +433,6 @@ class TripModelTests(TestCase):
                 "cave_region": "Test Region",
                 "cave_country": "Test Country",
                 "type": Trip.SPORT,
-                "cavers": "Test Cavers",
                 "privacy": Trip.DEFAULT,
                 "notes": "Test Notes",
                 "start": same_time,
@@ -452,7 +448,6 @@ class TripModelTests(TestCase):
                 "cave_region": "Test Region",
                 "cave_country": "Test Country",
                 "type": Trip.SPORT,
-                "cavers": "Test Cavers",
                 "privacy": Trip.DEFAULT,
                 "notes": "Test Notes",
                 "start": tz.now() + td(days=8),
@@ -470,7 +465,6 @@ class TripModelTests(TestCase):
                 "cave_region": "Test Region",
                 "cave_country": "Test Country",
                 "type": Trip.SPORT,
-                "cavers": "Test Cavers",
                 "privacy": Trip.DEFAULT,
                 "notes": "Test Notes",
                 "start": tz.now(),
@@ -509,7 +503,6 @@ class TripModelTests(TestCase):
         self.assertContains(response, "Cave name")
         self.assertContains(response, "Region")
         self.assertContains(response, "Country")
-        self.assertContains(response, "Cavers")
         self.assertContains(response, "Trip notes")
         self.assertContains(response, "Update trip")
         self.assertContains(response, self.trip.cave_name)
@@ -521,7 +514,6 @@ class TripModelTests(TestCase):
                 "cave_region": "Test Region",
                 "cave_country": "Test Country",
                 "type": Trip.SPORT,
-                "cavers": "Test Cavers",
                 "start": tz.now(),
                 "end": tz.now() + td(days=1),
                 "privacy": Trip.DEFAULT,
@@ -535,7 +527,6 @@ class TripModelTests(TestCase):
         self.assertEqual(trip.cave_region, "Test Region")
         self.assertEqual(trip.cave_country, "Test Country")
         self.assertEqual(trip.type, Trip.SPORT)
-        self.assertEqual(trip.cavers, "Test Cavers")
         self.assertEqual(trip.notes, "Test Notes")
         self.assertEqual(trip.privacy, Trip.DEFAULT)
         self.assertEqual(trip.user, self.user)
