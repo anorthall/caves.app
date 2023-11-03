@@ -140,6 +140,9 @@ class ExportDataTests(TestCase):
                 if isinstance(value, Distance):
                     value = value.m
 
+                if field == "cavers":
+                    value = ", ".join([str(v) for v in value.all()])
+
                 self.assertContains(response, value)
 
 

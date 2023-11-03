@@ -46,6 +46,7 @@ class Exporter:
 
         if value is None:
             return ""
+
         return handler(value)
 
     def _build_header(self) -> list[str]:
@@ -94,6 +95,9 @@ class Exporter:
     def _format_pointfield(self, value) -> str:
         return f"{value.y}, {value.x}"
 
+    def _format_manytomanyfield(self, value_qs: QuerySet) -> str:
+        return ", ".join([str(value) for value in value_qs.all()])
+
 
 class TripExporter(Exporter):
     model = Trip
@@ -124,6 +128,7 @@ class TripExporter(Exporter):
         "resurveyed_dist",
         "aid_dist",
         "notes",
+        "trip_report",
         "added",
         "updated",
         "privacy",
@@ -134,6 +139,7 @@ class TripExporter(Exporter):
 
     def __init__(self, user: User, queryset: QuerySet):
         self.user = user
+        queryset = queryset.order_by("-start")
 
         # Handle custom field labels and remove any fields that don't have a label
         for field in self.fields.copy():
