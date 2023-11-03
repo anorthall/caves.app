@@ -23,7 +23,7 @@ def trip_search(*, terms, for_user, search_user=None, type=None, fields=None) ->
         friends = for_user.friends.all()
         results = Trip.objects.filter(
             Q(user=for_user) | Q(user__in=friends) | Q(privacy=Trip.PUBLIC)
-        )
+        ).distinct("pk")
 
     # Filter by trip type if provided
     if type and type.lower() != "any":

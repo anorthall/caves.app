@@ -131,17 +131,21 @@ class HTMXTripListSearchView(View):
                 {"trips": None, "query": query},
             )
 
-        trips = Trip.objects.filter(
-            Q(user=self.profile_user)
-            & Q(
-                Q(cave_name__unaccent__icontains=query)
-                | Q(cave_entrance__unaccent__icontains=query)
-                | Q(cave_exit__unaccent__icontains=query)
-                | Q(cavers__name__unaccent__icontains=query)
-                | Q(clubs__unaccent__icontains=query)
-                | Q(expedition__unaccent__icontains=query)
+        trips = (
+            Trip.objects.filter(
+                Q(user=self.profile_user)
+                & Q(
+                    Q(cave_name__unaccent__icontains=query)
+                    | Q(cave_entrance__unaccent__icontains=query)
+                    | Q(cave_exit__unaccent__icontains=query)
+                    | Q(cavers__name__unaccent__icontains=query)
+                    | Q(clubs__unaccent__icontains=query)
+                    | Q(expedition__unaccent__icontains=query)
+                )
             )
-        ).order_by("-start", "pk")[:20]
+            .distinct("start", "pk")
+            .order_by("-start", "pk")[:20]
+        )
 
         friends = self.profile_user.friends.all()
 
