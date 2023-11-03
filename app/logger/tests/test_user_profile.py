@@ -7,7 +7,6 @@ from django.utils.timezone import timedelta as td
 
 from ..factories import TripFactory
 from ..models import Caver, Trip
-from ..views.userprofile import UserProfile as UserProfileView
 
 User = get_user_model()
 
@@ -63,34 +62,6 @@ class UserProfileViewTests(TestCase):
                 notes="User2 trip notes",
             )
 
-    def test_user_profile_page_trip_list(self):
-        """Test the trip list on the user profile page"""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 200)
-
-        # Test pagination and that the correct trips are displayed
-        for i in range(1, 50):
-            self.assertContains(response, f"User1 Cave {i}")
-            self.assertNotContains(response, f"User2 Cave {i}")
-
-        for i in range(51, 100):
-            self.assertNotContains(response, f"User1 Cave {i}")
-            self.assertNotContains(response, f"User2 Cave {i}")
-
-        # Test edit links appear
-        for trip in self.user.trips.order_by("-start")[:50]:
-            self.assertContains(response, reverse("log:trip_update", args=[trip.uuid]))
-
-        # Test the next page
-        response = self.client.get(
-            reverse("log:user", args=[self.user.username]) + "?page=2",
-        )
-        self.assertEqual(response.status_code, 200)
-        for i in range(51, 100):
-            self.assertContains(response, f"User1 Cave {i}")
-            self.assertNotContains(response, f"User2 Cave {i}")
-
     def test_user_profile_page_title(self):
         """Test the user profile page title"""
         self.client.force_login(self.user)
@@ -134,23 +105,6 @@ class UserProfileViewTests(TestCase):
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "User1 Cave")
-
-    @tag("privacy")
-    def test_that_friend_only_trips_appear_to_friends(self):
-        """Test that friend only trips appear on the user profile page to friends"""
-        for trip in self.user.trips:
-            trip.privacy = Trip.FRIENDS
-            trip.save()
-
-        self.user.friends.add(self.user2)
-        self.user2.friends.add(self.user)
-
-        self.client.force_login(self.user2)
-        response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 200)
-
-        for trip in self.user.trips.order_by("-start")[:50]:
-            self.assertContains(response, trip.cave_name)
 
     @tag("privacy")
     def test_user_profile_page_with_various_privacy_settings(self):
@@ -273,85 +227,6 @@ class UserProfileViewTests(TestCase):
         self.assertNotContains(response, self.user2.get_absolute_url())
         self.assertNotContains(response, self.user3.get_absolute_url())
         self.assertNotContains(response, "Friends")
-
-    def test_user_profile_page_loads_with_all_allowed_ordering(self):
-        """Test that the user profile page loads with all allowed ordering"""
-        self.client.force_login(self.user)
-        for order in UserProfileView.allowed_ordering:
-            # Ascending
-            response = self.client.get(self.user.get_absolute_url() + "?sort=" + order)
-            self.assertEqual(response.status_code, 200)
-
-            # Descending
-            response = self.client.get(self.user.get_absolute_url() + "?sort=-" + order)
-            self.assertEqual(response.status_code, 200)
-
-    @tag("privacy")
-    def test_user_profile_htmx_search_view_does_not_show_private_trips(self):
-        """Test that the user profile HTMX search view does not show private trips"""
-        self.client.force_login(self.user)
-        trip = TripFactory(user=self.user2, privacy=Trip.PUBLIC)
-        response = self.client.post(
-            reverse("log:user_search", args=[self.user2.username]),
-            {"query": trip.cave_name},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, trip.get_absolute_url())
-
-        trip.privacy = Trip.PRIVATE
-        trip.save()
-        response = self.client.post(
-            reverse("log:user_search", args=[self.user2.username]),
-            {"query": trip.cave_name},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, trip.get_absolute_url())
-
-    @tag("privacy")
-    def test_user_profile_htmx_search_view_does_not_show_friend_only_trips(self):
-        """Test that the user profile search view does not show friend only trips"""
-        # Test the trip is shown when public
-        self.client.force_login(self.user)
-        trip = TripFactory(user=self.user2, privacy=Trip.PUBLIC)
-        response = self.client.post(
-            reverse("log:user_search", args=[self.user2.username]),
-            {"query": trip.cave_name},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, trip.get_absolute_url())
-
-        # Test the trip is not shown when friends only
-        trip.privacy = Trip.FRIENDS
-        trip.save()
-        response = self.client.post(
-            reverse("log:user_search", args=[self.user2.username]),
-            {"query": trip.cave_name},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, trip.get_absolute_url())
-
-        # Test the trip is shown when friends
-        self.user.friends.add(self.user2)
-        self.user2.friends.add(self.user)
-
-        response = self.client.post(
-            reverse("log:user_search", args=[self.user2.username]),
-            {"query": trip.cave_name},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, trip.get_absolute_url())
-
-    @tag("privacy")
-    def test_user_profile_htmx_search_view_respects_profile_privacy(self):
-        """Test that the user profile search view respects profile privacy"""
-        self.user2.privacy = User.PRIVATE
-        self.user2.save()
-
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("log:user_search", args=[self.user2.username]), {"query": "query"}
-        )
-        self.assertEqual(response.status_code, 403)
 
     @tag("privacy")
     def test_cave_location_privacy(self):

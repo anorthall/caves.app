@@ -1,9 +1,8 @@
-from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, render
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django_ratelimit.decorators import ratelimit
 from stats import statistics
 from users.models import CavingUser as User
@@ -12,11 +11,55 @@ from ..models import Trip
 
 
 @method_decorator(ratelimit(key="user_or_ip", rate="500/h"), name="dispatch")
-class UserProfile(ListView):
+class UserProfile(TemplateView):
     """List all of a user's trips and their profile information"""
 
     model = Trip
     template_name = "logger/profile.html"
+    slug_field = "username"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.profile_user = None
+
+    def setup(self, *args, **kwargs):
+        """Assign self.profile_user and perform permissions checks"""
+        super().setup(*args, **kwargs)
+        self.profile_user = get_object_or_404(User, username=self.kwargs["username"])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["profile_user"] = self.profile_user
+        context["page_title"] = self.get_page_title()
+        context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
+        context["user_has_trips"] = self.profile_user.trips.exists()
+
+        if self.request.user not in self.profile_user.friends.all():
+            if self.profile_user.allow_friend_username:
+                context["can_add_friend"] = True
+
+        if not self.profile_user.is_viewable_by(self.request.user):
+            context["private_profile"] = True
+
+        if self.profile_user.public_statistics:
+            context["stats"] = statistics.yearly(
+                self.profile_user.trips.exclude(type=Trip.SURFACE)
+            )
+
+        return context
+
+    def get_page_title(self):
+        if self.profile_user.page_title:
+            return self.profile_user.page_title
+        else:
+            return f"{self.profile_user.name}'s trips"
+
+
+class ProfileTripsTable(ListView):
+    """List all of a user's trips and their profile information"""
+
+    model = Trip
+    template_name = "logger/profile_trips_table.html"
     context_object_name = "trips"
     slug_field = "username"
     paginate_by = 50
@@ -33,6 +76,8 @@ class UserProfile(ListView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.profile_user = None
+        self.allow_sort = True
+        self.query = None
 
     def setup(self, *args, **kwargs):
         """Assign self.profile_user and perform permissions checks"""
@@ -40,19 +85,36 @@ class UserProfile(ListView):
         self.profile_user = get_object_or_404(User, username=self.kwargs["username"])
 
     def get_queryset(self):
+        query = self.request.GET.get("query", "")
+        if len(query) < 3:
+            query = None
+        self.query = query
+
         trips = (
             Trip.objects.filter(user=self.profile_user)
             .select_related("user")
             .prefetch_related("photos")
-            .order_by(*self.get_ordering())
-        ).annotate(
-            photo_count=Count(
-                "photos",
-                filter=Q(photos__is_valid=True, photos__deleted_at=None),
-                distinct=True,
-            ),
-            comment_count=Count("comments", distinct=True),
         )
+
+        if query:
+            distinct_query = self.get_ordering()
+            distinct_query = [x.replace("-", "") for x in distinct_query]
+
+            trips = (
+                trips.filter(
+                    Q(cave_name__unaccent__icontains=query)
+                    | Q(cave_entrance__unaccent__icontains=query)
+                    | Q(cave_exit__unaccent__icontains=query)
+                    | Q(cavers__name__unaccent__icontains=query)
+                    | Q(clubs__unaccent__icontains=query)
+                    | Q(expedition__unaccent__icontains=query)
+                )
+                .distinct(*distinct_query)
+                .order_by(*self.get_ordering())
+            )
+            self.allow_sort = False
+        else:
+            trips = trips.order_by(*self.get_ordering())
 
         friends = self.profile_user.friends.all()
 
@@ -66,7 +128,7 @@ class UserProfile(ListView):
             return trips
 
     def get_ordering(self):
-        ordering = self.request.GET.get("sort", "")
+        ordering = self.request.GET.get("sort", "").lower()
         if ordering.replace("-", "") in self.allowed_ordering:
             return ordering, "pk"
 
@@ -75,20 +137,13 @@ class UserProfile(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["profile_user"] = self.profile_user
-        context["page_title"] = self.get_page_title()
-        context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["show_cavers"] = self.profile_user.show_cavers_on_trip_list
-        if self.request.user not in self.profile_user.friends.all():
-            if self.profile_user.allow_friend_username:
-                context["can_add_friend"] = True
-
-        if self.profile_user.public_statistics:
-            context["stats"] = statistics.yearly(
-                self.profile_user.trips.exclude(type=Trip.SURFACE)
-            )
-
-        if not self.profile_user.is_viewable_by(self.request.user):
-            context["private_profile"] = True
+        context["htmx_url"] = reverse(
+            "log:profile_trips_table", args=[self.profile_user.username]
+        )
+        context["ordering"] = self.get_ordering()[0]
+        context["allow_sort"] = self.allow_sort
+        context["query"] = self.query
 
         # This code provides the current GET parameters as a context variable
         # so that when a pagination link is clicked, the GET parameters are
@@ -104,60 +159,3 @@ class UserProfile(ListView):
             return self.profile_user.page_title
         else:
             return f"{self.profile_user.name}'s trips"
-
-
-@method_decorator(
-    ratelimit(key="user_or_ip", rate="1000/h", method=ratelimit.UNSAFE), name="dispatch"
-)
-class HTMXTripListSearchView(View):
-    def __init__(self):
-        super().__init__()
-        self.profile_user = None
-
-    def setup(self, *args, **kwargs):
-        """Assign self.profile_user and perform permissions checks"""
-        super().setup(*args, **kwargs)
-        self.profile_user = get_object_or_404(User, username=self.kwargs["username"])
-        if not self.profile_user.is_viewable_by(self.request.user):
-            raise PermissionDenied
-
-    def post(self, request, *args, **kwargs):
-        """Return a list of trips matching the search query"""
-        query = request.POST.get("query", "")
-        if len(query) < 3:
-            return render(
-                request,
-                "logger/_htmx_trip_list_search.html",
-                {"trips": None, "query": query},
-            )
-
-        trips = (
-            Trip.objects.filter(
-                Q(user=self.profile_user)
-                & Q(
-                    Q(cave_name__unaccent__icontains=query)
-                    | Q(cave_entrance__unaccent__icontains=query)
-                    | Q(cave_exit__unaccent__icontains=query)
-                    | Q(cavers__name__unaccent__icontains=query)
-                    | Q(clubs__unaccent__icontains=query)
-                    | Q(expedition__unaccent__icontains=query)
-                )
-            )
-            .distinct("start", "pk")
-            .order_by("-start", "pk")[:20]
-        )
-
-        friends = self.profile_user.friends.all()
-
-        # Sanitise trips to be privacy aware
-        if not self.profile_user == self.request.user:
-            sanitised_trips = [
-                x for x in trips if x.is_viewable_by(self.request.user, friends)
-            ]
-            trips = sanitised_trips
-
-        return render(
-            request,
-            "logger/_htmx_trip_list_search.html",
-            {"trips": trips, "query": query},
-        )
