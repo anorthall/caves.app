@@ -20,28 +20,28 @@
     <!-- Local styles -->
     <link href="{% static 'css/core.css' %}" rel="stylesheet">
 
-    <!-- Bootstrap v5.3.0 CSS from https://bootswatch.com/ -->
+    <!-- Bootstrap v5.3.2 CSS from https://bootswatch.com/ -->
     <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
 
-    <!-- Bootstrap Icons v1.10.3 -->
-    <link rel="stylesheet" href="{% static "bootstrap-icons/bootstrap-icons.css" %}">
+    <!-- Bootstrap Icons v1.11.1 -->
+    <link rel="stylesheet" href="{% static "bootstrap-icons/bootstrap-icons.min.css" %}">
 
     {% block stylesheets %}{% endblock %}
 
-    <!-- HTMX -->
+    <!-- HTMX v1.9.7 JS -->
     <script src="{% static "js/htmx.min.js" %}"></script>
     <script src="{% static "js/htmx-alpine-morph.js" %}"></script>
     {% django_htmx_script %}
 
-    <!-- Bootstrap v5.3.0 JS -->
+    <!-- Bootstrap v5.3.2 JS -->
     <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
 
-    <!-- Alpine 3.12.2 JS -->
+    <!-- Alpine 3.13.2 JS -->
     <script defer src="{% static "js/alpine-morph-plugin.min.js" %}"></script>
     <script defer src="{% static "js/alpine.min.js" %}"></script>
 
-    <!-- jQuery v3.7.0 JS -->
-    <script src="{% static "js/jquery-3.7.0.min.js" %}"></script>
+    <!-- jQuery v3.7.1 JS -->
+    <script src="{% static "js/jquery.min.js" %}"></script>
 
     {% include "_clickable_elements.html" %}
 
