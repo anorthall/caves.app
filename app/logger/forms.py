@@ -442,6 +442,7 @@ class MergeCaverForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
+        self.caver = kwargs.pop("caver")
         super().__init__(*args, **kwargs)
         self.fields["caver"].choices = self._get_caver_choices()
         self.helper = FormHelper()
@@ -451,7 +452,12 @@ class MergeCaverForm(forms.Form):
     def _get_caver_choices(self):
         choices = []
 
-        cavers = Caver.objects.filter(user=self.user).order_by("name")
+        cavers = (
+            Caver.objects.filter(user=self.user)
+            .exclude(pk=self.caver.pk)
+            .order_by("name")
+        )
+
         for caver in cavers:
             choices.append([caver.uuid, f"{caver.name}"])
 
@@ -459,7 +465,7 @@ class MergeCaverForm(forms.Form):
 
     def clean_caver(self):
         caver = self.cleaned_data.get("caver")
-        if not caver:
+        if not caver or caver == self.caver:
             raise ValidationError("Please select a caver record to merge.")
 
         try:

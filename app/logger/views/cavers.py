@@ -56,7 +56,9 @@ class CaverDetail(LoginRequiredMixin, DetailView):
         context["trip_count"] = context["trips"].count()
         context["link_caver_form"] = LinkCaverForm(user=self.request.user)
         context["rename_caver_form"] = RenameCaverForm()
-        context["merge_caver_form"] = MergeCaverForm(user=self.request.user)
+        context["merge_caver_form"] = MergeCaverForm(
+            user=self.request.user, caver=self.object
+        )
         return context
 
     def get_queryset(self):
@@ -134,12 +136,19 @@ class CaverUnlink(LoginRequiredMixin, View):
 class CaverMerge(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         caver = get_object_or_404(Caver, uuid=kwargs["uuid"], user=request.user)
-        form = MergeCaverForm(request.POST, user=request.user)
+        form = MergeCaverForm(request.POST, user=request.user, caver=caver)
 
         if form.is_valid():
             merge_caver = form.cleaned_data["caver"]
             if not merge_caver.user == request.user:
                 raise PermissionDenied
+
+            if merge_caver == caver:
+                messages.error(
+                    request,
+                    "You cannot merge a caver with itself.",
+                )
+                return redirect(caver.get_absolute_url())
 
             with transaction.atomic():
                 for trip in merge_caver.trip_set.all():
