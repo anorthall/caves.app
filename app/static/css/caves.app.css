@@ -160,9 +160,7 @@ body {
 
 #hamburgerMenuIcon {
   font-size: 30px;
-  margin-top: 3px;
   margin-left: 0.9rem;
-  display: inline-flex;
   align-self: center;
   justify-self: center;
   display: block;
