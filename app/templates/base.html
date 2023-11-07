@@ -7,13 +7,13 @@
       <!-- Navbar -->
       <div id="navbarContainer" class="fixed-top">
         <nav class="navbar navbar-expand navbar-dark" id="navbarContentContainer">
-          <div>
-            <a class="site-title fs-3" href="/">{{ site_title }}</a>
+          <div class="site-title fs-3">
+            <a href="/">{{ site_title }}</a>
           </div>
 
-          <ul class="navbar-nav justify-content-center align-items-center flex-grow-1" id="navbarLinks">
+          <div class="navbar-nav justify-content-center align-items-center flex-grow-1" id="navbarLinks">
             {% include "_navbar_links.html" %}
-          </ul>
+          </div>
 
           <div class="d-flex flex-row justify-content-center align-items-center ms-auto me-2">
             {% if user.has_mod_perms or user.is_superuser %}
@@ -27,9 +27,9 @@
             {% include "users/htmx_notifications_dropdown.html" %}
 
             <div class="ms-3">
-              <a href="{% url 'users:account_detail' %}" class="nav-link">
+              <a href="{% url 'log:user' user.username %}" class="nav-link">
                 {% if user.avatar %}
-                  <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="25" height="25" class="rounded-circle" alt="User avatar">
+                  <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="40" height="40" class="rounded-circle" alt="Your avatar">
                 {% else %}
                   <i class="bi bi-person-circle"></i>
                 {% endif %}
