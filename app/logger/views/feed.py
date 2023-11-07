@@ -102,6 +102,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
         context = {
             "trip": trip,
             "liked_str": liked_str,
+            "likes_count": trip.likes.count(),
         }
 
         return self.render_to_response(context)

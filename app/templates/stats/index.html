@@ -7,14 +7,14 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
-{% block content %}
+{% block main %}
   {% if stats_yearly %}
-    <h3 class="subtitle">
-      Annual statistics
+    <h3 class="subtitle mt-2">
+      {{ user.name }}'s statistics
     </h3>
 
     <div id="yearly-statistics-table">
-      {% include "stats/_yearly_stats.html" with stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}
+      {% include "stats/_yearly_stats.html" with table_class="table-striped" stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}
     </div>
 
     {% if not user.disable_stats_over_time %}
@@ -176,7 +176,7 @@
       {{ excluded_trip_count }} surface trip{{ excluded_trip_count|pluralize }} have been excluded from the statistics on this page.
     </div>
   {% endif %}
-{% endblock content %}
+{% endblock %}
 
 {% block footer_scripts %}
   <script>

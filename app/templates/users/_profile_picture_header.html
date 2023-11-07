@@ -3,11 +3,11 @@
 
 <a href="{% url 'log:user' username=photo_user.username %}">
   {% if photo_user.avatar %}
-    <img class="rounded-circle border-1 shadow-sm profile-photo-header"
+    <img class="rounded-circle border-1 profile-photo-header"
           src="{{ photo_user.avatar|imgproxy:"preset:avatar" }}"
           alt="{{ photo_user.name }}'s profile picture">
   {% else %}
-    <img class="rounded-circle shadow-sm profile-photo-header"
+    <img class="rounded-circle profile-photo-header"
           src="{% static 'images/blank_profile_picture.svg' %}"
           alt="Default profile picture">
   {% endif %}

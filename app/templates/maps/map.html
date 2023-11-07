@@ -1,8 +1,7 @@
-{% extends "base_full_width.html" %}
+{% extends "base_trips.html" %}
 
 {% block title %}{{ user.name }}'s cave map{% endblock %}
 {% block description %}A map of all the caves you've logged trips to on caves.app.{% endblock %}
-{% block display_title %}{{ user.name }}'s cave map{% endblock %}
 
 {% block header_scripts %}
   <script>
@@ -13,7 +12,7 @@
   </script>
 {% endblock %}
 
-{% block content %}
+{% block main %}
   {% if not map_markers %}
     <div class="alert alert-info text-center">
       You have not added locations to any of your trips so there are no caves to display on this map!<br>

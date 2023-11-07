@@ -1,26 +1,26 @@
 {% load active_link_tags %}
 {% if user.is_authenticated %}
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
-      <i class="bi bi-person-fill"></i> Trips
-    </a>
-  </li>
-
-    <li class="nav-item">
+  <li class="nav-item nav-item-hide">
     <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
-      <i class="bi bi-card-list"></i> Feed
+      <i class="bi bi-card-list"></i>
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item nav-item-hide">
+    <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
+      <i class="bi bi-person-fill"></i>
+    </a>
+  </li>
+
+  <li class="nav-item nav-item-hide">
     <a class="nav-link {% active_link 'stats:index' %}" href="{% url 'stats:index' %}">
-      <i class="bi bi-bar-chart"></i> Statistics
+      <i class="bi bi-bar-chart"></i>
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item nav-item-hide">
     <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
-      <i class="bi bi-plus-circle"></i> Add
+      <i class="bi bi-plus-circle"></i>
     </a>
   </li>
 {% else %}

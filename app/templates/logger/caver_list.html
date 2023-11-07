@@ -4,7 +4,6 @@
 
 {% block title %}Caver list{% endblock %}
 {% block description %}A list of cavers that you've been on trips with{% endblock %}
-{% block display_title_container %}{% endblock %}
 
 {% block main %}
   <header class="subtitle">
@@ -13,7 +12,7 @@
 
   {% if cavers %}
     <div class="table-responsive">
-      <table class="table table-sm table-striped">
+      <table class="table table-sm table-striped border">
         <thead>
           <tr>
             <th>Name</th>
@@ -31,7 +30,7 @@
               <td>{{ caver.trip_count }}</td>
               <td class="d-none d-md-table-cell">{{ caver.last_trip_date|date }}</td>
               <td class="d-none d-lg-table-cell">{{ caver.total_trip_duration_str|default_if_none:"" }}</td>
-              <td class="text-end pe-0">
+              <td class="text-center pe-0">
                 <a class="btn btn-sm btn-outline-primary" href="{{ caver.get_absolute_url }}">
                   View
                 </a>

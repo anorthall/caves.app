@@ -1,16 +1,15 @@
-{# <div hx-target="this" hx-ext="alpine-morph" hx-swap="morph" hx-get="{% url 'users:htmx_notifications_dropdown' %}" hx-trigger="every 15s" x-data="{ open: false }"> #}
 <div x-data="{ open: false }">
-  <a class="nav-link" href="#">
-    <span class="icon-badge-container text-white" x-on:click="open = !open">
+  <a class="nav-link text-white" href="#">
+    <span class="icon-badge-container" x-on:click="open = !open">
       {% if notifications.unread %}
         <i class="bi bi-bell-fill icon-badge-icon"></i>
         <span class="icon-badge">{{ notifications.unread }}</span>
       {% else %}
-        <i class="bi bi-bell"></i>
+        <i class="bi bi-bell-fill"></i>
       {% endif %}
     </span>
   </a>
-  <div class="notification-dropdown shadow-lg border border-2 bg-light" x-show="open" @click.outside="open = false" x-cloak x-transition>
+  <div class="notification-dropdown border border-2 bg-light" x-show="open" @click.outside="open = false" x-cloak x-transition>
     <div class="item title my-0">
       Notifications
     </div>

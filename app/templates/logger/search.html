@@ -5,7 +5,6 @@
 {% load humanize %}
 
 {% block title %}Search caves.app{% endblock %}
-{% block display_title_container %}{% endblock %}
 
 {% block main %}
   <form method="post" action="{% url 'log:search' %}">
@@ -24,7 +23,7 @@
     </h2>
 
     {% for trip in trips %}
-      <div class="card border-primary-subtle shadow-sm mb-3 mb-lg-4">
+      <div class="card border-primary-subtle mb-3 mb-lg-4">
         <div class="card-body bg-light" data-href="{{ trip.get_absolute_url }}">
           <h4 class="card-title">
             <a class="link-body-emphasis text-decoration-none" href="{{ trip.get_absolute_url }}">

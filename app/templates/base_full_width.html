@@ -1,2 +1,7 @@
 {% extends "base.html" %}
-{% block mobile_menu_container %}{% endblock %}
+
+{% block content %}
+  <div id="mainContent">
+    {% block main %}{% endblock %}
+  </div>
+{% endblock %}

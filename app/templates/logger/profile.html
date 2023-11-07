@@ -4,38 +4,18 @@
 {% block title %}{{ page_title }}{% endblock %}
 {% block meta_tags %}<meta name="author" content="{{ profile_user.name }}">{% endblock %}
 
-{% block display_title %}{{ page_title }}{% endblock %}
-{% block display_title_right %}@{{ profile_user.username }}{% endblock %}
-{% if private_profile %}
-  {% block display_title_container %}{% endblock %}
-{% endif %}
-
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
-{% block sidebar %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
-{% block mobile_menu %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
+{% block right_sidebar %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
 
 {% block main %}
   {% if not private_profile %}
-    {% if user_has_trips %}
-      <div class="form-floating mb-4">
-        <input type="text" class="form-control border-primary" id="searchInput" placeholder="Search"
-               hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
-               hx-trigger="keyup changed delay:100ms"
-               hx-target="#userTrips"
-               hx-replace="outerHTML"
-               autocomplete="off"
-               name="query">
-        <label for="floatingInput">Search</label>
-      </div>
-    {% endif %}
-
     {% if profile_user.bio %}
-      <div class="mb-4">
+      <div class="border-bottom border-gray-200 pb-4 mb-4 no-paragraph-mb">
         {{ profile_user.bio|markdownify }}
       </div>
-    {% elif not profile_user.bio and not trips %}
-      <p class="lead mb-4">
+    {% elif not profile_user.bio and not user_has_trips %}
+      <p class="lead">
         There is nothing here &mdash; yet.
         {% if user == profile_user %}
           Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
@@ -45,12 +25,23 @@
     {% endif %}
 
     {% if stats %}
-      <div class="profile-stats {% if profile_user.bio %}mt-4{% endif %} mb-3 border-top">
-        {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-md-table-cell" %}
+      <div class="profile-stats border-bottom border-gray-200 pb-4 mb-4">
+        {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm mb-0 table-striped table-bordered" dist_class="d-none d-xl-table-cell" %}
       </div>
     {% endif %}
 
     {% if user_has_trips %}
+      <div class="input-group mb-4">
+        <span class="input-group-text">Search</span>
+        <input type="text" class="form-control" placeholder="Cave, cavers, clubs or expeditions"
+               hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
+               hx-trigger="keyup changed delay:100ms"
+               hx-target="#userTrips"
+               hx-swap="outerHTML"
+               hx-indicator="none"
+               autocomplete="off"
+               name="query">
+      </div>
       <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
     {% endif %}
 

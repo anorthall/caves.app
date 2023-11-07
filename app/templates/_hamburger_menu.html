@@ -1,0 +1,51 @@
+{% load active_link_tags %}
+<div x-data="{ open: false }">
+  <a :class="{ 'active': open }" id="hamburgerMenuIcon"
+     class="text-white" href="#" role="button" x-on:click="open = !open"
+     x-trap.noscroll="open"
+     @resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width; if (width > 992) { open = false }">
+    <i class="bi bi-list"></i>
+  </a>
+
+  <div id="hamburgerMenuContainer" x-show="open" @click.outside="open = false" x-cloak x-transition.scale.20.origin.top.right>
+    <div class="hamburger-menu-column left">
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'log:index' %}" href="{% url 'log:index' %}#}">
+        <i class="bi bi-card-list"></i> Feed
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}#}">
+        <i class="bi bi-person-fill"></i> Trips
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'stats:index' %}" href="{% url 'stats:index' %}#}">
+        <i class="bi bi-bar-chart"></i> Statistics
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}#}">
+        <i class="bi bi-plus-circle"></i> Add trip
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'log:caver_list' %}" href="{% url 'log:caver_list' %}#}">
+        <i class="bi bi-people-fill"></i> Cavers
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}#}">
+        <i class="bi bi-search"></i> Search
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'maps:index' %}" href="{% url 'maps:index' %}#}">
+        <i class="bi bi-map"></i> Map
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'core:news' %}" href="{% url 'core:news' %}#}">
+        <i class="bi bi-newspaper"></i> News
+      </a>
+
+      <a class="hamburger-nav-link btn btn-light {#{% active_link 'core:help' %}" href="{% url 'core:help' %}#}">
+        <i class="bi bi-question-circle"></i> Help
+      </a>
+    </div>
+
+    <div class="hamburger-menu-column right"></div>
+  </div>
+</div>

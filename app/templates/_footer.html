@@ -1,18 +1,21 @@
-<span class="float-start">
-  {% block footer_left %}
-      <span class="d-none d-md-block">
-        Created by <a class="text-decoration-none text-white" href="https://buymeacoffee.com/anorthall">Andrew Northall</a>
-      </span>
+<footer id="footerContent">
+  <div>
+    {% block footer_left %}
+        <span class="d-none d-md-block">
+          Created by <a class="text-decoration-none" href="https://buymeacoffee.com/anorthall">Andrew Northall</a>
+        </span>
 
-      <span class="d-md-none">
-        &copy; 2023 <a class="text-decoration-none text-white" href="https://buymeacoffee.com/anorthall">Andrew Northall</a>
-      </span>
-  {% endblock %}
-</span>
-<span class="float-end">
-  {% block footer_right %}
-    <a href="{% url 'core:news' %}" class="text-decoration-none text-white">News</a>
-    <span class="mx-1">&middot;</span>
-    <a href="{% url 'core:help' %}" class="text-decoration-none text-white">Help</a>
-  {% endblock %}
-</span>
+        <span class="d-md-none">
+          &copy; 2023 <a class="text-decoration-none" href="https://buymeacoffee.com/anorthall">Andrew Northall</a>
+        </span>
+    {% endblock %}
+  </div>
+
+  <div>
+    {% block footer_right %}
+      <a href="{% url 'core:news' %}" class="text-decoration-none">News</a>
+      <span class="mx-1">&middot;</span>
+      <a href="{% url 'core:help' %}" class="text-decoration-none">Help</a>
+    {% endblock %}
+  </div>
+</footer>
