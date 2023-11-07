@@ -1,38 +1,34 @@
 {% load active_link_tags %}
 {% if user.is_authenticated %}
-  <li class="nav-item nav-item-hide">
-    <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
-      <i class="bi bi-card-list"></i>
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
+    <i class="bi bi-card-list"></i><span class="nav-link-text"> Feed</span>
+  </a>
 
-  <li class="nav-item nav-item-hide">
-    <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
-      <i class="bi bi-person-fill"></i>
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
+    <i class="bi bi-person-fill"></i><span class="nav-link-text"> Profile</span>
+  </a>
 
-  <li class="nav-item nav-item-hide">
-    <a class="nav-link {% active_link 'stats:index' %}" href="{% url 'stats:index' %}">
-      <i class="bi bi-bar-chart"></i>
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'stats:index' %}" href="{% url 'stats:index' %}">
+    <i class="bi bi-bar-chart"></i><span class="nav-link-text"> Statistics</span>
+  </a>
 
-  <li class="nav-item nav-item-hide">
-    <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
-      <i class="bi bi-plus-circle"></i>
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
+    <i class="bi bi-gear-fill"></i><span class="nav-link-text"> Account</span>
+  </a>
+
+  <a class="nav-link hamburger-hide">
+    <i class="bi bi-bell"></i>
+  </a>
+
+  <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
+    <i class="bi bi-plus-circle"></i><span class="nav-link-text"> Add trip</span>
+  </a>
 {% else %}
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'users:login' %}" href="{% url 'users:login' %}">
-      <i class="bi bi-person-circle"></i> Login
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'users:login' %}" href="{% url 'users:login' %}">
+    <i class="bi bi-person-circle"></i> Login
+  </a>
 
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'users:register' %}" href="{% url 'users:register' %}">
-      <i class="bi bi-house"></i> Register
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'users:register' %}" href="{% url 'users:register' %}">
+    <i class="bi bi-house"></i> Register
+  </a>
 {% endif %}
