@@ -211,10 +211,16 @@ body {
 
 .hamburger-menu .nav-link {
   display: inline-flex;
-  align-items: start;
-  margin: 0.25rem 1rem;
+  align-content: center;
+  justify-content: start;
+  margin: 0.3rem 1rem;
+  padding: 0.4rem 0.5rem;
   max-width: 15rem;
-  color: white;
+  opacity: 0.9;
+  color: var(--bs-white);
+  background-color: var(--bs-dark);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
 }
 
 .hamburger-menu .nav-link .bi {
