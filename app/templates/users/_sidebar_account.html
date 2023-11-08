@@ -1,12 +1,5 @@
 {% load active_link_tags %}
-
-<div class="d-none d-lg-flex mb-5">
-  {% if user.avatar %}
-    {% include "users/_profile_picture.html" with photo_user=user %}
-  {% else %}
-    {% include "users/_profile_picture.html" %}
-  {% endif %}
-</div>
+<span class="nav-item sidebar-header">Account</span>
 
 <a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
   <i class="bi bi-info-circle-fill"></i> Overview
@@ -25,7 +18,7 @@
 </a>
 
 <a class="nav-link {% active_link 'users:custom_fields_update' %}" href="{% url 'users:custom_fields_update' %}">
-  <i class="bi bi-ui-checks"></i> Trip fields
+  <i class="bi bi-ui-checks"></i> <span class="d-none d-md-inline">Trip fields</span><span class="d-md-none">Fields</span>
 </a>
 
 <a class="nav-link {% active_link 'import:index' %}" href="{% url 'import:index' %}">
@@ -40,9 +33,6 @@
   <i class="bi bi-gear-fill"></i> Settings
 </a>
 
-<form>
-  {% csrf_token %}
-  <button formmethod="post" formaction="{% url 'users:logout' %}" class="nav-link">
-    <i class="bi bi-x-octagon-fill"></i> Sign out
-  </button>
-</form>
+<a class="nav-link" hx-post="{% url 'users:logout' %}" hx-target="body" hx-swap="innerHTML show:top" hx-push-url="true">
+  <i class="bi bi-x-octagon-fill"></i> Sign out
+</a>
