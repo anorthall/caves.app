@@ -1,17 +1,7 @@
 {% extends "base_account.html" %}
 {% load markdownify %}
-
+{% block hamburger_menu_right %}{% include "users/_sidebar_account.html" %}{% endblock %}
 {% block main %}
-  <div class="row g-5 mb-5 d-lg-none">
-    <div class="d-flex justify-content-center mb-1">
-      {% if user.avatar %}
-        {% include "users/_profile_picture.html" with photo_user=user %}
-      {% else %}
-        {% include "users/_profile_picture.html" %}
-      {% endif %}
-    </div>
-  </div>
-
   <div class="row g-5">
     <div class="col-12 col-lg-6">
       <div class="h-100">
