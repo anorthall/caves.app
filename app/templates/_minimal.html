@@ -56,7 +56,7 @@
     {% block header_scripts %}{% endblock %}
   </head>
 
-  <body class="d-flex flex-column h-100" hx-boost="true">
+  <body class="d-flex flex-column h-100" hx-boost="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block body %}{% endblock body %}
 
     {% block modals %}{% endblock %}
