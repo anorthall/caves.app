@@ -64,6 +64,9 @@ body {
 
 #mainContent {
   display: block;
+}
+
+.main-content-bg {
   background-color: rgba(255, 255, 255, 1);
   width: 100%;
   max-width: 1600px;
@@ -95,6 +98,7 @@ body {
   background-image: linear-gradient(90deg, var(--bs-primary), var(--bs-primary-text-emphasis));
   color: white;
 }
+
 
 /*
   Messages
@@ -247,6 +251,11 @@ body {
   position: fixed;
   margin-top: 2rem;
   width: 230px;
+}
+
+.sidebar-profile {
+  margin-top: 146px;
+  position: static !important;
 }
 
 .sidebar .nav-link {
@@ -495,6 +504,72 @@ body {
 /*
   User profile
 */
+
+#profilePage.main-content-bg {
+  padding-top: 0;
+  margin-top: 145px;
+  border-top: 1px solid #e6e6e6;
+}
+
+#profilePage .profile-header-container {
+  margin-bottom: 200px;
+}
+
+#profilePage .profile-header {
+  margin: auto;
+  position: absolute;
+  top: 105px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#profilePage .profile-photo {
+  position: relative;
+  height: 220px;
+  width: 220px;
+  border: 1px solid #e6e6e6 !important;
+  border-radius: 50%;
+  box-shadow: 0 4px 5px #e6e6e6;
+}
+
+#profilePage .user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 240px;
+  text-align: center;
+}
+
+@media (min-width: 650px) {
+  #profilePage .profile-header-container {
+    margin-bottom: 145px;
+  }
+
+  #profilePage .user-info {
+    left: 240px;
+    top: 125px;
+    text-align: start;
+    justify-content: start;
+    width: 100%;
+  }
+
+  #profilePage .profile-header {
+    justify-content: start;
+    position: absolute;
+    top: 105px;
+    left: unset;
+    right: unset;
+  }
+}
+
+#profilePage .user-info h1, #profilePage .user-info-sm h1 {
+  margin-bottom: 0;
+}
 
 #trip-list-table #caver-list {
   box-shadow: inset 0 2px 2px hsla(0, 0%, 0%, 0.1), 0 -2px 0 hsla(0, 0%, 100%, 0.15);

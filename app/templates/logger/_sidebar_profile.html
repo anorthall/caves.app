@@ -3,57 +3,49 @@
 {% load static %}
 
 <div class="d-flex flex-column align-items-center">
-  <div class="mb-4">
-    {% if profile_user.avatar %}
-      {% include "users/_profile_picture.html" with photo_user=profile_user %}
-    {% else %}
-      {% include "users/_profile_picture.html" %}
-    {% endif %}
-  </div>
-
-  <strong>{{ profile_user.name }}</strong>
-  <small class="text-muted mb-3">@{{ profile_user.username }}</small>
-
-  {% if not private_profile %}
-    {% if profile_user.location %}
-      <small>{{ profile_user.location }}</small>
-    {% endif %}
-
-    {% if profile_user.country %}
-      <small>{{ profile_user.country.name }}</small>
-    {% endif %}
-
-    {% if profile_user.clubs %}
-      <small class="mt-3">{{ profile_user.clubs }}</small>
-    {% endif %}
-  {% endif %}
 
   {% if can_add_friend and user.is_authenticated and user != profile_user %}
     <a href="{% url 'users:friends' %}?u={{ object_owner.username }}" class="btn btn-sm btn-outline-primary mt-4">Add as friend <i class="ms-2 bi bi-person-plus-fill"></i></a>
   {% endif %}
 
-  {% if mutual_friends and not private_profile %}
-    <div class="mt-5">
-      <div class="sidebar-header text-center mb-2">
-        {% if not user == profile_user %}Mutual {% endif %}Friends
-      </div>
-
-      {% for friend in mutual_friends %}
-        <div class="d-flex flex-row align-items-center justify-content-start mb-3">
-          {% if friend.avatar %}
-            <img src="{{ friend.avatar|imgproxy:"preset:avatar_navbar" }}"
-                 class="rounded-circle me-3"
-                 alt="{{ friend.name }}'s profile picture"
-                 width="30" height="30">
-          {% else %}
-            <img src="{% static 'images/blank_profile_picture.svg' %}"
-                 class="rounded-circle me-3"
-                 alt="Blank profile picture"
-                 width="30" height="30">
-          {% endif %}
-          <span class="friend-link">{% user friend %}</span>
+  {% if not private_profile %}
+    {% if profile_user.clubs %}
+      <div class="card w-100 rounded-0">
+        <div class="card-header">
+          Clubs
         </div>
-      {% endfor %}
-    </div>
+
+        <div class="card-body">
+          {{ profile_user.clubs }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if mutual_friends %}
+      <div class="card w-100 rounded-0 mt-5">
+        <div class="card-header">
+          Friends
+        </div>
+
+        <div class="card-body d-flex flex-column align-items-start justify-content-center">
+            {% for friend in mutual_friends %}
+              <div class="d-flex flex-row align-items-center justify-content-start mb-3">
+                {% if friend.avatar %}
+                  <img src="{{ friend.avatar|imgproxy:"preset:avatar_navbar" }}"
+                       class="rounded-circle me-3"
+                       alt="{{ friend.name }}'s profile picture"
+                       width="30" height="30">
+                {% else %}
+                  <img src="{% static 'images/blank_profile_picture.svg' %}"
+                       class="rounded-circle me-3"
+                       alt="Blank profile picture"
+                       width="30" height="30">
+                {% endif %}
+                <span class="friend-link">{% user friend %}</span>
+              </div>
+            {% endfor %}
+        </div>
+      </div>
+    {% endif %}
   {% endif %}
 </div>

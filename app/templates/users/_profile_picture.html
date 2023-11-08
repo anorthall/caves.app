@@ -2,12 +2,9 @@
 {% load core_tags %}
 
 {% if photo_user.avatar %}
-  <a href="{{ photo_user.avatar.url }}">
-      <img class="align-self-center justify-self-center rounded-circle border border-2 profile-photo"
-           src="{{ photo_user.avatar|imgproxy:"preset:avatar" }}"
-           alt="{{ photo_user.name }}'s profile picture"
-           width="220" height="220">
-  </a>
+    <img class="align-self-center justify-self-center rounded-circle border border-2 profile-photo"
+         src="{{ photo_user.avatar|imgproxy:"preset:avatar" }}"
+         alt="{{ photo_user.name }}'s profile picture">
 {% else %}
   <img class="align-self-center justify-self-center rounded-circle profile-photo"
         src="{% static 'images/blank_profile_picture.svg' %}"
