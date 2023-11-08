@@ -1,10 +1,12 @@
 {% extends "base_stats.html" %}
 {% load logger_tags %}
 {% load stats_tags %}
+{% load static %}
 {% load markdownify %}
 
 {% block header_scripts %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script src="{% static 'js/jquery.min.js' %}"></script>
 {% endblock %}
 
 {% block main %}

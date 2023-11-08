@@ -16,20 +16,10 @@
           </div>
 
           <div class="d-flex flex-row justify-content-center align-items-center ms-auto me-2">
-            {% if user.has_mod_perms or user.is_superuser %}
-              <div class="me-3">
-                <a href="{% url 'staff:index' %}" class="nav-link text-white">
-                  <i class="bi bi-gear-fill"></i>
-                </a>
-              </div>
-            {% endif %}
-
-            {% include "users/htmx_notifications_dropdown.html" %}
-
             <div class="ms-3">
               <a href="{% url 'log:user' user.username %}" class="nav-link">
                 {% if user.avatar %}
-                  <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="40" height="40" class="rounded-circle" alt="Your avatar">
+                  <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="40" height="40" class="border border-primary rounded-circle" alt="Your avatar">
                 {% else %}
                   <i class="bi bi-person-circle"></i>
                 {% endif %}

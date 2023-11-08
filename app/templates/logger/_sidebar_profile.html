@@ -11,10 +11,6 @@
   {% if not private_profile %}
     {% if profile_user.clubs %}
       <div class="card w-100 rounded-0">
-        <div class="card-header">
-          Clubs
-        </div>
-
         <div class="card-body">
           {{ profile_user.clubs }}
         </div>
@@ -23,10 +19,6 @@
 
     {% if mutual_friends %}
       <div class="card w-100 rounded-0 mt-5">
-        <div class="card-header">
-          Friends
-        </div>
-
         <div class="card-body d-flex flex-column align-items-start justify-content-center">
             {% for friend in mutual_friends %}
               <div class="d-flex flex-row align-items-center justify-content-start mb-3">

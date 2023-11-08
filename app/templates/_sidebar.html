@@ -8,11 +8,11 @@
   </a>
 
   <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
-    <i class="bi bi-search"></i> Search
+    <i class="bi bi-search-heart-fill"></i> Search
   </a>
 
-  <a class="nav-link {% active_link 'maps:index' %}" href="{% url 'maps:index' %}">
-    <i class="bi bi-map"></i> Map
+  <a class="nav-link {% active_link 'maps:index' %}" href="{% url 'maps:index' %}" hx-boost="false">
+    <i class="bi bi-map-fill"></i> Map
   </a>
 {% endif %}
 
@@ -23,14 +23,30 @@
   </a>
 
   <a class="nav-link" href="{% url 'users:register' %}">
-    <i class="bi bi-house"></i> Register
+    <i class="bi bi-house-fill"></i> Register
   </a>
 {% endif %}
 
-<a class="nav-link{% if trip %} d-none d-lg-block{% endif %} {% active_link 'core:news' %}" href="{% url 'core:news' %}">
+<a class="nav-link {% active_link 'core:news' %}" href="{% url 'core:news' %}">
   <i class="bi bi-newspaper"></i> News
 </a>
 
-<a class="nav-link{% if trip %} d-none d-lg-block{% endif %} {% active_link 'core:help' %}" href="{% url 'core:help' %}">
-  <i class="bi bi-question-circle"></i> Help
+<a class="nav-link {% active_link 'core:help' %}" href="{% url 'core:help' %}">
+  <i class="bi bi-question-circle-fill"></i> Help
 </a>
+
+{% if user.is_authenticated %}
+  {% if user.is_moderator %}
+    <span class="nav-item sidebar-header mt-4">Staff</span>
+
+    <a class="nav-link {% active_link 'staff:dashboard' %}" href="{% url 'staff:dashboard' %}">
+      <i class="bi bi-pie-chart-fill"></i> Dashboard
+    </a>
+  {% endif %}
+
+  {% if user.is_superuser %}
+    <a class="nav-link" href="{% url 'admin:index' %}" hx-boost="false">
+      <i class="bi bi-gear-fill"></i> Admin
+    </a>
+  {% endif %}
+{% endif %}
