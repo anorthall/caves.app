@@ -41,11 +41,6 @@
     <script defer src="{% static "js/alpine-morph-plugin.min.js" %}"></script>
     <script defer src="{% static "js/alpine.min.js" %}"></script>
 
-    <!-- jQuery v3.7.1 JS -->
-    <script src="{% static "js/jquery.min.js" %}"></script>
-
-    {% include "_clickable_elements.html" %}
-
     {% if google_analytics_id %}
       <!-- Google tag (gtag.js) -->
       <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_id }}"></script>
@@ -61,7 +56,7 @@
     {% block header_scripts %}{% endblock %}
   </head>
 
-  <body class="d-flex flex-column h-100">
+  <body class="d-flex flex-column h-100" hx-boost="true">
     {% block body %}{% endblock body %}
 
     {% block modals %}{% endblock %}

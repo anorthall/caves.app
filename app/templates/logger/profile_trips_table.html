@@ -96,13 +96,11 @@
 
         <tbody>
           {% for trip in trips %}
-            <tr class="{% if show_cavers %}table-light{% endif %}" data-href="{{ trip.get_absolute_url }}">
-              <td>{{ trip.start|date:"j M y" }}</td>
+            <tr class="{% if show_cavers %}table-light{% endif %}" style="transform: rotate(0);">
+              <td><a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>{{ trip.start|date:"j M y" }}</td>
 
               <td>
-                <a class="text-decoration-none text-body" href="{{ trip.get_absolute_url }}">
-                  {{ trip.cave_name }}
-                </a>
+                {{ trip.cave_name }}
               </td>
 
               <td class="d-none d-xl-table-cell">
@@ -122,9 +120,9 @@
             </tr>
 
             {% if trip.cavers.all and show_cavers %}
-              <tr id="caver-list" data-href="{{ trip.get_absolute_url }}">
+              <tr id="caver-list" style="transform: rotate(0);">
                 <td colspan="{% if profile_user.disable_distance_statistics %}4{% else %}6{% endif %}" class="pb-3 pt-3 px-3 text-primary">
-                  with {{ trip.cavers.all|join:", " }}
+                  <a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>with {{ trip.cavers.all|join:", " }}
                 </td>
               </tr>
             {% endif %}
@@ -140,7 +138,6 @@
               </td>
             </tr>
           {% endif %}
-            </tr>
         </tbody>
       </table>
 
@@ -196,5 +193,3 @@
     </div>
   {% endif %}
 </div>
-
-{% include "_clickable_elements.html" %}

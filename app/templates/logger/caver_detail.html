@@ -165,24 +165,18 @@
     </header>
 
     <div class="table-responsive">
-      <table class="table">
+      <table class="table table-sm table-striped table-hover">
         <thead>
           <tr>
             <th>Date</th>
             <th>Cave</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
           {% for trip in trips %}
-            <tr class="align-middle">
-              <td>{{ trip.start|date }}</td>
+            <tr class="align-middle" style="transform: rotate(0);">
+              <td><a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>{{ trip.start|date }}</td>
               <td>{{ trip.cave_name }}</td>
-              <td class="text-end pe-0">
-                <a class="btn btn-sm btn-outline-primary" href="{{ trip.get_absolute_url }}">
-                  View
-                </a>
-              </td>
             </tr>
           {% endfor %}
         </tbody>
