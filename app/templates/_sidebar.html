@@ -37,10 +37,8 @@
 
 {% if user.is_authenticated %}
   {% if user.is_moderator %}
-    <span class="nav-item sidebar-header mt-4">Staff</span>
-
     <a class="nav-link {% active_link 'staff:dashboard' %}" href="{% url 'staff:dashboard' %}">
-      <i class="bi bi-pie-chart-fill"></i> Dashboard
+      <i class="bi bi-pie-chart-fill"></i> Stats
     </a>
   {% endif %}
 
