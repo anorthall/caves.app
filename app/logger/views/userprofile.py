@@ -62,7 +62,7 @@ class ProfileTripsTable(ListView):
     template_name = "logger/profile_trips_table.html"
     context_object_name = "trips"
     slug_field = "username"
-    paginate_by = 50
+    paginate_by = 100
     ordering = ("-start", "pk")
     allowed_ordering = [
         "start",
