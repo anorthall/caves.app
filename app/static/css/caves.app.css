@@ -423,7 +423,7 @@ body {
 */
 
 #notificationsContainer {
-  transform: rotate(0);
+  position: relative;
   margin: 0 0.25rem 0 0;
   border: 1px transparent;
   border-radius: 50%;
@@ -443,7 +443,7 @@ body {
 }
 
 #notificationsBadgeContainer {
-  position: fixed;
+  position: absolute;
   z-index: 50;
   padding: 2px 8px;
   top: -9px;
