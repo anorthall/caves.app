@@ -10,7 +10,7 @@ def notifications(request):
         "list": [],
     }
 
-    n_list = Notification.objects.filter(user=request.user).order_by("-updated")[0:5]
+    n_list = Notification.objects.filter(user=request.user).order_by("-updated")[:9]
     if bool(n_list):
         for notification in n_list:
             if not notification.read:
