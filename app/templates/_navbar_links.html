@@ -15,10 +15,6 @@
   <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
     <i class="bi bi-plus-circle-fill"></i><span class="nav-link-text"> Add trip</span>
   </a>
-
-  <a class="nav-link hamburger-hide">
-    <i class="bi bi-bell-fill"></i>
-  </a>
 {% else %}
   <a class="nav-link {% active_link 'users:login' %}" href="{% url 'users:login' %}">
     <i class="bi bi-person-circle"></i> Login

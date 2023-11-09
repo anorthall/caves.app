@@ -16,10 +16,21 @@
           </div>
 
           <div class="d-flex flex-row justify-content-center align-items-center ms-auto me-2">
+
+            <div id="notificationsContainer">
+              <i class="bi bi-bell-fill"></i>
+
+              {% if notifications.unread > 0 %}
+                <div id="notificationsBadgeContainer">
+                  <span>{% if notifications.unread <= 9 %}{{ notifications.unread }}{% else %}9{% endif %}</span>
+                </div>
+              {% endif %}
+            </div>
+
             <div class="ms-3">
               <a href="{% url 'log:user' user.username %}" class="nav-link">
                 {% if user.avatar %}
-                  <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="40" height="40" class="border border-primary rounded-circle" alt="Your avatar">
+                  <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="37" height="37" alt="Your avatar" id="navbarAvatar">
                 {% else %}
                   <i class="bi bi-person-circle"></i>
                 {% endif %}
