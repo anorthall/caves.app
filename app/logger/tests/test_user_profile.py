@@ -62,16 +62,6 @@ class UserProfileViewTests(TestCase):
                 notes="User2 trip notes",
             )
 
-    def test_user_profile_page_title(self):
-        """Test the user profile page title"""
-        self.client.force_login(self.user)
-        self.user.page_title = "Test Page Title 123"
-        self.user.save()
-
-        response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Test Page Title 123")
-
     def test_user_profile_page_bio(self):
         """Test the user profile page bio"""
         self.client.force_login(self.user)

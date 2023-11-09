@@ -319,7 +319,6 @@ class ProfileChangeForm(forms.ModelForm):
             "username",
             "location",
             "country",
-            "page_title",
             "bio",
             "clubs",
         )
@@ -353,7 +352,6 @@ class ProfileChangeForm(forms.ModelForm):
             Fieldset(
                 "Profile settings",
                 Div(
-                    Div("page_title", css_class="col"),
                     Div("bio", css_class="col"),
                     Div("clubs", css_class="col"),
                     css_class="row row-cols-1",

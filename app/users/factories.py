@@ -19,7 +19,6 @@ class UserFactory(DjangoModelFactory):
     bio = factory.Faker("text", max_nb_chars=500)
     location = factory.Faker("city")
     clubs = factory.LazyFunction(generate_club)
-    page_title = factory.Faker("text", max_nb_chars=40)
     timezone = factory.Faker("timezone")
     public_statistics = factory.Faker("pybool")
     private_notes = factory.Faker("pybool")
@@ -38,7 +37,6 @@ class UserFactory(DjangoModelFactory):
 
     @classmethod
     def _adjust_kwargs(cls, **kwargs):
-        kwargs["page_title"] = kwargs["page_title"].replace(".", "")
         if kwargs["is_active"]:
             kwargs["has_verified_email"] = True
         return kwargs

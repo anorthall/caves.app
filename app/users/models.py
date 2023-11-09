@@ -148,14 +148,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         help_text="A list of caving clubs or organisations that you are a member of.",
     )
-    page_title = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text=(
-            "A title to display on your profile page (if enabled). "
-            "If left blank it will use your full name."
-        ),
-    )
 
     # Avatar
     avatar = models.ImageField(

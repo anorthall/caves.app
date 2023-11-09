@@ -30,7 +30,6 @@ class UserProfile(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["profile_user"] = self.profile_user
-        context["page_title"] = self.get_page_title()
         context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["user_has_trips"] = self.profile_user.trips.exists()
 
@@ -47,12 +46,6 @@ class UserProfile(TemplateView):
             )
 
         return context
-
-    def get_page_title(self):
-        if self.profile_user.page_title:
-            return self.profile_user.page_title
-        else:
-            return f"{self.profile_user.name}'s trips"
 
 
 class ProfileTripsTable(ListView):
@@ -153,9 +146,3 @@ class ProfileTripsTable(ListView):
         context["get_parameters"] = parameters
 
         return context
-
-    def get_page_title(self):
-        if self.profile_user.page_title:
-            return self.profile_user.page_title
-        else:
-            return f"{self.profile_user.name}'s trips"
