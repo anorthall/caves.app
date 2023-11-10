@@ -38,16 +38,14 @@ body {
   display: none;
   width: 230px;
   flex: 0 0 230px;
-  margin-left: 1.5rem;
-  margin-right: 3rem;
+  margin: 0 1.5rem 0 1.5rem;
 }
 
 #rightSidebarContainer {
   display: none;
   width: 230px;
   flex: 0 0 230px;
-  margin-left: 3rem;
-  margin-right: 1.5rem;
+  margin: 0 1.5rem 0 1.5rem;
 }
 
 @media (min-width: 992px) {
@@ -64,6 +62,7 @@ body {
 
 #mainContent {
   display: block;
+  flex: 1;
 }
 
 #footerContainer {
@@ -90,7 +89,6 @@ body {
 
 .main-content-bg {
   background-color: rgba(255, 255, 255, 1);
-  width: 100%;
   max-width: 1600px;
   padding: 1.5rem 1.5rem;
   margin: 2rem 1.5rem 3rem 1.5rem;
@@ -102,15 +100,18 @@ body {
   color: white;
 }
 
-.blur-bg {
+#blurContainer {
   position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 50;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(15px);
+  height: 100%;
+  width: 100%;
+  transition: ease-in-out 0.2s;
+  z-index: -1;
+}
+
+#blurContainer.blur-bg {
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  transition: ease-in-out 0.2s;
 }
 
 
@@ -186,7 +187,7 @@ body {
 */
 
 #hamburgerMenuIcon {
-  font-size: 30px;
+  font-size: 28px;
   margin-left: 0.9rem;
   align-self: center;
   justify-self: center;
@@ -200,33 +201,34 @@ body {
 }
 
 .hamburger-menu-container {
+  position: fixed;
+  z-index: 50;
   right: 0;
   top: 70px;
-  position: absolute;
-  width: 100vw;
-  min-height: 100vh;
-  background-color: var(--bs-white);
-  padding: 1.5rem 2rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  overflow-y: auto;
+  background-color: var(--bs-white);
+  border: 1px solid #e6e6e6;
+  border-right: none;
+  border-top: none;
+  padding: 1.5rem 2rem;
+  min-width: 100vw;
+  overflow-y: scroll;
+  max-height: calc(100vh - 70px);
+}
+
+@media (min-width: 500px) {
+  .hamburger-menu-container {
+    min-width: unset;
+  }
 }
 
 .hamburger-menu {
   display: flex;
   flex-direction: column;
   align-content: flex-start;
-  flex-grow: 1;
-  width: 100%;
-}
-
-.hamburger-menu .nav-link.hamburger-hide {
-  display: none !important;
-}
-
-.hamburger-menu .sidebar-header:first-child {
-  margin-top: 0 !important;
+  height: 100%;
 }
 
 .hamburger-menu .sidebar-header {
@@ -234,22 +236,25 @@ body {
   color: var(--bs-body-color);
 }
 
-.hamburger-menu.left {
+.hamburger-menu .sidebar-header:first-child {
+  margin-top: 0 !important;
+}
+
+.hamburger-menu .left {
   max-width: 17rem;
 }
 
-.hamburger-menu.right {
+.hamburger-menu .right {
   max-width: 17rem;
   margin-left: 1.5rem;
 }
 
 .hamburger-menu .nav-link {
-  display: inline-flex;
+  display: block;
   align-content: center;
   justify-content: start;
   margin: 0.3rem 1rem;
   padding: 0.4rem 0.5rem;
-  max-width: 15rem;
   opacity: 0.9;
   color: var(--bs-white);
   background-color: var(--bs-primary);
@@ -274,6 +279,103 @@ body {
   }
 }
 
+
+/*
+  Notifications
+*/
+
+#notificationsContainer {
+  position: relative;
+}
+
+#notificationsBellContainer {
+  margin: 0 0.25rem 0 0;
+  border: 1px transparent;
+  border-radius: 50%;
+  padding: 1px 7px;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: ease-in-out background-color 0.2s;
+}
+
+#notificationsBellContainer:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+#notificationsContainer .bi-bell-fill {
+  color: var(--bs-white);
+  font-size: 22px;
+}
+
+#notificationsBadgeContainer {
+  position: absolute;
+  z-index: 50;
+  padding: 2px 8px;
+  top: -9px;
+  left: 26px;
+  background-color: red;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.notifications-dropdown {
+  position: fixed;
+  right: 0;
+  top: 70px;
+  min-width: 100vw;
+  max-height: calc(100vh - 70px);
+  background-color: var(--bs-white);
+  border: 1px solid #e6e6e6;
+  overflow-y: scroll;
+}
+
+@media (min-width: 600px) {
+  .notifications-dropdown {
+    position: absolute;
+    right: -10px;
+    top: 53px;
+    background-color: var(--bs-white);
+    border: 1px solid #e6e6e6;
+    min-width: 400px;
+    overflow: auto;
+  }
+}
+
+.notifications-dropdown .notification-item {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.notifications-dropdown .notification-item:first-child {
+  padding: 1.5rem;
+  margin: 0;
+}
+
+.notifications-dropdown .notification-item:last-child {
+  border-bottom: none;
+}
+
+.notifications-dropdown .notification {
+  position: relative;
+}
+
+.notifications-dropdown .notification:hover {
+  background-color: rgba(240, 240, 240, 1);
+  transition: background-color ease-in-out 0ms;
+}
+
+.notifications-dropdown .notification.read {
+  opacity: 0.8;
+}
+
+.notifications-dropdown .notification time {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--bs-secondary-color);
+}
 
 /*
   Sidebar
@@ -419,43 +521,6 @@ body {
 
 
 /*
-  Notifications
-*/
-
-#notificationsContainer {
-  position: relative;
-  margin: 0 0.25rem 0 0;
-  border: 1px transparent;
-  border-radius: 50%;
-  padding: 1px 7px;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-#notificationsContainer:hover {
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.4);
-  transition: ease-in-out background-color 0.1s;
-}
-
-#notificationsContainer .bi-bell-fill {
-  color: var(--bs-white);
-  font-size: 22px;
-}
-
-#notificationsBadgeContainer {
-  position: absolute;
-  z-index: 50;
-  padding: 2px 8px;
-  top: -9px;
-  left: 26px;
-  background-color: red;
-  border-radius: 50%;
-  color: white;
-  font-size: 0.8rem;
-  text-align: center;
-}
-
-/*
   Accounts
 */
 
@@ -493,13 +558,14 @@ body {
 }
 
 #profilePage .profile-header-container {
+  position: relative;
   margin-bottom: 200px;
 }
 
 #profilePage .profile-header {
   margin: auto;
   position: absolute;
-  top: 105px;
+  bottom: -110px;
   left: 0;
   right: 0;
   display: flex;
@@ -542,7 +608,7 @@ body {
   #profilePage .profile-header {
     justify-content: start;
     position: absolute;
-    top: 105px;
+    top: -115px;
     left: unset;
     right: unset;
   }

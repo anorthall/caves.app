@@ -60,6 +60,6 @@ class NotificationsMiddleware:
         for notification in unread_notifications:
             if notification.get_url() == request.path:
                 notification.read = True
-                notification.save(update_fields=["read"])
+                notification.save(updated=False, update_fields=["read"])
 
         return self.get_response(request)
