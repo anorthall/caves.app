@@ -57,6 +57,8 @@
   </head>
 
   <body class="d-flex flex-column h-100" hx-boost="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div id="blurContainer"></div>
+
     {% block body %}{% endblock body %}
 
     {% block modals %}{% endblock %}
