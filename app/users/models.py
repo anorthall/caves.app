@@ -441,7 +441,7 @@ class Notification(models.Model):
         default=False, help_text="Has the notification been read by the user?"
     )
     added = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField()
 
     # Freeform specific fields
     message = models.CharField(max_length=255, blank=True)
@@ -452,6 +452,14 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.get_message()
+
+    def save(self, updated=True, *args, **kwargs):
+        """Allow `updated=False` option to prevent updating the `updated`
+        field when marking a notification as read"""
+
+        if updated:
+            self.updated = django_tz.now()
+        return super().save(*args, **kwargs)
 
     def clean(self):
         """Ensure that different types of notifications have the correct fields"""
@@ -493,6 +501,9 @@ class Notification(models.Model):
         elif self.type == self.TRIP_COMMENT:
             return self._get_trip_comment_message()
         raise RuntimeError("Invalid notification type")
+
+    def get_absolute_url(self):
+        return reverse("users:notification", args=[self.pk])
 
     def _get_trip_like_message(self) -> str:
         assert self.type == self.TRIP_LIKE
