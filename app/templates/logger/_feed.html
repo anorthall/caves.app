@@ -109,6 +109,6 @@
        hx-get="{% url 'log:feed_htmx_view' %}?page={{ trips.next_page_number }}"
        hx-target="#loadMoreTrips"
        hx-swap="outerHTML"
-       hx-trigger="revealed">
+       hx-trigger="intersect once">
   </div>
 {% endif %}
