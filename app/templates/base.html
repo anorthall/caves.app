@@ -36,7 +36,7 @@
                 {% for item in notifications.list %}
                   <div class="notification-item notification{% if item.read %} read{% endif %}">
                     <a class="stretched-link" href="{{ item.get_absolute_url }}"></a>
-                    {{ item.message }}
+                    {{ item.get_message }}
                     <time datetime="{{ item.updated }}">{{ item.updated|naturaltime }}</time>
                   </div>
                 {% endfor %}
