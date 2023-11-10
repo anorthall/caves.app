@@ -527,7 +527,7 @@ class NotificationRedirect(LoginRequiredMixin, View):
             raise PermissionDenied
 
         notification.read = True
-        notification.save()
+        notification.save(updated=False)
         log_user_action(
             request.user, f"read notification: {notification.get_message()}"
         )
@@ -550,10 +550,6 @@ class CustomFieldsUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
         form.save()
         log_user_action(self.request.user, "updated their custom fields")
         return super().form_valid(form)
-
-
-class HTMXNotificationsDropdown(LoginRequiredMixin, TemplateView):
-    template_name = "users/htmx_notifications_dropdown.html"
 
 
 class NotificationsList(LoginRequiredMixin, ListView):
