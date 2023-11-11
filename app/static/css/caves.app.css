@@ -485,6 +485,10 @@ body {
   margin-right: auto;
 }
 
+#div_id_honeypot {
+  display: none;
+}
+
 
 /*
   JS Elements - HTMX/Alpine.js
