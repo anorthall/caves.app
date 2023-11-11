@@ -3,7 +3,6 @@
 */
 
 body {
-  overflow-y: scroll;
   background-color: #FAF9F6 !important;
   padding-top: 70px;
   height: 100%;
@@ -15,6 +14,7 @@ body {
 
 #mainContainer {
   margin-bottom: auto;
+  overflow-y: scroll;
 }
 
 #threeColumnContainer {
@@ -22,32 +22,6 @@ body {
   flex-direction: row;
   justify-content: space-between;
   max-width: 1600px;
-}
-
-#leftSidebarContainer {
-  display: none;
-  width: 230px;
-  flex: 0 0 230px;
-  margin: 0 1.5rem 0 1.5rem;
-}
-
-#rightSidebarContainer {
-  display: none;
-  width: 230px;
-  flex: 0 0 230px;
-  margin: 0 1.5rem 0 1.5rem;
-}
-
-@media (min-width: 992px) {
-  #leftSidebarContainer {
-    display: block;
-  }
-}
-
-@media (min-width: 1200px) {
-  #rightSidebarContainer {
-    display: block;
-  }
 }
 
 #mainContent {
@@ -129,6 +103,11 @@ body {
 #navbarContainer {
   height: 70px;
   background-image: linear-gradient(90deg, var(--bs-primary), var(--bs-primary-text-emphasis));
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1500;
 }
 
 #navbarContentContainer {
@@ -371,9 +350,43 @@ body {
   Sidebar
 */
 
+
+#leftSidebarContainer {
+  display: none;
+  width: 120px;
+  flex: 0 0 120px;
+  margin: 0 1.5rem 0 1.5rem;
+}
+
+#rightSidebarContainer {
+  display: none;
+  width: 230px;
+  flex: 0 0 230px;
+  margin: 0 1.5rem 0 1.5rem;
+}
+
+@media (min-width: 992px) {
+  #leftSidebarContainer {
+    display: block;
+  }
+}
+
+@media (min-width: 1200px) {
+  #rightSidebarContainer {
+    display: block;
+  }
+}
+
 .sidebar {
   position: fixed;
   margin-top: 2rem;
+}
+
+#leftSidebarContainer .sidebar {
+  width: 130px;
+}
+
+#rightSidebarContainer .sidebar {
   width: 230px;
 }
 
@@ -392,6 +405,7 @@ body {
 .sidebar .nav-link {
   padding-left: 0.5rem;
   color: var(--bs-body-color);
+  transition: none !important;
 }
 
 .sidebar .nav-link .bi, #mobileMenu .nav-link .bi {
@@ -407,9 +421,13 @@ body {
   color: var(--bs-white);
 }
 
-.sidebar .nav-link:hover, #mobileMenu .nav-link:hover {
+.sidebar .nav-link:hover {
+  background-color: rgba(512, 512, 512, 1);
+}
+
+#mobileMenu a.nav-link:hover {
   opacity: 0.7;
-  transition: opacity .3s ease-in-out;
+  transition: 0.3s ease-in-out;
 }
 
 .sidebar .nav-link.active, #mobileMenu .nav-link.active {

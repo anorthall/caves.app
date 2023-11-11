@@ -6,7 +6,7 @@
   <header>
     {% if user.is_authenticated %}
       <!-- Navbar -->
-      <div id="navbarContainer" class="fixed-top">
+      <div id="navbarContainer">
         <nav class="navbar navbar-expand navbar-dark" id="navbarContentContainer">
           <div class="site-title fs-3">
             <a href="/">{{ site_title }}</a>
@@ -94,9 +94,10 @@
 
   <main id="mainContainer">
     {% block content %}{% endblock %}
+
+    <div id="footerContainer">
+      {% include "_footer.html" %}
+    </div>
   </main>
 
-  <div id="footerContainer">
-    {% include "_footer.html" %}
-  </div>
 {% endblock body %}
