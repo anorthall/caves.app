@@ -196,6 +196,7 @@ class UserIntegrationTestCase(TestCase):
                 "username": "testregistration",
                 "password1": "this_is_a_password",
                 "password2": "this_is_a_password",
+                "antispam": "caving",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -286,6 +287,7 @@ class UserIntegrationTestCase(TestCase):
                 "username": "testregistration",
                 "password1": "this_is_a_password",
                 "password2": "this_is_a_password",
+                "antispam": "caving",
             },
         )
         verify_code = mail.outbox[0].body.split("ode:")[1].split("If y")[0].strip()
