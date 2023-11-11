@@ -299,7 +299,7 @@ class Logout(LoginRequiredMixin, auth_views.LogoutView):
         return super().post(*args, **kwargs)
 
 
-@ratelimit(key="ip", rate="6/h", method=ratelimit.UNSAFE)
+@ratelimit(key="ip", rate="10/h", method=ratelimit.UNSAFE)
 def register(request):
     if request.user.is_authenticated:
         return redirect("users:account_detail")
@@ -323,6 +323,14 @@ def register(request):
             log_user_action(user, "created a new account")
             # Redirect to Verify Email page.
             return redirect("users:verify_new_account")
+        else:
+            if form.triggered_honeypot:
+                messages.error(
+                    request,
+                    "You have triggered an anti-spam measure. If you are human "
+                    "and need help, please contact the site administrator.",
+                )
+                return redirect("log:index")
     else:
         form = UserCreationForm()
 

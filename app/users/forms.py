@@ -182,6 +182,22 @@ class UserCreationForm(forms.ModelForm):
         help_text="Enter the same password as before, for verification.",
         required=True,
     )
+    antispam = forms.CharField(
+        label="Anti-spam check",
+        help_text=(
+            "For anti-spam purposes, please enter the six letter word, beginning "
+            "with 'c', that describes the sport that this website is about."
+        ),
+        required=True,
+    )
+    honeypot = forms.CharField(
+        label="Honeypot",
+        help_text=(
+            "If you are a human, please leave this field blank. This is to prevent "
+            "automated spam submissions."
+        ),
+        required=False,
+    )
 
     class Meta:
         model = User
@@ -189,6 +205,7 @@ class UserCreationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.triggered_honeypot = False
         self.fields["name"].widget.attrs["autofocus"] = True
         self.fields["name"].widget.attrs["autocomplete"] = "name"
         self.fields["email"].widget.attrs["autocomplete"] = "email"
@@ -222,6 +239,19 @@ class UserCreationForm(forms.ModelForm):
         if User.objects.filter(username__iexact=username).exists():
             raise ValidationError("Username already taken.")
         return username
+
+    def clean_antispam(self):
+        antispam = self.cleaned_data.get("antispam")
+        if antispam.lower().strip() != "caving":
+            raise ValidationError("Please read the help text below this field.")
+        return antispam
+
+    def clean_honeypot(self):
+        honeypot = self.cleaned_data.get("honeypot")
+        if honeypot:
+            self.triggered_honeypot = True
+            raise ValidationError("Please read the help text below this field.")
+        return honeypot
 
     def save(self, commit=True):
         # Save the provided password in hashed format
