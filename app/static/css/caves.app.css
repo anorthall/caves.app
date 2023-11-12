@@ -4,15 +4,10 @@
 
 body {
   background-color: #FAF9F6 !important;
-  padding-top: 70px;
   height: 100%;
 }
 
-.center-container {
-  max-width: 38em;
-}
-
-#mainContainer {
+#mainContainer { /* Container of *all* content, including the three column layout */
   margin-bottom: auto;
   overflow-y: scroll;
 }
@@ -20,13 +15,15 @@ body {
 #threeColumnContainer {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: start;
   max-width: 1600px;
+  margin: 0 1.5rem 0 1.5rem;
 }
 
-#mainContent {
+#mainContent { /* Main column in the three column layout */
   display: block;
   flex: 1;
+  max-width: 1200px;
 }
 
 #footerContainer {
@@ -103,11 +100,8 @@ body {
 #navbarContainer {
   height: 70px;
   background-image: linear-gradient(90deg, var(--bs-primary), var(--bs-primary-text-emphasis));
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1500;
 }
 
 #navbarContentContainer {
@@ -352,17 +346,13 @@ body {
 
 
 #leftSidebarContainer {
+  position: relative;
   display: none;
-  width: 120px;
-  flex: 0 0 120px;
-  margin: 0 1.5rem 0 1.5rem;
+  min-width: 130px;
 }
 
 #rightSidebarContainer {
   display: none;
-  width: 230px;
-  flex: 0 0 230px;
-  margin: 0 1.5rem 0 1.5rem;
 }
 
 @media (min-width: 992px) {
@@ -378,16 +368,9 @@ body {
 }
 
 .sidebar {
-  position: fixed;
   margin-top: 2rem;
-}
-
-#leftSidebarContainer .sidebar {
-  width: 130px;
-}
-
-#rightSidebarContainer .sidebar {
-  width: 230px;
+  position: sticky;
+  top: 2rem;
 }
 
 .sidebar-profile {
@@ -403,7 +386,7 @@ body {
 }
 
 .sidebar .nav-link {
-  padding-left: 0.5rem;
+  padding: 0.5rem 2rem 0.5rem 1.0rem;
   color: var(--bs-body-color);
   transition: none !important;
 }
