@@ -8,8 +8,12 @@ body {
 }
 
 #mainContainer { /* Container of *all* content, including the three column layout */
+  height: 100%;
   margin-bottom: auto;
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #threeColumnContainer {
