@@ -23,6 +23,12 @@ body {
   max-width: 1600px;
 }
 
+@media (min-width: 1000px) {
+  #threeColumnContainer {
+    margin: 0 0 0 1.5rem;
+  }
+}
+
 #mainContent { /* Main column in the three column layout */
   display: block;
   flex: 1;
@@ -55,12 +61,11 @@ body {
   background-color: rgba(255, 255, 255, 1);
   max-width: 1600px;
   padding: 1.5rem 1.5rem;
-  margin: 0;
 }
 
 @media (min-width: 1000px) {
   .main-content-bg {
-    margin: 2rem 1.5rem;
+    margin: 2rem 1.5rem 2rem 0;
     border: 1px solid #e6e6e6;
   }
 }
@@ -116,8 +121,7 @@ body {
 
 #navbarContentContainer {
   max-width: 1600px;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  margin: 0 2rem 0 1.5rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -358,14 +362,13 @@ body {
 #leftSidebarContainer {
   position: relative;
   display: none;
-  min-width: 130px;
 }
 
 #rightSidebarContainer {
   display: none;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1000px) {
   #leftSidebarContainer {
     display: block;
   }
@@ -377,15 +380,32 @@ body {
   }
 }
 
+#leftSidebarContainer .sidebar {
+  min-width: 130px;
+  margin: 2rem 2rem 2rem 0;
+}
+
+#rightSidebarContainer .sidebar {
+  margin: 0 1.5rem 0 1rem;
+}
+
+#rightSidebarContainer .sidebar:empty {
+  display: none !important;
+  margin: 0 !important;
+}
+
 .sidebar {
-  margin-top: 2rem;
   position: sticky;
   top: 2rem;
 }
 
 .sidebar-profile {
-  margin-top: 146px;
+  margin-top: 145px !important;
+}
+
+#rightSidebarContainer .sidebar-profile {
   position: static !important;
+  max-width: 200px;
 }
 
 .sidebar-profile .card {
