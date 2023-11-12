@@ -21,7 +21,6 @@ body {
   flex-direction: row;
   justify-content: start;
   max-width: 1600px;
-  margin: 0 1.5rem 0 1.5rem;
 }
 
 #mainContent { /* Main column in the three column layout */
@@ -56,8 +55,14 @@ body {
   background-color: rgba(255, 255, 255, 1);
   max-width: 1600px;
   padding: 1.5rem 1.5rem;
-  margin: 2rem 1.5rem 3rem 1.5rem;
-  border: 1px solid #e6e6e6;
+  margin: 0;
+}
+
+@media (min-width: 1000px) {
+  .main-content-bg {
+    margin: 2rem 1.5rem;
+    border: 1px solid #e6e6e6;
+  }
 }
 
 .navbar-gradient-bg {
@@ -450,10 +455,14 @@ body {
 }
 
 .trip-field {
+  display: inline-block;
   font-size: 0.7rem;
   color: var(--bs-secondary-color);
 }
 
+.trip-field:first-letter {
+  text-transform: capitalize;
+}
 
 /*
   Text
