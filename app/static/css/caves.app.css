@@ -754,6 +754,7 @@ body {
 #socialFeedContainer {
   display: flex;
   justify-content: center;
+  flex-direction: column;
 }
 
 #socialFeedHeader {
@@ -792,10 +793,6 @@ body {
 
 .mw-45 {
   max-width: 45rem;
-}
-
-.mw-800px {
-  max-width: 800px;
 }
 
 .mw-1400px {
