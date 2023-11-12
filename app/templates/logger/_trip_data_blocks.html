@@ -17,24 +17,27 @@
 {% endif %}
 
 <!-- Data blocks -->
-<div class="row row-cols-2 row-cols-xxl-3 g-3">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-xxl-3 g-3">
   <!-- Start time-->
   <div class="col">
-    <small class="trip-field">Date/time entered</small><br />
-    {{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}
+    <small class="trip-field"><span class="d-none d-md-inline">Date/time </span>entered</small><br />
+    <span class="d-none d-md-inline">{{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}</span>
+    <span class="d-md-none">{{ trip.start|date:"Y-m-d" }} {{ trip.start|time:"H:i" }}</span>
   </div>
 
   {% if trip.end %}
     <!-- Duration -->
     <div class="col">
       <small class="trip-field">Duration</small><br />
-      {{ trip.duration_str }}
+      <span class="d-none d-md-inline">{{ trip.duration_str }}</span>
+      <span class="d-md-none">{{ trip.duration }}</span>
     </div>
 
     <!-- End time -->
     <div class="col">
-      <small class="trip-field">Date/time exited</small><br />
-      {{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}
+      <small class="trip-field"><span class="d-none d-md-inline">Date/time </span>exited</small><br />
+      <span class="d-none d-md-inline">{{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}</span>
+      <span class="d-md-none">{{ trip.end|date:"Y-m-d" }} {{ trip.end|time:"H:i" }}</span>
     </div>
   {% endif %}
 
@@ -56,7 +59,7 @@
 
   {% if trip.clubs %}
   <!-- Clubs -->
-    <div class="col-6 col-xl-4">
+    <div class="col">
       <small class="trip-field">Clubs</small><br />
       {{ trip.clubs }}
     </div>
@@ -71,7 +74,7 @@
   {% endif %}
 
   {% for label, value in trip.custom_fields %}
-    <div class="col-6 col-xl-4">
+    <div class="col">
       <small class="trip-field">{{ label }}</small><br />
       {{ value }}
     </div>
