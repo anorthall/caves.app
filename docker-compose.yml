@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: config/docker/Dockerfile.dev.db
-    volumes:
-      - ./data/development/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
