@@ -49,5 +49,5 @@ then
     echo "Detected $CPU_CORES CPU cores. Defaulting to $WORKERS gunicorn workers."
 
     echo "Starting server..."
-    PYTHONPATH="." cd /app/config && gunicorn django.wsgi:application --bind 0.0.0.0:"${PORT:=8000}" --workers "$WORKERS"
+    gunicorn config.django.wsgi:application --bind 0.0.0.0:"${PORT:=8000}" --workers "$WORKERS"
 fi

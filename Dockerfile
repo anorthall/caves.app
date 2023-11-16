@@ -5,10 +5,13 @@ FROM python:3.12.0
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV TINI_SUBREAPER 1
+ENV BASE_DIR "/app/src/"
+ENV PYTHONPATH "/app/"
 
-# Create directories
+# Create directories and initial environment
 RUN mkdir -p /app /app/logs /app/src /app/config \
              /app/staticfiles /app/mediafiles
+RUN touch /app/config/__init__.py
 WORKDIR /app
 
 # Install system dependencies
@@ -34,15 +37,13 @@ RUN chmod +x /app/run.sh
 
 # Copy app
 COPY ./app/ /app/src
+COPY ./config /app/config
 
 # Final environment
 RUN groupadd app
 RUN useradd -g app -d /app app
 RUN chown app -R /app
 USER app
-RUN touch /app/config/__init__.py
-ENV BASE_DIR "/app/src/"
-ENV PYTHONPATH "/app/"
 
 # Entrypoint
 ENTRYPOINT ["/usr/bin/tini", "--"]
