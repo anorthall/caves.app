@@ -135,11 +135,7 @@ dmypy.json
 
 # Settings and production scripts
 data/
-config/docker/development.env
-config/docker/staging.env
-bin/pg_dump.sh
-bin/staticfiles.sh
-docker-compose.staging.yml
+config/env/dev.env
 
 # Node
 node_modules/

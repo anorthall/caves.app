@@ -1,0 +1,20 @@
+{
+  "name": "caves.app",
+  "description": "A social network to track caving activity",
+  "keywords": ["caves", "caving", "social network", "tracking", "tracker", "activity"],
+  "repository": "https://github.com/anorthall/caves.app",
+  "healthchecks": {
+    "web": [
+        {
+            "type":        "startup",
+            "name":        "web check",
+            "description": "Checking if the app responds to /healthcheck/",
+            "path":        "/healthcheck",
+            "attempts": 5
+        }
+    ]
+  },
+  "addons": [
+    "dokku-postgres"
+  ]
+}
