@@ -1,5 +1,6 @@
 import copy
 import os
+import socket
 from pathlib import Path
 from typing import Any
 
@@ -66,8 +67,12 @@ IMGPROXY_PRESETS = {
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", "http://127.0.0.1").split(" ")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(" ")
-# need this many for CSV import feature to work - 16 fields per trip
+
+# Need this many for CSV import feature to work - 16 fields per trip
 DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000, int)
+
+# Add Docker host IP to ALLOWED_HOSTS for Dokku healthchecks
+ALLOWED_HOSTS.append(socket.getaddrinfo(socket.gethostname(), "http")[0][4][0])
 
 
 # Email settings
