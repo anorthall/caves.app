@@ -1,6 +1,7 @@
 attrs
 boto3
 chardet
+coverage
 crispy-bootstrap5
 Django
 django-active-link
@@ -12,12 +13,14 @@ django-htmx
 django-mailer
 django-markdownify
 django-ratelimit
+django-rich
 django-storages[s3]
 django-timezone-field
 django-tinymce
 django-unfold
 dj-database-url
 ExifRead
+factory-boy
 googlemaps
 gunicorn
 hiredis

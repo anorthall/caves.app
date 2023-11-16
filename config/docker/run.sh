@@ -18,7 +18,8 @@ fi
 if [ "$1" = "test" ]
 then
     echo "Running tests..."
-    python src/manage.py test
+    cd /app/src/ || exit 1
+    python manage.py test
 fi
 
 if [ "$1" = "manage" ]
