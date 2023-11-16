@@ -10,7 +10,7 @@
             "name":        "web check",
             "description": "Checking if the app responds to /healthcheck/",
             "path":        "/healthcheck",
-            "attempts": 5
+            "attempts": 3
         }
     ]
   },
