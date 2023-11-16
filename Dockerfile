@@ -11,8 +11,6 @@ RUN mkdir -p /app /app/logs /app/src /app/config \
 
 # Set up work directory
 RUN touch /app/config/__init__.py
-ENV PYTHONPATH "/app/"
-ENV BASE_DIR "/app/src/"
 WORKDIR /app
 
 # Install system dependencies
@@ -44,6 +42,11 @@ RUN groupadd app
 RUN useradd -g app -d /app app
 RUN chown app -R /app
 USER app
+
+# Set environment variables
+ENV TINI_SUBREAPER 1
+ENV PYTHONPATH "/app/"
+ENV BASE_DIR "/app/src/"
 
 # Entrypoint
 ENTRYPOINT ["/usr/bin/tini", "--"]
