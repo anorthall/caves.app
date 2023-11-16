@@ -1,5 +1,7 @@
 from comments.forms import NewsCommentForm
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
 from .models import FAQ
@@ -37,6 +39,11 @@ class NewsDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context["comment_form"] = NewsCommentForm(self.request, self.object)
         return context
+
+
+class Healthcheck(View):
+    def get(self, request, *args, **kwargs):
+        return HttpResponse("OK")
 
 
 class HTTP400(TemplateView):
