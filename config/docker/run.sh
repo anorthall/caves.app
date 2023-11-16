@@ -43,6 +43,11 @@ then
     echo "Collecting static files..."
     python src/manage.py collectstatic --noinput
 
+    # Calculate gunicorn workers (CPU cores * 2 + 1)
+    CPU_CORES=$(nproc --all)
+    WORKERS=$((CPU_CORES * 2 + 1))
+    echo "Detected $CPU_CORES CPU cores. Defaulting to $WORKERS gunicorn workers."
+
     echo "Starting server..."
-    gunicorn config.django.wsgi:application --bind 0.0.0.0:"${PORT:=8000}"
+    gunicorn config.django.wsgi:application --bind 0.0.0.0:"${PORT:=8000}" --workers "$WORKERS"
 fi
