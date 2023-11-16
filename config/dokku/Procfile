@@ -1,2 +1,2 @@
-web: start
-mailer: manage runmailer_pg
+web: /app/run.sh start
+mailer: /app/run.sh manage runmailer_pg
