@@ -16,5 +16,19 @@
   },
   "addons": [
     "dokku-postgres"
+  ],
+  "cron": [
+    {
+      "command": "/app/run.sh manage delete_invalid_photos",
+      "schedule": "0 * * * *"
+    },
+    {
+      "command": "/app/run.sh manage prune_inactive_users",
+      "schedule": "0 * * * *"
+    },
+    {
+      "command": "/app/run.sh manage clearsessions",
+      "schedule": "0 3 * * *"
+    }
   ]
 }
