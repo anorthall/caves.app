@@ -4,13 +4,11 @@ FROM python:3.12.0
 # Environment setup
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV TINI_SUBREAPER 1
 
 # Create directories
 RUN mkdir -p /app /app/logs /app/src /app/config \
              /app/staticfiles /app/mediafiles
-
-# Set up work directory
-RUN touch /app/config/__init__.py
 WORKDIR /app
 
 # Install system dependencies
@@ -42,11 +40,9 @@ RUN groupadd app
 RUN useradd -g app -d /app app
 RUN chown app -R /app
 USER app
-
-# Set environment variables
-ENV TINI_SUBREAPER 1
-ENV PYTHONPATH "/app/"
+RUN touch /app/config/__init__.py
 ENV BASE_DIR "/app/src/"
+ENV PYTHONPATH "/app/"
 
 # Entrypoint
 ENTRYPOINT ["/usr/bin/tini", "--"]
