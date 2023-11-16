@@ -34,18 +34,18 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Set up Python 3.11.4
+      - name: Set up Python 3.12
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11.4
+          python-version: 3.12
           cache: 'pip'
-          cache-dependency-path: config/requirements/development.txt
+          cache-dependency-path: config/requirements/requirements.txt
       - name: Upgrade pip
         run: |
           pip install --upgrade pip wheel
       - name: Install dependencies
         run: |
-          pip install -r config/requirements/development.txt
+          pip install -r config/requirements/requirements.txt
       - name: Install GeoDjango dependencies
         run: sudo apt-get install gdal-bin libgdal-dev libgeos-dev libproj-dev
       - name: Run Django tests
@@ -62,7 +62,7 @@ jobs:
           files: ./app/coverage.xml
     services:
       postgres:
-        image: postgis/postgis:15-3.4
+        image: postgis/postgis:16-3.4
         env:
           POSTGRES_USER: ${{ env.SQL_USER }}
           POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
