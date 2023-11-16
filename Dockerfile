@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV TINI_SUBREAPER 1
 ENV BASE_DIR "/app/src/"
-ENV PYTHONPATH "/app/"
+ENV PYTHONPATH "/app/:/app/src/"
 
 # Create directories and initial environment
 RUN mkdir -p /app /app/logs /app/src /app/config \
