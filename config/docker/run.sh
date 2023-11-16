@@ -43,6 +43,12 @@ then
     echo "Collecting static files..."
     python src/manage.py collectstatic --noinput
 
+    if [ "$RUN_MIGRATIONS_ON_START" = "yes" ]
+    then
+        echo "Running migrations..."
+        python src/manage.py migrate --no-input
+    fi
+
     # Calculate gunicorn workers (CPU cores * 2 + 1)
     CPU_CORES=$(nproc --all)
     WORKERS=$((CPU_CORES * 2 + 1))
@@ -50,4 +56,7 @@ then
 
     echo "Starting server..."
     gunicorn config.django.wsgi:application --bind 0.0.0.0:"${PORT:=8000}" --workers "$WORKERS"
+
+    # TODO: Run cron jobs
+    # TODO: Run migrations based on env var
 fi

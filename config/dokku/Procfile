@@ -1,0 +1,2 @@
+web: start
+mailer: manage runmailer_pg
