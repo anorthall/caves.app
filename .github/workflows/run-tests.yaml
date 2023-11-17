@@ -15,8 +15,8 @@ jobs:
     name: Django tests
     runs-on: ubuntu-latest
     env:
-      PYTHONPATH: ${{ github.workspace }}
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      PYTHONPATH: ${{ github.workspace }}
       BASE_DIR: ${{ github.workspace }}/app
       DJANGO_SETTINGS_MODULE: config.django.settings.development
       IMGPROXY_KEY: tests
@@ -58,9 +58,9 @@ jobs:
       postgres:
         image: postgis/postgis:16-3.4
         env:
-          POSTGRES_USER: ${{ env.SQL_USER }}
-          POSTGRES_PASSWORD: ${{ env.SQL_PASSWORD }}
-          POSTGRES_DB: ${{ env.DATABASE }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
         ports:
           - 5432:5432
         options: >-
