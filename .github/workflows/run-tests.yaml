@@ -15,7 +15,7 @@ jobs:
     name: Django tests
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
       PYTHONPATH: ${{ github.workspace }}
       BASE_DIR: ${{ github.workspace }}/app
       DJANGO_SETTINGS_MODULE: config.django.settings.development
