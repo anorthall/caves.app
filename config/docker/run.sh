@@ -57,7 +57,4 @@ then
 
     echo "Starting server..."
     gunicorn config.django.wsgi:application --bind 0.0.0.0:"${PORT:=8000}" --workers "$WORKERS"
-
-    # TODO: Run cron jobs
-    # TODO: Run migrations based on env var
 fi
