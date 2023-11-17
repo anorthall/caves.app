@@ -15,14 +15,8 @@ jobs:
     name: Django tests
     runs-on: ubuntu-latest
     env:
-      DATABASE: postgres
-      SQL_ENGINE: django.contrib.gis.db.backends.postgis
-      SQL_USER: postgres
-      SQL_PASSWORD: postgres
-      SQL_DATABASE: postgres
-      SQL_HOST: localhost
-      SQL_PORT: 5432
       PYTHONPATH: ${{ github.workspace }}
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
       BASE_DIR: ${{ github.workspace }}/app
       DJANGO_SETTINGS_MODULE: config.django.settings.development
       IMGPROXY_KEY: tests
