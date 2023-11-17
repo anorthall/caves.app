@@ -35,33 +35,5 @@ if env("SENTRY_KEY", ""):  # pragma: no cover
 # Google Analytics
 GOOGLE_ANALYTICS_ID = env("GOOGLE_ANALYTICS_ID", "")
 
-# Storages
-STORAGES["default"] = {
-    "BACKEND": "core.custom_storages.MediaS3Storage",
-}
-
-# Static files should be stored on disc and then uploaded to S3
-# via use of the AWS CLI which is much more efficient than
-# Django's collectstatic command.
-STORAGES["staticfiles"] = {
-    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-}
-STATIC_ROOT = "/opt/caves/staticfiles"
-
-# Media files
-# MEDIA_ROOT should not be needed in production. Everything is in S3.
-# MEDIA_ROOT = "/opt/caves/media/"
-MEDIA_URL = env("MEDIA_URL")
-TEMPLATES[0]["OPTIONS"]["context_processors"] += [
-    "django.template.context_processors.media"
-]
-
-# Static files (CSS, JavaScript, Images)
-STATIC_ROOT = env("STATIC_ROOT", "/opt/caves/staticfiles")
-STATIC_URL = env("STATIC_URL")
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
 # Ratelimiting IP config
-RATELIMIT_IP_META_KEY = "HTTP_X_REAL_IP"
+RATELIMIT_IP_META_KEY = env("RATELIMIT_IP_META_KEY", "HTTP_X_FORWARDED_FOR")
