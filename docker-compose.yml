@@ -1,48 +1,56 @@
 version: '3.8'
 
 services:
-  postgres:
+  db:
     build:
       context: .
-      dockerfile: config/docker/Dockerfile.dev.db
+      dockerfile: config/docker/db/Dockerfile
+    volumes:
+      - db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
   redis:
-    image: redis:7.2.1
+    image: redis:latest
     volumes:
-      - ./data/development/redis:/data
+      - redis:/data
     expose:
       - 6379
 
   imgproxy:
     image: darthsim/imgproxy:latest
     security_opt:
-    - no-new-privileges:true
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "imgproxy", "health"]
     env_file:
-      - ./config/docker/development.env
+      - config/env/dev.env
     ports:
       - "9000:9000"
 
   web:
-    command: python manage.py runserver 0.0.0.0:8000 --insecure
-    build:
-      context: .
-      dockerfile: config/docker/Dockerfile.dev.web
+    command: /app/run.sh devserver
+    build: .
     volumes:
-      - ./app/:/opt/dev/app/
-      - ./data/development/media:/opt/dev/media/
-      - ./data/development/logs:/opt/dev/logs/
-      - ./config/django/:/opt/dev/config/django/
+      - ./app/:/app/src
+      - ./config/django/:/app/config/django/
+      - mediafiles:/app/mediafiles/
+      - staticfiles:/app/staticfiles/
+      - logs:/app/logs/
     ports:
       - "8000:8000"
     env_file:
-      - ./config/docker/development.env
+      - ./config/env/dev.env
     depends_on:
-      - postgres
+      - db
       - redis
       - imgproxy
+
+volumes:
+  db:
+  redis:
+  mediafiles:
+  staticfiles:
+  logs:

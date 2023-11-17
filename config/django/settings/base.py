@@ -1,8 +1,10 @@
 import copy
 import os
+import socket
 from pathlib import Path
 from typing import Any
 
+import dj_database_url
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
 
@@ -65,8 +67,12 @@ IMGPROXY_PRESETS = {
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", "http://127.0.0.1").split(" ")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(" ")
-# need this many for CSV import feature to work - 16 fields per trip
+
+# Need this many for CSV import feature to work - 16 fields per trip
 DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000, int)
+
+# Add Docker host IP to ALLOWED_HOSTS for Dokku healthchecks
+ALLOWED_HOSTS.append(socket.getaddrinfo(socket.gethostname(), "http")[0][4][0])
 
 
 # Email settings
@@ -93,6 +99,7 @@ USE_TZ = True
 
 # Django apps
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "logger.apps.LoggerConfig",
@@ -145,6 +152,7 @@ MESSAGE_TAGS = {
 # Django middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -171,6 +179,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",
                 "users.context_processors.notifications",
                 "core.context_processors.site_root",
                 "core.context_processors.site_title",
@@ -191,18 +200,14 @@ ROOT_URLCONF = "config.django.urls"
 
 # Database
 DATABASES = {
-    "default": {
-        "ENGINE": env("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": env("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
-        "USER": env("SQL_USER", "user"),
-        "PASSWORD": env("SQL_PASSWORD", "password"),
-        "HOST": env("SQL_HOST", "localhost"),
-        "PORT": env("SQL_PORT", "5432", int),
-        "ATOMIC_REQUESTS": env("SQL_ATOMIC_REQUESTS", True, int),
-    }
+    "default": dj_database_url.config(
+        default="postgres://postgres:postgres@db:5432/postgres",
+        conn_max_age=env("CONN_MAX_AGE", 30, int),
+        conn_health_checks=True,
+    )
 }
-CONN_MAX_AGE = env("CONN_MAX_AGE", 30, int)
-
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"]["ENGINE"] = "django.contrib.gis.db.backends.postgis"
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -221,7 +226,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Amazon S3
+# Static files, media files, and Amazon S3.
+# Photos are *always* stored in S3, even in development.
 AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN", "")
 AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", "")
 AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", "")
@@ -231,13 +237,49 @@ AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", "s3v4")
 AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL", "private")
 AWS_PRESIGNED_EXPIRY = env("AWS_PRESIGNED_EXPIRY", 20, int)
 
+STATIC_URL = "/static/"
+STATIC_ROOT = os.environ.get("STATIC_ROOT", "/app/staticfiles")
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# Storages
-STORAGES = {
-    "photos": {
-        "BACKEND": "core.custom_storages.PhotosS3Storage",
-    },
-}
+MEDIA_STORAGE_LOCATION = env("MEDIA_LOCATION", "m")
+PHOTOS_STORAGE_LOCATION = env("PHOTOS_LOCATION", "p")
+
+if AWS_STORAGE_BUCKET_NAME:  # pragma: no cover
+    MEDIA_URL = env("MEDIA_URL")
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "location": MEDIA_STORAGE_LOCATION,
+            },
+        },
+        "photos": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "location": PHOTOS_STORAGE_LOCATION,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = os.environ.get("MEDIA_ROOT", "/app/mediafiles")
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+        },
+        "photos": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "location": PHOTOS_STORAGE_LOCATION,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 
 # Default primary key field type
@@ -329,7 +371,7 @@ CACHES = {
 
 
 # Logging
-DEFAULT_LOG_LEVEL = "INFO"
+DEFAULT_LOG_LEVEL = "ERROR"
 
 LOGGING = {
     "version": 1,
@@ -344,15 +386,13 @@ LOGGING = {
         "django_logs": {
             "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
             "class": "logging.FileHandler",
-            "filename": env("DJANGO_LOG_LOCATION", "/opt/dev/logs/django.log"),
+            "filename": env("DJANGO_LOG_LOCATION", "/app/logs/django.log"),
             "formatter": "simple",
         },
         "user_actions": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": env(
-                "USER_ACTIONS_LOG_LOCATION", "/opt/dev/logs/user_actions.log"
-            ),
+            "filename": env("USER_ACTIONS_LOG_LOCATION", "/app/logs/user_actions.log"),
             "formatter": "simple",
         },
         "console": {

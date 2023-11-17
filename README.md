@@ -30,33 +30,34 @@ The project is written in Python and Django. Pull requests are more than welcome
 ### Development environment
 
 All development is done inside the Docker development environment. To set up the environment, copy the example
-`development.env` file and build and run the docker image from the project root directory:
+`dev.env` file and build and run the docker image from the project root directory:
 
 ```
-$ cp config/docker/development.env.example config/docker/development.env
+$ cp config/env/dev.env.dist config/env/dev.env
 $ docker-compose up
 ```
 
-Once the database has initialised, the server will be accessible at http://127.0.0.1:8000. An initial superuser account with the email address `admin@caves.app` and the password `admin` is created automatically.
+Once the database has initialised, the server will be accessible at http://127.0.0.1:8000. An
+initial superuser account with the email address `admin@caves.app` and the password `admin`
+is created automatically.
 
 Additional test data can be generated using the `make_test_data` Django management
 command. You can run the command via docker compose like so:
 
 ```
-$ docker-compose exec web ./manage.py make_test_data
+$ docker-compose exec web /app/src/manage.py make_test_data
 ```
 
 By default, this will create 25 users and 6,000 trips, although this is configurable
-(see `manage.py make_test_data --help` for more information). Generation of users
+(see `make_test_data --help` for more information). Generation of users
 and trips may take a few minutes on slower systems. Please note that the
 `make_test_data` command can only create users once, as it will attempt to re-use
 the same sequential emails on the second attempt. If you wish to re-create users,
-you can stop the Docker instance and delete the `data/development` directory, before
-re-initialising the environment:
+you can stop the Docker instance and delete the volumes, which will destroy any
+existing PostgreSQL data:
 
 ```
 $ docker compose down -v
-$ rm -r data/development/
 $ docker compose up
 ```
 
@@ -64,7 +65,7 @@ $ docker compose up
 
 In order to use the photo upload feature of trips (powered by [uppy](https://uppy.io/)),
 you will need to set up details for AWS S3 in the
-`config/docker/development.env` file. It is possible to reconfigure Uppy
+`config/env/dev.env` file. It is possible to reconfigure Uppy
 and Django to use a different storage backend, but this is beyond the scope of
 this README and would require significant code changes. For more information, check
 out the [django-storages](https://django-storages.readthedocs.io/) and
@@ -73,8 +74,10 @@ out the [django-storages](https://django-storages.readthedocs.io/) and
 ### Hints
 
 - Any emails generated whilst using the development environment will be printed directly to the console.
-- Python requirements are listed in `config/requirements/development.txt` and can be installed locally (for linting, etc) with `pip install -r config/requirements/development.txt`.
-- Tests can be run via `docker-compose exec web ./manage.py test`.
+- Python requirements are listed in `config/requirements/requirements.txt` (or `requirements.in` for the
+  core list) and can be installed locally (for linting, etc) with 
+  `pip install -r config/requirements/requirements.txt`.
+- Tests can be run via `docker-compose exec web /app/run.sh test`.
 
 ## Feedback
 
