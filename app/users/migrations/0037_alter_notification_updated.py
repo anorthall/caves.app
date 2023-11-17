@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0036_alter_cavinguser_email_comments'),
+        ("users", "0036_alter_cavinguser_email_comments"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='notification',
-            name='updated',
+            model_name="notification",
+            name="updated",
             field=models.DateTimeField(),
         ),
     ]
