@@ -42,7 +42,7 @@ jobs:
           cache-dependency-path: config/requirements/requirements.txt
       - name: Upgrade pip
         run: |
-          pip install --upgrade pip wheel
+          pip install --upgrade pip wheel setuptools
       - name: Install dependencies
         run: |
           pip install -r config/requirements/requirements.txt
