@@ -371,7 +371,7 @@ CACHES = {
 
 
 # Logging
-DEFAULT_LOG_LEVEL = "INFO"
+DEFAULT_LOG_LEVEL = "ERROR"
 
 LOGGING = {
     "version": 1,
