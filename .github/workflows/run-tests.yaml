@@ -41,7 +41,9 @@ jobs:
         run: |
           pip install -r config/requirements/requirements.txt
       - name: Install GeoDjango dependencies
-        run: sudo apt-get install gdal-bin libgdal-dev libgeos-dev libproj-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install gdal-bin libgdal-dev libgeos-dev libproj-dev
       - name: Run Django tests
         working-directory: ./app
         run: |
