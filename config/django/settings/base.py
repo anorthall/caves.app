@@ -58,7 +58,7 @@ IMGPROXY_KEY = env("IMGPROXY_KEY")
 IMGPROXY_SALT = env("IMGPROXY_SALT")
 IMGPROXY_PRESETS = {
     "tripphoto_thumb": "width=400,height=600,resizing_type=fill",
-    "avatar": "width=450,height=450,resizing_type=fill",
+    "avatar": "width=400,height=400,resizing_type=fill",
     "avatar_navbar": "width=80,height=80,resizing_type=fill",
 }
 

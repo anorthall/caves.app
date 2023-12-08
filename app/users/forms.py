@@ -53,18 +53,18 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
         self.fields["old_password"].widget.attrs.pop("autofocus", None)
         self.fields["new_password1"].help_text = ""
         self.fields["new_password2"].help_text = (
-            "<div class='mw-35'>Your password can't be too similar to your other "
+            "Your password can't be too similar to your other "
             "personal information, must contain at least 8 characters, cannot be "
-            "entirely numeric and must not be a commonly used password.</div>"
+            "entirely numeric and must not be a commonly used password."
         )
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
             Fieldset(
                 "Change password",
-                Field("old_password", css_class="mw-35"),
-                Field("new_password1", css_class="mw-35"),
-                Field("new_password2", css_class="mw-35"),
+                Field("old_password"),
+                Field("new_password1"),
+                Field("new_password2"),
                 Submit("password_submit", "Change password"),
             )
         )
@@ -212,7 +212,6 @@ class UserCreationForm(forms.ModelForm):
         self.fields["name"].initial = None
         self.helper = FormHelper()
         self.helper.form_method = "post"
-        self.helper.form_class = "mw-35"
         self.helper.add_input(
             Submit("submit", "Create account", css_class="w-100 btn-lg mt-3")
         )
@@ -484,8 +483,8 @@ class EmailChangeForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 "Change email address",
-                Field("email", css_class="mw-35"),
-                Field("password", css_class="mw-35"),
+                Field("email"),
+                Field("password"),
                 Submit("email_submit", "Update email"),
             )
         )

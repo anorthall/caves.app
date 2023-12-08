@@ -7,39 +7,37 @@
 {% block description %}Frequently asked questions about caves.app, and how to get help with the site.{% endblock %}
 
 {% block main %}
-  <div class="mw-45">
-    <p>
-      If you need any help with anything, or if you've encountered a problem with the site, then please do not hesitate to
-      <a href="mailto:admin@caves.app">send me an email</a> and I will get back to you as soon as possible. Equally, any
-      feedback &mdash; positive or negative &mdash; is very welcome.
-    </p>
+  <p>
+    If you need any help with anything, or if you've encountered a problem with the site, then please do not hesitate to
+    <a href="mailto:admin@caves.app">send me an email</a> and I will get back to you as soon as possible. Equally, any
+    feedback &mdash; positive or negative &mdash; is very welcome.
+  </p>
 
-    <p>
-      The support email address is: <code>admin@caves.app</code>.
-    </p>
+  <p>
+    The support email address is: <code>admin@caves.app</code>.
+  </p>
 
-    {% if faqs %}
-      <div class="my-5">
-        <h4 class="subtitle mb-2">
-          Frequently asked questions
+  {% if faqs %}
+    <div class="my-5">
+      <h4 class="subtitle mb-2">
+        Frequently asked questions
+      </h4>
+      <ol>
+        {% for faq in faqs %}
+          <li>
+            <a href="#faq{{ faq.id }}">{{ faq.question }}</a>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+
+    {% for faq in faqs %}
+      <div class="mb-5">
+        <h4 class="subtitle mb-2" id="faq{{ faq.id }}">
+          {{ faq.question }}
         </h4>
-        <ol>
-          {% for faq in faqs %}
-            <li>
-              <a href="#faq{{ faq.id }}">{{ faq.question }}</a>
-            </li>
-          {% endfor %}
-        </ol>
+        {{ faq.answer|markdownify }}
       </div>
-
-      {% for faq in faqs %}
-        <div class="mb-5">
-          <h4 class="subtitle mb-2" id="faq{{ faq.id }}">
-            {{ faq.question }}
-          </h4>
-          {{ faq.answer|markdownify }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  </div>
+    {% endfor %}
+  {% endif %}
 {% endblock %}

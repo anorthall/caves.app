@@ -5,19 +5,18 @@
 {% block banner_subtitle %}Resend verification email{% endblock %}
 
 {% block content %}
-  <div class="mw-35">
-    <p class="lead">
-      If you've registered for a new account but have not received an email
-      to activate it, or the activation code has expired, you can resend the
-      activation email using the form below.
-    </p>
+  <p class="lead">
+    If you've registered for a new account but have not received an email
+    to activate it, or the activation code has expired, you can resend the
+    activation email using the form below.
+  </p>
 
-    <p class="mb-5">
-      Please wait a few minutes for the original email to arrive and check your
-      spam folder before using this form. If the email still does not arrive after
-      attempting to resend it, please contact me via email on
-      <a href="mailto:admin@caves.app">admin@caves.app</a>.
-    </p>
+  <p class="mb-5">
+    Please wait a few minutes for the original email to arrive and check your
+    spam folder before using this form. If the email still does not arrive after
+    attempting to resend it, please contact me via email on
+    <a href="mailto:admin@caves.app">admin@caves.app</a>.
+  </p>
 
-    {% crispy form %}
+  {% crispy form %}
 {% endblock %}

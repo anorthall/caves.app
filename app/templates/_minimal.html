@@ -1,12 +1,12 @@
 {% load static %}
 {% load django_htmx %}
 <!doctype html>
-<html lang="en" class="h-100">
+<html lang="en" class="h-100" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% block description %}An online caving trip logger. Log your trips, track caving statistics, share your activities with friends, upload your caving photos and more.{% endblock %}">
-    <meta name="theme-color" content="{% block theme_color %}#2c3e50{% endblock %}">
+    <meta name="theme-color" content="{% block theme_color %}#000000{% endblock %}">
     {% block meta_tags %}{% endblock %}
 
     <title>{% block title %}caves.app{% endblock %}</title>
@@ -38,6 +38,7 @@
 
     <!-- Bootstrap v5.3.2 JS -->
     <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
+    <script src="{% static "js/colour-modes.js" %}"></script>
 
     <!-- Alpine 3.13.2 JS -->
     <script defer src="{% static "js/alpine-focus-plugin.min.js" %}"></script>
@@ -59,7 +60,8 @@
     {% block header_scripts %}{% endblock %}
   </head>
 
-  <body class="d-flex flex-column h-100" hx-boost="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <body class="d-flex flex-column h-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include "_bs_colour_mode.html" %}
     <div id="blurContainer"></div>
 
     {% block body %}{% endblock body %}

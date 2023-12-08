@@ -28,18 +28,16 @@
       </div>
     {% endif %}
   {% else %}
-    <div class="mw-45">
-      <p class="lead">
-        You haven't added any trips, so no statistics are available.
-        Why not <a href="{% url 'log:trip_create' %}">add a trip</a> now?
-      </p>
+    <p class="lead">
+      You haven't added any trips, so no statistics are available.
+      Why not <a href="{% url 'log:trip_create' %}">add a trip</a> now?
+    </p>
 
-      <p>
-        As you add trips, more statistics will be added to this page. The statistics
-        shown will vary based on what data is available. To ensure the most interesting
-        statistics, fill out as many fields as possible when adding trips.
-      </p>
-    </div>
+    <p>
+      As you add trips, more statistics will be added to this page. The statistics
+      shown will vary based on what data is available. To ensure the most interesting
+      statistics, fill out as many fields as possible when adding trips.
+    </p>
   {% endif %}
 
   {% if stats_averages or stats_metrics %}

@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <div class="card trip-card feed-card mb-5 w-100">
+  <div class="card feed-card feed-card mb-5 w-100">
     <div class="card-header" style="transform: rotate(0);">
       <a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>
       <div class="d-flex flex-row align-items-center justify-content-between">
@@ -101,7 +101,7 @@
     </div>
   </div>
 
-  <div class="mb-4 mb-lg-5" id="comment{{ trip.uuid }}"></div>
+  <div id="comment{{ trip.uuid }}"></div>
 {% endfor %}
 
 {% if trips.has_next %}

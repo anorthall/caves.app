@@ -4,7 +4,7 @@
 {% if trip.cavers.all %}
   <div class="row mb-3">
     <div class="col">
-      <small class="text-primary-emphasis-emphasis trip-field">Cavers</small><br />
+      <span class="trip-field">Cavers</span><br />
       {% if user == trip.user %}
         {% for caver in trip.cavers.all %}
           <a class="text-body text-decoration-none" href="{{ caver.get_absolute_url }}">{{ caver.name }}</a>{% if forloop.counter < trip.cavers.all|length %},{% endif %}
@@ -17,39 +17,39 @@
 {% endif %}
 
 <!-- Data blocks -->
-<div class="row row-cols-1 row-cols-sm-2 row-cols-xxl-3 g-3">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
   <!-- Start time-->
   <div class="col">
-    <small class="trip-field"><span class="d-none d-md-inline">Date/time </span>entered</small><br />
-    <span class="d-none d-md-inline">{{ trip.start|time:"H:i" }} on {{ trip.start|date:"d M Y" }}</span>
+    <span class="trip-field"><span class="d-none d-md-inline">Date/time </span>entered</span><br />
+      <span class="d-none d-md-inline">{{ trip.start|date:"D j M y" }} &mdash; {{ trip.start|time:"H:i" }}</span>
     <span class="d-md-none">{{ trip.start|date:"Y-m-d" }} {{ trip.start|time:"H:i" }}</span>
   </div>
 
   {% if trip.end %}
     <!-- Duration -->
     <div class="col">
-      <small class="trip-field">Duration</small><br />
+      <span class="trip-field">Duration</span><br />
       <span class="d-none d-md-inline">{{ trip.duration_str }}</span>
       <span class="d-md-none">{{ trip.duration }}</span>
     </div>
 
     <!-- End time -->
     <div class="col">
-      <small class="trip-field"><span class="d-none d-md-inline">Date/time </span>exited</small><br />
-      <span class="d-none d-md-inline">{{ trip.end|time:"H:i" }} on {{ trip.end|date:"d M Y" }}</span>
+      <span class="trip-field"><span class="d-none d-md-inline">Date/time </span>exited</span><br />
+      <span class="d-none d-md-inline">{{ trip.end|date:"D j M y" }} &mdash; {{ trip.end|time:"H:i" }}</span>
       <span class="d-md-none">{{ trip.end|date:"Y-m-d" }} {{ trip.end|time:"H:i" }}</span>
     </div>
   {% endif %}
 
   <!-- Type -->
   <div class="col">
-    <small class="trip-field">Trip type</small><br />
+    <span class="trip-field">Trip type</span><br />
     {{ trip.type }}
   </div>
 
   {% if trip.cave_coordinates and user == trip.user %}
     <div class="col">
-      <small class="trip-field">Cave location <i class="bi bi-lock-fill" title="Visible only to you"></i></small><br />
+      <span class="trip-field">Cave location <i class="bi bi-lock-fill" title="Visible only to you"></i></span><br />
       <a target="_blank" class="link-secondary"
          href="https://www.google.com/maps/search/?api=1&query={{ trip.latitude|urlencode }},{{ trip.longitude|urlencode }}">
         {{ trip.latitude|floatformat:5 }}, {{ trip.longitude|floatformat:5 }}
@@ -60,7 +60,7 @@
   {% if trip.clubs %}
   <!-- Clubs -->
     <div class="col">
-      <small class="trip-field">Clubs</small><br />
+      <span class="trip-field">Clubs</span><br />
       {{ trip.clubs }}
     </div>
   {% endif %}
@@ -68,14 +68,14 @@
   {% if trip.expedition %}
   <!-- Expedition -->
     <div class="col">
-      <small class="trip-field">Expedition</small><br />
+      <span class="trip-field">Expedition</span><br />
       {{ trip.expedition }}
     </div>
   {% endif %}
 
   {% for label, value in trip.custom_fields %}
     <div class="col">
-      <small class="trip-field">{{ label }}</small><br />
+      <span class="trip-field">{{ label }}</span><br />
       {{ value }}
     </div>
   {% endfor %}
@@ -83,7 +83,7 @@
   {% if trip.has_distances %}
     {% for name, dist in trip.distances.items %}
       <div class="col">
-        <small class="trip-field">{{ name|capfirst }}</small><br />
+        <span class="trip-field">{{ name|capfirst }}</span><br />
         {% if user.is_authenticated %}
           {{ dist|distformat:request.units }}
         {% else %}

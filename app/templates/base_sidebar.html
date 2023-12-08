@@ -4,16 +4,18 @@
   <div id="threeColumnContainer">
     <!-- Sidebar -->
     <div id="leftSidebarContainer">
-      <nav class="sidebar nav nav-light nav-pills d-flex flex-column {% block left_sidebar_classes %}{% endblock %}">{% block left_sidebar %}{% include "_sidebar.html" %}{% endblock %}</nav>
+      <nav class="sidebar nav d-flex flex-column">{% block left_sidebar %}{% include "_sidebar.html" %}{% endblock %}</nav>
     </div>
 
     <!-- Main content -->
-    <div id="mainContent" class="w-100 {% block main_content_container_class %}main-content-bg{% endblock %}">
-      {% block main %}{% endblock %}
+    <div id="centerColumnContainer">
+      <div id="centerColumn">
+        {% block main %}{% endblock %}
+      </div>
     </div>
 
     <div id="rightSidebarContainer" class="{% block right_sidebar_container_classes %}{% endblock %}">
-      <aside class="sidebar nav nav-light nav-pills d-flex flex-column {% block right_sidebar_classes %}{% endblock %}">{% block right_sidebar %}{% endblock %}</aside>
+      <aside class="sidebar nav nav-light nav-pills d-flex flex-column">{% block right_sidebar %}{% endblock %}</aside>
     </div>
   </div>
 {% endblock %}

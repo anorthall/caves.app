@@ -49,15 +49,13 @@
     Photo privacy
   </h3>
 
-  <div class="mw-45">
-    {% crispy form %}
-  </div>
+  {% crispy form %}
 
   <h3 class="subtitle mt-5 mb-3">
     Remove photos
   </h3>
 
-  <p class="mw-45 mb-3">
+  <p class="mb-3">
     If you'd like to delete all photos that you've uploaded for this trip, click the button below.
     This will remove <strong>all the photos</strong> for the trip to
     {{ trip.cave_name }} on {{ trip.start|date }} and is <strong>permanent and

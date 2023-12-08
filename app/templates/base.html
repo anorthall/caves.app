@@ -6,8 +6,8 @@
   <header>
     {% if user.is_authenticated %}
       <!-- Navbar -->
-      <div id="navbarContainer" class="bg-primary">
-        <nav class="navbar navbar-expand navbar-dark" id="navbarContentContainer">
+      <div id="navbarContainer" class="bg-dark">
+        <nav class="navbar navbar-expand navbar-light" id="navbarContent">
           <div class="site-title fs-3">
             <a href="/">{{ site_title }}</a>
           </div>
@@ -32,7 +32,7 @@
 
               <div class="notifications-dropdown" x-show="open" x-cloak x-transition.scale.20.origin.top.right
                    @click.outside="open = false" x-trap.noscroll="true">
-                <h4 class="title fs-6 notification-item navbar">Notifications</h4>
+                <h4 class="fs-6 notification-item">Notifications</h4>
                 {% for item in notifications.list %}
                   <div class="notification-item notification{% if item.read %} read{% endif %}">
                     <a class="stretched-link" href="{{ item.get_absolute_url }}"></a>
@@ -92,12 +92,8 @@
     {% include "_messages.html" %}
   </header>
 
-  <main id="mainContainer">
+  <main>
     {% block content %}{% endblock %}
-
-    <div id="footerContainer">
-      {% include "_footer.html" %}
-    </div>
   </main>
 
 {% endblock body %}

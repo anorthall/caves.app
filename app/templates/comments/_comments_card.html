@@ -1,11 +1,11 @@
 {% if trip.user.allow_comments %}
-  <div class="card" id="comments{{ trip.uuid }}">
+  <div class="card feed-card mb-5" id="comments{{ trip.uuid }}">
     <div class="card-header">
       <div class="d-flex flex-row align-items-center justify-content-between">
         <span class="float-start">Comments on {{ trip.cave_name }}</span>
         <small class="float-end text-muted">
           {% include "logger/_htmx_trip_follow.html" %}
-          <button class="ms-1 btn btn-sm btn-secondary" onclick="document.getElementById('comments{{ trip.uuid }}').remove()">Hide</button>
+          <button class="ms-1 btn btn-sm btn-secondary" onclick="document.getElementById('comments{{ trip.uuid }}').classList.add('d-none')">Hide</button>
         </small>
       </div>
     </div>
