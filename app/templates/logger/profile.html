@@ -46,27 +46,43 @@
         </p>
       {% endif %}
 
-      {% if stats %}
-        <div class="profile-stats border-bottom border-gray-200 pb-4 mb-4">
-          {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm mb-0 table-striped table-bordered" dist_class="d-none d-xl-table-cell" %}
-        </div>
-      {% endif %}
-
       {% if user_has_trips %}
-        <div class="input-group mb-4">
-          <span class="input-group-text">Search</span>
-          <input type="text" class="form-control" placeholder="Cave, cavers, clubs or expeditions"
-                 hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
-                 hx-trigger="keyup changed delay:100ms"
-                 hx-target="#userTrips"
-                 hx-swap="outerHTML"
-                 hx-indicator="none"
-                 autocomplete="off"
-                 name="query">
-        </div>
-        <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
-      {% endif %}
+        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent" type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">Trips</button>
+          </li>
+          {% if stats %}
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent" type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">Statistics</button>
+            </li>
+          {% endif %}
+        </ul>
 
+        <div class="tab-content mt-3" id="profileTabsContent">
+          <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
+            <div class="input-group mb-3">
+              <span class="input-group-text">Search</span>
+              <input type="text" class="form-control" placeholder="Cave, cavers, clubs or expeditions"
+                     hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
+                     hx-trigger="keyup changed delay:100ms"
+                     hx-target="#userTrips"
+                     hx-swap="outerHTML"
+                     hx-indicator="none"
+                     autocomplete="off"
+                     name="query">
+            </div>
+            <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
+          </div>
+
+          {% if stats %}
+            <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
+              <div class="profile-stats">
+                {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-xl-table-cell" %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
     {% else %}
       <h4 class="border-bottom pt-4 pb-1 mb-3">
         <i class="bi bi-exclamation-circle-fill"></i> Oopsie...
