@@ -8,18 +8,18 @@
      hx-swap="outerHTML"
      href="#">
     {% if trip.user_liked %}
-      <span class="text-primary">
+      <span class="liked-trip">
         <i class="bi bi-hand-thumbs-up-fill"></i>
       </span>
     {% else %}
-      <span class="text-dark">
+      <span class="unliked-trip">
         <i class="bi bi-hand-thumbs-up"></i>
       </span>
     {% endif %}
-    <span class="text-dark d-none d-md-inline-block">
+    <span class="liked-count d-none d-md-inline-block{% if trip.user_liked %} liked-trip{% endif %}">
       &nbsp;{{ liked_str|get:trip.pk }}
     </span>
-    <span class="text-dark d-md-none">
+    <span class="liked-count d-md-none{% if trip.user_liked %} liked-trip{% endif %}">
       &nbsp;{{ likes_count }}
     </span>
   </a>

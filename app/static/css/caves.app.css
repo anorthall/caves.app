@@ -407,6 +407,15 @@ main {
   text-transform: capitalize;
 }
 
+.unliked-trip, .liked-count {
+  color: var(--bs-body-color);
+}
+
+.liked-trip, .liked-count.liked-trip {
+  color: var(--bs-emphasis-color);
+}
+
+
 /*
   Text
 */
