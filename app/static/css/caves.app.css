@@ -32,12 +32,6 @@ main {
   border-bottom: none;
 }
 
-[data-bs-theme="dark"] {
-  #centerColumnContainer {
-    background-color: var(--bs-tertiary-bg);
-  }
-}
-
 #centerColumn {
   max-width: 900px;
   margin: 1rem;
@@ -136,7 +130,7 @@ main {
   align-self: center;
   justify-self: center;
   display: block;
-  color: black;
+  color: var(--bs-body-color);
 }
 
 @media (min-width: 1300px) {
