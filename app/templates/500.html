@@ -1,20 +1,11 @@
-{% extends "base_full_width.html" %}
+{% extends "_base_http_error.html" %}
 
 {% block title %}caves.app - internal server error{% endblock %}
 {% block description %}Oops! Something went wrong.{% endblock %}
-
-{% block main %}
-  <div class="container px-0">
-    <h1 class="display-4">Oops.</h1>
-    <p class="fs-4 mt-3">There was an internal server error.</p>
-    <p class="mt-3">
-      I've received a report of what caused the error and I will try to fix it as soon as possible.
-      If you like, you can submit a bug report on
-      <a href="https://github.com/anorthall/caves.app/issues/new/choose">GitHub</a>.
-    </p>
-
-    <p class="mt-3">Sorry about that! Thanks for using caves.app.</p>
-
-    <button class="btn btn-primary btn-lg mt-3" onclick="window.history.back()">Go back</button>
-  </div>
+{% block error_title %}Internal server error.{% endblock %}
+{% block error_subtitle %}Something is broken.{% endblock %}
+{% block error_description %}
+  I've received a report of what caused the error and I will try to fix it as soon as possible.
+  If you like, you can submit a bug report on
+  <a href="https://github.com/anorthall/caves.app/issues/new/choose">GitHub</a>. Sorry about that!
 {% endblock %}

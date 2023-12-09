@@ -1,0 +1,16 @@
+{% extends "_base.html" %}
+
+{% block title %}caves.app - error{% endblock %}
+{% block description %}Oops! Something went wrong.{% endblock %}
+
+{% block content %}
+  <div class="text-center mt-5 h-100" style="max-width: 35rem">
+    <h1 class="display-4">{% block error_title %}Oops.{% endblock %}</h1>
+    <p class="fs-4 mt-3">{% block error_subtitle %}Our server didn't like that.{% endblock %}</p>
+    <p class="mt-3">{% block error_description %}Something went wrong and we couldn't process your request.{% endblock %}</p>
+
+    {% block error_button %}
+      <button class="btn btn-outline-secondary mt-3" onclick="window.history.back()">Go back</button>
+    {% endblock %}
+  </div>
+{% endblock %}
