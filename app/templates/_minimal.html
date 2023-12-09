@@ -38,7 +38,6 @@
 
     <!-- Bootstrap v5.3.2 JS -->
     <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
-    <script src="{% static "js/colour-modes.js" %}"></script>
 
     <!-- Alpine 3.13.2 JS -->
     <script defer src="{% static "js/alpine-focus-plugin.min.js" %}"></script>
@@ -61,12 +60,13 @@
   </head>
 
   <body class="d-flex flex-column h-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-    {% include "_bs_colour_mode.html" %}
     <div id="blurContainer"></div>
 
     {% block body %}{% endblock body %}
 
     {% block modals %}{% endblock %}
+
+    <script src="{% static "js/colour-modes.js" %}"></script>
     {% block footer_scripts %}{% endblock %}
   </body>
 </html>

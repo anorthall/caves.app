@@ -460,7 +460,7 @@ main {
   JS Elements - HTMX/Alpine.js
 */
 
-[data-bs-toggle], [hx-get], [hx-post], [hx-delete], [hx-put] {
+[data-bs-toggle], [hx-get], [hx-post], [hx-delete], [hx-put], .fake-link {
   cursor: pointer;
 }
 
