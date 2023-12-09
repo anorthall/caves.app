@@ -214,13 +214,12 @@ main {
   border: 1px transparent;
   border-radius: 50%;
   padding: 1px 7px;
-  background-color: rgba(255, 255, 255, 1);
   transition: ease-in-out background-color 0.2s;
 }
 
 #notificationsBellContainer:hover {
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(230, 230, 230, 0.8);
 }
 
 [data-bs-theme="dark"] {
