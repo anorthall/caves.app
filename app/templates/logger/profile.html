@@ -10,90 +10,91 @@
 {% block hamburger_menu_right_container %}{% endblock %}
 
 {% block main %}
-  <div class="main-content-bg" id="profilePage">
-    <div class="profile-header-container">
-      <div class="profile-header">
-        {% include "users/_profile_picture.html" with photo_user=profile_user %}
-        <div class="user-info">
-          <h1 class="fs-3">{{ profile_user.name }}</h1>
-          {% if not profile_user.private_profile %}
-            {% if profile_user.location or profile_user.country %}
-              <small class="text-muted">
-                {{ profile_user.location }}{% if profile_user.country %} &middot; {{ profile_user.country.name }}{% endif %}
-              </small>
-            {% endif %}
-          {% else %}
-            <small class="text-muted">
-              Private profile
-            </small>
-          {% endif %}
-        </div>
-      </div>
+  <div class="d-flex flex-column flex-md-row justify-content-start align-items-center mb-4">
+    {% include "users/_profile_picture.html" with photo_user=profile_user %}
+    <div class="ms-md-5 text-center text-md-start mt-3 mt-md-0">
+      <h1 class="fs-3 mb-0">{{ profile_user.name }}</h1>
+      {% if not profile_user.private_profile %}
+        {% if profile_user.location or profile_user.country %}
+          <small class="text-muted d-block mt-1 mt-md-0">
+            {{ profile_user.location }}{% if profile_user.country %} &middot; {{ profile_user.country.name }}{% endif %}
+          </small>
+        {% endif %}
+        {% if user_has_trips %}
+          <small class="text-body-tertiary d-block mt-1 mt-md-0">
+            {{ profile_user.trips.count }} trips on caves.app
+          </small>
+        {% endif %}
+      {% else %}
+        <small class="text-muted">
+          Private profile
+        </small>
+      {% endif %}
     </div>
+  </div>
 
-    {% if not private_profile %}
-      {% if profile_user.bio %}
-        <div class="border-bottom border-gray-200 pb-4 mb-4 no-paragraph-mb">
-          {{ profile_user.bio|markdownify }}
-        </div>
-      {% elif not profile_user.bio and not user_has_trips %}
-        <p class="lead">
-          There is nothing here &mdash; yet.
-          {% if user == profile_user %}
-            Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
-            <a href="{% url 'users:profile_update' %}">update your profile</a>?
-          {% endif %}
-        </p>
-      {% endif %}
-
-      {% if user_has_trips %}
-        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent" type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">Trips</button>
-          </li>
-          {% if stats %}
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent" type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">Statistics</button>
-            </li>
-          {% endif %}
-        </ul>
-
-        <div class="tab-content mt-3" id="profileTabsContent">
-          <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
-            <div class="input-group mb-3">
-              <span class="input-group-text">Search</span>
-              <input type="text" class="form-control" placeholder="Cave, cavers, clubs or expeditions"
-                     hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
-                     hx-trigger="keyup changed delay:100ms"
-                     hx-target="#userTrips"
-                     hx-swap="outerHTML"
-                     hx-indicator="none"
-                     autocomplete="off"
-                     name="query">
-            </div>
-            <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
-          </div>
-
-          {% if stats %}
-            <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
-              <div class="profile-stats">
-                {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-xl-table-cell" %}
-              </div>
-            </div>
-          {% endif %}
-        </div>
-      {% endif %}
-    {% else %}
-      <h4 class="border-bottom pt-4 pb-1 mb-3">
-        <i class="bi bi-exclamation-circle-fill"></i> Oopsie...
-      </h4>
-      <p>
-        {{ profile_user.name }}'s privacy settings prevent you from viewing their profile and trip list.
-      </p>
-
-      <p>
-        Oh well. You didn't want to see them anyway! &#128579;
+  {% if not private_profile %}
+    {% if profile_user.bio %}
+      <div class="mb-4 no-paragraph-mb">
+        {{ profile_user.bio|markdownify }}
+      </div>
+    {% elif not profile_user.bio and not user_has_trips %}
+      <p class="lead">
+        There is nothing here &mdash; yet.
+        {% if user == profile_user %}
+          Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
+          <a href="{% url 'users:profile_update' %}">update your profile</a>?
+        {% endif %}
       </p>
     {% endif %}
-  </div>
+
+    {% if user_has_trips %}
+      <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent" type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">Trips</button>
+        </li>
+        {% if stats %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent" type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">Statistics</button>
+          </li>
+        {% endif %}
+      </ul>
+
+      <div class="tab-content p-3 border border-top-0" id="profileTabsContent">
+        <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
+          <div class="input-group mb-3">
+            <span class="input-group-text">Search</span>
+            <input type="text" class="form-control" placeholder="Cave, cavers, clubs or expeditions"
+                   hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
+                   hx-trigger="keyup changed delay:100ms"
+                   hx-target="#userTrips"
+                   hx-swap="outerHTML"
+                   hx-indicator="none"
+                   autocomplete="off"
+                   name="query">
+          </div>
+          <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
+        </div>
+
+        {% if stats %}
+          <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
+            <div class="profile-stats">
+              {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-xl-table-cell" %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <h4 class="border-bottom pt-4 pb-1 mb-3">
+      <i class="bi bi-exclamation-circle-fill"></i> Oopsie...
+    </h4>
+    <p>
+      {{ profile_user.name }}'s privacy settings prevent you from viewing their profile and trip list.
+    </p>
+
+    <p>
+      Oh well. You didn't want to see them anyway! &#128579;
+    </p>
+  {% endif %}
 {% endblock %}

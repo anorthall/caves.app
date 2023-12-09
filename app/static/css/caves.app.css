@@ -15,7 +15,7 @@ main {
   margin-bottom: auto;
   min-height: 100%;
   width: 100%;
-  max-width: calc(1600px + 3rem);
+  max-width: 1600px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -320,13 +320,11 @@ main {
   display: none;
   flex: 0 0 250px;
   padding-right: 2rem;
-  padding-left: 1.5rem;
 }
 
 #rightSidebarContainer {
   display: none;
   flex: 0 0 250px;
-  padding-left: 2rem;
 }
 
 @media (min-width: 900px) {
@@ -505,65 +503,8 @@ main {
   User profile
 */
 
-#profilePage .profile-header-container {
-  position: relative;
-  margin-bottom: 200px;
-}
-
-#profilePage .profile-header {
-  margin: auto;
-  position: absolute;
-  bottom: -110px;
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-#profilePage .profile-photo {
-  position: relative;
-  height: 220px;
-  width: 220px;
-  border: 1px solid var(--bs-border-color) !important;
-  border-radius: 50%;
-  box-shadow: 0 4px 5px var(--bs-border-color);
-}
-
-#profilePage .user-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: absolute;
-  top: 240px;
-  text-align: center;
-}
-
-@media (min-width: 650px) {
-  #profilePage .profile-header-container {
-    margin-bottom: 145px;
-  }
-
-  #profilePage .user-info {
-    left: 240px;
-    top: 125px;
-    text-align: start;
-    justify-content: start;
-    width: 100%;
-  }
-
-  #profilePage .profile-header {
-    justify-content: start;
-    position: absolute;
-    top: -115px;
-    left: unset;
-    right: unset;
-  }
-}
-
-#profilePage .user-info h1, #profilePage .user-info-sm h1 {
-  margin-bottom: 0;
+#profileSidebar .friend-link {
+  color: var(--bs-body-color) !important;
 }
 
 #searchInput.htmx-request {
