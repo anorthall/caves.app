@@ -174,6 +174,23 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return initial
 
 
+class TripPhotoFeature(LoginRequiredMixin, View):
+    def post(self, request, uuid, photo_uuid):
+        trip = get_object_or_404(Trip, uuid=uuid)
+        if not trip.user == request.user:
+            raise PermissionDenied
+
+        photo = get_object_or_404(TripPhoto, uuid=photo_uuid)
+        trip.featured_photo = photo
+        trip.save()
+        log_trip_action(request.user, trip, "set featured photo", photo.uuid)
+        messages.success(
+            request,
+            "The featured photo has been updated.",
+        )
+        return redirect(trip.get_absolute_url())
+
+
 class TripDelete(LoginRequiredMixin, View):
     def post(self, request, uuid):
         trip = get_object_or_404(Trip, uuid=uuid)

@@ -26,29 +26,27 @@
 {% endblock %}
 
 {% block main %}
-  <div class="d-flex flex-column flex-md-row justify-content-start align-items-center mb-3 mb-md-5">
+  <div class="d-flex flex-column flex-md-row justify-content-start align-items-center {% if not trip.featured_photo %}mb-4{% endif %}">
+{#    TODO: Add a way to crop the featured photo#}
+{#    TODO: Add a way to remove the featured photo#}
+{#    TODO: Improve photo edit links#}
     {% if not trip.featured_photo %}
       <a href="{{ object_owner.get_absolute_url }}">{% include "users/_profile_picture.html" with photo_user=object_owner %}</a>
+      <div class="ms-md-5 text-center text-md-start">
+        {% include "logger/_trip_detail_header.html" %}
+      </div>
     {% else %}
+      <div class="featured-photo-container mb-3">
+        <img src="{{ trip.featured_photo|imgproxy:"preset:featured_photo" }}" class="trip-featured-photo"
+             alt="{% if trip.featured_photo.caption %}{{ featured_photo.caption }}{% else %}Featured photo for this trip.{% endif %}">
+        <div class="featured-photo-overlay d-none d-sm-block">
+          {% include "logger/_trip_detail_header.html" %}
+        </div>
+      </div>
+      <div class="d-sm-none flex-column w-100 mt-3 text-center">
+        {% include "logger/_trip_detail_header.html" %}
+      </div>
     {% endif %}
-    <div class="ms-md-5 text-center text-md-start mt-3 mt-md-0">
-      <h1 class="fs-3 mb-0">
-        {{ trip.cave_name }}
-        {% if trip.cave_entrance or trip.cave_exit %}
-          <span class="fs-6 d-block d-lg-inline">via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}</span>
-        {% endif %}
-      </h1>
-      <small class="text-muted d-block mt-md-0">
-        {% user object_owner link_class="text-body-emphasis" %} &middot; {{ trip.start|date }}, {{ trip.start|time:"f a" }}
-      </small>
-      {% with cavers=trip.cavers.all.count %}
-        {% if trip.duration_str or cavers %}
-          <small class="text-body-tertiary d-block mt-1 mt-md-0">
-            {% if cavers > 0 %}{{ cavers|add:"1" }} people{% else %}Solo trip{% endif %}{% if trip.duration_str %} &middot; {{ trip.duration_str }}{% endif %}
-          </small>
-        {% endif %}
-      {% endwith %}
-    </div>
   </div>
   <div class="border-bottom mb-3 d-md-none"></div>
 
@@ -92,14 +90,20 @@
           </a>
           {% if user == object_owner %}
             <small class="mt-1 mb-2">
-              <a href="#" class="link-success text-decoration-none"
+              <a href="#" class="text-muted text-decoration-none"
                  data-bs-toggle="modal" data-bs-target="#photoEditModal"
                  onclick="updateEditModal('{{ photo.uuid }}',
                  'photoEditUUID');">edit</a> /
-              <a href="#" class="link-danger text-decoration-none"
+              <a href="#" class="text-muted text-decoration-none"
                  data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
                  onclick="updateDeleteModal('{{ photo.uuid }}',
-                 'photoDeleteUUID');">delete</a>
+                 'photoDeleteUUID');">delete</a> /
+              <a class="text-muted text-decoration-none"
+                 hx-post="{% url 'log:trip_photos_feature' trip.uuid photo.uuid %}" hx-target="body"
+                 hx-swap="innerHTML show:top">
+                feature
+              </a>
+              </form>
             </small>
           {% endif %}
         </div>
