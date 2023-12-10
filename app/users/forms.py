@@ -513,15 +513,14 @@ class AvatarChangeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "post"
-        self.helper.form_id = "avatar-form"
+        self.helper.form_id = "avatarForm"
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
             Fieldset(
                 "Profile picture",
                 "avatar",
-                id="avatar-fieldset",
             ),
-            Submit("btn_submit", "Save profile picture", css_class="btn-lg mt-4"),
+            Submit("btn_submit", "Save profile picture", css_class="mt-3"),
         )
 
 
