@@ -54,13 +54,14 @@
             </div>
 
             <div x-data="{ open: false }">
-              <a id="hamburgerMenuIcon" class="text-white" href="#" role="button" @click="open = !open" x-trap.noscroll="true"
+              <a id="hamburgerMenuIcon" class="text-white" href="#" role="button" @click="open = !open"
                 @resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width; if (width > 1200) { open = false }"
                 x-effect="document.getElementById('blurContainer').classList.toggle('blur-bg', open)">
                 <i class="bi bi-list"></i>
               </a>
 
-              <div class="hamburger-menu-container" x-show="open" @click.outside="open = false" x-cloak x-transition.scale.20.origin.top.right>
+              <div class="hamburger-menu-container" x-show="open" @click.outside="open = false"
+                   x-cloak x-transition.scale.20.origin.top.right x-trap.noscroll="true">
                 <nav class="hamburger-menu left">
                   <span class="nav-item sidebar-header">Navigation</span>
 
