@@ -82,7 +82,7 @@
     {% else %}
       <nav class="navbar navbar-expand-sm navbar-light py-2" id="navbarContainer">
         <div class="container d-flex justify-content-between">
-          <a class="site-title fs-3" href="/">{% if debug %}devel.app{% else %}caves.app{% endif %}</a>
+          <a class="site-title fs-3" href="/">{{ site_title }}</a>
           <a class="nav-link text-white text-decoration-none" href="{% url 'users:login' %}">Login</a>
         </div>
       </nav>
