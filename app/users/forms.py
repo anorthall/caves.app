@@ -350,6 +350,11 @@ class ProfileChangeForm(forms.ModelForm):
             "country",
             "bio",
             "clubs",
+            "instagram",
+            "facebook",
+            "discord",
+            "x_username",
+            "website",
         )
 
     def __init__(self, *args, **kwargs):
@@ -384,6 +389,18 @@ class ProfileChangeForm(forms.ModelForm):
                     Div("bio", css_class="col"),
                     Div("clubs", css_class="col"),
                     css_class="row row-cols-1",
+                ),
+                css_class="mt-4",
+            ),
+            Fieldset(
+                "Social media",
+                Div(
+                    Div("instagram", css_class="col"),
+                    Div("facebook", css_class="col"),
+                    Div("discord", css_class="col"),
+                    Div("x_username", css_class="col"),
+                    Div("website", css_class="col"),
+                    css_class="row row-cols-1 row-cols-lg-2",
                 ),
                 css_class="mt-4",
             ),

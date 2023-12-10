@@ -148,6 +148,33 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         help_text="A list of caving clubs or organisations that you are a member of.",
     )
+    instagram = models.CharField(
+        max_length=30,
+        blank=True,
+        help_text="Your Instagram username.",
+    )
+    facebook = models.CharField(
+        max_length=50,
+        validators=[MinLengthValidator(5)],
+        blank=True,
+        help_text="Your Facebook username.",
+    )
+    discord = models.CharField(
+        max_length=32,
+        validators=[MinLengthValidator(2)],
+        blank=True,
+        help_text="Your Discord username.",
+    )
+    x_username = models.CharField(
+        max_length=15,
+        blank=True,
+        help_text="Your X username.",
+        verbose_name="X/Twitter",
+    )
+    website = models.URLField(
+        blank=True,
+        help_text="A link to your personal website.",
+    )
 
     # Avatar
     avatar = models.ImageField(
