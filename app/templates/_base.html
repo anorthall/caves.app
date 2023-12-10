@@ -44,7 +44,7 @@
             </div>
 
             <div class="ms-2">
-              <a href="{% url 'log:user' user.username %}" class="nav-link">
+              <a href="{% url 'users:account_detail' %}" class="nav-link">
                 {% if user.avatar %}
                   <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="34" height="34" alt="Your avatar" id="navbarAvatar">
                 {% else %}
