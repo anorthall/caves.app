@@ -191,6 +191,22 @@ class TripPhotoFeature(LoginRequiredMixin, View):
         return redirect(trip.get_absolute_url())
 
 
+class TripPhotoUnsetFeature(LoginRequiredMixin, View):
+    def post(self, request, uuid):
+        trip = get_object_or_404(Trip, uuid=uuid)
+        if not trip.user == request.user:
+            raise PermissionDenied
+
+        trip.featured_photo = None
+        trip.save()
+        log_trip_action(request.user, trip, "unset featured photo")
+        messages.success(
+            request,
+            "The featured photo has been unset.",
+        )
+        return redirect(trip.get_absolute_url())
+
+
 class TripDelete(LoginRequiredMixin, View):
     def post(self, request, uuid):
         trip = get_object_or_404(Trip, uuid=uuid)
