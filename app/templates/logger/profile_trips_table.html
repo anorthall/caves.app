@@ -3,17 +3,17 @@
 <div id="userTrips">
   {% if trips or query %}
     <div class="table-responsive">
-      <table class="table table-hover table-sm mb-0">
+      <table class="table text-nowrap mb-0" id="tripsTable">
         <thead>
           <tr>
             <th scope="col">
               Date
               {% if allow_sort %}
                 <small>
-                  <a hx-get="{{ htmx_url }}?sort=start" hx-target="#userTrips" class="{% if ordering == "start" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=start" hx-target="#userTrips" class="{% if ordering == "start" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-up"></i>
                   </a>
-                  <a hx-get="{{ htmx_url }}?sort=-start" hx-target="#userTrips" class="{% if ordering == "-start" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=-start" hx-target="#userTrips" class="{% if ordering == "-start" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-down"></i>
                   </a>
                 </small>
@@ -24,10 +24,10 @@
               Cave
               {% if allow_sort %}
                 <small>
-                  <a hx-get="{{ htmx_url }}?sort=cave_name" hx-target="#userTrips" class="{% if ordering == "cave_name" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=cave_name" hx-target="#userTrips" class="{% if ordering == "cave_name" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-alpha-up"></i>
                   </a>
-                  <a hx-get="{{ htmx_url }}?sort=-cave_name" hx-target="#userTrips" class="{% if ordering == "-cave_name" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=-cave_name" hx-target="#userTrips" class="{% if ordering == "-cave_name" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-alpha-down"></i>
                   </a>
                 </small>
@@ -38,10 +38,10 @@
               Duration
               {% if allow_sort %}
                 <small>
-                  <a hx-get="{{ htmx_url }}?sort=duration" hx-target="#userTrips" class="{% if ordering == "duration" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=duration" hx-target="#userTrips" class="{% if ordering == "duration" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-up"></i>
                   </a>
-                  <a hx-get="{{ htmx_url }}?sort=-duration" hx-target="#userTrips" class="{% if ordering == "-duration" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=-duration" hx-target="#userTrips" class="{% if ordering == "-duration" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-down"></i>
                   </a>
                 </small>
@@ -53,10 +53,10 @@
                 Up
                 {% if allow_sort %}
                   <small>
-                    <a hx-get="{{ htmx_url }}?sort=vert_dist_up" hx-target="#userTrips" class="{% if ordering == "vert_dist_up" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                    <a hx-get="{{ htmx_url }}?sort=vert_dist_up" hx-target="#userTrips" class="{% if ordering == "vert_dist_up" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                       <i class="bi bi-sort-up"></i>
                     </a>
-                    <a hx-get="{{ htmx_url }}?sort=-vert_dist_up" hx-target="#userTrips" class="{% if ordering == "-vert_dist_up" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                    <a hx-get="{{ htmx_url }}?sort=-vert_dist_up" hx-target="#userTrips" class="{% if ordering == "-vert_dist_up" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                       <i class="bi bi-sort-down"></i>
                     </a>
                   </small>
@@ -67,10 +67,10 @@
                 Down
                 {% if allow_sort %}
                   <small>
-                    <a hx-get="{{ htmx_url }}?sort=vert_dist_down" hx-target="#userTrips" class="{% if ordering == "vert_dist_down" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                    <a hx-get="{{ htmx_url }}?sort=vert_dist_down" hx-target="#userTrips" class="{% if ordering == "vert_dist_down" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                       <i class="bi bi-sort-up"></i>
                     </a>
-                    <a hx-get="{{ htmx_url }}?sort=-vert_dist_down" hx-target="#userTrips" class="{% if ordering == "-vert_dist_down" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                    <a hx-get="{{ htmx_url }}?sort=-vert_dist_down" hx-target="#userTrips" class="{% if ordering == "-vert_dist_down" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                       <i class="bi bi-sort-down"></i>
                     </a>
                   </small>
@@ -82,10 +82,10 @@
               Trip type
               {% if allow_sort %}
                 <small>
-                  <a hx-get="{{ htmx_url }}?sort=type" hx-target="#userTrips" class="{% if ordering == "type" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=type" hx-target="#userTrips" class="{% if ordering == "type" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-alpha-up"></i>
                   </a>
-                  <a hx-get="{{ htmx_url }}?sort=-type" hx-target="#userTrips" class="{% if ordering == "-type" %}text-success{% else %}text-primary{% endif %} text-decoration-none">
+                  <a hx-get="{{ htmx_url }}?sort=-type" hx-target="#userTrips" class="{% if ordering == "-type" %}text-primary{% else %}text-secondary{% endif %} text-decoration-none">
                     <i class="bi bi-sort-alpha-down"></i>
                   </a>
                 </small>
@@ -94,18 +94,21 @@
           </tr>
         </thead>
 
-        <tbody>
-          {% for trip in trips %}
-            <tr class="{% if show_cavers %}table-light{% endif %}" style="transform: rotate(0);">
-              <td><a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>{{ trip.start|date:"j M y" }}</td>
+        {% for trip in trips %}
+          <tbody style="transform: rotate(0);">
+            <tr>
+              <td {% if trip.cavers.all and show_cavers %} class="align-middle" rowspan="2"{% endif %}>
+                <a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>
+                {{ trip.start|date:"j M y" }}
+              </td>
 
-              <td>
+              <td class="fw-bold">
                 {{ trip.cave_name }}
               </td>
 
               <td class="d-none d-xl-table-cell">
-                {% if trip.duration_str %}
-                  {{ trip.duration_str }}
+                {% if trip.duration %}
+                  {{ trip.duration }}
                 {% endif %}
               </td>
 
@@ -120,14 +123,16 @@
             </tr>
 
             {% if trip.cavers.all and show_cavers %}
-              <tr id="caver-list" style="transform: rotate(0);">
-                <td colspan="{% if profile_user.disable_distance_statistics %}4{% else %}6{% endif %}" class="pb-3 pt-3 px-3 text-primary">
-                  <a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>with {{ trip.cavers.all|join:", " }}
+              <tr>
+                <td colspan="{% if profile_user.disable_distance_statistics %}4{% else %}6{% endif %}">
+                  {{ trip.cavers.all|join:", "|truncatechars:100 }}
                 </td>
               </tr>
             {% endif %}
-          {% endfor %}
-          {% if not trips %}
+          </tbody>
+        {% endfor %}
+        {% if not trips %}
+          <tbody>
             <tr>
               <td colspan="{% if profile_user.disable_distance_statistics %}5{% else %}7{% endif %}" class="text-center">
                 {% if query %}
@@ -137,8 +142,8 @@
                 {% endif %}
               </td>
             </tr>
-          {% endif %}
-        </tbody>
+          </tbody>
+        {% endif %}
       </table>
 
       {% if page_obj.has_other_pages %}

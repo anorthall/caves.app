@@ -530,8 +530,26 @@ dl.user-info dt, dl.user-info dd {
 dl.user-info dd {
   margin-bottom: 0;
 }
+
 dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
   border-bottom: none !important;
+}
+
+#tripsTable {
+  font-size: 0.9rem;
+}
+
+#tripsTable tbody:hover td {
+  background-color: var(--bs-table-hover-bg);
+  color: var(--bs-table-hover-color);
+}
+
+#tripsTable tbody tr:first-child td {
+  border-bottom: none;
+}
+
+#tripsTable tbody tr:last-child td, #tripsTable tbody tr:first-of-type td:first-of-type {
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 #searchInput.htmx-request {
