@@ -320,6 +320,13 @@ class Trip(models.Model):
     followers = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="followed_trips"
     )
+    featured_photo = models.ForeignKey(
+        "logger.TripPhoto",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="trips_featured",
+    )
     privacy = models.CharField(
         "Who can view this trip?",
         max_length=10,
