@@ -1,23 +1,8 @@
 {% load active_link_tags %}
 
-<div class="d-none d-lg-flex flex-column align-items-center text-center mb-4">
-  {% if trip %}
-    <div class="mb-4">
-      {% if trip.user.avatar %}
-        {% include "users/_profile_picture.html" with photo_user=trip.user %}
-      {% else %}
-        {% include "users/_profile_picture.html" %}
-      {% endif %}
-    </div>
-
-    <strong>{{ trip.user.name }}</strong>
-    <span class="text-muted mb-2">@{{ trip.user.username }}</span>
-  {% endif %}
-</div>
-
 {% if user.is_authenticated %}
   {% if trip and user == object_owner %}
-    <span class="nav-item sidebar-header mt-4">This trip</span>
+    <span class="nav-item sidebar-header">This trip</span>
     <a class="nav-link {% active_link 'log:trip_detail' uuid=trip.uuid %}" href="{{ trip.get_absolute_url }}">
       <i class="bi bi-info-circle-fill"></i> View trip
     </a>

@@ -16,11 +16,11 @@
         <i class="bi bi-hand-thumbs-up"></i>
       </span>
     {% endif %}
-    <span class="liked-count d-none d-md-inline-block{% if trip.user_liked %} liked-trip{% endif %}">
-      &nbsp;{{ liked_str|get:trip.pk }}
+    <span class="ms-1 liked-count d-none d-md-inline-block{% if trip.user_liked %} liked-trip{% endif %}">
+      {{ liked_str|get:trip.pk }}
     </span>
-    <span class="liked-count d-md-none{% if trip.user_liked %} liked-trip{% endif %}">
-      &nbsp;{{ likes_count }}
+    <span class="ms-1 liked-count d-md-none{% if trip.user_liked %} liked-trip{% endif %}">
+      {% if likes_count is not None %}{{ likes_count }}{% else %}{{ trip.likes_count }}{% endif %} likes
     </span>
   </a>
 </span>

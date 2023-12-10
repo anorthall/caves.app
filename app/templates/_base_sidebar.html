@@ -4,7 +4,7 @@
   <div id="threeColumnContainer">
     <!-- Sidebar -->
     <div id="leftSidebarContainer">
-      <nav class="sidebar nav d-flex flex-column">{% block left_sidebar %}{% include "sidebars/_main_sidebar.html" %}{% endblock %}</nav>
+      <nav class="sidebar nav d-flex flex-column text-nowrap">{% block left_sidebar %}{% include "sidebars/_main_sidebar.html" %}{% endblock %}</nav>
     </div>
 
     <!-- Main content -->
@@ -15,7 +15,7 @@
     </div>
 
     <div id="rightSidebarContainer" class="{% block right_sidebar_container_classes %}{% endblock %}">
-      <aside class="sidebar nav d-flex flex-column">{% block right_sidebar %}{% endblock %}</aside>
+      <aside class="sidebar nav d-flex flex-column text-nowrap">{% block right_sidebar %}{% endblock %}</aside>
     </div>
   </div>
 {% endblock %}

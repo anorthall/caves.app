@@ -1,11 +1,11 @@
 <span id="follow-button-{{ trip.uuid }}">
-  <a class="btn btn-sm {% if user in trip.followers.all %}btn-outline-primary{% else %}btn-primary{% endif %}"
+  <a class="btn btn-sm {% if user in trip.followers.all %}btn-success{% else %}btn-outline-secondary{% endif %}"
      hx-post="{% url 'log:trip_follow_htmx_view' trip.uuid %}"
      hx-target="#follow-button-{{ trip.uuid }}"
      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
      hx-swap="outerHTML">
     {% if user in trip.followers.all %}
-      Unfollow
+      Following <i class="bi bi-check-circle-fill ms-1"></i>
     {% else %}
       Follow
     {% endif %}
