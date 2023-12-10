@@ -22,7 +22,7 @@
         {% endif %}
         {% if user_has_trips %}
           <small class="text-body-tertiary d-block mt-1 mt-md-0">
-            {{ profile_user.trips.count }} trips on caves.app
+            {{ profile_user.trips.count }} trips &middot; {{ profile_user.friends.all.count }} friends
           </small>
         {% endif %}
       {% else %}
@@ -58,6 +58,9 @@
             <button class="nav-link" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent" type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">Statistics</button>
           </li>
         {% endif %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent" type="button" role="tab" aria-controls="userInfoTabContent" aria-selected="false">Info</button>
+        </li>
       </ul>
 
       <div class="tab-content p-3 border border-top-0" id="profileTabsContent">
@@ -83,6 +86,46 @@
             </div>
           </div>
         {% endif %}
+
+        <div class="tab-pane fade" id="userInfoTabContent" role="tabpanel" aria-labelledby="userInfoTab" tabindex="0">
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Name</dt>
+            <dd class="col-sm-8">{{ profile_user.name }}</dd>
+
+            <dt class="col-sm-4">Username</dt>
+            <dd class="col-sm-8">{{ profile_user.username }}</dd>
+
+            {% if profile_user.location %}
+              <dt class="col-sm-4">Location</dt>
+              <dd class="col-sm-8">{{ profile_user.location }}</dd>
+            {% endif %}
+
+            {% if profile_user.country %}
+              <dt class="col-sm-4">Country</dt>
+              <dd class="col-sm-8">{{ profile_user.country.name }}</dd>
+            {% endif %}
+
+            {% if profile_user.clubs %}
+              <dt class="col-sm-4">Clubs</dt>
+              <dd class="col-sm-8">{{ profile_user.clubs }}</dd>
+            {% endif %}
+
+            <dt class="col-sm-4">Friends</dt>
+            <dd class="col-sm-8">{{ profile_user.friends.all.count }}</dd>
+
+            <dt class="col-sm-4">Units</dt>
+            <dd class="col-sm-8">{{ profile_user.units }}</dd>
+
+            <dt class="col-sm-4">Timezone</dt>
+            <dd class="col-sm-8">{{ profile_user.timezone }}</dd>
+
+            <dt class="col-sm-4">Date joined</dt>
+            <dd class="col-sm-8">{{ profile_user.date_joined|date:"j F Y" }}</dd>
+
+            <dt class="col-sm-4">Account age</dt>
+            <dd class="col-sm-8">{{ profile_user.date_joined|timesince }}</dd>
+          </dl>
+        </div>
       </div>
     {% endif %}
   {% else %}

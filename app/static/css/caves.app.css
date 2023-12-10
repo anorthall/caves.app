@@ -511,8 +511,17 @@ main {
   User profile
 */
 
-#profileSidebar .friend-link {
-  color: var(--bs-body-color) !important;
+dl.user-info dt, dl.user-info dd {
+  border-bottom: 1px solid var(--bs-border-color);
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+dl.user-info dd {
+  margin-bottom: 0;
+}
+dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
+  border-bottom: none !important;
 }
 
 #searchInput.htmx-request {
