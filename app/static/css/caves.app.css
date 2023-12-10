@@ -56,6 +56,9 @@ main {
   }
 }
 
+.alert {
+  border-radius: 0 !important;
+}
 
 /*
   Navbar
