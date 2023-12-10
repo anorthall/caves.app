@@ -65,7 +65,17 @@ main {
 
 .alert {
   border-radius: 0 !important;
+  margin: 0 !important;
+  padding: inherit 0 !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
+
+.alert .bi {
+  margin-right: 0.5rem;
+}
+
 
 /*
   Navbar
@@ -93,7 +103,7 @@ main {
 #navbarContent {
   max-width: 1600px;
   flex: 1;
-  margin: 0 1rem 0 1rem;
+  margin: 0 1rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
