@@ -20,12 +20,12 @@
         <form method="post" action="{% url 'log:feed_set_ordering' %}" class="me-1">
           {% csrf_token %}
           <input type="hidden" name="sort" value="-added">
-          <input type="submit" value="Added" class="btn btn-sm {% if ordering == "-added" %}btn-primary{% else %}btn-secondary{% endif %}">
+          <input type="submit" value="Added" class="btn btn-sm {% if ordering == "-added" %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
         </form>
         <form method="post" action="{% url 'log:feed_set_ordering' %}">
           {% csrf_token %}
           <input type="hidden" name="sort" value="-start">
-          <input type="submit" value="Start" class="btn btn-sm {% if ordering == "-start" %}btn-primary{% else %}btn-secondary{% endif %}">
+          <input type="submit" value="Start" class="btn btn-sm {% if ordering == "-start" %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
         </form>
       </div>
     </div>
