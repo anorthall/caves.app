@@ -12,13 +12,25 @@ main {
 }
 
 #threeColumnContainer {
-  margin-bottom: auto;
   min-height: 100%;
   width: 100%;
   max-width: 1600px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin: 0 0 auto 0;
+}
+
+@media (min-width: 900px) {
+  #threeColumnContainer {
+    margin: 0 0 auto 1.5rem;
+  }
+}
+
+@media (min-width: 1300px) {
+  #threeColumnContainer {
+    margin: 0 1.5rem auto 1.5rem;
+  }
 }
 
 #centerColumnContainer { /* Main column in the three column layout */
@@ -314,11 +326,13 @@ main {
   display: none;
   flex: 0 0 250px;
   padding-right: 2rem;
+  margin: 0 0 0 0;
 }
 
 #rightSidebarContainer {
   display: none;
   flex: 0 0 250px;
+  margin: 0 0 0 2rem;
 }
 
 @media (min-width: 900px) {
