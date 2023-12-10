@@ -53,6 +53,15 @@ class TripPhoto(models.Model):
     def __str__(self):
         return f"Photo for {self.trip} by {self.user}"
 
+    def save(self, *args, **kwargs):
+        """If the photo is deleted, remove it from the featured photo field of
+        any trips it is associated with."""
+        if self.deleted_at is not None or self.is_valid is False:
+            for trip in self.trips_featured.all():
+                trip.featured_photo = None
+                trip.save()
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         return self.photo.url
 
