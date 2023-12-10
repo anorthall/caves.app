@@ -577,6 +577,9 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
   }
 }
 
+.annual-stats-table tbody td {
+  text-align: start;
+}
 
 /*
   Import and export

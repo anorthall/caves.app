@@ -82,7 +82,7 @@
         {% if stats %}
           <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
             <div class="profile-stats">
-              {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-xl-table-cell" %}
+              {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="" dist_class="d-none d-xl-table-cell" %}
             </div>
           </div>
         {% endif %}
