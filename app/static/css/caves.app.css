@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
+:root {
+  --caves-navbar-rgb: 44, 62, 80;
+}
+
 body {
   height: 100%;
   font-family: 'Lato', sans-serif !important;
@@ -81,6 +85,11 @@ main {
   Navbar
 */
 
+.site-title {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
 #navbarContainer {
   height: 70px;
   position: sticky;
@@ -91,13 +100,7 @@ main {
   justify-content: center;
   align-content: center;
   border-bottom: 1px solid var(--bs-border-color);
-  background-color: var(--bs-tertiary-bg) !important;
-}
-
-[data-bs-theme="dark"] {
-  #navbarContainer {
-    background-color: var(--bs-tertiary-bg) !important;
-  }
+  background-color: rgba(var(--caves-navbar-rgb), 1) !important;
 }
 
 #navbarContent {
@@ -162,7 +165,7 @@ main {
   align-self: center;
   justify-self: center;
   display: block;
-  color: var(--bs-body-color);
+  color: var(--bs-light);
 }
 
 @media (min-width: 1300px) {
@@ -240,26 +243,15 @@ main {
   border: 1px transparent;
   border-radius: 50%;
   padding: 1px 7px;
-  transition: ease-in-out background-color 0.2s;
 }
 
 #notificationsBellContainer:hover {
   cursor: pointer;
-  background-color: rgba(230, 230, 230, 0.8);
-}
-
-[data-bs-theme="dark"] {
-  #notificationsBellContainer {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-
-  #notificationsBellContainer:hover {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+  background-color: rgba(230, 230, 230, 0.3);
 }
 
 #notificationsContainer .bi-bell-fill {
-  color: var(--bs-body-color);
+  color: var(--bs-light);
   font-size: 22px;
 }
 
@@ -450,8 +442,8 @@ main {
 }
 
 .site-title a {
-  color: var(--bs-body-color);
   text-decoration: none;
+  color: white;
   width: 230px;
 }
 
