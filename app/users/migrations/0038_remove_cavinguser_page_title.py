@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("users", "0036_alter_cavinguser_email_comments"),
+        ("users", "0037_alter_notification_updated"),
     ]
 
     operations = [
