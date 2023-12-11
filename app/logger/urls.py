@@ -29,7 +29,7 @@ urlpatterns = [
     path("trip/<uuid:uuid>/", views.TripDetail.as_view(), name="trip_detail"),
     path("trip/<uuid:uuid>/photos/", views.TripPhotos.as_view(), name="trip_photos"),
     path(
-        "trip/<uuid:uuid>/photos/feature/<uuid:photo_uuid>/",
+        "trip/<uuid:uuid>/photos/feature/",
         views.TripPhotoFeature.as_view(),
         name="trip_photos_feature",
     ),

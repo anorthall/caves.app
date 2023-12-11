@@ -6,12 +6,12 @@
     <span class="fs-6 d-block d-lg-inline">via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}</span>
   {% endif %}
 </h1>
-<small class="text-muted d-block mt-md-0">
+<small class="text-muted mt-md-0 d-block">
   {% user object_owner link_class="text-body-emphasis" %} &middot; {{ trip.start|date }}, {{ trip.start|time:"f a" }}
 </small>
 {% with cavers=trip.cavers.all.count %}
   {% if trip.duration_str or cavers %}
-    <small class="text-body-tertiary d-block mt-1 mt-md-0">
+    <small class="text-body-tertiary mt-md-0 d-block">
       {% if cavers > 0 %}{{ cavers|add:"1" }} people{% else %}Solo trip{% endif %}{% if trip.duration_str %} &middot; {{ trip.duration_str }}{% endif %}
     </small>
   {% endif %}

@@ -439,7 +439,11 @@ main {
 }
 
 .featured-photo-container {
+  width: 100%;
   position: relative;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .featured-photo-container img {
@@ -455,9 +459,14 @@ main {
   width: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
   padding: 1rem;
+}
+
+.featured-photo-overlay img {
+  max-height: 100px;
 }
 
 [data-bs-theme="light"] {

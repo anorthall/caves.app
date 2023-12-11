@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from io import BytesIO
 
 import exifread
 from core.logging import log_trip_action, log_tripphoto_action
@@ -8,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import BadRequest, PermissionDenied
+from django.core.files import File
 from django.db.models.fields.files import ImageFieldFile
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -17,6 +19,7 @@ from django.utils.decorators import method_decorator
 from django.utils.timezone import make_aware
 from django.views.generic import FormView, View
 from django_ratelimit.decorators import ratelimit
+from PIL import Image
 
 from .. import services
 from ..forms import PhotoPrivacyForm, TripPhotoForm
@@ -197,4 +200,77 @@ class TripPhotosDeleteAll(LoginRequiredMixin, View):
         else:
             messages.error(request, "There were no photos to delete.")
 
+        return redirect(trip.get_absolute_url())
+
+
+class TripPhotoFeature(LoginRequiredMixin, View):
+    def post(self, request, uuid):
+        trip = get_object_or_404(Trip, uuid=uuid)
+        if trip.user != request.user:
+            raise PermissionDenied
+
+        photo = get_object_or_404(TripPhoto, uuid=request.POST.get("photoUUID"))
+
+        crop = {
+            "x": float(request.POST.get("cropX", None)),
+            "y": float(request.POST.get("cropY", None)),
+            "width": float(request.POST.get("cropWidth", None)),
+            "height": float(request.POST.get("cropHeight", None)),
+            "rotate": float(request.POST.get("cropRotate", None)),
+            "scaleX": float(request.POST.get("cropScaleX", None)),
+            "scaleY": float(request.POST.get("cropScaleY", None)),
+        }
+
+        if None in crop.values():
+            raise BadRequest("Missing crop data")
+
+        img = Image.open(photo.photo.file)
+        img = img.rotate(crop["rotate"]).crop(
+            (
+                int(crop["x"]),
+                int(crop["y"]),
+                int(crop["x"] + crop["width"]),
+                int(crop["y"] + crop["height"]),
+            )
+        )
+
+        if img.width > 1800 or img.height > 800:
+            # We want a max of 1800x800 to display at 900x400 on retina screens
+            img = img.resize((1800, 800))
+
+        blob = BytesIO()
+        img.save(blob, "JPEG", quality=70)
+        featured_photo = TripPhoto.objects.create(
+            trip=trip,
+            user=request.user,
+            photo=File(blob, "featured.jpg"),
+            is_valid=True,
+            photo_type=TripPhoto.PhotoTypes.FEATURED,
+            filesize=blob.getbuffer().nbytes,
+        )
+        trip.featured_photo = featured_photo
+        trip.save()
+
+        log_trip_action(request.user, trip, "featured", featured_photo)
+        messages.success(request, "The featured photo has been updated.")
+        return redirect(trip.get_absolute_url())
+
+
+class TripPhotoUnsetFeature(LoginRequiredMixin, View):
+    def post(self, request, uuid):
+        trip = get_object_or_404(Trip, uuid=uuid)
+        if not trip.user == request.user:
+            raise PermissionDenied
+
+        trip.featured_photo.deleted_at = timezone.now()
+        trip.featured_photo.save()
+
+        trip.featured_photo = None
+        trip.save()
+
+        log_trip_action(request.user, trip, "deleted featured photo")
+        messages.success(
+            request,
+            "The featured photo has been unset.",
+        )
         return redirect(trip.get_absolute_url())

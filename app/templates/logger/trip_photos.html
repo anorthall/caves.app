@@ -51,6 +51,23 @@
 
   {% crispy form %}
 
+  {% if trip.featured_photo is not None %}
+    <h3 class="subtitle mt-5 mb-3">
+      Remove featured photo
+    </h3>
+
+    <p class="mb-3">
+      If you'd like to remove the featured photo for this trip and display the default
+      header instead, click the button below.
+    </p>
+
+    <button hx-post="{% url 'log:trip_photos_unfeature' trip.uuid %}"
+            hx-swap="innerHTML show:top" hx-push-url="true" hx-target="body"
+            class="btn btn-secondary">
+      Remove featured photo
+    </button>
+  {% endif %}
+
   <h3 class="subtitle mt-5 mb-3">
     Remove photos
   </h3>
