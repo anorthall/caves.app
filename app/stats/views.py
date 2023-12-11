@@ -126,11 +126,7 @@ def chart_stats_over_time(request, username):
 
     # Check for blank datasets and don't add them to the response
     for x in ["duration", "vert_up", "vert_down", "surveyed", "resurveyed"]:
-        add = False
-        for y in locals()[x]:
-            if y != 0:
-                add = True
-                break
+        add = any(y != 0 for y in locals()[x])
         if add:
             data[x] = locals()[x]
 

@@ -112,11 +112,10 @@ class ProfileTripsTable(ListView):
         friends = self.profile_user.friends.all()
 
         # Sanitise trips to be privacy aware
-        if not self.profile_user == self.request.user:
-            sanitised_trips = [
+        if self.profile_user != self.request.user:
+            return [
                 x for x in trips if x.is_viewable_by(self.request.user, friends)
             ]
-            return sanitised_trips
         else:
             return trips
 

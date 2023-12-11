@@ -73,7 +73,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
     slug_url_kwarg = "uuid"
 
     def get_queryset(self):
-        qs = (
+        return (
             Trip.objects.all()
             .select_related("user")
             .prefetch_related(
@@ -94,7 +94,6 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
                 ),
             )
         )
-        return qs
 
     def get_object(self, *args, **kwargs):
         """Sanitise the Trip for the current user"""
@@ -117,9 +116,8 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             self.object.pk: self.object.get_liked_str(self.request.user, friends)
         }
 
-        valid_photos = self.object.valid_photos
-        if valid_photos:
-            if not self.object.private_photos or self.object.user == self.request.user:
+        if not self.object.private_photos or self.object.user == self.request.user:
+            if valid_photos := self.object.valid_photos:
                 context["show_photos"] = True
                 context["valid_photos"] = valid_photos
 
@@ -177,7 +175,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 class TripPhotoFeature(LoginRequiredMixin, View):
     def post(self, request, uuid, photo_uuid):
         trip = get_object_or_404(Trip, uuid=uuid)
-        if not trip.user == request.user:
+        if trip.user != request.user:
             raise PermissionDenied
 
         photo = get_object_or_404(TripPhoto, uuid=photo_uuid)
@@ -194,7 +192,7 @@ class TripPhotoFeature(LoginRequiredMixin, View):
 class TripPhotoUnsetFeature(LoginRequiredMixin, View):
     def post(self, request, uuid):
         trip = get_object_or_404(Trip, uuid=uuid)
-        if not trip.user == request.user:
+        if trip.user != request.user:
             raise PermissionDenied
 
         trip.featured_photo = None
@@ -210,7 +208,7 @@ class TripPhotoUnsetFeature(LoginRequiredMixin, View):
 class TripDelete(LoginRequiredMixin, View):
     def post(self, request, uuid):
         trip = get_object_or_404(Trip, uuid=uuid)
-        if not trip.user == request.user:
+        if trip.user != request.user:
             raise PermissionDenied
 
         # Delete all photos associated with the trip

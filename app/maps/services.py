@@ -15,8 +15,7 @@ LAT_LONG_REGEX_PATTERN = re.compile(
 
 def geocode(query: str) -> tuple[float, float]:
     client = googlemaps.Client(key=settings.GOOGLE_MAPS_PRIVATE_API_KEY)
-    geocode_result = client.geocode(query)
-    if geocode_result:
+    if geocode_result := client.geocode(query):
         lat, lng = geocode_result[0]["geometry"]["location"].values()
         return lat, lng
     raise ValueError("Could not geolocate query")
@@ -82,7 +81,7 @@ def get_markers_for_user(user: CavingUser) -> list[Marker]:
         ]
 
     markers = []
-    for key, data in visits.items():
+    for data in visits.values():
         name, lat, lng, visits, last_visit, last_trip_url = data
         markers.append(
             Marker(

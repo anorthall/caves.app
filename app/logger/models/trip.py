@@ -44,8 +44,7 @@ class Caver(models.Model):
         return self.trip_set.aggregate(Sum("duration"))["duration__sum"]
 
     def total_trip_duration_str(self):
-        td = self.total_trip_duration()
-        if td:
+        if td := self.total_trip_duration():
             return humanize.precisedelta(
                 td, minimum_unit="minutes", suppress=["months", "years"]
             )
@@ -357,18 +356,12 @@ class Trip(models.Model):
 
     def _set_duration(self):
         """Store the duration in the database as a timedelta"""
-        if self.end:
-            self.duration = self.end - self.start
-        else:
-            self.duration = None
+        self.duration = self.end - self.start if self.end else None
         return self.duration
 
     def _set_duration_str(self):
         """Store the duration in the database as a string"""
-        td = None
-        if self.end:
-            td = self.end - self.start
-
+        td = self.end - self.start if self.end else None
         if td:
             self.duration_str = humanize.precisedelta(
                 td, minimum_unit="minutes", suppress=["days", "months", "years"]
@@ -456,14 +449,10 @@ class Trip(models.Model):
                 liked_user_names.append(f"{number_of_others} others")
 
         if len(liked_user_names) == 1:
-            if self_liked:
-                return "You liked this"
-            else:
-                return f"{liked_user_names[0]} liked this"
-        else:
-            english_list = ", ".join(liked_user_names[:-1])
-            english_list = english_list + " and " + liked_user_names[-1]
-            return f"Liked by {english_list}"
+            return "You liked this" if self_liked else f"{liked_user_names[0]} liked this"
+        english_list = ", ".join(liked_user_names[:-1])
+        english_list = f"{english_list} and {liked_user_names[-1]}"
+        return f"Liked by {english_list}"
 
     def get_liked_str(self, for_user=None, for_user_friends=None):
         """Returns a string of the names of the users that liked the trip"""
@@ -482,8 +471,7 @@ class Trip(models.Model):
                 others_liked.append(user.name)
 
         # Ensure the user's friends are shown first
-        liked_user_names = []
-        liked_user_names.extend(friends_liked)
+        liked_user_names = list(friends_liked)
         liked_user_names.extend(others_liked)
         if self_liked:
             liked_user_names.append("you")
@@ -556,8 +544,7 @@ class Trip(models.Model):
             if not label:
                 continue
 
-            value = getattr(self, field.name)
-            if value:
+            if value := getattr(self, field.name):
                 valid_fields.append((label, value))
 
         return tuple(valid_fields)

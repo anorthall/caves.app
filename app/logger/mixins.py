@@ -12,7 +12,7 @@ class TripContextMixin:
         trip = self.object
 
         object_owner = trip.user
-        if not object_owner == self.request.user:
+        if object_owner != self.request.user:
             context["can_view_profile"] = object_owner.is_viewable_by(self.request.user)
 
             if self.request.user not in object_owner.friends.all():
@@ -67,11 +67,11 @@ class DistanceUnitFormMixin:
         ]
 
         units = instance.user.units
-        initial = {}
-        for field in distance_fields:
-            initial[field] = distformat(getattr(instance, field), units)
-
-        kwargs.update({"initial": initial})
+        initial = {
+            field: distformat(getattr(instance, field), units)
+            for field in distance_fields
+        }
+        kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
 

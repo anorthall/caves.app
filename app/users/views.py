@@ -191,14 +191,13 @@ class FriendAddView(LoginRequiredMixin, View):
                 user,
             )
 
-        else:
-            if form.errors.get("user"):
-                for error in form.errors["user"]:
-                    messages.error(request, error)
-            else:  # pragma: no cover
-                messages.error(
-                    request, "Unable to add friend. Are the details correct?"
-                )
+        elif form.errors.get("user"):
+            for error in form.errors["user"]:
+                messages.error(request, error)
+        else:  # pragma: no cover
+            messages.error(
+                request, "Unable to add friend. Are the details correct?"
+            )
 
         return redirect("users:friends")
 
@@ -206,29 +205,28 @@ class FriendAddView(LoginRequiredMixin, View):
 class FriendRequestDeleteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         f_req = get_object_or_404(FriendRequest, pk=pk)
-        if f_req.user_to == request.user or f_req.user_from == request.user:
-            f_req.delete()
-            messages.success(
-                request,
-                f"Friend request between {f_req.user_to} and {f_req.user_from} "
-                "deleted.",
-            )
-
-            other_user = f_req.user_to
-            if other_user == request.user:
-                other_user = f_req.user_from
-            log_user_interaction(
-                request.user, "deleted a friend request to/from", other_user
-            ),
-        else:
+        if f_req.user_to != request.user and f_req.user_from != request.user:
             raise PermissionDenied
+        f_req.delete()
+        messages.success(
+            request,
+            f"Friend request between {f_req.user_to} and {f_req.user_from} "
+            "deleted.",
+        )
+
+        other_user = f_req.user_to
+        if other_user == request.user:
+            other_user = f_req.user_from
+        log_user_interaction(
+            request.user, "deleted a friend request to/from", other_user
+        ),
         return redirect("users:friends")
 
 
 class FriendRequestAcceptView(LoginRequiredMixin, View):
     def post(self, request, pk):
         f_req = get_object_or_404(FriendRequest, pk=pk)
-        if not f_req.user_to == request.user:
+        if f_req.user_to != request.user:
             raise PermissionDenied
 
         f_req.user_from.friends.add(f_req.user_to)
@@ -412,10 +410,9 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
             return self.form_valid(form)
-        else:
-            if form.has_code:
-                messages.error(request, "Invalid verification code.")
-            return super().get(request, *args, **kwargs)
+        if form.has_code:
+            messages.error(request, "Invalid verification code.")
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         """Set the user's new email address and log them in"""
@@ -531,7 +528,7 @@ class AccountSettings(LoginRequiredMixin, View):
 class NotificationRedirect(LoginRequiredMixin, View):
     def get(self, request, pk):
         notification = get_object_or_404(Notification, pk=pk)
-        if not notification.user == request.user:
+        if notification.user != request.user:
             raise PermissionDenied
 
         notification.read = True

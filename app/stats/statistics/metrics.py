@@ -30,14 +30,10 @@ def unique_caves(queryset):
 def unique_entrance_exit(queryset):
     uniques = set()
     for trip in queryset:
-        if trip.cave_entrance or trip.cave_exit:
-            if trip.cave_entrance:
-                uniques.add(trip.cave_entrance)
-            if trip.cave_exit:
-                uniques.add(trip.cave_exit)
-        else:
-            uniques.add(trip.cave_name)
-
+        if trip.cave_entrance:
+            uniques.add(trip.cave_entrance)
+        if trip.cave_exit:
+            uniques.add(trip.cave_exit)
     return len(uniques)
 
 

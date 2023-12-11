@@ -29,7 +29,7 @@ class TestStatsPagesLoad(TestCase):
     def test_statistics_page_loads_with_trips(self):
         """Test that the statistics page loads with trips"""
         self.client.force_login(self.user)
-        for i in range(250):
+        for _ in range(250):
             TripFactory(user=self.user)
         response = self.client.get(reverse("stats:index"))
         self.assertEqual(response.status_code, 200)

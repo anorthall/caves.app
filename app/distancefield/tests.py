@@ -115,22 +115,23 @@ class DistanceFieldTests(TestCase):
         self.assertEqual(tm.mtr_field, D(mm=5.08e-4))
 
     def test_queryset_filtering(self):
-        lst = list(
+        lst = sorted(
             TestModel.objects.filter(mm_field__lte="20in").values_list(
                 "name", flat=True
             )
         )
-        lst.sort()
         self.assertEqual(lst, ["all_inches", "mixed"])
 
-        lst = list(
-            TestModel.objects.filter(mm_field="20in").values_list("name", flat=True)
+        lst = sorted(
+            TestModel.objects.filter(mm_field="20in").values_list(
+                "name", flat=True
+            )
         )
-        lst.sort()
         self.assertEqual(lst, ["all_inches"])
 
-        lst = list(TestModel.objects.filter(mtr_field=0).values_list("name", flat=True))
-        lst.sort()
+        lst = sorted(
+            TestModel.objects.filter(mtr_field=0).values_list("name", flat=True)
+        )
         self.assertEqual(lst, ["mixed"])
 
     def test_form(self):

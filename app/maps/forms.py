@@ -108,7 +108,4 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
 
     def clean_additional_caves(self):
         caves = self.cleaned_data["additional_caves"]
-        if not caves:
-            return caves
-
-        return self.trip.user.trips.filter(uuid__in=caves)
+        return caves if not caves else self.trip.user.trips.filter(uuid__in=caves)

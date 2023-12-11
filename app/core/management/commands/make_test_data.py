@@ -91,11 +91,11 @@ class Command(BaseCommand):
 
     def __get_active_users(self, user_pks=None):
         """Return a list of active users, optionally from a list of user PKs"""
-        if user_pks is None:
-            users = list(User.objects.all())
-        else:
-            users = list(User.objects.filter(pk__in=user_pks, is_active=True))
-        return users
+        return (
+            list(User.objects.all())
+            if user_pks is None
+            else list(User.objects.filter(pk__in=user_pks, is_active=True))
+        )
 
     def _generate_users(self):
         """Generate num_users amount of users"""
@@ -166,8 +166,8 @@ class Command(BaseCommand):
 
     def _generate_friendships(self, user_pks=None):
         """Generate friendships between users"""
-        num_friends = self.options["friends"]
         if self.options["verbosity"] >= 1:
+            num_friends = self.options["friends"]
             self.stdout.write(f"Generating {num_friends} friends per user...")
 
         users = self.__get_active_users(user_pks)

@@ -75,9 +75,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
             log_trip_action(request.user, trip, "unliked")
 
             if not trip.likes.exists():
-                # Delete the notification if there are no likes left
-                notification = self._get_trip_like_notification(trip)
-                if notification:
+                if notification := self._get_trip_like_notification(trip):
                     notification.delete()
 
         else:  # A new like, so add it
@@ -87,8 +85,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
             # Create a notification for the trip owner if one doesn't already exist
             if request.user != trip.user:
-                notification = self._get_trip_like_notification(trip)
-                if notification:
+                if notification := self._get_trip_like_notification(trip):
                     notification.read = False
                     notification.save()
                 else:

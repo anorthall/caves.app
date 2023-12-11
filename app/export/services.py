@@ -44,10 +44,7 @@ class Exporter:
         if not handler:
             handler = str
 
-        if value is None:
-            return ""
-
-        return handler(value)
+        return "" if value is None else handler(value)
 
     def _build_header(self) -> list[str]:
         """Return a list of headers for the dataset"""
@@ -145,8 +142,7 @@ class TripExporter(Exporter):
         for field in self.fields.copy():
             if field.startswith("custom_field"):
                 if hasattr(self.user, f"{field}_label"):
-                    label = getattr(self.user, f"{field}_label")
-                    if label:
+                    if label := getattr(self.user, f"{field}_label"):
                         self.field_headers[field] = label
                     else:
                         self.fields.remove(field)
@@ -154,6 +150,4 @@ class TripExporter(Exporter):
         super().__init__(queryset)
 
     def _get_distance_units(self) -> str:
-        if self.user.units == User.IMPERIAL:
-            return "ft"
-        return "m"
+        return "ft" if self.user.units == User.IMPERIAL else "m"

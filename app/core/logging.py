@@ -17,11 +17,7 @@ def _format_user_for_logging(user: CavingUser) -> str:
 
 def _format_trip_for_logging(trip: Trip) -> str:
     start = trip.start.strftime("%Y-%m-%d")
-    if trip.pk:
-        pk = f" ({trip.pk})"
-    else:
-        pk = ""
-
+    pk = f" ({trip.pk})" if trip.pk else ""
     return f'"{trip.cave_name}" on {start}{pk}'
 
 

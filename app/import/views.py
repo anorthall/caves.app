@@ -83,8 +83,7 @@ class Save(LoginRequiredMixin, View):
             cavers = form.cleaned_data["cavers"]
             cavers = cavers.split(",")
             for caver in cavers:
-                caver = caver.strip()
-                if caver:
+                if caver := caver.strip():
                     caver_obj, _ = Caver.objects.get_or_create(
                         name=caver, user=request.user
                     )

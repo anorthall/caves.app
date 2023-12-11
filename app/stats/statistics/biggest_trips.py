@@ -28,7 +28,7 @@ def _build_trip_stats(queryset, title, field, limit, metric=None, is_time=False)
         metric = title
 
     stats = TripStats(title=title, metric=metric)
-    qs = queryset.exclude(**{field: None}).order_by("-" + field)[:limit]
+    qs = queryset.exclude(**{field: None}).order_by(f"-{field}")[:limit]
 
     for trip in qs:
         stats.add_row(trip, getattr(trip, field), is_time)

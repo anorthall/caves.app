@@ -154,7 +154,7 @@ class UserProfileViewTests(TestCase):
     @tag("privacy")
     def test_public_statistics_privacy_setting(self):
         """Test that the public statistics privacy setting works"""
-        for i in range(0, 50):
+        for _ in range(0, 50):
             TripFactory(user=self.user)
         self.user.public_statistics = False
         self.user.save()

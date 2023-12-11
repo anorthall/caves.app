@@ -122,11 +122,11 @@ class D(_D):
         if d == d.to_integral():
             return d.quantize(Decimal(1))
 
-        return d.quantize(Decimal(".%s1" % quant)).normalize()
+        return d.quantize(Decimal(f".{quant}1")).normalize()
 
     def __str__(self):
         norm = self.remove_exponent(getattr(self, self._default_unit))
-        return "%s%s" % (norm.to_eng_string(), self._default_unit)
+        return f"{norm.to_eng_string()}{self._default_unit}"
 
 
 def register_units(**kwargs):
@@ -174,10 +174,7 @@ class DistanceFieldDescriptor(object):
         self.field = field
 
     def __get__(self, instance=None, owner=None):
-        if instance is None:  # pragma: no cover
-            return None
-
-        return instance.__dict__[self.field.name]
+        return None if instance is None else instance.__dict__[self.field.name]
 
     def __set__(self, instance, value):
         if value is None or value == "":
@@ -365,6 +362,6 @@ class DistanceField(models.Field):
 class DistanceUnitField(fields.CharField):
     def __init__(self, *args, **kwargs):
         if kwargs.get("max_length", None) is None:
-            kwargs["max_length"] = max([len(unit_len) for unit_len in D.UNITS.keys()])
+            kwargs["max_length"] = max(len(unit_len) for unit_len in D.UNITS.keys())
         kwargs.update(dict(blank=True, null=True, editable=False))
         super(DistanceUnitField, self).__init__(*args, **kwargs)

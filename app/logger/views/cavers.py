@@ -140,7 +140,7 @@ class CaverMerge(LoginRequiredMixin, View):
 
         if form.is_valid():
             merge_caver = form.cleaned_data["caver"]
-            if not merge_caver.user == request.user:
+            if merge_caver.user != request.user:
                 raise PermissionDenied
 
             if merge_caver == caver:

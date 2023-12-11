@@ -84,7 +84,7 @@ class ExportDataTests(TestCase):
         user.custom_field_2_label = "Test Field 2"
         user.save()
 
-        for i in range(0, 20):
+        for _ in range(0, 20):
             TripFactory.create(user=user)
 
         uuids = []
@@ -120,7 +120,7 @@ class ExportDataTests(TestCase):
         user.custom_field_2_label = "Test Field 2"
         user.save()
 
-        for i in range(0, 20):
+        for _ in range(0, 20):
             TripFactory.create(user=user)
 
         self.client.force_login(user)

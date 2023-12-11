@@ -68,13 +68,11 @@ def _generate_expedition():
         "Project",
     ]
 
-    return fake.city() + " " + random.randgen.choice(suffixes)
+    return f"{fake.city()} {random.randgen.choice(suffixes)}"
 
 
 def _generate_cave_entrance_or_exit():
-    if random.randgen.randint(1, 100) > 20:
-        return ""
-    return _generate_cave_name()
+    return "" if random.randgen.randint(1, 100) > 20 else _generate_cave_name()
 
 
 def _generate_cave_name():
@@ -110,7 +108,7 @@ def _generate_cave_name():
         "Chambers",
     ]
 
-    return fake.city() + " " + random.randgen.choice(suffixes)
+    return f"{fake.city()} {random.randgen.choice(suffixes)}"
 
 
 def generate_club():

@@ -66,7 +66,4 @@ def imgproxy(image, args=None):
 def _rewrite_url_for_local_dev(url):
     """Rewrite URLs sent to imgproxy for local development in a Docker container"""
     # Do not rewrite S3 URLs
-    if settings.AWS_S3_CUSTOM_DOMAIN in url:
-        return url
-
-    return "http://web:8000" + url
+    return url if settings.AWS_S3_CUSTOM_DOMAIN in url else f"http://web:8000{url}"

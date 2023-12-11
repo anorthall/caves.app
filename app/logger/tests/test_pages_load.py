@@ -41,7 +41,7 @@ class TestLoggerPagesLoad(TestCase):
         self.client.force_login(self.user)
         for i in range(50):
             Trip.objects.create(
-                user=self.user, cave_name="Test Trip {}".format(i), start=timezone.now()
+                user=self.user, cave_name=f"Test Trip {i}", start=timezone.now()
             ).save()
 
         response = self.client.get(reverse("log:index"))

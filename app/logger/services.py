@@ -22,7 +22,7 @@ def generate_s3_presigned_post(upload_path, content_type, max_bytes=10485760):
     acl = settings.AWS_DEFAULT_ACL
     expires_in = settings.AWS_PRESIGNED_EXPIRY
 
-    aws_response = client.generate_presigned_post(
+    if aws_response := client.generate_presigned_post(
         settings.AWS_STORAGE_BUCKET_NAME,
         upload_path,
         Fields={
@@ -35,12 +35,10 @@ def generate_s3_presigned_post(upload_path, content_type, max_bytes=10485760):
             ["content-length-range", 1, max_bytes],
         ],
         ExpiresIn=expires_in,
-    )
-
-    if not aws_response:
+    ):
+        return aws_response
+    else:
         raise IOError("Failed to generate presigned post")
-
-    return aws_response
 
 
 def get_trips_context(request, ordering, page=1):
@@ -104,8 +102,4 @@ def get_liked_str_context(request, trips):
     This dictionary will be used in the includes/htmx_trip_like.html template
     """
     friends = request.user.friends.all()
-    liked_str_index = {}
-    for trip in trips:
-        liked_str_index[trip.pk] = trip.get_liked_str(request.user, friends)
-
-    return liked_str_index
+    return {trip.pk: trip.get_liked_str(request.user, friends) for trip in trips}

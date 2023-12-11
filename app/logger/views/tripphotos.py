@@ -34,7 +34,7 @@ class TripPhotos(LoginRequiredMixin, SuccessMessageMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
         self.trip = get_object_or_404(Trip, uuid=self.kwargs["uuid"])
-        if not self.trip.user == request.user:
+        if self.trip.user != request.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
@@ -78,7 +78,7 @@ class TripPhotosUpload(LoginRequiredMixin, View):
         except Trip.DoesNotExist:
             raise BadRequest("Trip does not exist")
 
-        if not trip.user == request.user:
+        if trip.user != request.user:
             raise PermissionDenied
 
         photo = TripPhoto.objects.create(
@@ -91,7 +91,7 @@ class TripPhotosUpload(LoginRequiredMixin, View):
         photo.photo = ImageFieldFile(photo, photo.photo.field, upload_path)
         photo.save()
 
-        uppy_upload_path = settings.PHOTOS_STORAGE_LOCATION + "/" + upload_path
+        uppy_upload_path = f"{settings.PHOTOS_STORAGE_LOCATION}/{upload_path}"
 
         try:
             aws_response = services.generate_s3_presigned_post(
@@ -107,7 +107,7 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         json_request = json.loads(request.body)
         s3_key = json_request.get("s3Key")
-        s3_key = s3_key.replace(settings.PHOTOS_STORAGE_LOCATION + "/", "")
+        s3_key = s3_key.replace(f"{settings.PHOTOS_STORAGE_LOCATION}/", "")
         trip_uuid = json_request.get("tripUUID")
 
         if not s3_key or not trip_uuid:
@@ -123,7 +123,7 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
         except TripPhoto.DoesNotExist:
             raise BadRequest("Trip photo does not exist")
 
-        if not trip.user == request.user or not photo.trip == trip:
+        if trip.user != request.user or photo.trip != trip:
             raise PermissionDenied
 
         with photo.photo.open("rb") as f:
@@ -145,7 +145,7 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
 class TripPhotosUpdate(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         photo = get_object_or_404(TripPhoto, uuid=request.POST["photoUUID"])
-        if not photo.user == request.user:
+        if photo.user != request.user:
             raise PermissionDenied
 
         form = TripPhotoForm(request.POST, instance=photo)
@@ -155,19 +155,19 @@ class TripPhotosUpdate(LoginRequiredMixin, View):
             log_tripphoto_action(
                 request.user, photo, "updated the caption for", photo.caption
             )
-            return redirect(photo.trip.get_absolute_url())
         else:
             messages.error(
                 request,
                 "The photo could not be updated. Was the caption over 200 characters?",
             )
-            return redirect(photo.trip.get_absolute_url())
+
+        return redirect(photo.trip.get_absolute_url())
 
 
 class TripPhotosDelete(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         photo = get_object_or_404(TripPhoto, uuid=request.POST["photoUUID"])
-        if not photo.user == request.user:
+        if photo.user != request.user:
             raise PermissionDenied
 
         photo.deleted_at = timezone.now()
@@ -180,7 +180,7 @@ class TripPhotosDelete(LoginRequiredMixin, View):
 class TripPhotosDeleteAll(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         trip = get_object_or_404(Trip, uuid=kwargs["uuid"])
-        if not trip.user == request.user:
+        if trip.user != request.user:
             raise PermissionDenied
 
         qs = TripPhoto.objects.valid().filter(trip=trip, user=request.user)

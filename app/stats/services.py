@@ -5,10 +5,7 @@ from users.models import CavingUser as User
 
 def use_units(value, units):
     """Return the value in the required units, based on the user's preferred units"""
-    if units == User.IMPERIAL:
-        return value.ft
-    else:
-        return value.m
+    return value.ft if units == User.IMPERIAL else value.m
 
 
 def match_and_check_username(request, username):
@@ -18,7 +15,7 @@ def match_and_check_username(request, username):
     except User.DoesNotExist:
         return Http404
 
-    if not request.user == user:
+    if request.user != user:
         raise PermissionDenied
 
     return user

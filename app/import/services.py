@@ -49,20 +49,14 @@ def get_formset_with_data(rows, data_only=False):
         for key, value in row.items():
             data[f"form-{i}-{key}"] = value
 
-    if data_only:
-        return data
-    return TripImportFormset(data)
+    return data if data_only else TripImportFormset(data)
 
 
 def clean_row(row):
     """Reformat the row data to be compatible with the formset"""
-    cleaned_row = {}
-    for key, value in row.items():
-        if value:
-            cleaned_row[key] = str(value).strip()
-        else:
-            cleaned_row[key] = ""
-
+    cleaned_row = {
+        key: str(value).strip() if value else "" for key, value in row.items()
+    }
     cleaned_row["start"] = clean_datetime(cleaned_row["start"])
     cleaned_row["end"] = clean_datetime(cleaned_row["end"])
     cleaned_row["privacy"] = clean_privacy(cleaned_row["privacy"])
@@ -71,9 +65,7 @@ def clean_row(row):
 
 
 def clean_privacy(privacy: str) -> str:
-    if not privacy:
-        return Trip.DEFAULT
-    return privacy
+    return Trip.DEFAULT if not privacy else privacy
 
 
 def clean_type(trip_type: str) -> str:

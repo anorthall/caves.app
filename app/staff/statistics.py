@@ -37,11 +37,7 @@ def _add_up_fields(queryset, field):
     Get the filesize of a FileField or ImageField on each object
     in a given QuerySet and return the total
     """
-    total_size = 0
-    for obj in queryset:
-        total_size += getattr(obj, field)
-
-    return total_size
+    return sum(getattr(obj, field) for obj in queryset)
 
 
 def get_integer_field_statistics(queryset, metric, field, lookup="added__gte"):

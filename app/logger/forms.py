@@ -242,8 +242,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
             if not field_name.startswith("custom_field_"):
                 continue
 
-            label = getattr(self.user, f"{field_name}_label")
-            if label:
+            if label := getattr(self.user, f"{field_name}_label"):
                 field.label = label
                 valid_field_names.append(field_name)
             else:
@@ -380,21 +379,15 @@ class LinkCaverForm(forms.Form):
         self.helper.add_input(Submit("submit", "Save linked account"))
 
     def _get_account_choices(self):
-        choices = []
-        already_linked = []
-
         cavers = Caver.objects.filter(user=self.user)
-        for caver in cavers:
-            if caver.linked_account:
-                already_linked.append(caver.linked_account)
-
-        for friend in self.user.friends.all():
-            if friend not in already_linked:
-                choices.append(
-                    [friend.username, f"{friend.name} -- @{friend.username}"]
-                )
-
-        return choices
+        already_linked = [
+            caver.linked_account for caver in cavers if caver.linked_account
+        ]
+        return [
+            [friend.username, f"{friend.name} -- @{friend.username}"]
+            for friend in self.user.friends.all()
+            if friend not in already_linked
+        ]
 
     def clean_account(self):
         account = self.cleaned_data.get("account")
@@ -450,18 +443,13 @@ class MergeCaverForm(forms.Form):
         self.helper.add_input(Submit("submit", "Merge caver"))
 
     def _get_caver_choices(self):
-        choices = []
-
         cavers = (
             Caver.objects.filter(user=self.user)
             .exclude(pk=self.caver.pk)
             .order_by("name")
         )
 
-        for caver in cavers:
-            choices.append([caver.uuid, f"{caver.name}"])
-
-        return choices
+        return [[caver.uuid, f"{caver.name}"] for caver in cavers]
 
     def clean_caver(self):
         caver = self.cleaned_data.get("caver")

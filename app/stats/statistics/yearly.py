@@ -67,9 +67,7 @@ def yearly(queryset, /, max_years=10) -> tuple:
 
         stats[year].add_trip(trip)
 
-    if stats:
-        stats = list(stats.values())
-        sorted_stats = sorted(stats, key=lambda s: s.year, reverse=True)
-        return tuple(sorted_stats + [total])
-    else:
+    if not stats:
         return ()
+    stats = list(stats.values())
+    return tuple(sorted(stats, key=lambda s: s.year, reverse=True) + [total])

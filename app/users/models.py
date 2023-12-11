@@ -426,15 +426,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_private(self):
-        if self.privacy == self.PUBLIC:
-            return False
-        return True
+        return self.privacy != self.PUBLIC
 
     @property
     def is_public(self):
-        if self.privacy == self.PUBLIC:
-            return True
-        return False
+        return self.privacy == self.PUBLIC
 
     @property
     def is_staff(self):
@@ -442,9 +438,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_moderator(self):
-        if self.is_superuser or self.has_mod_perms:
-            return True
-        return False
+        return bool(self.is_superuser or self.has_mod_perms)
 
 
 User = get_user_model()
@@ -495,7 +489,7 @@ class Notification(models.Model):
                 raise ValidationError(
                     "Free text notifications must have both a message and a URL."
                 )
-        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
+        elif self.type in [self.TRIP_LIKE, self.TRIP_COMMENT]:
             if not self.trip:
                 raise ValidationError(
                     "Trip like or trip comment notifications "
@@ -516,7 +510,7 @@ class Notification(models.Model):
     def get_url(self) -> str:
         if self.type == self.FREE_TEXT:
             return self.url
-        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
+        elif self.type in [self.TRIP_LIKE, self.TRIP_COMMENT]:
             return self.trip.get_absolute_url()
         raise RuntimeError("Invalid notification type")
 
@@ -593,11 +587,7 @@ class Notification(models.Model):
                 f"{user1}, {user2} and {num_others} "
             )
 
-            if num_others == 1:
-                return result + "other person."
-            else:
-                return result + "others."
-
+            return f"{result}other person." if num_others == 1 else f"{result}others."
         raise RuntimeError(
             "Impossible state reached in TripLikeNotification.get_message()"
         )

@@ -23,8 +23,7 @@ def env(name, default=None, force_type: Any = str):
 
 
 # BASE_DIR should point to where manage.py is
-base_dir = env("BASE_DIR", "")
-if base_dir:
+if base_dir := env("BASE_DIR", ""):
     BASE_DIR = Path(base_dir)
 else:
     raise ImproperlyConfigured("BASE_DIR environment variable is not set")

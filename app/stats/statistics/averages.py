@@ -61,9 +61,7 @@ def trips_per_week(queryset):
     qs = queryset.order_by("start")
     weeks = (timezone.now() - qs.first().start).days // 7
 
-    if weeks == 0:  # pragma: no cover
-        return 0
-    return qs.count() / weeks
+    return 0 if weeks == 0 else qs.count() / weeks
 
 
 def trip_duration(queryset):
@@ -71,8 +69,7 @@ def trip_duration(queryset):
     if qs.count() == 0:
         return 0
 
-    avg_duration = qs.aggregate(avg_duration=models.Avg("duration"))["avg_duration"]
-    return avg_duration
+    return qs.aggregate(avg_duration=models.Avg("duration"))["avg_duration"]
 
 
 def dist(queryset, field):

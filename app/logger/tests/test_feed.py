@@ -42,7 +42,7 @@ class SocialFeedTests(TestCase):
     def test_load_more_trips_button_is_displayed(self):
         """Test that the load more trips button is displayed"""
         self.client.force_login(self.user)
-        for i in range(1, 12):
+        for _ in range(1, 12):
             TripFactory(user=self.user)
 
         response = self.client.get(reverse("log:index"))
@@ -52,7 +52,7 @@ class SocialFeedTests(TestCase):
     def test_load_more_trips_button_is_not_displayed(self):
         """Test that the load more trips button is not displayed"""
         self.client.force_login(self.user)
-        for i in range(1, 6):
+        for _ in range(1, 6):
             TripFactory(user=self.user)
 
         response = self.client.get(reverse("log:index"))
@@ -146,7 +146,7 @@ class SocialFeedTests(TestCase):
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
 
-        for i in range(1, 50):
+        for _ in range(1, 50):
             TripFactory(user=self.user, cave_name="User1 Cave", privacy=Trip.PUBLIC)
 
         response = self.client.get(reverse("log:index"))

@@ -40,7 +40,7 @@ def _sort_comma_separated_list(qs, value, limit=10):
             else:
                 common[trimmed] = 1
 
-    return sorted(common.items(), key=lambda x: x[1], reverse=True)[0:limit]
+    return sorted(common.items(), key=lambda x: x[1], reverse=True)[:limit]
 
 
 def most_common_caves(queryset, limit):
@@ -53,7 +53,7 @@ def most_common_caves(queryset, limit):
     results = (
         queryset.values("cave_name")
         .annotate(count=Count("cave_name"))
-        .order_by("-count")[0:limit]
+        .order_by("-count")[:limit]
     )
 
     for result in results:
@@ -72,7 +72,7 @@ def most_common_trip_types(queryset, limit):
     results = (
         queryset.values("type")
         .annotate(count=Count("type"))
-        .order_by("-count")[0:limit]
+        .order_by("-count")[:limit]
     )
 
     for result in results:
@@ -106,7 +106,7 @@ def most_common_cavers_by_trips(queryset, limit):
     cavers = (
         Caver.objects.filter(trip__in=queryset)
         .annotate(trip_count=Count("trip"))
-        .order_by("-trip_count")[0:limit]
+        .order_by("-trip_count")[:limit]
     )
 
     for caver in cavers:
@@ -126,7 +126,7 @@ def most_common_cavers_by_time(queryset, limit):
         Caver.objects.filter(trip__in=queryset)
         .annotate(duration=Sum("trip__duration"))
         .exclude(duration__isnull=True)
-        .order_by("-duration")[0:limit]
+        .order_by("-duration")[:limit]
     )
 
     for caver in cavers:

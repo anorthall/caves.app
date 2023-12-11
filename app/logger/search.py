@@ -37,12 +37,9 @@ def trip_search(*, terms, for_user, search_user=None, type=None, fields=None) ->
     # Prefetch related users and their friends
     results = results.select_related("user").prefetch_related("user__friends")
 
-    # Remove trips that the user doesn't have permission to view
-    sanitised_results = [
+    return [
         x.sanitise(for_user) for x in results if x.is_viewable_by(for_user)
     ]
-
-    return sanitised_results
 
 
 def _build_search_field_queries(terms, fields, for_user) -> Q:

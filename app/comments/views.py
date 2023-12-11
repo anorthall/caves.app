@@ -60,15 +60,14 @@ class AddComment(LoginRequiredMixin, View):
                 "Your comment has been added and you are now following this trip.",
             )
             log_trip_action(request.user, form.trip, "commented on")
+        elif form.errors.get("content", None):
+            for error in form.errors["content"]:
+                messages.error(request, error)
         else:
-            if form.errors.get("content", None):
-                for error in form.errors["content"]:
-                    messages.error(request, error)
-            else:
-                messages.error(
-                    request,
-                    "There was an error adding your comment. Please try again.",
-                )
+            messages.error(
+                request,
+                "There was an error adding your comment. Please try again.",
+            )
         return redirect(form.trip.get_absolute_url())
 
 
@@ -126,15 +125,14 @@ class AddNewsComment(LoginRequiredMixin, View):
                 request,
                 "Your comment has been added.",
             )
+        elif form.errors.get("content", None):
+            for error in form.errors["content"]:
+                messages.error(request, error)
         else:
-            if form.errors.get("content", None):
-                for error in form.errors["content"]:
-                    messages.error(request, error)
-            else:
-                messages.error(
-                    request,
-                    "There was an error adding your comment. Please try again.",
-                )
+            messages.error(
+                request,
+                "There was an error adding your comment. Please try again.",
+            )
 
         return redirect(news.get_absolute_url())
 
