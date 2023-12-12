@@ -114,7 +114,7 @@
           <div class="tab-pane fade" id="photosTabContent" role="tabpanel" aria-labelledby="photosTab" tabindex="0">
             <div id="imageGallery">
               {% for tripphoto in photos %}
-                <a href="{{ tripphoto.photo.url }}" title="{{ tripphoto.trip.cave_name }}">
+                <a href="{{ tripphoto.photo.url }}">
                   <img src="{{ tripphoto|imgproxy:"preset:photo" }}" alt="{{ tripphoto.trip.cave_name }}">
                 </a>
               {% endfor %}
