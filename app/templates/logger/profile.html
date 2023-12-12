@@ -1,5 +1,19 @@
 {% extends "_base_sidebar.html" %}
+{% load static %}
 {% load markdownify %}
+{% load core_tags %}
+
+{% block stylesheets %}
+  {% if photos %}
+    <link rel="stylesheet" href="{% static 'css/justifiedGallery.min.css' %}">
+  {% endif %}
+{% endblock %}
+
+{% block header_scripts %}
+  {% if photos %}
+    <script src="{% static 'js/jquery.justifiedGallery.min.js' %}"></script>
+  {% endif %}
+{% endblock %}
 
 {% block title %}{{ profile_user }}'s profile on caves.app{% endblock %}
 {% block meta_tags %}<meta name="author" content="{{ profile_user.name }}">{% endblock %}
@@ -51,15 +65,32 @@
     {% if user_has_trips %}
       <ul class="nav nav-tabs" id="profileTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent" type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">Trips</button>
+          <button class="nav-link active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent"
+                  type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">
+            Trips
+          </button>
         </li>
+        {% if photos %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="photosTab" data-bs-toggle="tab" data-bs-target="#photosTabContent"
+                    type="button" role="tab" aria-controls="photosTabContent" aria-selected="false">
+              Photos
+            </button>
+          </li>
+        {% endif %}
         {% if stats %}
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent" type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">Statistics</button>
+            <button class="nav-link" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent"
+                    type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">
+              Statistics
+            </button>
           </li>
         {% endif %}
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent" type="button" role="tab" aria-controls="userInfoTabContent" aria-selected="false">Info</button>
+          <button class="nav-link" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent"
+                  type="button" role="tab" aria-controls="userInfoTabContent" aria-selected="false">
+            Info
+          </button>
         </li>
       </ul>
 
@@ -78,6 +109,27 @@
           </div>
           <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
         </div>
+
+        {% if photos %}
+          <div class="tab-pane fade" id="photosTabContent" role="tabpanel" aria-labelledby="photosTab" tabindex="0">
+            <div id="imageGallery">
+              {% for tripphoto in photos %}
+                <a href="{{ tripphoto.photo.url }}" title="{{ tripphoto.trip.cave_name }}">
+                  <img src="{{ tripphoto|imgproxy:"preset:photo" }}" alt="{{ tripphoto.trip.cave_name }}">
+                </a>
+              {% endfor %}
+            </div>
+            <script type="text/javascript">
+              $("#imageGallery").justifiedGallery({
+                rowHeight: 200,
+                margins: 5,
+                lastRow: 'justify',
+                captions: true,
+                waitThumbnailsLoad: false,
+              });
+            </script>
+          </div>
+        {% endif %}
 
         {% if stats %}
           <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">

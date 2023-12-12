@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -20,7 +22,7 @@ class UserProfile(TemplateView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.profile_user = None
+        self.profile_user: Union[User, None] = None
 
     def setup(self, *args, **kwargs):
         """Assign self.profile_user and perform permissions checks"""
@@ -32,6 +34,7 @@ class UserProfile(TemplateView):
         context["profile_user"] = self.profile_user
         context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["user_has_trips"] = self.profile_user.trips.exists()
+        context["photos"] = self.profile_user.get_photos(for_user=self.request.user)
 
         if self.request.user not in self.profile_user.friends.all():
             if self.profile_user.allow_friend_username:

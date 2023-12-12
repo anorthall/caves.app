@@ -1,5 +1,6 @@
 import os
 import uuid
+from typing import Union
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
@@ -415,6 +416,32 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
         other_user_friends_pks = other_user.friends.values_list("pk", flat=True)
         return self.friends.filter(pk__in=other_user_friends_pks)
+
+    def get_photos(self, for_user: Union["User", "CavingUser", None] = None):
+        """Returns a QuerySet of photos uploaded by this user
+
+        If `for_user` is specified, only photos which are viewable by that user
+        will be returned.
+        """
+        from logger.models import TripPhoto
+
+        if for_user is None:
+            return TripPhoto.objects.valid().filter(user=self)
+
+        qs = (
+            TripPhoto.objects.valid()
+            .filter(user=self)
+            .select_related("trip", "trip__user", "user")
+            .order_by("-trip__added", "-taken")
+        )
+
+        # Remove photos from trips which are not viewable by the user
+        friends = self.friends.all()
+        for photo in qs:
+            if not photo.trip.is_viewable_by(for_user, friends):
+                qs = qs.exclude(pk=photo.pk)
+
+        return qs
 
     @property
     def trips(self):

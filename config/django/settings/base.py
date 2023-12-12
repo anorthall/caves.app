@@ -57,6 +57,7 @@ IMGPROXY_URL = env("IMGPROXY_URL", "http://127.0.0.1:9000/imgproxy")
 IMGPROXY_KEY = env("IMGPROXY_KEY")
 IMGPROXY_SALT = env("IMGPROXY_SALT")
 IMGPROXY_PRESETS = {
+    "photo": "width=1000,height=1000,resizing_type=fit",
     "tripphoto_thumb": "width=400,height=600,resizing_type=fill",
     "avatar": "width=400,height=400,resizing_type=fill",
     "avatar_navbar": "width=80,height=80,resizing_type=fill",
