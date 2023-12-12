@@ -10,9 +10,12 @@
 {% block description %}Details of a trip to {{ trip.cave_name }} that took place on {{ trip.start|date }}.{% endblock %}
 
 {% block stylesheets %}
-  {% if show_photos and user == object_owner %}
-    <!-- Cropper.js CSS-->
-    <link href="{% static "css/cropper.min.css" %}" rel="stylesheet">
+  {% if photos %}
+    {% if user == object_owner %}
+      <link href="{% static "css/cropper.min.css" %}" rel="stylesheet">
+    {% endif %}
+
+    <link rel="stylesheet" href="{% static 'css/justifiedGallery.min.css' %}">
   {% endif %}
 {% endblock %}
 
@@ -32,9 +35,12 @@
     }
   </script>
 
-  {% if show_photos and user == object_owner %}
-    <!-- Cropper.js -->
-    <script src="{% static "js/cropper.min.js" %}"></script>
+  {% if photos %}
+    {% if user == object_owner %}
+      <script src="{% static "js/cropper.min.js" %}"></script>
+    {% endif %}
+
+    <script src="{% static 'js/jquery.justifiedGallery.min.js' %}"></script>
   {% endif %}
 {% endblock %}
 
@@ -103,30 +109,50 @@
     </div>
   {% endif %}
 
-  {% if show_photos %}
-    <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-3 mt-3 pt-2 border-top">
-      {% for photo in valid_photos %}
-        <div class="col d-flex flex-column align-items-center justify-content-center">
-          <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
-            <img src="{{ photo|imgproxy:"preset:tripphoto_thumb" }}" class="img-fluid tripphoto-thumb rounded" alt="{{ photo.caption }}">
-          </a>
-          {% if user == object_owner %}
-            <small class="mt-1">
-              <a href="#" class="text-muted text-decoration-none"
-                 data-bs-toggle="modal" data-bs-target="#photoEditModal"
-                 onclick="updateEditModal('{{ photo.uuid }}',
-                 'photoEditUUID');"><i class="bi bi-pencil-fill me-2"></i></a>
-              <span class="fake-link featured-image-link" data-image-src="{{ photo.url }}"
-                    data-photo-uuid="{{ photo.uuid }}"><i class="bi bi-star-fill me-2"></i></span>
-              <a href="#" class="text-muted text-decoration-none"
-                 data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
-                 onclick="updateDeleteModal('{{ photo.uuid }}',
-                 'photoDeleteUUID');"><i class="bi bi-trash-fill"></i></a>
-            </small>
-          {% endif %}
-        </div>
+  {% if photos %}
+    {% comment %}
+      <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-3 mt-3 pt-2 border-top">
+        {% for photo in valid_photos %}
+          <div class="col d-flex flex-column align-items-center justify-content-center">
+            <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
+              <img src="{{ photo|imgproxy:"preset:tripphoto_thumb" }}" class="img-fluid tripphoto-thumb rounded" alt="{{ photo.caption }}">
+            </a>
+            {% if user == object_owner %}
+              <small class="mt-1">
+                <a href="#" class="text-muted text-decoration-none"
+                   data-bs-toggle="modal" data-bs-target="#photoEditModal"
+                   onclick="updateEditModal('{{ photo.uuid }}',
+                   'photoEditUUID');"><i class="bi bi-pencil-fill me-2"></i></a>
+                <span class="fake-link featured-image-link" data-image-src="{{ photo.url }}"
+                      data-photo-uuid="{{ photo.uuid }}"><i class="bi bi-star-fill me-2"></i></span>
+                <a href="#" class="text-muted text-decoration-none"
+                   data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
+                   onclick="updateDeleteModal('{{ photo.uuid }}',
+                   'photoDeleteUUID');"><i class="bi bi-trash-fill"></i></a>
+              </small>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endcomment %}
+    <div class="mt-3 pt-3 border-top"></div>
+    <div id="imageGallery">
+      {% for tripphoto in photos %}
+        <a href="{{ tripphoto.photo.url }}">
+          <img src="{{ tripphoto|imgproxy:"preset:photo" }}" alt="{{ tripphoto.taken|date:"D" }} {{ tripphoto.taken|time }}">
+        </a>
       {% endfor %}
     </div>
+
+    <script type="text/javascript">
+      $("#imageGallery").justifiedGallery({
+        rowHeight: 250,
+        margins: 5,
+        lastRow: 'justify',
+        captions: true,
+        waitThumbnailsLoad: false,
+      });
+    </script>
 
     {% if user == object_owner %}
       <div class="modal" tabindex="-1" id="photoEditModal">

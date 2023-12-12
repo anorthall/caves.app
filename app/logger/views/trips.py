@@ -78,6 +78,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             .select_related("user")
             .prefetch_related(
                 "photos",
+                "cavers",
                 "likes",
                 "comments",
                 "comments__author",
@@ -117,11 +118,10 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             self.object.pk: self.object.get_liked_str(self.request.user, friends)
         }
 
-        valid_photos = self.object.valid_photos
-        if valid_photos:
+        photos = self.object.valid_photos
+        if photos.exists():
             if not self.object.private_photos or self.object.user == self.request.user:
-                context["show_photos"] = True
-                context["valid_photos"] = valid_photos
+                context["photos"] = photos
 
         if self.object.user.allow_comments:
             context["comment_form"] = CommentForm(self.request, self.object)
