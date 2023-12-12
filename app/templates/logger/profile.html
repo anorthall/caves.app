@@ -67,7 +67,7 @@
         <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
           <div class="input-group mb-3">
             <span class="input-group-text">Search</span>
-            <input type="text" class="form-control" placeholder="Cave, cavers, clubs or expeditions"
+            <input type="text" class="form-control" placeholder="Cave name, cavers, etc."
                    hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
                    hx-trigger="keyup changed delay:100ms"
                    hx-target="#userTrips"

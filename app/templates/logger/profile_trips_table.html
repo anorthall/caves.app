@@ -3,8 +3,8 @@
 <div id="userTrips">
   {% if trips or query %}
     <div class="table-responsive">
-      <table class="table text-nowrap mb-0" id="tripsTable">
-        <thead>
+      <table class="table mb-0" id="tripsTable">
+        <thead class="text-nowrap">
           <tr>
             <th scope="col">
               Date
@@ -97,7 +97,7 @@
         {% for trip in trips %}
           <tbody style="transform: rotate(0);">
             <tr>
-              <td {% if trip.cavers.all and show_cavers %} class="align-middle" rowspan="2"{% endif %}>
+              <td {% if trip.cavers.all and show_cavers %}class="align-middle text-nowrap" rowspan="2"{% else %}class="text-nowrap"{% endif %}>
                 <a href="{{ trip.get_absolute_url }}" class="stretched-link"></a>
                 {{ trip.start|date:"j M y" }}
               </td>
@@ -124,8 +124,10 @@
 
             {% if trip.cavers.all and show_cavers %}
               <tr>
-                <td colspan="{% if profile_user.disable_distance_statistics %}4{% else %}6{% endif %}">
-                  {{ trip.cavers.all|join:", "|truncatechars:100 }}
+                <td colspan="{% if profile_user.disable_distance_statistics %}4{% else %}6{% endif %}"
+                    class="text-secondary">
+                  <span class="d-none d-sm-inline">{{ trip.cavers.all|join:", "|truncatechars:110 }}</span>
+                  <span class="d-sm-none">{{ trip.cavers.all|join:", "|truncatechars:50 }}</span>
                 </td>
               </tr>
             {% endif %}
