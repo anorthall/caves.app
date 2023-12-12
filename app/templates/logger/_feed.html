@@ -1,6 +1,7 @@
 {% load humanize %}
 {% load users_tags %}
 {% load core_tags %}
+{% load markdownify %}
 
 {% for trip in trips %}
   <div class="d-flex justify-content-center">
@@ -56,8 +57,8 @@
       {% if trip.trip_report %}
         <div class="row row-cols-1 mt-4 border-top pt-3">
           <div class="col">
-            <small class="trip-field">Trip report</small><br />
-            {{ trip.trip_report|striptags|truncatechars:800 }}
+            <small class="trip-field">Trip report</small>
+            {{ trip.trip_report|markdownify:"plain"|truncatechars:800 }}
           </div>
         </div>
       {% endif %}

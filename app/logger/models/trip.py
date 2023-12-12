@@ -7,7 +7,6 @@ from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.urls import reverse
-from tinymce.models import HTMLField
 
 from ..validators import (
     above_zero_dist_validator,
@@ -305,7 +304,7 @@ class Trip(models.Model):
         ),
     )
 
-    trip_report = HTMLField(
+    trip_report = models.TextField(
         blank=True,
         help_text=(
             "Trip reports are full, article style reports of a trip and will be "

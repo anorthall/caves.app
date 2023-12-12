@@ -4,6 +4,7 @@
 {% load core_tags %}
 {% load humanize %}
 {% load static %}
+{% load markdownify %}
 
 {% block title %}Trip to {{ trip.cave_name }}{% endblock %}
 {% block meta_tags %}<meta name="author" content="{{ trip.user.name }}">{% endblock %}
@@ -105,7 +106,7 @@
           <small class="d-block text-muted trip-field">
             Trip report <i class="bi bi-globe ms-1" title="Trip reports are visible to anyone who can view the trip."></i>
           </small>
-          <div class="mt-2 no-paragraph-mb" style="overflow-wrap: break-word; overflow: hidden;">{{ trip.trip_report|safe }}</div>
+          <div class="mt-2 no-paragraph-mb" style="overflow-wrap: break-word; overflow: hidden;">{{ trip.trip_report|markdownify }}</div>
         </div>
       </div>
     {% endif %}

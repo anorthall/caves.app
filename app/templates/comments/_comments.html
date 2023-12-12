@@ -9,7 +9,7 @@
         {% if forloop.counter > 1 %}<hr class="my-4">{% endif %}
 
         <div class="m-0 comment-display">
-          {{ comment.content|markdownify:"comment" }}
+          {{ comment.content|markdownify:"plain" }}
           <p class="text-muted mt-1">
             <small class="ms-2">
               &mdash; by {% user comment.author %}, {{ comment.added|timesince }} ago

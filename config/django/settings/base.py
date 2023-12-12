@@ -114,7 +114,6 @@ INSTALLED_APPS = [
     "dal",
     "dal_select2",
     "django_countries",
-    "tinymce",
     "active_link",
     "mailer",
     "crispy_forms",
@@ -324,8 +323,9 @@ MARKDOWNIFY = {
             "PARSE_URLS": True,
         },
     },
-    "comment": {
+    "plain": {
         "WHITELIST_TAGS": [
+            "p",
             "a",
             "strong",
             "blockquote",
@@ -343,16 +343,6 @@ MARKDOWNIFY["news"] = copy.deepcopy(MARKDOWNIFY["default"])
 MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")
 MARKDOWNIFY["news"]["WHITELIST_ATTRS"] = ["src", "alt", "title", "class", "href"]
 
-# TinyMCE configuration
-TINYMCE_DEFAULT_CONFIG = {
-    "theme": "silver",
-    "resize": "true",
-    "menubar": "file edit view insert format tools table help",
-    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment code typography",
-    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table powerpaste advcode help wordcount spellchecker typography",
-    "removed_menuitems": "newdocument spellchecker help",
-    "height": "500",
-}
 
 # Crispy forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
