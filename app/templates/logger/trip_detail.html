@@ -54,7 +54,7 @@
         {% include "logger/_trip_detail_header.html" %}
       </div>
     {% else %}
-      <div class="featured-photo-container mb-3 shadow shadow-lg">
+      <div class="featured-photo-container mb-3 shadow">
         <img src="{{ trip.featured_photo.photo.url }}" class="trip-featured-photo"
              alt="{% if trip.featured_photo.caption %}{{ featured_photo.caption }}{% else %}Featured photo for this trip.{% endif %}">
         <div class="featured-photo-overlay d-none d-sm-flex">
@@ -78,36 +78,38 @@
     {% endif %}
   </div>
 
-  {% include "logger/_trip_data_blocks.html" %}
+  <div class="px-3">
+    {% include "logger/_trip_data_blocks.html" %}
 
-  {% if trip.notes %}
-    <div class="row mt-3">
-      <div class="col no-paragraph-mb">
-        <small class="text-muted trip-field">
-          Notes
-          {% if user == object_owner %}
-            {% if object_owner.private_notes %}
-              <i class="bi bi-lock-fill ms-1" title="Visible only to you"></i>
-            {% else %}
-              <i class="bi bi-globe ms-1" title="These notes are visible to anyone who can view the trip. You can change this in your account settings."></i>
+    {% if trip.notes %}
+      <div class="row mt-3">
+        <div class="col no-paragraph-mb">
+          <small class="text-muted trip-field">
+            Notes
+            {% if user == object_owner %}
+              {% if object_owner.private_notes %}
+                <i class="bi bi-lock-fill ms-1" title="Visible only to you"></i>
+              {% else %}
+                <i class="bi bi-globe ms-1" title="These notes are visible to anyone who can view the trip. You can change this in your account settings."></i>
+              {% endif %}
             {% endif %}
-          {% endif %}
-        </small>
-        <div class="mt-2">{{ trip.notes|linebreaks }}</div>
+          </small>
+          <div class="mt-2">{{ trip.notes|linebreaks }}</div>
+        </div>
       </div>
-    </div>
-  {% endif %}
+    {% endif %}
 
-  {% if trip.trip_report %}
-    <div class="row mt-3 pt-3 border-top">
-      <div class="col">
-        <small class="d-block text-muted trip-field">
-          Trip report <i class="bi bi-globe ms-1" title="Trip reports are visible to anyone who can view the trip."></i>
-        </small>
-        <div class="mt-2 no-paragraph-mb" style="overflow-wrap: break-word; overflow: hidden;">{{ trip.trip_report|safe }}</div>
+    {% if trip.trip_report %}
+      <div class="row mt-3 pt-3 border-top">
+        <div class="col">
+          <small class="d-block text-muted trip-field">
+            Trip report <i class="bi bi-globe ms-1" title="Trip reports are visible to anyone who can view the trip."></i>
+          </small>
+          <div class="mt-2 no-paragraph-mb" style="overflow-wrap: break-word; overflow: hidden;">{{ trip.trip_report|safe }}</div>
+        </div>
       </div>
-    </div>
-  {% endif %}
+    {% endif %}
+  </div>
 
   {% if photos %}
     {% comment %}

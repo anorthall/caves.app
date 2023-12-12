@@ -49,7 +49,7 @@
 
   {% if not private_profile %}
     {% if profile_user.bio %}
-      <div class="mb-4 no-paragraph-mb">
+      <div class="mb-4 no-paragraph-mb px-2">
         {{ profile_user.bio|markdownify }}
       </div>
     {% elif not profile_user.bio and not user_has_trips %}
@@ -114,7 +114,7 @@
           <div class="tab-pane fade" id="photosTabContent" role="tabpanel" aria-labelledby="photosTab" tabindex="0">
             <div id="imageGallery">
               {% for tripphoto in photos %}
-                <a href="{{ tripphoto.photo.url }}">
+                <a href="{{ tripphoto.trip.get_absolute_url }}">
                   <img src="{{ tripphoto|imgproxy:"preset:photo" }}" alt="{{ tripphoto.trip.cave_name }}">
                 </a>
               {% endfor %}
