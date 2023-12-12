@@ -112,23 +112,38 @@
 
         {% if photos %}
           <div class="tab-pane fade" id="photosTabContent" role="tabpanel" aria-labelledby="photosTab" tabindex="0">
-            <div id="imageGallery">
-              {% for tripphoto in photos %}
-                <a href="{{ tripphoto.trip.get_absolute_url }}">
-                  <img src="{{ tripphoto|imgproxy:"preset:photo" }}" alt="{{ tripphoto.trip.cave_name }}">
-                </a>
-              {% endfor %}
-            </div>
-            <script type="text/javascript">
-              $("#imageGallery").justifiedGallery({
-                rowHeight: 200,
-                margins: 5,
-                lastRow: 'justify',
-                captions: true,
-                waitThumbnailsLoad: false,
-              });
-            </script>
+            <div id="imageGallery"></div>
           </div>
+
+          <script type="text/javascript">
+            const photos = [
+              {% for photo in photos %}
+                [
+                  {{ forloop.counter }},
+                  "{{ photo.photo.url }}",
+                  "{{ photo|imgproxy:"preset:photo" }}",
+                  "{{ photo.trip.cave_name }}"
+                ]{% if not forloop.last %},{% endif %}
+              {% endfor %}
+            ]
+
+            /* Load images into gallery */
+            photos.forEach(function (photo) {
+              $("#imageGallery").append(
+                '<a href="' + photo[1] + '" data-lightbox="photos" data-title="' + photo[3] + '">' +
+                '<img src="' + photo[2] + '" alt="' + photo[3] + '" />' +
+                '</a>'
+              )
+            });
+
+            $("#imageGallery").justifiedGallery({
+              rowHeight: 200,
+              margins: 5,
+              lastRow: 'justify',
+              captions: true,
+              waitThumbnailsLoad: true,
+            });
+          </script>
         {% endif %}
 
         {% if stats %}
