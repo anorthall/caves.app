@@ -440,6 +440,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         for photo in qs:
             if not photo.trip.is_viewable_by(for_user, friends):
                 qs = qs.exclude(pk=photo.pk)
+            if photo.trip.private_photos and photo.trip.user != for_user:
+                qs = qs.exclude(pk=photo.pk)
 
         return qs
 
