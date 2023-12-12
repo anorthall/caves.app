@@ -1,6 +1,7 @@
 {% extends "_minimal.html" %}
 {% load core_tags %}
 {% load humanize %}
+{% load static %}
 
 {% block body %}
   <header>
@@ -44,11 +45,11 @@
             </div>
 
             <div class="ms-2">
-              <a href="{% url 'users:account_detail' %}" class="nav-link">
+              <a href="{% url 'log:user' user.username %}" class="nav-link">
                 {% if user.avatar %}
                   <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="34" height="34" alt="Your avatar" id="navbarAvatar">
                 {% else %}
-                  <i class="bi bi-person-circle"></i>
+                  <img src="{% static 'images/blank_profile_picture.svg' %}" width="30" height="30" alt="Your avatar" id="navbarAvatar">
                 {% endif %}
               </a>
             </div>

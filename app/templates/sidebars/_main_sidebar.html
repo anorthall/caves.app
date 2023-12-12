@@ -10,10 +10,6 @@
   <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
     <i class="bi bi-search-heart-fill"></i> Search
   </a>
-
-  <a class="nav-link {% active_link 'maps:index' %}" href="{% url 'maps:index' %}" hx-boost="false">
-    <i class="bi bi-map-fill"></i> Map
-  </a>
 {% endif %}
 
 <span class="nav-item sidebar-header">App</span>
@@ -35,7 +31,16 @@
   <i class="bi bi-question-circle-fill"></i> Help
 </a>
 
+<div class="fake-link nav-link" onclick="toggleTheme()">
+  <i class="bi bi-palette-fill"></i> Theme
+</div>
+
 {% if user.is_authenticated %}
+  <a class="nav-link" href="{% url 'users:account_detail' %}">
+    <i class="bi bi-gear-fill"></i> Account
+  </a>
+
+  <span class="nav-item sidebar-header">Staff</span>
   {% if user.is_moderator %}
     <a class="nav-link {% active_link 'staff:dashboard' %}" href="{% url 'staff:dashboard' %}">
       <i class="bi bi-pie-chart-fill"></i> Stats
@@ -44,11 +49,7 @@
 
   {% if user.is_superuser %}
     <a class="nav-link" href="{% url 'admin:index' %}" hx-boost="false">
-      <i class="bi bi-gear-fill"></i> Admin
+      <i class="bi bi-database-fill-gear"></i> Admin
     </a>
   {% endif %}
 {% endif %}
-
-<div class="fake-link nav-link" onclick="toggleTheme()">
-  <i class="bi bi-palette-fill"></i> Theme
-</div>
