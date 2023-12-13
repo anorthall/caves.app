@@ -36,6 +36,7 @@ COPY ./config/docker/run.sh /app
 RUN chmod +x /app/run.sh
 
 # Copy app
+COPY ./CHANGELOG.md /app
 COPY ./app/ /app/src
 COPY ./config /app/config
 
