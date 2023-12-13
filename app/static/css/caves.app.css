@@ -575,6 +575,46 @@ main {
   100% { transform: rotate(360deg); }
 }
 
+/* select2 dark theme */
+[data-bs-theme="dark"] {
+  .select2-container--default .select2-selection {
+    background-color: var(--bs-dark) !important;
+    color: var(--bs-body-color) !important;
+    border-color: var(--bs-border-color) !important;
+  }
+
+  .select2-container--default.select2-container--focus .select2-selection,
+  .select2-container--default .select2-dropdown {
+    border-color: var(--bs-light) !important;
+    color: var(--bs-body-color) !important;
+  }
+
+  .select2-container--default {
+    color: var(--bs-light) !important;
+  }
+
+  .select2-selection__clear {
+    color: var(--bs-light) !important;
+  }
+
+  .select2-search__field {
+    color: var(--bs-body-color) !important;
+  }
+
+  .select2-results__option--highlighted {
+    background-color: var(--bs-gray) !important;
+    color: var(--bs-light) !important;
+  }
+
+  .select2-dropdown {
+    background-color: var(--bs-dark) !important;
+  }
+
+  .select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: var(--bs-gray) !important;
+  }
+}
+
 
 /*
   Accounts
