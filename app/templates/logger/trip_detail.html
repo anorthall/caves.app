@@ -21,18 +21,18 @@
 {% endblock %}
 
 {% block header_scripts %}
-  {% include "logger/_lightbox.html" %}
-
   <script type="text/javascript">
     function updateEditModal(photoUUID) {
+      const photo = document.getElementById(photoUUID);
       document.getElementById("photoEditUUID").value = photoUUID;
-      document.getElementById("photoEditImage").src = document.getElementById(photoUUID).href;
-      document.getElementById("photoCaption").value = document.getElementById(photoUUID).dataset.title;
+      document.getElementById("photoEditImage").src = photo.href;
+      document.getElementById("photoCaption").value = photo.dataset.caption;
     }
 
     function updateDeleteModal(photoUUID) {
+      const photo = document.getElementById(photoUUID);
       document.getElementById("photoDeleteUUID").value = photoUUID;
-      document.getElementById("photoDeleteImage").src = document.getElementById(photoUUID).href;
+      document.getElementById("photoDeleteImage").src = photo.href;
     }
   </script>
 
@@ -42,6 +42,8 @@
     {% endif %}
 
     <script src="{% static 'js/jquery.justifiedGallery.min.js' %}"></script>
+
+    {% include "logger/_lightbox.html" %}
   {% endif %}
 {% endblock %}
 
@@ -113,37 +115,37 @@
   </div>
 
   {% if photos %}
-    {% comment %}
-      <div class="row row-cols-3 row-cols-lg-4 row-cols-xl-5 g-3 mt-3 pt-2 border-top">
-        {% for photo in valid_photos %}
-          <div class="col d-flex flex-column align-items-center justify-content-center">
-            <a href="{{ photo.url }}" data-title="{{ photo.caption }}" data-lightbox="trip" id="{{ photo.uuid }}">
-              <img src="{{ photo|imgproxy:"preset:tripphoto_thumb" }}" class="img-fluid tripphoto-thumb rounded" alt="{{ photo.caption }}">
-            </a>
-            {% if user == object_owner %}
-              <small class="mt-1">
-                <a href="#" class="text-muted text-decoration-none"
-                   data-bs-toggle="modal" data-bs-target="#photoEditModal"
-                   onclick="updateEditModal('{{ photo.uuid }}',
-                   'photoEditUUID');"><i class="bi bi-pencil-fill me-2"></i></a>
-                <span class="fake-link featured-image-link" data-image-src="{{ photo.url }}"
-                      data-photo-uuid="{{ photo.uuid }}"><i class="bi bi-star-fill me-2"></i></span>
-                <a href="#" class="text-muted text-decoration-none"
-                   data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
-                   onclick="updateDeleteModal('{{ photo.uuid }}',
-                   'photoDeleteUUID');"><i class="bi bi-trash-fill"></i></a>
-              </small>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-    {% endcomment %}
     <div class="mt-3 pt-3 border-top"></div>
+
     <div id="imageGallery">
-      {% for tripphoto in photos %}
-        <a href="{{ tripphoto.photo.url }}">
-          <img src="{{ tripphoto|imgproxy:"preset:photo" }}" alt="{{ tripphoto.taken|date:"D" }} {{ tripphoto.taken|time }}">
-        </a>
+      {% for photo in photos %}
+        <div class="photo-container">
+          <a href="{{ photo.photo.url }}" id="{{ photo.uuid }}" data-caption="{{ photo.caption }}"
+             data-lightbox="trip"{% if photo.taken %} data-title="Taken on {{ photo.taken|date }} at {{ photo.taken|time }}"{% endif %}>
+            <img src="{{ photo|imgproxy:"preset:photo" }}"{% if photo.taken %} alt="{{ photo.taken|date:"D" }} {{ photo.taken|time }}"{% endif %}>
+          </a>
+          {% if user == object_owner %}
+            <span class="photo-overlay w-100 d-flex flex-row justify-content-evenly">
+              <a href="#" class="text-body text-decoration-none"
+                 data-bs-toggle="modal" data-bs-target="#photoEditModal"
+                 onclick="updateEditModal('{{ photo.uuid }}', 'photoEditUUID');">
+                <i class="bi bi-pencil-fill"></i>
+              </a>
+
+              <span class="fake-link featured-image-link text-body" data-image-src="{{ photo.url }}"
+                    data-photo-uuid="{{ photo.uuid }}">
+                <i class="bi bi-star-fill"></i>
+              </span>
+
+              <a href="#" class="text-decoration-none text-body"
+                 data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
+                 onclick="updateDeleteModal('{{ photo.uuid }}',
+                 'photoDeleteUUID');">
+                <i class="bi bi-trash-fill"></i>
+              </a>
+            </span>
+          {% endif %}
+        </div>
       {% endfor %}
     </div>
 

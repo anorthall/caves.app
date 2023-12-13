@@ -874,3 +874,29 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
 #changelog h3, #changelog h4, #changelog h5, #changelog h6 {
   font-size: 1.1rem;
 }
+
+
+/* Photos */
+
+.photo-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-container .photo-overlay {
+  display: none;
+}
+
+.photo-container:hover .photo-overlay {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 0.75rem 1rem;
+}
+
+.photo-overlay {
+  text-decoration: none;
+  color: var(--bs-body-color);
+}

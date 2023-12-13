@@ -12,6 +12,7 @@
 {% block header_scripts %}
   {% if photos %}
     <script src="{% static 'js/jquery.justifiedGallery.min.js' %}"></script>
+    {% include "logger/_lightbox.html" %}
   {% endif %}
 {% endblock %}
 
@@ -124,7 +125,7 @@
             const photos = [
               {% for photo in photos %}
                 [
-                  {{ forloop.counter }},
+                  "{{ photo.photo.url }}",
                   "{{ photo.trip.get_absolute_url }}",
                   "{{ photo|imgproxy:"preset:photo" }}",
                   "{{ photo.trip.cave_name }}"
@@ -139,9 +140,12 @@
             /* Load initial 20 images into gallery */
             for (let i = 0; i < photoStep; i++) {
               gallery.append(
-                `<a href="${photos[i][1]}">
-                  <img src="${photos[i][2]}">
-                </a>`
+                `<div class="photo-container">
+                   <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]}">
+                     <img src="${photos[i][2]}" alt="${photos[i][3]}">
+                   </a>
+                   <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+                 </div>`
               );
             }
 
@@ -168,9 +172,12 @@
                 for (let i = photoIndex; i < photoIndex + photoStep; i++) {
                   if (i < photos.length) {
                     gallery.append(
-                      `<a href="${photos[i][1]}">
-                        <img src="${photos[i][2]}">
-                      </a>`
+                      `<div class="photo-container">
+                         <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]}">
+                           <img src="${photos[i][2]}" alt="${photos[i][3]}">
+                         </a>
+                         <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+                       </div>`
                     );
                   }
                 }
@@ -184,7 +191,7 @@
               }
             }
 
-            container.addEventListener("scroll", (event) => {
+            container.addEventListener("scroll", () => {
               lastKnownScrollPosition = container.scrollY;
 
               if (!ticking) {
