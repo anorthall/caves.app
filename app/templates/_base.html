@@ -32,7 +32,7 @@
               </div>
 
               <div class="notifications-dropdown" x-show="open" x-cloak x-transition.scale.20.origin.top.right
-                   @click.outside="open = false" x-trap.noscroll="true">
+                   @click.outside="open = false" x-trap.noscroll="open">
                 <h4 class="fs-6 notification-item">Notifications</h4>
                 {% for item in notifications.list %}
                   <div class="notification-item notification{% if item.read %} read{% endif %}">
@@ -62,7 +62,7 @@
               </a>
 
               <div class="hamburger-menu-container" x-show="open" @click.outside="open = false"
-                   x-cloak x-transition.scale.20.origin.top.right x-trap.noscroll="true">
+                   x-cloak x-transition.scale.20.origin.top.right x-trap.noscroll="open">
                 <nav class="hamburger-menu left">
                   <span class="nav-item sidebar-header">Navigation</span>
 
