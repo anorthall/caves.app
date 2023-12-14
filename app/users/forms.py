@@ -368,7 +368,8 @@ class ProfileChangeForm(forms.ModelForm):
                     Div("name", css_class="col"),
                     Div("username", css_class="col"),
                     Div("location", css_class="col"),
-                    Div("country", css_class="col"),
+                    # TODO: Enable when django-countries is updated for Django 5.0
+                    # Div("country", css_class="col"),
                     css_class="row row-cols-1 row-cols-lg-2",
                 ),
                 HTML(
