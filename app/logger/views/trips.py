@@ -34,7 +34,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = TripForm
     slug_field = "uuid"
     slug_url_kwarg = "uuid"
-    extra_context = {"title": "Edit trip"}
+    extra_context = {"page_title": "Edit trip"}
     template_name = "logger/crispy_form.html"
     success_message = "The trip has been updated."
 
@@ -136,7 +136,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Trip
     form_class = TripForm
     template_name = "logger/crispy_form.html"
-    extra_context = {"title": "Add a trip"}
+    extra_context = {"page_title": "Add a trip"}
     success_message = "The trip has been created."
     initial = {
         "start": timezone.localdate(),
