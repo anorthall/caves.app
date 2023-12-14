@@ -4,11 +4,11 @@
 
 <div class="mb-3">
   <div class="title-underline mb-3">
-    <h3 id="news{{ news.id }}" class="mb-0">
+    <h1 id="news{{ news.id }}" class="mb-0">
       <a class="text-decoration-none text-body-emphasis" href="{{ news.get_absolute_url }}">
         {{ news.title }}
       </a>
-    </h3>
+    </h1>
     <small class="text-muted">
       <i class="bi bi-person-fill"></i>
       {% user news.author link_class="link-secondary" %}, {{ news.posted_at|naturaltime }}
