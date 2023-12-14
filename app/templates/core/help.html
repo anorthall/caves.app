@@ -19,7 +19,7 @@
 
   {% if faqs %}
     <div class="my-5">
-      <h4 class="subtitle mb-2">
+      <h4 class="title-underline mb-2">
         Frequently asked questions
       </h4>
       <ol>
@@ -33,7 +33,7 @@
 
     {% for faq in faqs %}
       <div class="mb-5">
-        <h4 class="subtitle mb-2" id="faq{{ faq.id }}">
+        <h4 class="title-underline mb-2" id="faq{{ faq.id }}">
           {{ faq.question }}
         </h4>
         {{ faq.answer|markdownify }}

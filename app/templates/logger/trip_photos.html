@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block main %}
-  <h3 class="subtitle mb-3">
+  <h3 class="title-underline mb-3">
     Upload photos
   </h3>
 
@@ -45,14 +45,14 @@
 
   <div id="uppy"></div>
 
-  <h3 class="subtitle mt-5 mb-3">
+  <h3 class="title-underline mt-5 mb-3">
     Photo privacy
   </h3>
 
   {% crispy form %}
 
   {% if trip.featured_photo is not None %}
-    <h3 class="subtitle mt-5 mb-3">
+    <h3 class="title-underline mt-5 mb-3">
       Remove featured photo
     </h3>
 
@@ -68,7 +68,7 @@
     </button>
   {% endif %}
 
-  <h3 class="subtitle mt-5 mb-3">
+  <h3 class="title-underline mt-5 mb-3">
     Remove photos
   </h3>
 
