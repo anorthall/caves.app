@@ -108,7 +108,7 @@
 
               <td class="d-none d-xl-table-cell">
                 {% if trip.duration %}
-                  {{ trip.duration }}
+                  {{ trip.duration|shortdelta }}
                 {% endif %}
               </td>
 
