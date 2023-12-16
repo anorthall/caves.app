@@ -591,6 +591,16 @@ main {
   100% { transform: rotate(360deg); }
 }
 
+.uppy-Dashboard-inner {
+  width: 100% !important;
+}
+
+@media (max-width: 576px) {
+  .uppy-Dashboard-inner {
+    max-height: 300px !important;
+  }
+}
+
 /* select2 dark theme */
 [data-bs-theme="dark"] {
   .select2-container--default .select2-selection {
