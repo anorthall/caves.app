@@ -22,6 +22,12 @@ main {
   width: 100%;
 }
 
+main.home {
+  display: block;
+  height: auto;
+  width: auto;
+}
+
 #threeColumnContainer {
   min-height: 100%;
   width: 100%;
@@ -101,11 +107,7 @@ main {
   margin-right: 0.5rem;
 }
 
-
-/*
-  Navbar
-*/
-
+/* Navbar */
 .site-title {
   font-size: 2rem;
   margin-bottom: 4px;
@@ -176,10 +178,7 @@ main {
 }
 
 
-/*
-  Hamburger Menu
-*/
-
+/* Hamburger menu */
 #hamburgerMenuIcon .bi {
   font-size: 28px;
   margin-left: 0.9rem;
@@ -252,10 +251,7 @@ main {
 }
 
 
-/*
-  Notifications
-*/
-
+/* Notifications */
 #notificationsContainer {
   position: relative;
 }
@@ -356,10 +352,7 @@ main {
   color: var(--bs-tertiary-color) !important;
 }
 
-/*
-  Sidebar
-*/
-
+/* Sidebar */
 #leftSidebarContainer {
   position: relative;
   display: none;
@@ -423,10 +416,7 @@ main {
   margin-top: 0 !important;
 }
 
-/*
-  Trip display
-*/
-
+/* Trip display */
 .cave-name {
   font-weight: 400;
   margin-bottom: 0;
@@ -531,19 +521,27 @@ main {
   }
 }
 
-/*
-  Text
-*/
+.trip-detail-avatar img {
+  max-width: 100px;
+}
 
+@media (max-width: 576px) {
+  .trip-detail-avatar img {
+    max-width: 70px;
+  }
+
+  .featured-photo-container.featured-photo-trip-detail .featured-photo-overlay {
+    height: 100%;
+  }
+}
+
+/* Text */
 .comment-display > p {
   margin-bottom: 0;
 }
 
 
-/*
-  Forms
-*/
-
+/* Forms */
 .comment-form div.mb-3 { margin-bottom: 0 !important; }
 
 .comment-form input[type="submit"] {
@@ -565,10 +563,7 @@ main {
 }
 
 
-/*
-  JS Elements - HTMX/Alpine.js
-*/
-
+/* JS Elements */
 [data-bs-toggle], [hx-get], [hx-post], [hx-delete], [hx-put], .fake-link {
   cursor: pointer;
 }
@@ -643,10 +638,7 @@ main {
 }
 
 
-/*
-  Accounts
-*/
-
+/* Accounts */
 .account-info-label {
   color: var(--bs-emphasis-color);
 }
@@ -670,10 +662,7 @@ main {
 }
 
 
-/*
-  User profile
-*/
-
+/* User profile */
 dl.user-info dt, dl.user-info dd {
   border-bottom: 1px solid var(--bs-border-color);
   padding-top: 0.3rem;
@@ -711,10 +700,7 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
 }
 
 
-/*
-  Statistics
-*/
-
+/* Statistics */
 #stats-over-time-chart {
   max-height: 450px;
 }
@@ -756,10 +742,7 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
   font-weight: normal !important;
 }
 
-/*
-  Import and export
-*/
-
+/* Import and export */
 #trip-import-formset {
   font-size: 0.8rem;
 }
@@ -772,10 +755,7 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
 }
 
 
-/*
-  Homepage (for unregistered users)
-*/
-
+/* Homepage (for unregistered users) */
 #homepage-banner {
   padding-top: 100px;
   padding-bottom: 100px;
@@ -807,29 +787,20 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
 }
 
 
-/*
-  Images
-*/
-
+/* Images */
 .tripphoto-thumb {
   max-width: 200px;
   max-height: 300px;
 }
 
 
-/*
-  Google Map
-*/
-
+/* Google Map */
 #googleMap {
   border: 1px solid var(--bs-border-color);
 }
 
 
-/*
-  Social feed
-*/
-
+/* Social feed */
 #socialFeedContainer {
   display: flex;
   justify-content: center;
@@ -902,26 +873,7 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
 .trip-feed-gallery {
 }
 
-
-/* Trip detail */
-.trip-detail-avatar img {
-  max-width: 100px;
-}
-
-@media (max-width: 576px) {
-  .trip-detail-avatar img {
-    max-width: 70px;
-  }
-
-  .featured-photo-container.featured-photo-trip-detail .featured-photo-overlay {
-    height: 100%;
-  }
-}
-
-/*
-  Backgrounds
-*/
-
+/* Backgrounds */
 #blurContainer {
   position: fixed;
   height: 100%;
@@ -938,7 +890,6 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
 
 
 /* Headers */
-
 h1 {
   font-size: 1.5rem !important;
   margin-bottom: 1rem !important;
@@ -973,7 +924,6 @@ form fieldset legend {
 
 
 /* Photos */
-
 .photo-container {
   position: relative;
   overflow: hidden;
