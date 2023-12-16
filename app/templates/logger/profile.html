@@ -27,7 +27,7 @@
 
 {% block main %}
   <div class="d-flex flex-column flex-md-row justify-content-start align-items-center {% if profile_user.bio %}mb-4{% else %}mb-5{% endif %}">
-    {% include "users/_profile_picture.html" with photo_user=profile_user %}
+    {% include "users/_profile_picture.html" with photo_user=profile_user link=True %}
     <div class="ms-md-5 text-center text-md-start mt-4 mt-md-0">
       <h1 class="fs-3 mb-0">{{ profile_user.name }}</h1>
       {% if not profile_user.private_profile %}
@@ -230,9 +230,7 @@
                       <a href="{{ friend.get_absolute_url }}" class="text-body-emphasis text-decoration-none">
                         {{ friend.name }}
                       </a>
-                      {% with friend_trip_count=friend.trips.count %}
-                        <span class="text-muted">{{ friend_trip_count }} trip{{ friend_trip_count|pluralize }}</span>
-                      {% endwith %}
+                      <span class="text-muted">{{ friend.num_trips }} trip{{ friend.num_trips|pluralize }}</span>
                     </div>
                   </div>
                 </div>

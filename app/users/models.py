@@ -1,20 +1,22 @@
 import os
 import uuid
+from datetime import timedelta
 from typing import Union
 
-from distancefield import D
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+from django.contrib.gis.measure import D
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import Count, Max, Sum
+from django.db.models import Count, Max, QuerySet, Sum
 from django.urls import reverse
 from django.utils import timezone as django_tz
+from django.utils.functional import cached_property
 from django_countries.fields import CountryField
 from logger.models import Trip
 from timezone_field import TimeZoneField
@@ -417,7 +419,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             return self.friends.none()
 
         other_user_friends_pks = other_user.friends.values_list("pk", flat=True)
-        return self.friends.filter(pk__in=other_user_friends_pks)
+        return self.friends.filter(pk__in=other_user_friends_pks).annotate(
+            num_trips=Count("trip", distinct=True),
+        )
 
     def get_photos(self, for_user: Union["User", "CavingUser", None] = None):
         """Returns a QuerySet of photos uploaded by this user
@@ -452,6 +456,10 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         return Trip.objects.filter(user=self)
 
     @property
+    def trips_for_stats(self):
+        return self.trips.exclude(type=Trip.SURFACE)
+
+    @property
     def has_trips(self):
         return self.trips.count() > 0
 
@@ -483,24 +491,46 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "duration__sum"
         ]
 
-    @property
+    def _sum_distance_field(self, qs: QuerySet, field_name: str) -> D:
+        """Return the total distance for the given field"""
+        if qs is None:
+            qs = self.trips_for_stats
+
+        total = D(0)
+        for trip in qs:
+            total += getattr(trip, field_name)
+        return total
+
+    def total_vert_dist_up(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "vert_dist_up")
+
+    def total_vert_dist_down(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "vert_dist_down")
+
+    def total_surveyed(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "surveyed_dist")
+
+    def total_resurveyed(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "resurveyed_dist")
+
+    @cached_property
     def quick_stats(self):
         qs = self.trips.exclude(type=Trip.SURFACE).aggregate(
-            qs_climbed=Sum("vert_dist_up"),
-            qs_descended=Sum("vert_dist_down"),
-            qs_surveyed=Sum("surveyed_dist"),
-            qs_resurveyed=Sum("resurveyed_dist"),
             qs_trips=Count("pk", distinct=True),
             qs_cavers=Count("cavers", distinct=True),
-            qs_longest_trip=Max("duration"),
+            qs_longest_trip=Max("duration", default=timedelta()),
         )
-        for x in ["qs_climbed", "qs_descended", "qs_surveyed", "qs_resurveyed"]:
-            qs[x] = D(m=qs[x])
         qs["qs_duration"] = self.total_trip_duration
         qs["qs_friends"] = self.friends.count()
         qs["qs_photos"] = self.get_photos().count()
         qs["qs_joined"] = self.date_joined
         qs["qs_last_trip"] = self.trips.order_by("-start").first()
+
+        stats_qs = self.trips_for_stats
+        qs["qs_climbed"] = self.total_vert_dist_up(stats_qs)
+        qs["qs_descended"] = self.total_vert_dist_down(stats_qs)
+        qs["qs_surveyed"] = self.total_surveyed(stats_qs)
+        qs["qs_resurveyed"] = self.total_resurveyed(stats_qs)
         return qs
 
 
