@@ -1,6 +1,7 @@
 from typing import Union
 
 from attrs import frozen
+from django.db.models import Count
 from django.db.models.functions import Lower, Trim
 
 
@@ -50,4 +51,4 @@ def unique_regions(queryset):
 
 
 def unique_cavers(queryset):
-    return len(queryset.values_list("cavers", flat=True))
+    return queryset.aggregate(cavers=Count("cavers", distinct=True))["cavers"]
