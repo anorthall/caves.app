@@ -1,6 +1,7 @@
 import os
 import uuid
 from datetime import timedelta
+from functools import lru_cache
 from typing import Union
 
 from django.contrib.auth import get_user_model
@@ -491,6 +492,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "duration__sum"
         ]
 
+    @lru_cache
     def _sum_distance_field(self, qs: QuerySet, field_name: str) -> D:
         """Return the total distance for the given field"""
         if qs is None:
@@ -501,17 +503,29 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             total += getattr(trip, field_name)
         return total
 
+    @lru_cache
     def total_vert_dist_up(self, qs: QuerySet = None):
         return self._sum_distance_field(qs, "vert_dist_up")
 
+    @lru_cache
     def total_vert_dist_down(self, qs: QuerySet = None):
         return self._sum_distance_field(qs, "vert_dist_down")
 
+    @lru_cache
     def total_surveyed(self, qs: QuerySet = None):
         return self._sum_distance_field(qs, "surveyed_dist")
 
+    @lru_cache
     def total_resurveyed(self, qs: QuerySet = None):
         return self._sum_distance_field(qs, "resurveyed_dist")
+
+    @lru_cache
+    def total_aid_climbed(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "aid_dist")
+
+    @lru_cache
+    def total_horizontal(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "horizontal_dist")
 
     @cached_property
     def quick_stats(self):
@@ -531,6 +545,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         qs["qs_descended"] = self.total_vert_dist_down(stats_qs)
         qs["qs_surveyed"] = self.total_surveyed(stats_qs)
         qs["qs_resurveyed"] = self.total_resurveyed(stats_qs)
+        qs["qs_aid_climbed"] = self.total_aid_climbed(stats_qs)
+        qs["qs_horizontal"] = self.total_horizontal(stats_qs)
         return qs
 
 

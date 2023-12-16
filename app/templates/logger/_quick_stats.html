@@ -21,25 +21,39 @@
   <span class="quick-stat-value">{{ quick_stats.qs_duration|shortdelta }}</span>
 </div>
 
-<div class="nav-item quick-stat">
-  <span class="quick-stat-name">Climbed</span>
-  <span class="quick-stat-value">{{ quick_stats.qs_climbed|distformat:request.units }}</span>
-</div>
+{% if not user.disable_distance_statistics %}
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Climbed</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_climbed|distformat:request.units }}</span>
+  </div>
 
-<div class="nav-item quick-stat">
-  <span class="quick-stat-name">Descended</span>
-  <span class="quick-stat-value">{{ quick_stats.qs_descended|distformat:request.units }}</span>
-</div>
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Descended</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_descended|distformat:request.units }}</span>
+  </div>
 
-<div class="nav-item quick-stat">
-  <span class="quick-stat-name">Surveyed</span>
-  <span class="quick-stat-value">{{ quick_stats.qs_surveyed|distformat:request.units }}</span>
-</div>
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Horizontal</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_horizontal|distformat:request.units }}</span>
+  </div>
 
-<div class="nav-item quick-stat">
-  <span class="quick-stat-name">Resurveyed</span>
-  <span class="quick-stat-value">{{ quick_stats.qs_resurveyed|distformat:request.units }}</span>
-</div>
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Aid climbed</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_aid_climbed|distformat:request.units }}</span>
+  </div>
+{% endif %}
+
+{% if not user.disable_survey_statistics %}
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Surveyed</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_surveyed|distformat:request.units }}</span>
+  </div>
+
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Resurveyed</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_resurveyed|distformat:request.units }}</span>
+  </div>
+{% endif %}
 
 <div class="nav-item quick-stat">
   <span class="quick-stat-name">Longest trip</span>
