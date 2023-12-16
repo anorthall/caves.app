@@ -2,9 +2,11 @@
 {% load core_tags %}
 
 {% if photo_user.avatar %}
+    {% if link %}<a href="{{ photo_user.avatar.url }}">{% endif %}
     <img class="align-self-center justify-self-center rounded-circle border border-2 profile-photo"
          src="{{ photo_user.avatar|imgproxy:"preset:avatar" }}"
          alt="{{ photo_user.name }}'s profile picture">
+    {% if link %}</a>{% endif %}
 {% else %}
   <img class="align-self-center justify-self-center rounded-circle profile-photo"
         src="{% static 'images/blank_profile_picture.svg' %}"
