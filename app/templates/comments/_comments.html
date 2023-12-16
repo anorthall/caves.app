@@ -49,7 +49,7 @@
         {% endif %}
       {% endfor %}
     {% else %}
-      <p class="mt-2">There are no comments yet &mdash; why not be the first?</p>
+      <p class="mt-2">There are no comments yet{% if user.is_authenticated %} &mdash; why not be the first?{% else %}.{% endif %}</p>
     {% endif %}
 
     {% if user.is_authenticated %}

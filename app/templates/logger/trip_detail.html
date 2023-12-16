@@ -296,10 +296,12 @@
   </div>
 
   {% if object_owner.allow_comments %}
-    <div class="d-flex flex-row justify-content-between align-items-center mb-3 mt-5">
-      <h2 class="m-0">Comments</h2>
-      {% include "logger/_htmx_trip_follow.html" %}
-    </div>
-    {% include "comments/_comments.html" with comment_obj=trip %}
+    {% if user.is_authenticated or trip.comments.all %}
+      <div class="d-flex flex-row justify-content-between align-items-center mb-3 mt-5">
+        <h2 class="m-0">Comments</h2>
+        {% include "logger/_htmx_trip_follow.html" %}
+      </div>
+      {% include "comments/_comments.html" with comment_obj=trip %}
+    {% endif %}
   {% endif %}
 {% endblock %}

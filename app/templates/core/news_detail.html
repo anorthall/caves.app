@@ -9,8 +9,10 @@
 {% block main %}
   {% include "core/_news_item.html" %}
 
-  <h5 class="mb-3 mt-5">Comments</h5>
-  {% include "comments/_comments.html" with comment_obj=news comment_obj_type="news" %}
+  {% if user.is_authenticated or news.comments.all %}
+    <h5 class="mb-3 mt-5">Comments</h5>
+    {% include "comments/_comments.html" with comment_obj=news comment_obj_type="news" %}
+  {% endif %}
 
-  <a href="{% url 'core:news' %}" class="btn btn-outline-primary mt-3"><i class="bi bi-arrow-left"></i>&nbsp; Back to all news</a>
+  <a href="{% url 'core:news' %}" class="btn btn-sm btn-outline-secondary mt-3"><i class="bi bi-arrow-left"></i>&nbsp; Back to all news</a>
 {% endblock %}
