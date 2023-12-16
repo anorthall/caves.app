@@ -752,6 +752,10 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
   text-align: start;
 }
 
+.annual-stats-table tbody th {
+  font-weight: normal !important;
+}
+
 /*
   Import and export
 */

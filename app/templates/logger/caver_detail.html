@@ -8,9 +8,7 @@
 {% block description %}A list of trips you've been on with {{ caver.name }}{% endblock %}
 
 {% block main %}
-  <header class="title-underline">
-    <h3 class="mb-0" style="font-size: inherit;">{{ caver.name }}</h3>
-  </header>
+  <h1 class="title-underline">{{ caver.name }} <small class="text-muted" data-bs-tooltip="The unique ID of this caver">#{{ caver.pk }}</small></h1>
 
   {% if trips %}
     <p>
@@ -169,8 +167,8 @@
   </form>
 
   {% if trips %}
-    <header class="title-underline mt-5">
-      <h5 class="mb-0">Trips with {{ caver.name }}</h5>
+    <header class="title-underline mt-4">
+      <h3>Trips with {{ caver.name }}</h3>
     </header>
 
     <div class="table-responsive">

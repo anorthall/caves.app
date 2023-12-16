@@ -6,8 +6,8 @@
 
 {% block main %}
   {% if friends_list %}
-    <div class="mb-5">
-      <h3 class="title-underline">Your friends</h3>
+    <div class="mb-4">
+      <h1 class="title-underline">Your friends</h1>
 
       <div class="table-responsive">
         <table class="table table-hover">
@@ -48,8 +48,8 @@
   {% endif %}
 
   {% if friend_requests %}
-    <div class="mb-5">
-      <h3 class="title-underline">Friend requests</h3>
+    <div class="mb-4">
+      <h2 class="title-underline">Friend requests</h2>
 
       <div class="table-responsive">
         <table class="table table-hover">
@@ -97,12 +97,10 @@
     </div>
   {% endif %}
 
-  <div>
-    <h3 class="title-underline">Add a friend</h3>
+  <h2 class="title-underline">Add a friend</h2>
 
-    {% crispy add_friend_form %}
-    <div id="form-errors">{{ form_errors }}</div>
-  </div>
+  {% crispy add_friend_form %}
+  <div id="form-errors">{{ form_errors }}</div>
 
   {% for friend_request in friend_requests %}
     <div class="modal fade" id="deleteReqModel{{ forloop.counter }}" tabindex="-1">

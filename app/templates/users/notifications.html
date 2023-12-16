@@ -4,15 +4,15 @@
 {% block title %}Notifications{% endblock %}
 
 {% block main %}
-  <div class="d-flex flex-row justify-content-between align-items-center title-underline">
-    <h3 class="mb-0" style="font-size: inherit;">Notifications</h3>
+  <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Notifications</h1>
     <a href="{% url 'users:notifications_mark_read' %}"
-       class="btn btn-sm btn-outline-primary">mark all read</a>
+       class="btn btn-sm btn-secondary">mark all read</a>
   </div>
 
   {% if all_notifications %}
     <div class="table-responsive">
-      <table class="table table-striped">
+      <table class="table table-hover">
         <thead>
           <tr>
             <th class="d-none d-xl-table-cell">Received</th>
@@ -28,7 +28,7 @@
               <td class="d-none d-xl-table-cell">{{ notification.updated|naturaltime }}</td>
               <td>{{ notification.get_message }}</td>
               <td class="text-end pe-0">
-                <a class="btn {% if notification.read %}btn-primary{% else %}btn-success{% endif %}"
+                <a class="btn {% if notification.read %}btn-secondary{% else %}btn-success{% endif %}"
                    href="{% url 'users:notification' pk=notification.pk %}"><i class="bi bi-link-45deg"></i></a>
               </td>
             </tr>
