@@ -26,7 +26,7 @@
               <td><a href="{{ caver.get_absolute_url }}" class="stretched-link"></a>{{ caver.name }}</td>
               <td>{{ caver.trip_count }}</td>
               <td class="d-none d-md-table-cell">{{ caver.last_trip_date|date }}</td>
-              <td class="d-none d-lg-table-cell">{{ caver.total_trip_duration_str|default_if_none:"" }}</td>
+              <td class="d-none d-lg-table-cell">{{ caver.annotated_total_trip_duration|shortdelta }}</td>
             </tr>
           {% endfor %}
         </tbody>
