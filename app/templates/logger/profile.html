@@ -53,7 +53,7 @@
 
   {% if not private_profile %}
     {% if profile_user.bio %}
-      <div class="mb-4 no-paragraph-mb px-2">
+      <div class="mb-5 no-paragraph-mb px-2 text-limit-length">
         {{ profile_user.bio|markdownify }}
       </div>
     {% elif not profile_user.bio and not user_has_trips %}

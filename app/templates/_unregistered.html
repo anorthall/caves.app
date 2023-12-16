@@ -8,7 +8,7 @@
   <main hx-boost="false" class="home">
     <div id="homepage-banner">
       <div class="container">
-        <div class="row mw-1400px">
+        <div class="row">
           <div class="col-12 col-md-8 mx-auto">
             <h1 class="display-1 fs-1 fw-bold">
               {% block banner_title %}<a href="/" class="text-light text-decoration-none">caves.app</a>{% endblock %}
@@ -23,24 +23,24 @@
     </div>
 
     <div class="container">
-      <div class="row mw-1400px {% if not form.errors and not messages %}my-5{% endif %}">
+      <div class="row {% if not form.errors and not messages %}my-5{% endif %}">
         <div class="col-12 col-md-8 mx-auto">
           {% if form.errors or messages %}
             <div class="mt-5 mb-4">
               {% include "_messages.html" %}
             </div>
           {% endif %}
-          {% block content %}{% endblock %}
-        </div>
+          <div class="{% block content_class %}text-limit-length{% endblock %}">
+            {% block content %}{% endblock %}
 
-        <div class="col-12 col-md-8 text-center w-100 mt-5">
-          <footer class="text-muted">
-            {% block footer %}
-              Created by <a class="text-muted" href="https://buymeacoffee.com/anorthall">Andrew Northall</a>
-              <span class="mx-1">&middot;</span>
-              <a class="text-muted" href="{% url 'core:help' %}">Need help?</a>
-            {% endblock %}
-          </footer>
+            <footer class="text-muted mt-5">
+              {% block footer %}
+                Created by <a class="text-muted" href="https://buymeacoffee.com/anorthall">Andrew Northall</a>
+                <span class="mx-1">&middot;</span>
+                <a class="text-muted" href="{% url 'core:help' %}">Need help?</a>
+              {% endblock %}
+            </footer>
+          </div>
         </div>
       </div>
     </div>

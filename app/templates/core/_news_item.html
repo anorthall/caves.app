@@ -15,5 +15,7 @@
     </small>
   </div>
 
-  {{ news.content|markdownify:"news" }}
+  <div class="text-limit-length">
+    {{ news.content|markdownify:"news" }}
+  </div>
 </div>
