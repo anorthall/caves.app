@@ -4,9 +4,9 @@
 {% block title %}Add cave locations{% endblock %}
 
 {% block main %}
-  <h3 class="mb-3">Trip to {{ trip.cave_name }}</h3>
-  <p class="lead">
-    You are adding a cave location for the trip to {{ trip.cave_name }}
+  <h1 class="title-underline">Trip to {{ trip.cave_name }}</h1>
+  <p>
+    You are adding a cave location for the trip to <a href="{{ trip.get_absolute_url }}" class="link-body-emphasis">{{ trip.cave_name }}</a>
     {% if trip.cave_entrance %}<span class="fw-bold text-danger">via {{ trip.cave_entrance }}</span> {% endif %}
     on {{ trip.start|date }}.
   </p>

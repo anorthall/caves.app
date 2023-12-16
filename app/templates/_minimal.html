@@ -1,7 +1,8 @@
 {% load static %}
 {% load django_htmx %}
+
 <!doctype html>
-<html lang="en" class="h-100" data-bs-theme="dark">
+<html lang="en" class="h-100" data-bs-theme="{% block data-bs-theme %}dark{% endblock %}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,7 +39,7 @@
 
     <!-- Bootstrap v5.3.2 JS -->
     <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
-    <script src="{% static "js/colour-modes.js" %}"></script>
+    {% block data-bs-theme-js %}<script src="{% static "js/colour-modes.js" %}"></script>{% endblock %}
 
     <!-- Alpine 3.13.2 JS -->
     <script defer src="{% static "js/alpine-focus-plugin.min.js" %}"></script>

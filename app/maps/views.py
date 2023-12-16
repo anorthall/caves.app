@@ -118,9 +118,14 @@ class AddTripLocation(LoginRequiredMixin, FormView):
 
 class FindTripToAddLocation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+        user = get_user(request)
+
+        if not user.trips.exists():
+            messages.info(self.request, "You don't have any trips yet.")
+            return redirect("logger:add_trip")
+
         selected_trip = (
-            get_user(request)
-            .trips.filter(Q(cave_coordinates__isnull=True) | Q(cave_location=""))
+            user.trips.filter(Q(cave_coordinates__isnull=True) | Q(cave_location=""))
             .order_by("?")
             .first()
         )

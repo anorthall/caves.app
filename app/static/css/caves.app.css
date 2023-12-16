@@ -22,12 +22,6 @@ main {
   width: 100%;
 }
 
-main.home {
-  display: block;
-  height: auto;
-  width: auto;
-}
-
 #threeColumnContainer {
   min-height: 100%;
   width: 100%;
@@ -756,15 +750,22 @@ dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
 
 
 /* Homepage (for unregistered users) */
+main.home {
+  display: block;
+  height: auto;
+  width: auto;
+}
+
 #homepage-banner {
+  position: relative;
   padding-top: 100px;
   padding-bottom: 100px;
-  background-color: #eaf5ff;
-  background-image: var(--bs-gradient);
+  background-color: rgba(var(--caves-navbar-rgb), 1);
+  color: var(--bs-light) !important;
 }
 
 .feature-block h4 {
-  color: var(--bs-primary);
+  color: var(--bs-emphasis-color);
 }
 
 @media (max-width: 992px) {
