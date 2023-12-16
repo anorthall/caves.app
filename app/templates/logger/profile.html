@@ -2,6 +2,7 @@
 {% load static %}
 {% load markdownify %}
 {% load core_tags %}
+{% load logger_tags %}
 
 {% block stylesheets %}
   {% if photos %}
@@ -37,7 +38,9 @@
         {% endif %}
         {% if user_has_trips %}
           <small class="text-body-tertiary d-block mt-1 mt-md-0">
-            {{ profile_user.trips.count }} trips &middot; {{ profile_user.friends.all.count }} friends
+            {% with trip_duration=profile_user.total_trip_duration %}
+              {{ profile_user.trips.count }} trips &middot; {{ profile_user.friends.all.count }} friends{% if trip_duration %} &middot; {{ trip_duration|shortdelta }}{% endif %}
+            {% endwith %}
           </small>
         {% endif %}
       {% else %}

@@ -11,6 +11,7 @@ from django.contrib.auth.models import (
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.db.models import Sum
 from django.urls import reverse
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
@@ -474,6 +475,12 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         if self.is_superuser or self.has_mod_perms:
             return True
         return False
+
+    @property
+    def total_trip_duration(self):
+        return self.trips.exclude(type=Trip.SURFACE).aggregate(Sum("duration"))[
+            "duration__sum"
+        ]
 
 
 User = get_user_model()

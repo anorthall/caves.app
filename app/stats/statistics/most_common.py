@@ -1,4 +1,3 @@
-import humanize
 from attrs import Factory, define, frozen
 from django.db.models import Count, Sum
 from logger.models import Caver
@@ -17,6 +16,7 @@ class MostCommonStatistics:
     metric_name: str
     value_name: str
     rows: list = Factory(list)
+    is_time: bool = False
 
     def add_row(self, metric, value, url=None):
         self.rows.append(MostCommonRow(metric=metric, value=value, url=url))
@@ -120,6 +120,7 @@ def most_common_cavers_by_time(queryset, limit):
         title="Most common cavers by time",
         metric_name="Caver",
         value_name="Time",
+        is_time=True,
     )
 
     cavers = (
@@ -132,9 +133,7 @@ def most_common_cavers_by_time(queryset, limit):
     for caver in cavers:
         stats.add_row(
             caver.name,
-            humanize.precisedelta(
-                caver.duration, minimum_unit="minutes", format="%.0f"
-            ),
+            caver.duration,
             caver.get_absolute_url(),
         )
 

@@ -43,10 +43,6 @@ class YearlyStatistics:
     def caving_days(self):
         return len(set(self.dates))
 
-    @property
-    def caving_hours(self):
-        return self.time.total_seconds() / 60 / 60
-
 
 def yearly(queryset, /, max_years=10) -> tuple:
     earliest_year = timezone.now().year - (max_years - 1)

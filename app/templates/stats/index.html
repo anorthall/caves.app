@@ -1,6 +1,5 @@
 {% extends "stats/_base.html" %}
 {% load logger_tags %}
-{% load stats_tags %}
 {% load static %}
 {% load markdownify %}
 
@@ -69,7 +68,7 @@
                 {% if stat.is_dist %}
                   {{ stat.value|distformat:request.units }}
                 {% elif stat.is_time %}
-                  {{ stat.value|naturaldelta:"minutes" }}
+                  {{ stat.value|shortdelta }}
                 {% else %}
                   {{ stat.value|floatformat:2 }}
                 {% endif %}
@@ -119,7 +118,7 @@
                         {{ row.metric }}
                       {% endif %}
                     </td>
-                    <td>{{ row.value }}</td>
+                    <td>{% if stat.is_time %}{{ row.value|shortdelta }}{% else %}{{ row.value }}{% endif %}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -154,7 +153,7 @@
                     <td>{{ row.trip.start|date }}</td>
                     <td>
                       {% if row.is_time %}
-                        {{ row.value|naturaldelta }}
+                        {{ row.value|shortdelta }}
                       {% else %}
                         {{ row.value|distformat:request.units }}
                       {% endif %}

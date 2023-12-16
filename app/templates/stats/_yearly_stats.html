@@ -1,5 +1,4 @@
 {% load logger_tags %}
-{% load stats_tags %}
 {% load static %}
 
 <div class="table-responsive">
@@ -75,9 +74,9 @@
       </tr>
 
       <tr>
-        <th>Hours</th>
+        <th>Time</th>
         {% for year in stats %}
-          <td>{{ year.caving_hours|floatformat }}</td>
+          <td>{{ year.time|shortdelta }}</td>
         {% endfor %}
       </tr>
     </tbody>
