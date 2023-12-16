@@ -303,37 +303,34 @@ class SettingsChangeForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
-            Fieldset(
-                "Account settings",
-                HTML('<h5 class="mt-3">General</h5>'),
-                Div(
-                    Div("privacy", css_class="col"),
-                    Div("units", css_class="col"),
-                    Div("timezone", css_class="col"),
-                    css_class="row row-cols-1 row-cols-xl-3 mt-4",
-                ),
-                Div(
-                    Div("private_notes", css_class="col"),
-                    Div("allow_friend_username", css_class="col"),
-                    Div("allow_friend_email", css_class="col"),
-                    Div("allow_comments", css_class="col"),
-                    Div("show_cavers_on_trip_list", css_class="col"),
-                    css_class="row row-cols-1 row-cols-lg-3 mt-4",
-                ),
-                HTML('<h5 class="mt-3">Statistics</h5>'),
-                Div(
-                    Div("public_statistics", css_class="col"),
-                    Div("disable_distance_statistics", css_class="col"),
-                    Div("disable_survey_statistics", css_class="col"),
-                    Div("disable_stats_over_time", css_class="col"),
-                    css_class="row row-cols-1 row-cols-lg-3 mt-4",
-                ),
-                HTML('<h5 class="mt-3">Emails</h5>'),
-                Div(
-                    Div("email_friend_requests", css_class="col"),
-                    Div("email_comments", css_class="col"),
-                    css_class="row row-cols-1 row-cols-lg-3 mt-4",
-                ),
+            HTML('<h1 class="title-underline">Account settings</h5>'),
+            Div(
+                Div("privacy", css_class="col"),
+                Div("units", css_class="col"),
+                Div("timezone", css_class="col"),
+                css_class="row row-cols-1 row-cols-xl-3 mt-4",
+            ),
+            Div(
+                Div("private_notes", css_class="col"),
+                Div("allow_friend_username", css_class="col"),
+                Div("allow_friend_email", css_class="col"),
+                Div("allow_comments", css_class="col"),
+                Div("show_cavers_on_trip_list", css_class="col"),
+                css_class="row row-cols-1 row-cols-lg-3 mt-4",
+            ),
+            HTML('<h5 class="mt-3">Statistics</h5>'),
+            Div(
+                Div("public_statistics", css_class="col"),
+                Div("disable_distance_statistics", css_class="col"),
+                Div("disable_survey_statistics", css_class="col"),
+                Div("disable_stats_over_time", css_class="col"),
+                css_class="row row-cols-1 row-cols-lg-3 mt-4",
+            ),
+            HTML('<h5 class="mt-3">Emails</h5>'),
+            Div(
+                Div("email_friend_requests", css_class="col"),
+                Div("email_comments", css_class="col"),
+                css_class="row row-cols-1 row-cols-lg-3 mt-4",
             ),
             Submit("settings_submit", "Update settings", css_class="mt-3"),
         )
@@ -350,11 +347,11 @@ class ProfileChangeForm(forms.ModelForm):
             "country",
             "bio",
             "clubs",
-            "instagram",
-            "facebook",
-            "discord",
-            "x_username",
-            "website",
+            # "instagram",
+            # "facebook",
+            # "discord",
+            # "x_username",
+            # "website",
         )
 
     def __init__(self, *args, **kwargs):
@@ -362,27 +359,24 @@ class ProfileChangeForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
-            Fieldset(
-                "Personal details",
-                Div(
-                    Div("name", css_class="col"),
-                    Div("username", css_class="col"),
-                    Div("location", css_class="col"),
-                    # TODO: Enable when django-countries is updated for Django 5.0
-                    # Div("country", css_class="col"),
-                    css_class="row row-cols-1 row-cols-lg-2",
-                ),
-                HTML(
-                    "<p class='text-muted'><strong>Warning:</strong> "
-                    "Changing your username will result in a new profile URL. If you "
-                    "have shared your profile URL with anyone they will no longer be "
-                    "able to access it until you send them a new link. Links from "
-                    "within caves.app will be updated automatically and links to "
-                    "individual trips will not change. After changing your username, "
-                    "other accounts will be free to select your old username for their "
-                    "own use.</p>"
-                ),
-                css_class="col-12",
+            HTML("<h1 class='title-underline'>Profile settings</h1>"),
+            Div(
+                Div("name", css_class="col"),
+                Div("username", css_class="col"),
+                Div("location", css_class="col"),
+                # TODO: Enable when django-countries is updated for Django 5.0
+                # Div("country", css_class="col"),
+                css_class="row row-cols-1 row-cols-lg-2",
+            ),
+            HTML(
+                "<p class='text-muted'><strong>Warning:</strong> "
+                "Changing your username will result in a new profile URL. If you "
+                "have shared your profile URL with anyone they will no longer be "
+                "able to access it until you send them a new link. Links from "
+                "within caves.app will be updated automatically and links to "
+                "individual trips will not change. After changing your username, "
+                "other accounts will be free to select your old username for their "
+                "own use.</p>"
             ),
             Fieldset(
                 "Profile settings",
@@ -393,18 +387,18 @@ class ProfileChangeForm(forms.ModelForm):
                 ),
                 css_class="mt-4",
             ),
-            Fieldset(
-                "Social media",
-                Div(
-                    Div("instagram", css_class="col"),
-                    Div("facebook", css_class="col"),
-                    Div("discord", css_class="col"),
-                    Div("x_username", css_class="col"),
-                    Div("website", css_class="col"),
-                    css_class="row row-cols-1 row-cols-lg-2",
-                ),
-                css_class="mt-4",
-            ),
+            # Fieldset(  TODO: Add social media fields
+            #     "Social media",
+            #     Div(
+            #         Div("instagram", css_class="col"),
+            #         Div("facebook", css_class="col"),
+            #         Div("discord", css_class="col"),
+            #         Div("x_username", css_class="col"),
+            #         Div("website", css_class="col"),
+            #         css_class="row row-cols-1 row-cols-lg-2",
+            #     ),
+            #     css_class="mt-4",
+            # ),
             Submit("submit", "Save changes", css_class="btn-lg w-100 mt-4"),
         )
 
@@ -534,10 +528,8 @@ class AvatarChangeForm(forms.ModelForm):
         self.helper.form_id = "avatarForm"
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Fieldset(
-                "Profile picture",
-                "avatar",
-            ),
+            HTML("<h1 class='title-underline'>Profile picture</h1>"),
+            "avatar",
             Submit("btn_submit", "Save profile picture", css_class="mt-3"),
         )
 
