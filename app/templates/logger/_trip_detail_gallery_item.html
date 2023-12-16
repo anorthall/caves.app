@@ -1,0 +1,29 @@
+{% load core_tags %}
+
+<div class="photo-container">
+  <a href="{{ photo.photo.url }}" id="{{ photo.uuid }}" data-caption="{{ photo.caption }}"
+     data-lightbox="trip"{% if photo.taken %} data-title="Taken on {{ photo.taken|date }} at {{ photo.taken|time }}"{% endif %}>
+    <img src="{{ photo|imgproxy:"preset:photo" }}"{% if photo.taken %} alt="{{ photo.taken|date:"D" }} {{ photo.taken|time }}"{% endif %}>
+  </a>
+  {% if user == object_owner %}
+    <span class="photo-overlay w-100 d-flex flex-row justify-content-evenly">
+      <a href="#" class="text-decoration-none"
+         data-bs-toggle="modal" data-bs-target="#photoEditModal"
+         onclick="updateEditModal('{{ photo.uuid }}', 'photoEditUUID');">
+        <i class="bi bi-pencil-fill"></i>
+      </a>
+
+      <span class="fake-link featured-image-link" data-image-src="{{ photo.url }}"
+            data-photo-uuid="{{ photo.uuid }}">
+        <i class="bi bi-star-fill"></i>
+      </span>
+
+      <a href="#" class="text-decoration-none"
+         data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
+         onclick="updateDeleteModal('{{ photo.uuid }}',
+         'photoDeleteUUID');">
+        <i class="bi bi-trash-fill"></i>
+      </a>
+    </span>
+  {% endif %}
+</div>

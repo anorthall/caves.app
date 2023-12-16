@@ -571,4 +571,4 @@ class Trip(models.Model):
 
     @property
     def feed_photos(self):
-        return self.valid_photos[:5]
+        return self.valid_photos.order_by("?")[:10]

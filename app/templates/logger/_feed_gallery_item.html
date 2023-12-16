@@ -1,0 +1,8 @@
+{% load core_tags %}
+
+<div class="photo-container">
+  <a href="{{ photo.photo.url }}" data-lightbox="{{ trip.uuid }}gallery"
+     data-title="Trip to {{ trip.cave_name }} by {{ trip.user }}{% if photo.taken %} &mdash; <em>{{ photo.taken|date }}, {{ photo.taken|time }}</em>{% endif %}">
+    <img src="{{ photo|imgproxy:"preset:photo" }}" alt="Trip to {{ trip.cave_name }} by {{ trip.user }}">
+  </a>
+</div>

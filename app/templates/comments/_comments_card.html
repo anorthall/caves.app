@@ -2,7 +2,7 @@
   <div class="card feed-card mb-5" id="comments{{ trip.uuid }}">
     <div class="card-header">
       <div class="d-flex flex-row align-items-center justify-content-between">
-        <span class="float-start">Comments on {{ trip.cave_name }}</span>
+        <span class="float-start">Comments<span class="d-none d-sm-inline"> on {{ trip.cave_name }}</span></span>
         <small class="float-end text-muted">
           {% include "logger/_htmx_trip_follow.html" %}
           <button class="ms-1 btn btn-sm btn-secondary" onclick="document.getElementById('comments{{ trip.uuid }}').classList.add('d-none')">Hide</button>

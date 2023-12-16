@@ -3,13 +3,15 @@
 <h1 class="fs-3 mb-0 text-nowrap">
   <a href="{{ trip.get_absolute_url }}" class="text-body-emphasis text-decoration-none">
     {{ trip.cave_name }}
+    {% comment %}
     {% if trip.cave_entrance or trip.cave_exit %}
       {% if trip.cave_entrance == trip.cave_exit %}
-        <span class="fs-6 d-none d-sm-block d-md-inline">via {{ trip.cave_entrance }}</span>
+        <span class="fs-6 d-none d-sm-block">via {{ trip.cave_entrance }}</span>
       {% else %}
-        <span class="fs-6 d-none d-sm-block d-md-inline">via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}</span>
+        <span class="fs-6 d-none d-sm-block">via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}</span>
       {% endif %}
     {% endif %}
+    {% endcomment %}
   </a>
 </h1>
 <small class="text-muted mt-md-0 d-block">

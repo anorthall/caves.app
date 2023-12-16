@@ -1,10 +1,16 @@
 {% extends "_base_sidebar.html" %}
 {% load markdownify %}
+{% load static %}
 
 {% block title %}caves.app{% endblock %}
 
 {% block header_scripts %}
+  <script src="{% static 'js/jquery.justifiedGallery.min.js' %}"></script>
   {% include "logger/_lightbox.html" %}
+{% endblock %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{% static 'css/justifiedGallery.min.css' %}">
 {% endblock %}
 
 {% block hamburger_menu_right_container %}{% endblock %}

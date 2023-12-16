@@ -10,9 +10,9 @@
 
 {% block main %}
   {% if stats_yearly %}
-    <h3 class="title-underline mt-2">
+    <h1 class="title-underline mt-2">
       {{ user.name }}'s statistics
-    </h3>
+    </h1>
 
     <div id="yearly-statistics-table">
       {% include "stats/_yearly_stats.html" with table_class="table-striped" stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}

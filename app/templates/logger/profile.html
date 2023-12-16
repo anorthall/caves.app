@@ -25,9 +25,9 @@
 {% block hamburger_menu_right_container %}{% endblock %}
 
 {% block main %}
-  <div class="d-flex flex-column flex-md-row justify-content-start align-items-center mb-4">
+  <div class="d-flex flex-column flex-md-row justify-content-start align-items-center {% if profile_user.bio %}mb-4{% else %}mb-5{% endif %}">
     {% include "users/_profile_picture.html" with photo_user=profile_user %}
-    <div class="ms-md-5 text-center text-md-start mt-3 mt-md-0">
+    <div class="ms-md-5 text-center text-md-start mt-4 mt-md-0">
       <h1 class="fs-3 mb-0">{{ profile_user.name }}</h1>
       {% if not profile_user.private_profile %}
         {% if profile_user.location or profile_user.country %}
@@ -66,14 +66,14 @@
     {% if user_has_trips %}
       <ul class="nav nav-tabs" id="profileTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent"
+          <button class="nav-link text-body-emphasis active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent"
                   type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">
             Trips
           </button>
         </li>
         {% if photos %}
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="photosTab" data-bs-toggle="tab" data-bs-target="#photosTabContent"
+            <button class="nav-link text-body-emphasis" id="photosTab" data-bs-toggle="tab" data-bs-target="#photosTabContent"
                     type="button" role="tab" aria-controls="photosTabContent" aria-selected="false">
               Photos
             </button>
@@ -81,14 +81,14 @@
         {% endif %}
         {% if stats %}
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent"
+            <button class="nav-link text-body-emphasis" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent"
                     type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">
               Statistics
             </button>
           </li>
         {% endif %}
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent"
+          <button class="nav-link text-body-emphasis" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent"
                   type="button" role="tab" aria-controls="userInfoTabContent" aria-selected="false">
             Info
           </button>
@@ -128,7 +128,8 @@
                   "{{ photo.photo.url }}",
                   "{{ photo.trip.get_absolute_url }}",
                   "{{ photo|imgproxy:"preset:photo" }}",
-                  "{{ photo.trip.cave_name }}"
+                  "{{ photo.trip.cave_name }}",
+                  "{% if photo.taken %}{{ photo.taken|date }}, {{ photo.taken|time }}{% else %}{{ photo.trip.start|date }}{% endif %}"
                 ]{% if not forloop.last %},{% endif %}
               {% endfor %}
             ]
@@ -141,7 +142,7 @@
             for (let i = 0; i < photoStep; i++) {
               gallery.append(
                 `<div class="photo-container">
-                   <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]}">
+                   <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
                      <img src="${photos[i][2]}" alt="${photos[i][3]}">
                    </a>
                    <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
@@ -173,7 +174,7 @@
                   if (i < photos.length) {
                     gallery.append(
                       `<div class="photo-container">
-                         <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]}">
+                         <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
                            <img src="${photos[i][2]}" alt="${photos[i][3]}">
                          </a>
                          <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>

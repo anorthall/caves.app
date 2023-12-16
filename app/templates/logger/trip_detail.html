@@ -48,276 +48,256 @@
 {% endblock %}
 
 {% block main %}
-  <div class="d-flex flex-column flex-md-row justify-content-start align-items-center {% if not trip.featured_photo %}mb-4{% endif %}">
-{#    TODO: Add a way to remove the featured photo#}
-{#    TODO: Improve photo edit links#}
+  <div class="trip-feed-item mb-4 mb-md-5 shadow">
     {% if not trip.featured_photo %}
-      <a href="{{ object_owner.get_absolute_url }}">{% include "users/_profile_picture.html" with photo_user=object_owner %}</a>
-      <div class="ms-md-5 text-center text-md-start mt-3 mt-md-0">
-        {% include "logger/_trip_detail_header.html" %}
+      <div class="d-flex flex-row justify-content-start align-items-center trip-feed-header">
+        <a class="trip-detail-avatar" href="{{ trip.user.get_absolute_url }}">{% include "users/_profile_picture.html" with photo_user=trip.user %}</a>
+        <div class="ms-3">
+          {% include "logger/_trip_detail_header.html" %}
+        </div>
       </div>
     {% else %}
-      <div class="featured-photo-container mb-3 shadow">
-        <img src="{{ trip.featured_photo.photo.url }}" class="trip-featured-photo"
-             alt="{% if trip.featured_photo.caption %}{{ featured_photo.caption }}{% else %}Featured photo for this trip.{% endif %}">
-        <div class="featured-photo-overlay d-none d-sm-flex">
-          <div class="d-none d-md-block">
-            <a href="{{ object_owner.get_absolute_url }}" class="mt-auto mb-auto">
-              {% if object_owner.avatar %}
+      <div class="d-flex flex-column flex-md-row justify-content-start align-items-center">
+        <div class="featured-photo-container featured-photo-trip-detail border-0 border-bottom" data-bs-theme="dark">
+          <img src="{{ trip.featured_photo.photo.url }}" class="trip-featured-photo"
+               alt="{% if trip.featured_photo.caption %}{{ featured_photo.caption }}{% else %}Featured photo for this trip.{% endif %}">
+          <div class="featured-photo-overlay">
+            <a href="{{ trip.user.get_absolute_url }}" class="mt-auto mb-auto">
+              {% if trip.user.avatar %}
                 <img class="align-self-center justify-self-center rounded-circle border shadow"
-                     src="{{ object_owner.avatar|imgproxy:"preset:avatar" }}"
-                     alt="{{ object_owner.name }}'s profile picture">
+                     src="{{ trip.user.avatar|imgproxy:"preset:avatar" }}"
+                     alt="{{ trip.user.name }}'s profile picture">
               {% endif %}
             </a>
-          </div>
-          <div class="ms-0 ms-md-3">
-            {% include "logger/_trip_detail_header.html" %}
+            <div class="ms-3">
+              {% include "logger/_trip_detail_header.html" %}
+            </div>
           </div>
         </div>
       </div>
-      <div class="d-sm-none flex-column w-100 mb-3 pb-3 border-bottom">
-        {% include "logger/_trip_detail_header.html" %}
-      </div>
     {% endif %}
-  </div>
 
-  <div class="px-3">
-    {% include "logger/_trip_data_blocks.html" %}
+    <div class="trip-feed-content">
+      {% include "logger/_trip_data_blocks.html" %}
 
-    {% if trip.notes %}
-      <div class="row mt-3">
-        <div class="col no-paragraph-mb">
-          <small class="text-muted trip-field">
-            Notes
-            {% if user == object_owner %}
-              {% if object_owner.private_notes %}
-                <i class="bi bi-lock-fill ms-1" title="Visible only to you"></i>
-              {% else %}
-                <i class="bi bi-globe ms-1" title="These notes are visible to anyone who can view the trip. You can change this in your account settings."></i>
+      {% if trip.notes %}
+        <div class="row mt-3">
+          <div class="col no-paragraph-mb">
+            <small class="text-muted trip-field">
+              Notes
+              {% if user == object_owner %}
+                {% if object_owner.private_notes %}
+                  <i class="bi bi-lock-fill ms-1" title="Visible only to you"></i>
+                {% else %}
+                  <i class="bi bi-globe ms-1" title="These notes are visible to anyone who can view the trip. You can change this in your account settings."></i>
+                {% endif %}
               {% endif %}
-            {% endif %}
-          </small>
-          <div class="mt-2">{{ trip.notes|linebreaks }}</div>
-        </div>
-      </div>
-    {% endif %}
-
-    {% if trip.trip_report %}
-      <div class="row mt-3 pt-3 border-top">
-        <div class="col">
-          <small class="d-block text-muted trip-field">
-            Trip report <i class="bi bi-globe ms-1" title="Trip reports are visible to anyone who can view the trip."></i>
-          </small>
-          <div class="mt-2 no-paragraph-mb" style="overflow-wrap: break-word; overflow: hidden;">{{ trip.trip_report|markdownify }}</div>
-        </div>
-      </div>
-    {% endif %}
-  </div>
-
-  {% if photos %}
-    <div class="mt-3 pt-3 border-top"></div>
-
-    <div id="imageGallery">
-      {% for photo in photos %}
-        <div class="photo-container">
-          <a href="{{ photo.photo.url }}" id="{{ photo.uuid }}" data-caption="{{ photo.caption }}"
-             data-lightbox="trip"{% if photo.taken %} data-title="Taken on {{ photo.taken|date }} at {{ photo.taken|time }}"{% endif %}>
-            <img src="{{ photo|imgproxy:"preset:photo" }}"{% if photo.taken %} alt="{{ photo.taken|date:"D" }} {{ photo.taken|time }}"{% endif %}>
-          </a>
-          {% if user == object_owner %}
-            <span class="photo-overlay w-100 d-flex flex-row justify-content-evenly">
-              <a href="#" class="text-body text-decoration-none"
-                 data-bs-toggle="modal" data-bs-target="#photoEditModal"
-                 onclick="updateEditModal('{{ photo.uuid }}', 'photoEditUUID');">
-                <i class="bi bi-pencil-fill"></i>
-              </a>
-
-              <span class="fake-link featured-image-link text-body" data-image-src="{{ photo.url }}"
-                    data-photo-uuid="{{ photo.uuid }}">
-                <i class="bi bi-star-fill"></i>
-              </span>
-
-              <a href="#" class="text-decoration-none text-body"
-                 data-bs-toggle="modal" data-bs-target="#photoDeleteModal"
-                 onclick="updateDeleteModal('{{ photo.uuid }}',
-                 'photoDeleteUUID');">
-                <i class="bi bi-trash-fill"></i>
-              </a>
-            </span>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-
-    <script type="text/javascript">
-      $("#imageGallery").justifiedGallery({
-        rowHeight: 250,
-        margins: 5,
-        lastRow: 'justify',
-        captions: true,
-        waitThumbnailsLoad: false,
-      });
-    </script>
-
-    {% if user == object_owner %}
-      <div class="modal" tabindex="-1" id="photoEditModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Edit photo</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post" action="{% url 'log:trip_photos_update' %}"
-            id="photoEditForm">
-              {% csrf_token %}
-              <input type="hidden" name="photoUUID" id="photoEditUUID" value="">
-              <div class="modal-body">
-                <img class="img-fluid rounded pb-4 border-bottom mb-3" src=""
-                     alt="Image to edit"
-                id="photoEditImage">
-                <div class="mb-3">
-                  <label for="photoCaption" class="form-label">Caption</label>
-                  <textarea class="form-control" id="photoCaption" name="caption"
-                            rows="3" maxlength="200"></textarea>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input type="submit" value="Save changes" class="btn btn-success">
-              </div>
-            </form>
+            </small>
+            <div class="mt-2">{{ trip.notes|linebreaks }}</div>
           </div>
         </div>
-      </div>
+      {% endif %}
 
-      <div class="modal" tabindex="-1" id="photoDeleteModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Delete photo</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              <img class="img-fluid rounded mb-3" src="" alt="Image
-               to delete" id="photoDeleteImage">
-              <p class="text-center mb-0">
-                Are you sure you want to delete this photo? This action is permanent and
-                cannot be undone.
-              </p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <form method="post" action="{% url 'log:trip_photos_delete' %}"
-                    id="photoDeleteForm">
-                {% csrf_token %}
-                <input type="hidden" name="photoUUID" id="photoDeleteUUID" value="">
-                <input type="submit" value="Delete photo" class="btn btn-danger">
-              </form>
-            </div>
+      {% if trip.trip_report %}
+        <div class="row mt-3 pt-3 border-top">
+          <div class="col">
+            <small class="d-block text-muted trip-field">
+              Trip report <i class="bi bi-globe ms-1" title="Trip reports are visible to anyone who can view the trip."></i>
+            </small>
+            <div class="mt-2 no-paragraph-mb" style="overflow-wrap: break-word; overflow: hidden;">{{ trip.trip_report|markdownify }}</div>
           </div>
         </div>
-      </div>
-
-      <div class="modal" id="cropModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="cropModalLabel">Crop featured image</h5>
-            </div>
-            <div class="modal-body w-100">
-              <div id="imageBox d-flex justify-content-center align-items-center">
-                <img alt="Crop this image to feature it" id="cropImage" style="width: 100%; height: 100%;">
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-              <form method="post" action="{% url 'log:trip_photos_feature' trip.uuid %}">
-                {% csrf_token %}
-                <input type="hidden" name="photoUUID" id="photoFeatureUUID" value="">
-                <input type="hidden" name="cropX" id="cropX" value="">
-                <input type="hidden" name="cropY" id="cropY" value="">
-                <input type="hidden" name="cropWidth" id="cropWidth" value="">
-                <input type="hidden" name="cropHeight" id="cropHeight" value="">
-                <input type="hidden" name="cropRotate" id="cropRotate" value="">
-                <input type="hidden" name="cropScaleX" id="cropScaleX" value="">
-                <input type="hidden" name="cropScaleY" id="cropScaleY" value="">
-                <input type="submit" class="btn btn-success" value="Crop">
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <script>
-        // Cropping JS for featured image
-        const image_box = document.getElementById('imageBox')
-        const crop_btn = document.getElementById('cropButton')
-        const crop_image = document.getElementById('cropImage')
-        const modal_id = document.getElementById('cropModal')
-        const form = document.getElementById('cropForm')
-
-        const cropX = document.getElementById("cropX");
-        const cropY = document.getElementById("cropY");
-        const cropWidth = document.getElementById("cropWidth");
-        const cropHeight = document.getElementById("cropHeight");
-        const cropRotate = document.getElementById("cropRotate");
-        const cropScaleX = document.getElementById("cropScaleX");
-        const cropScaleY = document.getElementById("cropScaleY");
-        const photoFeatureUUID = document.getElementById("photoFeatureUUID");
-
-        // When user uploads the image this event will get triggered
-        document.querySelectorAll("span.featured-image-link").forEach(item => {
-          item.addEventListener('click', ()=>{
-            crop_image.src = item.dataset.imageSrc
-            photoFeatureUUID.value = item.dataset.photoUuid
-
-            $(modal_id).modal('show')
-
-            new Cropper(crop_image, {
-              aspectRatio: 9 / 4,
-              initialAspectRatio: 9 / 4,
-              viewMode: 3,
-              dragMode: 'none',
-              center: true,
-              crop(event) {
-                cropX.value = event.detail.x;
-                cropY.value = event.detail.y;
-                cropWidth.value = event.detail.width;
-                cropHeight.value = event.detail.height;
-                cropRotate.value = event.detail.rotate;
-                cropScaleX.value = event.detail.scaleX;
-                cropScaleY.value = event.detail.scaleY;
-              },
-            })
-          });
-        });
-      </script>
-    {% endif %}
-  {% endif %}
-
-  <div class="row mt-3 mt-md-4 pt-3 border-top">
-    <div class="col-12{% if object_owner.allow_comments %} col-md-8{% endif %}">
-      {% if user.is_authenticated %}
-        {% include "logger/_htmx_trip_like.html" %}
-      {% else %}
-        <i class="bi bi-hand-thumbs-up-fill"></i>
-        {{ trip.likes_count }} like{{ trip.likes_count|pluralize }}
       {% endif %}
     </div>
 
-    {% if object_owner.allow_comments %}
-      <div class="d-none d-md-block col-4 text-end">
-        {% if trip.comments_count > 0 %}<i class="bi bi-chat-fill me-1"></i>{% else %}<i class="bi bi-chat me-1"></i>{% endif %}
-        {{ trip.comments_count }} comment{{ trip.comments_count|pluralize }}
+    {% if photos %}
+      <div id="imageGalleryBig" class="d-none d-sm-block">
+        {% for photo in photos %}
+          {% include "logger/_trip_detail_gallery_item.html" %}
+        {% endfor %}
       </div>
+
+      <div id="imageGallerySmall" class="d-sm-none">
+        {% for photo in photos %}
+          {% include "logger/_trip_detail_gallery_item.html" %}
+        {% endfor %}
+      </div>
+
+      <script type="text/javascript">
+        $("#imageGalleryBig").justifiedGallery({
+          rowHeight: 250,
+          margins: 5,
+          lastRow: 'justify',
+          captions: true,
+          waitThumbnailsLoad: false,
+        });
+        $("#imageGallerySmall").justifiedGallery({
+          rowHeight: 125,
+          margins: 5,
+          lastRow: 'justify',
+          captions: true,
+          waitThumbnailsLoad: false,
+        });
+      </script>
+
+      {% if user == object_owner %}
+        <div class="modal" tabindex="-1" id="photoEditModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <form method="post" action="{% url 'log:trip_photos_update' %}"
+              id="photoEditForm">
+                {% csrf_token %}
+                <input type="hidden" name="photoUUID" id="photoEditUUID" value="">
+                <div class="modal-body">
+                  <img class="img-fluid rounded pb-4 border-bottom mb-3" src=""
+                       alt="Image to edit"
+                  id="photoEditImage">
+                  <div class="mb-3">
+                    <label for="photoCaption" class="form-label">Caption</label>
+                    <textarea class="form-control" id="photoCaption" name="caption"
+                              rows="3" maxlength="200"></textarea>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <input type="submit" value="Save changes" class="btn btn-success">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal" tabindex="-1" id="photoDeleteModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Delete photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <img class="img-fluid rounded mb-3" src="" alt="Image
+                 to delete" id="photoDeleteImage">
+                <p class="text-center mb-0">
+                  Are you sure you want to delete this photo? This action is permanent and
+                  cannot be undone.
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="post" action="{% url 'log:trip_photos_delete' %}"
+                      id="photoDeleteForm">
+                  {% csrf_token %}
+                  <input type="hidden" name="photoUUID" id="photoDeleteUUID" value="">
+                  <input type="submit" value="Delete photo" class="btn btn-danger">
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal" id="cropModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="cropModalLabel">Crop featured image</h5>
+              </div>
+              <div class="modal-body w-100">
+                <div id="imageBox d-flex justify-content-center align-items-center">
+                  <img alt="Crop this image to feature it" id="cropImage" style="width: 100%; height: 100%;">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'log:trip_photos_feature' trip.uuid %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="photoUUID" id="photoFeatureUUID" value="">
+                  <input type="hidden" name="cropX" id="cropX" value="">
+                  <input type="hidden" name="cropY" id="cropY" value="">
+                  <input type="hidden" name="cropWidth" id="cropWidth" value="">
+                  <input type="hidden" name="cropHeight" id="cropHeight" value="">
+                  <input type="hidden" name="cropRotate" id="cropRotate" value="">
+                  <input type="hidden" name="cropScaleX" id="cropScaleX" value="">
+                  <input type="hidden" name="cropScaleY" id="cropScaleY" value="">
+                  <input type="submit" class="btn btn-success" value="Crop">
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          // Cropping JS for featured image
+          const image_box = document.getElementById('imageBox')
+          const crop_btn = document.getElementById('cropButton')
+          const crop_image = document.getElementById('cropImage')
+          const modal_id = document.getElementById('cropModal')
+          const form = document.getElementById('cropForm')
+
+          const cropX = document.getElementById("cropX");
+          const cropY = document.getElementById("cropY");
+          const cropWidth = document.getElementById("cropWidth");
+          const cropHeight = document.getElementById("cropHeight");
+          const cropRotate = document.getElementById("cropRotate");
+          const cropScaleX = document.getElementById("cropScaleX");
+          const cropScaleY = document.getElementById("cropScaleY");
+          const photoFeatureUUID = document.getElementById("photoFeatureUUID");
+
+          // When user uploads the image this event will get triggered
+          document.querySelectorAll("span.featured-image-link").forEach(item => {
+            item.addEventListener('click', ()=>{
+              crop_image.src = item.dataset.imageSrc
+              photoFeatureUUID.value = item.dataset.photoUuid
+
+              $(modal_id).modal('show')
+
+              new Cropper(crop_image, {
+                aspectRatio: 9 / 4,
+                initialAspectRatio: 9 / 4,
+                viewMode: 3,
+                dragMode: 'none',
+                center: true,
+                crop(event) {
+                  cropX.value = event.detail.x;
+                  cropY.value = event.detail.y;
+                  cropWidth.value = event.detail.width;
+                  cropHeight.value = event.detail.height;
+                  cropRotate.value = event.detail.rotate;
+                  cropScaleX.value = event.detail.scaleX;
+                  cropScaleY.value = event.detail.scaleY;
+                },
+              })
+            });
+          });
+        </script>
+      {% endif %}
     {% endif %}
+
+    <div class="trip-feed-footer">
+      <div class="d-flex flex-row align-items-center justify-content-between">
+        {% with trip.likes_count as likes_count %}
+          {% include "logger/_htmx_trip_like.html" %}
+        {% endwith %}
+
+        {% if trip.user.allow_comments %}
+          <span class="float-end text-muted">
+            {% if trip.comments_count > 0 %}
+              <span><i class="bi bi-chat-fill me-1"></i></span> {{ trip.comments_count }}</span>
+            {% else %}
+              <span><i class="bi bi-chat"></i></span>
+            {% endif %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   {% if object_owner.allow_comments %}
     <div class="d-flex flex-row justify-content-between align-items-center mb-3 mt-5">
-      <h5 class="m-0">
-        Comments
-      </h5>
+      <h2 class="m-0">Comments</h2>
       {% include "logger/_htmx_trip_follow.html" %}
     </div>
     {% include "comments/_comments.html" with comment_obj=trip %}

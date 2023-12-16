@@ -16,9 +16,7 @@
   </div>
 {% endif %}
 
-<!-- Data blocks -->
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-  <!-- Start time-->
+<div class="row row-cols-2 row-cols-md-3 g-3">
   <div class="col">
     <span class="trip-field"><span class="d-none d-md-inline">Date/time </span>entered</span>
       <span class="d-none d-md-inline">{{ trip.start|date:"D j M y" }} &mdash; {{ trip.start|time:"H:i" }}</span>
@@ -26,7 +24,6 @@
   </div>
 
   {% if trip.end %}
-    <!-- End time -->
     <div class="col">
       <span class="trip-field"><span class="d-none d-md-inline">Date/time </span>exited</span>
       <span class="d-none d-md-inline">{{ trip.end|date:"D j M y" }} &mdash; {{ trip.end|time:"H:i" }}</span>
@@ -34,11 +31,17 @@
     </div>
   {% endif %}
 
-  <!-- Type -->
   <div class="col">
     <span class="trip-field">Trip type</span>
     {{ trip.type }}
   </div>
+
+  {% if trip.cave_region or trip.cave_country %}
+    <div class="col">
+      <span class="trip-field">Location</span>
+      {{ trip.cave_region }}
+    </div>
+  {% endif %}
 
   {% if trip.cave_coordinates and user == trip.user %}
     <div class="col">
@@ -51,7 +54,6 @@
   {% endif %}
 
   {% if trip.clubs %}
-  <!-- Clubs -->
     <div class="col">
       <span class="trip-field">Clubs</span>
       {{ trip.clubs }}
@@ -59,7 +61,6 @@
   {% endif %}
 
   {% if trip.expedition %}
-  <!-- Expedition -->
     <div class="col">
       <span class="trip-field">Expedition</span>
       {{ trip.expedition }}

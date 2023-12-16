@@ -54,7 +54,9 @@
 
     {% if user.is_authenticated %}
       {% if comment_count > 0 %}<hr class="my-4">{% endif %}
-      {% crispy comment_form %}
+      <div class="comment-form">
+        {% crispy comment_form %}
+      </div>
     {% endif %}
   {% endif %}
 {% endwith %}
