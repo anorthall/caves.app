@@ -35,6 +35,7 @@ class UserProfile(TemplateView):
         context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["user_has_trips"] = self.profile_user.trips.exists()
         context["photos"] = self.profile_user.get_photos(for_user=self.request.user)
+        context["quick_stats"] = self.profile_user.quick_stats
 
         if self.request.user not in self.profile_user.friends.all():
             if self.profile_user.allow_friend_username:

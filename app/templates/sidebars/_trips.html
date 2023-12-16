@@ -1,39 +1,34 @@
 {% load active_link_tags %}
 
-{% if user.is_authenticated %}
-  {% if trip and user == object_owner %}
-    <span class="nav-item sidebar-header">This trip</span>
-    <a class="nav-link {% active_link 'log:trip_detail' uuid=trip.uuid %}" href="{{ trip.get_absolute_url }}">
-      <i class="bi bi-info-circle-fill"></i> View trip
+{% if trip and user == object_owner %}
+  <span class="nav-item sidebar-header">This trip</span>
+  <a class="nav-link {% active_link 'log:trip_detail' uuid=trip.uuid %}" href="{{ trip.get_absolute_url }}">
+    <i class="bi bi-info-circle-fill"></i> View trip
+  </a>
+
+  <a class="nav-link {% active_link 'log:trip_update' uuid=trip.uuid %}" href="{% url 'log:trip_update' trip.uuid %}">
+    <i class="bi bi-pencil-fill"></i> Edit trip
+  </a>
+
+  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripModal">
+    <i class="bi bi-x-circle-fill"></i> Delete trip
+  </a>
+
+  <a class="nav-link {% active_link 'log:trip_photos' uuid=trip.uuid %}" href="{% url 'log:trip_photos' trip.uuid %}">
+    <i class="bi bi-images"></i> Photos
+  </a>
+{% elif trip and user != object_owner %}
+  {% if can_view_profile %}
+    <span class="nav-item sidebar-header mt-4">{{ object_owner.name }}</span>
+    <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
+      <i class="bi bi-person-fill"></i> Profile
     </a>
 
-    <a class="nav-link {% active_link 'log:trip_update' uuid=trip.uuid %}" href="{% url 'log:trip_update' trip.uuid %}">
-      <i class="bi bi-pencil-fill"></i> Edit trip
+    {% include "logger/_quick_stats.html" %}
+  {% elif can_add_friend and user.is_authenticated %}
+    <span class="nav-item sidebar-header mt-4">{{ object_owner.name }}</span>
+    <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">
+      <i class="bi bi-plus-circle-fill"></i> Add as friend
     </a>
-
-    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#deleteTripModal">
-      <i class="bi bi-x-circle-fill"></i> Delete trip
-    </a>
-
-    <a class="nav-link {% active_link 'log:trip_photos' uuid=trip.uuid %}" href="{% url 'log:trip_photos' trip.uuid %}">
-      <i class="bi bi-images"></i> Photos
-    </a>
-  {% elif trip and user != object_owner %}
-    <span class="nav-item sidebar-header mt-4">{{ object_owner.username }}</span>
-    {% if can_view_profile %}
-      <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
-        <i class="bi bi-person-fill"></i> User profile
-      </a>
-    {% endif %}
-
-    <a class="nav-link {% active_link 'log:trip_detail' uuid=trip.uuid %}" href="{{ trip.get_absolute_url }}">
-      <i class="bi bi-card-text"></i> View trip
-    </a>
-
-    {% if can_add_friend and user.is_authenticated %}
-      <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">
-        <i class="bi bi-plus-circle-fill"></i> Add as friend
-      </a>
-    {% endif %}
   {% endif %}
 {% endif %}

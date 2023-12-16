@@ -2,6 +2,7 @@ import os
 import uuid
 from typing import Union
 
+from distancefield import D
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -11,7 +12,7 @@ from django.contrib.auth.models import (
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Count, Max, Sum
 from django.urls import reverse
 from django.utils import timezone as django_tz
 from django_countries.fields import CountryField
@@ -481,6 +482,26 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         return self.trips.exclude(type=Trip.SURFACE).aggregate(Sum("duration"))[
             "duration__sum"
         ]
+
+    @property
+    def quick_stats(self):
+        qs = self.trips.exclude(type=Trip.SURFACE).aggregate(
+            qs_climbed=Sum("vert_dist_up"),
+            qs_descended=Sum("vert_dist_down"),
+            qs_surveyed=Sum("surveyed_dist"),
+            qs_resurveyed=Sum("resurveyed_dist"),
+            qs_trips=Count("pk", distinct=True),
+            qs_cavers=Count("cavers", distinct=True),
+            qs_longest_trip=Max("duration"),
+        )
+        for x in ["qs_climbed", "qs_descended", "qs_surveyed", "qs_resurveyed"]:
+            qs[x] = D(m=qs[x])
+        qs["qs_duration"] = self.total_trip_duration
+        qs["qs_friends"] = self.friends.count()
+        qs["qs_photos"] = self.get_photos().count()
+        qs["qs_joined"] = self.date_joined
+        qs["qs_last_trip"] = self.trips.order_by("-start").first()
+        return qs
 
 
 User = get_user_model()

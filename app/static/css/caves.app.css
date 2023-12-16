@@ -668,20 +668,25 @@ main {
   }
 }
 
+/* Quick stats */
+.quick-stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.quick-stat-value {
+  color: var(--bs-emphasis-color);
+}
 
 /* User profile */
-dl.user-info dt, dl.user-info dd {
-  border-bottom: 1px solid var(--bs-border-color);
-  padding-top: 0.3rem;
-  padding-bottom: 0.3rem;
+#userInfoTabContent dt {
+  font-weight: normal !important;
 }
 
-dl.user-info dd {
-  margin-bottom: 0;
-}
-
-dl.user-info dt:last-of-type, dl.user-info dd:last-of-type {
-  border-bottom: none !important;
+#userInfoTabContent dd {
+  color: var(--bs-emphasis-color);
+  margin-bottom: 0.75rem;
 }
 
 #tripsTable {

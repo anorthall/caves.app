@@ -3,44 +3,12 @@
 {% load static %}
 
 <div class="d-flex flex-column" id="profileSidebar">
-  {% comment %}
-    {% if can_add_friend and user.is_authenticated and user != profile_user %}
-      <a href="{% url 'users:friends' %}?u={{ object_owner.username }}" class="btn btn-sm btn-outline-primary mt-4">Add as friend <i class="ms-2 bi bi-person-plus-fill"></i></a>
-    {% endif %}
-  {% endcomment %}
-
-  {% if not private_profile %}
-    {% comment %}
-      {% if profile_user.clubs %}
-        <div class="card w-100 rounded-0">
-          <div class="card-body">
-            {{ profile_user.clubs }}
-          </div>
-        </div>
-      {% endif %}
-    {% endcomment %}
-
-    {% if mutual_friends %}
-      <div class="nav-item sidebar-header mb-3">
-        {% if user == profile_user %}Friends{% else %}Mutual friends{% endif %}
-      </div>
-
-      {% for friend in mutual_friends %}
-        <div class="d-flex align-items-center mb-2">
-          {% if friend.avatar %}
-            <img src="{{ friend.avatar|imgproxy:"preset:avatar_navbar" }}"
-                 class="rounded-circle me-3"
-                 alt="{{ friend.name }}'s profile picture"
-                 width="30" height="30">
-          {% else %}
-            <img src="{% static 'images/blank_profile_picture.svg' %}"
-                 class="rounded-circle me-3"
-                 alt="Blank profile picture"
-                 width="30" height="30">
-          {% endif %}
-          <span>{% user friend link_class="text-body" %}</span>
-        </div>
-      {% endfor %}
-    {% endif %}
+  {% if can_add_friend and user.is_authenticated and user != profile_user %}
+    <span class="nav-item sidebar-header mt-4">{{ profile_user.name }}</span>
+    <a class="nav-link" href="{% url 'users:friends' %}?u={{ profile_user.username }}">
+      <i class="bi bi-plus-circle-fill"></i> Add friend
+    </a>
   {% endif %}
+
+  {% include "logger/_quick_stats.html" with quick_stats=profile_user.quick_stats user=profile_user %}
 </div>

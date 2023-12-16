@@ -38,8 +38,8 @@
         {% endif %}
         {% if user_has_trips %}
           <small class="text-body-tertiary d-block mt-1 mt-md-0">
-            {% with trip_duration=profile_user.total_trip_duration %}
-              {{ profile_user.trips.count }} trips &middot; {{ profile_user.friends.all.count }} friends{% if trip_duration %} &middot; {{ trip_duration|shortdelta }}{% endif %}
+            {% with dur=quick_stats.qs_duration %}
+              {{ quick_stats.qs_trips }} trips &middot; {{ quick_stats.qs_friends }} friend{{ quick_stats.qs_friends|pluralize }}{% if dur %} &middot; {{ dur|shortdelta }}{% endif %}
             {% endwith %}
           </small>
         {% endif %}
@@ -212,13 +212,15 @@
 
         {% if stats %}
           <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
+            <h3 class="ms-1 mb-3">Yearly Statistics</h3>
             <div class="profile-stats">
-              {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="" dist_class="d-none d-xl-table-cell" %}
+              {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-hover" dist_class="d-none d-xl-table-cell" %}
             </div>
           </div>
         {% endif %}
 
         <div class="tab-pane fade" id="userInfoTabContent" role="tabpanel" aria-labelledby="userInfoTab" tabindex="0">
+          <h3 class="mb-3">Account information</h3>
           <dl class="row mb-0">
             <dt class="col-sm-4">Name</dt>
             <dd class="col-sm-8">{{ profile_user.name }}</dd>
@@ -241,9 +243,6 @@
               <dd class="col-sm-8">{{ profile_user.clubs }}</dd>
             {% endif %}
 
-            <dt class="col-sm-4">Friends</dt>
-            <dd class="col-sm-8">{{ profile_user.friends.all.count }}</dd>
-
             <dt class="col-sm-4">Units</dt>
             <dd class="col-sm-8">{{ profile_user.units }}</dd>
 
@@ -260,8 +259,8 @@
       </div>
     {% endif %}
   {% else %}
-    <h4 class="border-bottom pt-4 pb-1 mb-3">
-      <i class="bi bi-exclamation-circle-fill"></i> Oopsie...
+    <h4 class="title-underline fs-4">
+      Oopsie...
     </h4>
     <p>
       {{ profile_user.name }}'s privacy settings prevent you from viewing their profile and trip list.
