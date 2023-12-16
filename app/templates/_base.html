@@ -5,14 +5,13 @@
 
 {% block body %}
   <header>
-    {% if user.is_authenticated %}
-      <!-- Navbar -->
-      <div id="navbarContainer" class="bg-dark">
-        <nav class="navbar navbar-expand navbar-dark" id="navbarContent">
-          <div class="site-title">
-            <a href="/">{{ site_title }}</a>
-          </div>
+    <div id="navbarContainer" class="bg-dark">
+      <nav class="navbar navbar-expand navbar-dark" id="navbarContent">
+        <div class="site-title">
+          <a href="/">{{ site_title }}</a>
+        </div>
 
+        {% if user.is_authenticated %}
           <div class="navbar-nav justify-content-center align-items-center flex-grow-1" id="navbarLinks">
             {% include "_navbar_links.html" %}
           </div>
@@ -82,18 +81,14 @@
               </div>
             </div>
           </div>
-        </nav>
-      </div>
-    {% else %}
-      <nav class="navbar navbar-expand-sm navbar-light py-2" id="navbarContainer">
-        <div class="container d-flex justify-content-between">
-          <a class="site-title fs-3" href="/">{{ site_title }}</a>
-          <a class="nav-link text-white text-decoration-none" href="{% url 'users:login' %}">Login</a>
-        </div>
+        {% else %}
+          <div class="ms-auto">
+            <a class="nav-link text-white" href="{% url 'users:login' %}"><i class="bi bi-person-circle" style="font-size: 21px;"></i></a>
+          </div>
+        {% endif %}
       </nav>
-    {% endif %}
+    </div>
 
-    <!-- Messages -->
     {% include "_messages.html" %}
   </header>
 
