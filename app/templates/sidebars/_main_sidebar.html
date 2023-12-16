@@ -40,7 +40,10 @@
     <i class="bi bi-gear-fill"></i> Account
   </a>
 
-  <span class="nav-item sidebar-header">Staff</span>
+  {% if user.is_moderator or user.is_superuser %}
+    <span class="nav-item sidebar-header">Staff</span>
+  {% endif %}
+
   {% if user.is_moderator %}
     <a class="nav-link {% active_link 'staff:dashboard' %}" href="{% url 'staff:dashboard' %}">
       <i class="bi bi-pie-chart-fill"></i> Stats
