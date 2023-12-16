@@ -81,9 +81,12 @@ class SocialFeedTests(TestCase):
         response = self.client.get(reverse("log:index"))
         self.assertEqual(response.status_code, 200)
 
-        first_cave_name = response.content.split(b'<h1 class="cave-name fs-4 my-1">')[
-            1
-        ].split(b"</h1>")[0]
+        first_cave_name = (
+            response.content.split(b'<h1 class="fs-3 mb-0 text-nowrap">')[1]
+            .split(b"</a>")[0]
+            .split(b">")[1]
+            .strip(b"\n ")
+        )
         self.assertEqual(first_cave_name, b"Test Cave 1")
 
     def test_feed_ordering_by_trip_added(self):
@@ -108,9 +111,12 @@ class SocialFeedTests(TestCase):
         response = self.client.get(reverse("log:index"))
         self.assertEqual(response.status_code, 200)
 
-        first_cave_name = response.content.split(b'<h1 class="cave-name fs-4 my-1">')[
-            1
-        ].split(b"</h1>")[0]
+        first_cave_name = (
+            response.content.split(b'<h1 class="fs-3 mb-0 text-nowrap">')[1]
+            .split(b"</a>")[0]
+            .split(b">")[1]
+            .strip(b"\n ")
+        )
         self.assertEqual(first_cave_name, b"Test Cave 5")
 
     def test_setting_feed_ordering_to_invalid_value(self):

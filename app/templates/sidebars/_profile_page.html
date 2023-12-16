@@ -10,5 +10,7 @@
     </a>
   {% endif %}
 
-  {% include "logger/_quick_stats.html" with quick_stats=quick_stats user=profile_user %}
+  {% if not private_profile %}
+    {% include "logger/_quick_stats.html" with quick_stats=quick_stats user=profile_user %}
+  {% endif %}
 </div>
