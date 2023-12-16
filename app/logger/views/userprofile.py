@@ -90,7 +90,7 @@ class ProfileTripsTable(ListView):
         trips = (
             Trip.objects.filter(user=self.profile_user)
             .select_related("user")
-            .prefetch_related("photos")
+            .prefetch_related("photos", "cavers")
         )
 
         if query:
