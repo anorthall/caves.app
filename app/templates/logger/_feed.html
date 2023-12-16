@@ -57,14 +57,14 @@
       <div class="p-2">
         <div id="gallery-{{ trip.uuid }}-big" class="trip-feed-gallery d-none d-sm-block">
           {% for photo in trip.feed_photos %}
-            {% include "logger/_feed_gallery_item.html" %}
+            {% include "logger/_feed_gallery_item.html" with gallery_name="-big" %}
           {% endfor %}
         </div>
 
         <div id="gallery-{{ trip.uuid }}-small" class="trip-feed-gallery d-sm-none">
           {% for photo in trip.feed_photos %}
             {% if forloop.counter <= 5 %}
-              {% include "logger/_feed_gallery_item.html" %}
+              {% include "logger/_feed_gallery_item.html" with gallery_name="-small" %}
             {% endif %}
           {% endfor %}
         </div>

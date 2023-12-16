@@ -113,13 +113,13 @@
     {% if photos %}
       <div id="imageGalleryBig" class="d-none d-sm-block">
         {% for photo in photos %}
-          {% include "logger/_trip_detail_gallery_item.html" %}
+          {% include "logger/_trip_detail_gallery_item.html" with gallery_name="galleryBig"%}
         {% endfor %}
       </div>
 
       <div id="imageGallerySmall" class="d-sm-none">
         {% for photo in photos %}
-          {% include "logger/_trip_detail_gallery_item.html" %}
+          {% include "logger/_trip_detail_gallery_item.html" with gallery_name="gallerySmall" %}
         {% endfor %}
       </div>
 

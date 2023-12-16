@@ -23,8 +23,6 @@
     <a class="nav-link" href="{% url 'log:user' username=object_owner.username %}">
       <i class="bi bi-person-fill"></i> Profile
     </a>
-
-    {% include "logger/_quick_stats.html" %}
   {% elif can_add_friend and user.is_authenticated %}
     <span class="nav-item sidebar-header mt-4">{{ object_owner.name }}</span>
     <a class="nav-link" href="{% url 'users:friends' %}?u={{ object_owner.username }}">
