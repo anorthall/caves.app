@@ -42,10 +42,10 @@
               title: "{{ marker.title }}",
               position: { lat: {{ marker.lat }}, lng: {{ marker.lng }}},
               description: `
-  <h5 class='mt-2'>{{ marker.title }}</h5>
-  <p>
+  <h5 class='mt-2 text-dark'>{{ marker.title }}</h5>
+  <p class='text-dark'>
     You visited this location {{ marker.visits }} time{{ marker.visits|pluralize }}.<br>
-    The last time you visited was <a href="{{ marker.last_trip_url }}">{{ marker.last_visit|date }}.</a>
+    The last time you visited was <a class='link-dark' href="{{ marker.last_trip_url }}">{{ marker.last_visit|date }}</a>.
   </p>
   `,
             },
