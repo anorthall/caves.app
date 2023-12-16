@@ -260,16 +260,16 @@ if AWS_STORAGE_BUCKET_NAME:  # pragma: no cover
                 "location": PHOTOS_STORAGE_LOCATION,
             },
         },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
     }
 else:
     MEDIA_URL = "/media/"
     MEDIA_ROOT = os.environ.get("MEDIA_ROOT", "/app/mediafiles")
     STORAGES = {
         "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {
+                "location": MEDIA_STORAGE_LOCATION,
+            },
         },
         "photos": {
             "BACKEND": "storages.backends.s3.S3Storage",
@@ -277,11 +277,12 @@ else:
                 "location": PHOTOS_STORAGE_LOCATION,
             },
         },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
     }
 
+# Same staticfiles storage for development and production
+STORAGES["staticfiles"] = {
+    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+}
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
