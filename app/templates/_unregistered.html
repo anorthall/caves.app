@@ -25,12 +25,13 @@
     <div class="container">
       <div class="row {% if not form.errors and not messages %}my-5{% endif %}">
         <div class="col-12 col-md-8 mx-auto">
-          {% if form.errors or messages %}
-            <div class="mt-5 mb-4">
-              {% include "_messages.html" %}
-            </div>
-          {% endif %}
           <div class="{% block content_class %}text-limit-length{% endblock %}">
+            {% if form.errors or messages %}
+              <div class="mt-5 mb-4">
+                {% include "_messages.html" %}
+              </div>
+            {% endif %}
+
             {% block content %}{% endblock %}
 
             <footer class="text-muted mt-5">
