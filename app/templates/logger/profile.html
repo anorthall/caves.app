@@ -17,6 +17,10 @@
   {% endif %}
 {% endblock %}
 
+{% block footer_scripts %}
+  {% include "_bs_tooltips.html" %}
+{% endblock %}
+
 {% block title %}{{ profile_user }}'s profile on caves.app{% endblock %}
 {% block meta_tags %}<meta name="author" content="{{ profile_user.name }}">{% endblock %}
 
@@ -71,14 +75,16 @@
         <li class="nav-item" role="presentation">
           <button class="nav-link text-body-emphasis active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent"
                   type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">
-            Trips
+              <span class="d-none d-sm-inline">Trips</span>
+              <span class="d-sm-none"><i class="bi bi-list-columns"></i></span>
           </button>
         </li>
         {% if photos %}
           <li class="nav-item" role="presentation">
             <button class="nav-link text-body-emphasis" id="photosTab" data-bs-toggle="tab" data-bs-target="#photosTabContent"
                     type="button" role="tab" aria-controls="photosTabContent" aria-selected="false">
-              Photos
+              <span class="d-none d-sm-inline">Photos</span>
+              <span class="d-sm-none"><i class="bi bi-image-fill"></i></span>
             </button>
           </li>
         {% endif %}
@@ -86,7 +92,8 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link text-body-emphasis" id="friendsTab" data-bs-toggle="tab" data-bs-target="#friendsTabContent"
                     type="button" role="tab" aria-controls="friendsTabContent" aria-selected="false">
-              Friends
+              <span class="d-none d-sm-inline">Friends</span>
+              <span class="d-sm-none"><i class="bi bi-people-fill"></i></span>
             </button>
           </li>
         {% endif %}
@@ -94,14 +101,16 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link text-body-emphasis" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent"
                     type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">
-              Statistics
+              <span class="d-none d-sm-inline">Statistics</span>
+              <span class="d-sm-none"><i class="bi bi-bar-chart-fill"></i></span>
             </button>
           </li>
         {% endif %}
         <li class="nav-item" role="presentation">
           <button class="nav-link text-body-emphasis" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent"
                   type="button" role="tab" aria-controls="userInfoTabContent" aria-selected="false">
-            Info
+            <span class="d-none d-sm-inline">Info</span>
+            <span class="d-sm-none"><i class="bi bi-info-circle-fill"></i></span>
           </button>
         </li>
       </ul>
