@@ -155,8 +155,11 @@
             ]
 
             const gallery = $("#imageGallery");
-            const photoStep = 40;
-            let photoIndex = photoStep;
+            let photoStep = 40;
+
+            if (photos.length < photoStep) {
+              photoStep = photos.length;
+            }
 
             /* Load initial 20 images into gallery */
             for (let i = 0; i < photoStep; i++) {
@@ -169,6 +172,8 @@
                  </div>`
               );
             }
+
+            let photoIndex = photoStep;
 
             gallery.justifiedGallery({
               rowHeight: 200,
