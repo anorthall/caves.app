@@ -41,7 +41,7 @@ class Process(LoginRequiredMixin, View):
         form = ImportUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             error_msg = (
-                "<strong>Error:</strong> Unable to process the uploaded file. "
+                "Unable to process the uploaded file. "
                 "Please check that you are uploading a CSV file with between 1 "
                 "and 50 data rows. "
             )
