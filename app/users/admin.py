@@ -115,7 +115,6 @@ class CavingUserAdmin(BaseUserAdmin, ModelAdmin):
                     "allow_friend_username",
                     "allow_comments",
                     "public_statistics",
-                    "private_notes",
                     "email_friend_requests",
                 ),
             },

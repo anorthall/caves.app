@@ -285,7 +285,6 @@ class SettingsChangeForm(forms.ModelForm):
             "privacy",
             "units",
             "timezone",
-            "private_notes",
             "allow_friend_username",
             "allow_friend_email",
             "allow_comments",
@@ -311,7 +310,6 @@ class SettingsChangeForm(forms.ModelForm):
                 css_class="row row-cols-1 row-cols-xl-3 mt-4",
             ),
             Div(
-                Div("private_notes", css_class="col"),
                 Div("allow_friend_username", css_class="col"),
                 Div("allow_friend_email", css_class="col"),
                 Div("allow_comments", css_class="col"),

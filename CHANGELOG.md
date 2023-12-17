@@ -16,6 +16,9 @@ Version 2.0 was released on Sunday, 17th December, 2023.
 - A new navbar and three column layout, and new notifications panel and dropdown menu.
 - A new quick stats feature on user profiles.
 - Numerous bugfixes and optimisations to backend code.
+- The 'trip report' field has been renamed to 'public notes'. The 'notes' field has been renamed
+to 'private notes'. Private notes are always private, public notes are always visible to anyone who
+can view the trip.
 
 ### All changes
 #### General changes
@@ -29,6 +32,9 @@ Version 2.0 was released on Sunday, 17th December, 2023.
 - All duration displays have been standardised to a *24h 0m* format.
 - The search page has been temporarily removed until it can be improved.
 - Most long form text on caves.app now uses a sensible line length for ease of reading.
+- The 'trip report' field has been renamed to 'public notes'. The 'notes' field has been renamed
+to 'private notes'. Private notes are always private, public notes are always visible to anyone who
+can view the trip.
 
 #### User profiles
 - A new header section shows the user and their avatar more prominently.
@@ -51,8 +57,9 @@ sidebar.
 - A new justified photo gallery is now shown.
 - Users can select a featured photo for each trip which will be displayed in the header.
 - The header section has been redesigned to be more readable.
-- Trip reports now *only* support Markdown - the previous rich text editor is no longer used.
-- Images are no longer allowed in trip reports.
+- Public notes (formerly trip reports) now *only* support Markdown - the previous rich
+text editor is no longer used.
+- Images are no longer allowed in public notes.
 - Several bugs were fixed that related to viewing trips when not logged in.
 
 #### Trip photos page
@@ -62,12 +69,12 @@ sidebar.
 #### Trip feed page
 - The trip feed has been redesigned to be inkeeping with the new design of the trip detail page.
 - A featured photo, if selected, will be used as a header background for each trip.
-- Trip reports are now shown on the trip detail page, truncated depending on screen size.
+- Public notes are now shown on the trip feed page, truncated depending on screen size.
 - Several bugs were fixed that related to viewing trips when not logged in.
 
 #### Trip add/edit page
-- The rich text editor for trip reports has been replaced with a plain text area.
-- A help link for Markdown has been added under the trip report field.
+- The rich text editor for public notes (formerly trip reports) has been replaced with a plain text area.
+- A help link for Markdown has been added under the public notes field.
 - The caver select field has been restyled to allow for dark mode.
 
 #### Cave map page

@@ -62,11 +62,6 @@
               {{ trip.cavers.all|join:", " }}
             </li>
           {% endif %}
-          {% if trip.notes %}
-            <li class="list-group-item">
-              {{ trip.notes|linebreaks }}
-            </li>
-          {% endif %}
         </ul>
       </div>
     {% endfor %}

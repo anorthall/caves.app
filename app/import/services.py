@@ -24,7 +24,8 @@ FIELD_MAP = (
     ("surveyed_dist", "Surveyed dist"),
     ("resurveyed_dist", "Resurveyed dist"),
     ("aid_dist", "Aid dist"),
-    ("notes", "Notes"),
+    ("notes", "Private notes"),
+    ("public_notes", "Public notes"),
 )
 
 

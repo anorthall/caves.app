@@ -97,14 +97,6 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
         )
         return qs
 
-    def get_object(self, *args, **kwargs):
-        """Sanitise the Trip for the current user"""
-        obj = super().get_object(*args, **kwargs)
-        if obj.user == self.request.user:
-            return obj
-        else:
-            return obj.sanitise(self.request.user)
-
     def get_context_data(self, *args, **kwargs):
         """Add the string of users that liked the trip to the context"""
         context = super().get_context_data(*args, **kwargs)

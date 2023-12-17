@@ -94,11 +94,13 @@ class TripImportForm(BaseTripForm):
             "resurveyed_dist",
             "aid_dist",
             "notes",
+            "public_notes",
         ]
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "end": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "notes": forms.Textarea(attrs={"rows": 3}),
+            "public_notes": forms.Textarea(attrs={"rows": 3}),
         }
 
 
@@ -157,6 +159,10 @@ class TripImportFormsetHelper(FormHelper):
                 ),
                 Div(
                     Field("notes", wrapper_class="col-12"),
+                    css_class="row mt-2",
+                ),
+                Div(
+                    Field("public_notes", wrapper_class="col-12"),
                     css_class="row mt-2",
                 ),
                 css_class="mt-4",

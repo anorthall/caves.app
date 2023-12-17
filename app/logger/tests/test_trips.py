@@ -370,7 +370,8 @@ class TripModelTests(TestCase):
         self.assertContains(response, "Cave name")
         self.assertContains(response, "Region")
         self.assertContains(response, "Country")
-        self.assertContains(response, "Trip notes")
+        self.assertContains(response, "Private notes")
+        self.assertContains(response, "Public notes")
         self.assertContains(response, "Create trip")
 
         response = self.client.post(
@@ -503,7 +504,8 @@ class TripModelTests(TestCase):
         self.assertContains(response, "Cave name")
         self.assertContains(response, "Region")
         self.assertContains(response, "Country")
-        self.assertContains(response, "Trip notes")
+        self.assertContains(response, "Public notes")
+        self.assertContains(response, "Private notes")
         self.assertContains(response, "Update trip")
         self.assertContains(response, self.trip.cave_name)
 

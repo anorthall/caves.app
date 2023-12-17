@@ -191,24 +191,6 @@
           </div>
         </div>
 
-        <div class="row p-1 border-bottom">
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
-            Trip notes
-          </div>
-
-          <div class="col account-info-data">
-            {% if user.is_private %}
-              If you select a trip to be public, the notes will be {% if user.private_notes %}hidden{% else %}shown{% endif %}.
-            {% else %}
-              {% if user.private_notes %}
-                Your trip notes are hidden.
-              {% else %}
-                Your trip notes are public, unless the trip is set to private.
-              {% endif %}
-            {% endif %}
-          </div>
-        </div>
-
         <div class="row p-1">
           <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
             Biography

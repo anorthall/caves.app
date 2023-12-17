@@ -135,8 +135,8 @@ class TripAdmin(ModelAdmin):
                 ),
             },
         ),
-        ("Notes", {"fields": ("notes",)}),
-        ("Trip report", {"fields": ("trip_report",)}),
+        ("Private notes", {"fields": ("notes",)}),
+        ("Public notes", {"fields": ("public_notes",)}),
     )
 
 

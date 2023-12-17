@@ -38,9 +38,7 @@ def trip_search(*, terms, for_user, search_user=None, type=None, fields=None) ->
     results = results.select_related("user").prefetch_related("user__friends")
 
     # Remove trips that the user doesn't have permission to view
-    sanitised_results = [
-        x.sanitise(for_user) for x in results if x.is_viewable_by(for_user)
-    ]
+    sanitised_results = [x for x in results if x.is_viewable_by(for_user)]
 
     return sanitised_results
 
@@ -63,10 +61,5 @@ def _build_search_field_queries(terms, fields, for_user) -> Q:
         queries |= Q(clubs__unaccent__icontains=terms)
     if "expedition" in fields or not fields:
         queries |= Q(expedition__unaccent__icontains=terms)
-    if "notes" in fields or not fields:
-        queries |= Q(
-            Q(user__private_notes=False) | Q(user=for_user),
-            notes__unaccent__icontains=terms,
-        )
 
     return queries

@@ -73,69 +73,6 @@ class TripSearchTests(TestCase):
         self.assertContains(response, "Username not found.")
 
     @tag("privacy")
-    def test_private_notes_do_not_appear_in_results(self):
-        """Test that private notes do not appear in search results"""
-        self.client.force_login(self.user2)
-
-        # First check the notes appear when private notes is disabled
-        test_finder = str(uuid.uuid4())
-        test_identifier = str(uuid.uuid4())
-        trip = TripFactory(user=self.user, cave_name=test_finder, notes=test_identifier)
-        trip.privacy = Trip.PUBLIC
-        trip.save()
-
-        self.user.private_notes = False
-        self.user.save()
-
-        response = self.client.post(
-            reverse("log:search"),
-            {
-                "terms": test_finder,
-                "trip_type": "Any",
-            },
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, test_identifier)
-        self.assertContains(response, trip.get_absolute_url())
-
-        # Now check the notes do not appear when private notes is enabled
-        self.user.private_notes = True
-        self.user.save()
-
-        response = self.client.post(
-            reverse("log:search"),
-            {
-                "terms": test_finder,
-                "trip_type": "Any",
-            },
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, trip.get_absolute_url())
-        self.assertNotContains(response, test_identifier)
-
-    def test_private_notes_appear_in_results_when_searching_own_trips(self):
-        """Test that private notes appear in search results when searching own trips"""
-        self.client.force_login(self.user)
-
-        test_finder = str(uuid.uuid4())
-        test_identifier = str(uuid.uuid4())
-        trip = TripFactory(user=self.user, cave_name=test_finder, notes=test_identifier)
-
-        self.user.private_notes = True
-        self.user.save()
-
-        response = self.client.post(
-            reverse("log:search"),
-            {
-                "terms": test_finder,
-                "trip_type": "Any",
-            },
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, trip.get_absolute_url())
-        self.assertContains(response, test_identifier)
-
-    @tag("privacy")
     def test_private_trips_do_not_appear_in_search_results(self):
         """Test that private trips do not appear in search results"""
         self.client.force_login(self.user2)
@@ -181,7 +118,9 @@ class TripSearchTests(TestCase):
 
         test_finder = str(uuid.uuid4())
         test_identifier = str(uuid.uuid4())
-        trip = TripFactory(user=self.user, cave_name=test_finder, notes=test_identifier)
+        trip = TripFactory(
+            user=self.user, cave_name=test_finder, cave_entrance=test_identifier
+        )
 
         trip.privacy = Trip.PRIVATE
         trip.save()

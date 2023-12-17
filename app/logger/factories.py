@@ -211,6 +211,7 @@ class TripFactory(DjangoModelFactory):
         elements=[Trip.PUBLIC, Trip.FRIENDS, Trip.PRIVATE, Trip.DEFAULT],
     )
     notes = factory.Faker("text", max_nb_chars=400)
+    public_notes = factory.Faker("text", max_nb_chars=1500)
 
     @factory.lazy_attribute
     def end(self):

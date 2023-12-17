@@ -128,7 +128,7 @@ class TripExporter(Exporter):
         "resurveyed_dist",
         "aid_dist",
         "notes",
-        "trip_report",
+        "public_notes",
         "added",
         "updated",
         "privacy",

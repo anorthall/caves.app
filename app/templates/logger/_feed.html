@@ -38,15 +38,15 @@
     <div class="trip-feed-content">
       {% include "logger/_trip_data_blocks.html" %}
 
-      {% if trip.trip_report %}
+      {% if trip.public_notes %}
         <div class="row row-cols-1 mt-3">
           <div class="col">
-            <small class="trip-field">Trip report</small>
+            <small class="trip-field">{% if user == trip.user %}Public notes{% else %}Notes{% endif %}</small>
             <div class="no-paragraph-mb d-none d-sm-block">
-              {{ trip.trip_report|markdownify:"plain"|truncatechars_html:800 }}
+              {{ trip.public_notes|markdownify:"plain"|truncatechars_html:800 }}
             </div>
             <div class="no-paragraph-mb d-sm-none">
-              {{ trip.trip_report|markdownify:"plain"|truncatechars_html:300 }}
+              {{ trip.public_notes|markdownify:"plain"|truncatechars_html:300 }}
             </div>
           </div>
         </div>

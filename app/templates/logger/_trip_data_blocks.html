@@ -45,7 +45,7 @@
 
   {% if trip.cave_coordinates and user == trip.user %}
     <div class="col">
-      <span class="trip-field">Cave location <i class="bi bi-lock-fill ms-1" title="Visible only to you"></i></span>
+      <span class="trip-field">Cave location <i class="bi bi-lock-fill ms-1" data-bs-toggle="tooltip" title="Visible only to you"></i></span>
       <a target="_blank" class="link-secondary"
          href="https://www.google.com/maps/search/?api=1&query={{ trip.latitude|urlencode }},{{ trip.longitude|urlencode }}">
         {{ trip.latitude|floatformat:5 }}, {{ trip.longitude|floatformat:5 }}

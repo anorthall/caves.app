@@ -298,14 +298,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "beneath each trip on your profile trip list."
         ),
     )
-    private_notes = models.BooleanField(
-        "Keep notes private",
-        default=True,
-        help_text=(
-            "Enable this option to prevent your trip notes being "
-            "displayed to other users when they view your trips."
-        ),
-    )
 
     # Custom fields
     custom_field_1_label = models.CharField(

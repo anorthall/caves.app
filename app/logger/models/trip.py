@@ -294,21 +294,21 @@ class Trip(models.Model):
         blank=True,
     )
 
-    # Notes and trip report
+    # Notes
     notes = models.TextField(
         blank=True,
+        verbose_name="private notes",
         help_text=(
-            "Trip notes should contain brief details of the trip, and may be "
-            "private depending on your account settings. For full trip reports, "
-            "use the trip report field below."
+            "Notes that will only ever be visible to you. "
+            "Some <a href='https://www.markdownguide.org/basic-syntax/'>Markdown</a> "
+            "is supported."
         ),
     )
 
-    trip_report = models.TextField(
+    public_notes = models.TextField(
         blank=True,
         help_text=(
-            "Trip reports are full, article style reports of a trip and will be "
-            "visible to anyone who can view the trip. "
+            "These notes will be visible to anyone who can view the trip. "
             "Some <a href='https://www.markdownguide.org/basic-syntax/'>Markdown</a> "
             "is supported."
         ),
@@ -409,12 +409,6 @@ class Trip(models.Model):
 
     def get_absolute_url(self):
         return reverse("log:trip_detail", args=[self.uuid])
-
-    def sanitise(self, user_viewing):
-        """Sanitise the trip for viewing by another user"""
-        if user_viewing != self.user and self.user.private_notes is True:
-            self.notes = None
-        return self
 
     def is_viewable_by(self, user_viewing, /, friends=None):
         """Returns whether or not user_viewing can view this trip"""

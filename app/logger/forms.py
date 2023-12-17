@@ -101,7 +101,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
             "custom_field_3",
             "custom_field_4",
             "custom_field_5",
-            "trip_report",
+            "public_notes",
         ]
         widgets = {
             "start": forms.DateTimeInput(attrs={"type": "datetime-local"}),
@@ -122,7 +122,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
         self.user = user
         self.has_custom_fields = False
         self.fields["notes"].label = ""
-        self.fields["trip_report"].label = ""
+        self.fields["public_notes"].label = ""
         self.helper = FormHelper()
         self.helper.form_method = "post"
 
@@ -205,13 +205,13 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
                 css_class="mt-4",
             ),
             Fieldset(
-                "Trip notes",
+                "Private notes",
                 "notes",
                 css_class="mt-4",
             ),
             Fieldset(
-                "Trip report",
-                "trip_report",
+                "Public notes",
+                "public_notes",
                 css_class="mt-4",
             ),
         )
@@ -311,7 +311,6 @@ class TripSearchForm(forms.Form):
     cavers = forms.BooleanField(initial=True, required=False)
     clubs = forms.BooleanField(initial=False, required=False)
     expedition = forms.BooleanField(initial=False, required=False)
-    notes = forms.BooleanField(initial=False, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -341,7 +340,6 @@ class TripSearchForm(forms.Form):
                 Div("cavers", css_class="col"),
                 Div("clubs", css_class="col"),
                 Div("expedition", css_class="col"),
-                Div("notes", css_class="col"),
                 css_class="row row-cols-2 row-cols-lg-3 mt-3",
             ),
         )
