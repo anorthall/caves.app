@@ -39,7 +39,7 @@ crispy-bootstrap5==2023.10
     # via -r config/requirements/requirements.in
 dj-database-url==2.1.0
     # via -r config/requirements/requirements.in
-django==5.0
+django==4.2
     # via
     #   -r config/requirements/requirements.in
     #   crispy-bootstrap5
