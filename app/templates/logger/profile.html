@@ -33,11 +33,18 @@
   <div class="d-flex flex-column flex-md-row justify-content-start align-items-center mb-5">
     {% include "users/_profile_picture.html" with photo_user=profile_user link=True %}
     <div class="ms-md-5 text-center text-md-start mt-4 mt-md-0">
-      <h1 class="fs-3 mb-0">{{ profile_user.name }}</h1>
-      {% if not profile_user.private_profile %}
+      <h1 class="fs-3 mb-0">
+        {{ profile_user.name }}
+        {% if can_add_friend and user.is_authenticated and user != profile_user %}
+          <a class="ms-1 d-none d-md-inline text-secondary small" title="Add friend" data-bs-toggle="tooltip" href="{% url 'users:friends' %}?u={{ profile_user.username }}">
+            <i class="bi bi-plus-circle-fill"></i>
+          </a>
+        {% endif %}
+      </h1>
+      {% if not private_profile %}
         {% if profile_user.location or profile_user.country %}
           <small class="text-muted d-block mt-1 mt-md-0">
-            {{ profile_user.location }}{% if profile_user.country %} &middot; {{ profile_user.country.name }}{% endif %}
+            {{ profile_user.location }}{% if profile_user.country and profile_user.location %} &middot; {% endif %}{{ profile_user.country.name }}
           </small>
         {% endif %}
         {% if user_has_trips %}
@@ -48,9 +55,14 @@
           </small>
         {% endif %}
       {% else %}
-        <small class="text-muted">
+        <small class="text-muted d-block">
           Private profile
         </small>
+      {% endif %}
+      {% if can_add_friend and user.is_authenticated and user != profile_user %}
+        <a class="btn btn-sm btn-outline-secondary mt-2 hide-with-right-sidebar d-md-none" href="{% url 'users:friends' %}?u={{ profile_user.username }}">
+          <i class="bi bi-plus-circle-fill me-1"></i> Add friend
+        </a>
       {% endif %}
     </div>
   </div>
