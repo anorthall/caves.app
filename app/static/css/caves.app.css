@@ -668,6 +668,23 @@ main {
   }
 }
 
+/* Quick friends */
+.quick-friends {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
+.quick-friends img {
+  max-width: 40px;
+  height: auto;
+  padding: 1px;
+  margin-bottom: 2px;
+  box-shadow: var(--bs-box-shadow-sm);
+  border-radius: var(--bs-border-radius);
+}
+
 /* Quick stats */
 .quick-stat {
   display: flex;
