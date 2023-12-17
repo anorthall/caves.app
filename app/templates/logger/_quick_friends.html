@@ -1,13 +1,15 @@
 {% load static %}
 {% load core_tags %}
 
-<span class="nav-item sidebar-header">Friends</span>
-<div class="quick-friends">
-  {% for friend in friends %}
-    {% if friend.avatar %}
-      <a href="{% url 'log:user' friend.username %}">
-        <img src="{{ friend.avatar|imgproxy:"preset:avatar_navbar" }}" alt="{{ friend.name }}" data-bs-toggle="tooltip" title="{{ friend.name }}">
-      </a>
-    {% endif %}
-  {% endfor %}
-</div>
+{% with friends_list=friends %}
+  {% if friends_list %}<span class="nav-item sidebar-header">Friends</span>{% endif %}
+  <div class="quick-friends">
+    {% for friend in friends_list %}
+      {% if friend.avatar %}
+        <a href="{% url 'log:user' friend.username %}">
+          <img src="{{ friend.avatar|imgproxy:"preset:avatar_navbar" }}" alt="{{ friend.name }}" data-bs-toggle="tooltip" title="{{ friend.name }}">
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endwith %}
