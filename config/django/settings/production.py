@@ -37,3 +37,8 @@ GOOGLE_ANALYTICS_ID = env("GOOGLE_ANALYTICS_ID", "")
 
 # Ratelimiting IP config
 RATELIMIT_IP_META_KEY = env("RATELIMIT_IP_META_KEY", "HTTP_X_FORWARDED_FOR")
+
+# Compress static files
+STORAGES["staticfiles"] = {
+    "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+}

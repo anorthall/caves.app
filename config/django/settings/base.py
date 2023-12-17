@@ -279,7 +279,6 @@ else:
         },
     }
 
-# Same staticfiles storage for development and production
 STORAGES["staticfiles"] = {
     "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
 }
