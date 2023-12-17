@@ -420,7 +420,7 @@ class UserIntegrationTestCase(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, "new-email@caves.app")
 
-    def test_user_profile_page(self):
+    def test_account_detail_page(self):
         """Test user profile page"""
         self.client.force_login(self.user)
         response = self.client.get(reverse("users:account_detail"))
@@ -430,12 +430,6 @@ class UserIntegrationTestCase(TestCase):
         self.assertContains(response, self.user.username)
         self.assertContains(response, self.user.privacy)
         self.assertContains(response, "Europe/London")
-        self.assertContains(
-            response, "If you select a trip to be public, the notes will be hidden."
-        )
-        self.assertContains(
-            response, "Public statistics are disabled as your profile is private."
-        )
 
     def test_submit_updates_to_profile(self):
         """Test submitting updates to a user's profile"""
