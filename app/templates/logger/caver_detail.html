@@ -7,8 +7,12 @@
 {% block title %}{{ caver.name }}{% endblock %}
 {% block description %}A list of trips you've been on with {{ caver.name }}{% endblock %}
 
+{% block footer_scripts %}
+  {% include "_bs_tooltips.html" %}
+{% endblock %}
+
 {% block main %}
-  <h1 class="title-underline">{{ caver.name }} <small class="text-muted" data-bs-tooltip="The unique ID of this caver">#{{ caver.pk }}</small></h1>
+  <h1 class="title-underline">{{ caver.name }} <small class="text-muted" data-bs-toggle="tooltip" title="The unique ID of this caver">#{{ caver.pk }}</small></h1>
 
   {% if trips %}
     <p>
