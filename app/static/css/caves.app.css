@@ -964,10 +964,6 @@ main.home {
 
 
 /* Headers */
-h2, h3, h4, h5, h6 {
-    margin-top: 1.5rem !important;
-}
-
 h1 {
   font-size: 1.5rem !important;
   margin-bottom: 1rem !important;
@@ -986,6 +982,11 @@ h3 {
 #changelog h1, #changelog h2, #changelog h3, .title-underline {
   padding-bottom: 0.25rem !important;
   border-bottom: 1px solid var(--bs-border-color) !important;
+}
+
+#changelog h2, #changelog h3, #changelog h4,
+#changelog h5, #changelog h6 {
+    margin-top: 1.5rem !important;
 }
 
 h4, h5, h6 {
