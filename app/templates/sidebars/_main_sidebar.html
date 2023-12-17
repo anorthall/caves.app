@@ -60,7 +60,7 @@
   {% endif %}
 
   {% if user.is_superuser %}
-    <a class="nav-link" href="{% url 'admin:index' %}" hx-boost="false">
+    <a class="nav-link" href="{% url 'admin:index' %}">
       <i class="bi bi-database-fill-gear"></i> Admin
     </a>
   {% endif %}
