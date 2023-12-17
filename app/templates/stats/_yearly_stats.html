@@ -83,8 +83,16 @@
   </table>
 </div>
 
-<div class="small text-muted text-center fake-link" data-bs-toggle="modal" data-bs-target="#annualStatsLegendModal">
-  Legend
+<div class="d-flex justify-content-center align-items-center text-muted small w-100">
+  <span class="fake-link" data-bs-toggle="modal" data-bs-target="#annualStatsLegendModal">
+    Legend
+  </span>
+
+  {% if show_stats_link %}
+    <span>
+      <span class="mx-2">&middot;</span><a href="{% url 'stats:index' %}" class="text-muted text-decoration-none">Full stats</a>
+    </span>
+  {% endif %}
 </div>
 
 <div class="modal modal-lg fade" id="annualStatsLegendModal" tabindex="-1">

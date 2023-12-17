@@ -257,7 +257,7 @@
           <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
             <h3 class="ms-1 my-3">Yearly Statistics</h3>
             <div class="profile-stats">
-              {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-hover" dist_class="d-none d-xl-table-cell" %}
+              {% include "stats/_yearly_stats.html" with show_stats_link=True stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-hover" dist_class="d-none d-xl-table-cell" %}
             </div>
           </div>
         {% endif %}
