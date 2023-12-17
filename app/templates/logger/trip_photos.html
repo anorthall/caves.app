@@ -28,6 +28,7 @@
     const trip_uuid = "{{ trip.uuid }}";
     const upload_url = "{% url 'log:trip_photos_upload' %}";
     const upload_success_url = "{% url 'log:trip_photos_upload_success' %}";
+    const upload_success_redirect_url = "{% url 'log:trip_detail' trip.uuid %}";
 
   </script>
   <script type="module" src="{% static 'js/uppy.js/bundle.js' %}"></script>

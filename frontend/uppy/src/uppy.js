@@ -72,3 +72,11 @@ uppy.on('upload-success', (file, data) => {
         return response.json()
     })
 });
+
+uppy.on('complete', (result) => {
+  if (result.failed.length === 0) {
+    setTimeout(function() {
+      window.location.href = upload_success_redirect_url;
+    }, 1000);
+  }
+});
