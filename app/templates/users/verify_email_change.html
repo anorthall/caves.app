@@ -1,19 +1,20 @@
 {% extends "users/crispy_form.html" %}
 
 {% block title %}Verify email change{% endblock %}
+{% block form_class %}text-limit-length{% endblock %}
 
 {% block text %}
   <div class="mb-4">
-    <h3 class="title-underline">
+    <h1 class="title-underline">
       Verify email change
-    </h3>
+    </h1>
 
-    <p class="lead">
+    <p class="lead text-limit-length">
       You're almost there! Just one more thing - you need to verify your
       new email address before it is updated on your account.
     </p>
 
-    <p>
+    <p class="text-limit-length">
       Please check your email for a unique link that can be used to verify
       your new email address. Alternatively, if you only receive text based
       emails, you can copy and paste the code you received into the field below.
