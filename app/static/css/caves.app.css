@@ -7,6 +7,7 @@
 body {
   height: 100%;
   font-family: 'Lato', sans-serif !important;
+  overflow-y: hidden;
 }
 
 h1, h2, h3, h4, h5, h6, .fs-1, .fs-2, .fs-3, .fs-4, .fs-5, .fs-6, .site-title {
