@@ -627,6 +627,11 @@ main {
     color: var(--bs-light) !important;
   }
 
+  .select2-selection__choice {
+    background-color: var(--bs-dark-bg-subtle) !important;
+    color: var(--bs-body-color) !important;
+  }
+
   .select2-search__field {
     color: var(--bs-body-color) !important;
   }
