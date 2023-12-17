@@ -964,6 +964,10 @@ main.home {
 
 
 /* Headers */
+h2, h3, h4, h5, h6 {
+    margin-top: 1.5rem !important;
+}
+
 h1 {
   font-size: 1.5rem !important;
   margin-bottom: 1rem !important;
