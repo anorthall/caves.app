@@ -2,6 +2,8 @@
  * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
  * Copyright 2011-2023 The Bootstrap Authors
  * Licensed under the Creative Commons Attribution 3.0 Unported License.
+ *
+ * Modified by Andrew Northall <andrew@northalL.me.uk>, December 2023.
  */
 
 const getStoredTheme = () => localStorage.getItem('theme')
