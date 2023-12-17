@@ -347,11 +347,10 @@ class ProfileChangeForm(forms.ModelForm):
             "country",
             "bio",
             "clubs",
-            # "instagram",
-            # "facebook",
-            # "discord",
-            # "x_username",
-            # "website",
+            "instagram",
+            "facebook",
+            "x_username",
+            "website",
         )
 
     def __init__(self, *args, **kwargs):
@@ -364,8 +363,7 @@ class ProfileChangeForm(forms.ModelForm):
                 Div("name", css_class="col"),
                 Div("username", css_class="col"),
                 Div("location", css_class="col"),
-                # TODO: Enable when django-countries is updated for Django 5.0
-                # Div("country", css_class="col"),
+                Div("country", css_class="col"),
                 css_class="row row-cols-1 row-cols-lg-2",
             ),
             HTML(
@@ -387,18 +385,23 @@ class ProfileChangeForm(forms.ModelForm):
                 ),
                 css_class="mt-4",
             ),
-            # Fieldset(  TODO: Add social media fields
-            #     "Social media",
-            #     Div(
-            #         Div("instagram", css_class="col"),
-            #         Div("facebook", css_class="col"),
-            #         Div("discord", css_class="col"),
-            #         Div("x_username", css_class="col"),
-            #         Div("website", css_class="col"),
-            #         css_class="row row-cols-1 row-cols-lg-2",
-            #     ),
-            #     css_class="mt-4",
-            # ),
+            Fieldset(
+                "Social media",
+                HTML(
+                    "<p class='text-muted'>"
+                    "Social media accounts will be visible to anyone who "
+                    "can view your profile."
+                    "</p>"
+                ),
+                Div(
+                    Div("instagram", css_class="col"),
+                    Div("facebook", css_class="col"),
+                    Div("x_username", css_class="col"),
+                    Div("website", css_class="col"),
+                    css_class="row row-cols-1 row-cols-lg-2",
+                ),
+                css_class="mt-4",
+            ),
             Submit("submit", "Save changes", css_class="btn-lg w-100 mt-4"),
         )
 

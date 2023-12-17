@@ -722,7 +722,7 @@ main {
 }
 
 [data-bs-theme="dark"] .friend-card {
-  background-color: var(--bs-secondary-bg-subtle);
+  background-color: var(--bs-dark);
 }
 
 .friend-card:nth-last-of-type(-n+2) {
@@ -778,6 +778,20 @@ main {
 
 .annual-stats-table tbody th {
   font-weight: normal !important;
+}
+
+.social-media-links a {
+  color: var(--bs-emphasis-color);
+  text-decoration: none;
+  margin-left: 0.5rem;
+}
+
+.social-media-links a:first-child {
+  margin-left: 0;
+}
+
+.social-media-links a:hover {
+  color: var(--bs-secondary-color);
 }
 
 /* Import and export */

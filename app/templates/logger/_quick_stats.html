@@ -32,15 +32,19 @@
     <span class="quick-stat-value">{{ quick_stats.qs_descended|distformat:request.units }}</span>
   </div>
 
-  <div class="nav-item quick-stat">
-    <span class="quick-stat-name">Horizontal</span>
-    <span class="quick-stat-value">{{ quick_stats.qs_horizontal|distformat:request.units }}</span>
-  </div>
+  {% if quick_stats.qs_horizontal %}
+    <div class="nav-item quick-stat">
+      <span class="quick-stat-name">Horizontal</span>
+      <span class="quick-stat-value">{{ quick_stats.qs_horizontal|distformat:request.units }}</span>
+    </div>
+  {% endif %}
 
-  <div class="nav-item quick-stat">
-    <span class="quick-stat-name">Aid climbed</span>
-    <span class="quick-stat-value">{{ quick_stats.qs_aid_climbed|distformat:request.units }}</span>
-  </div>
+  {% if quick_stats.qs_aid_climbed %}
+    <div class="nav-item quick-stat">
+      <span class="quick-stat-name">Aid climbed</span>
+      <span class="quick-stat-value">{{ quick_stats.qs_aid_climbed|distformat:request.units }}</span>
+    </div>
+  {% endif %}
 {% endif %}
 
 {% if not user.disable_survey_statistics %}
@@ -84,6 +88,18 @@
 </div>
 
 <div class="nav-item quick-stat">
+  <span class="quick-stat-name">Units</span>
+  <span class="quick-stat-value">{{ user.units }}</span>
+</div>
+
+<div class="nav-item quick-stat">
   <span class="quick-stat-name">Friends</span>
   <span class="quick-stat-value">{{ quick_stats.qs_friends }}</span>
 </div>
+
+{% if user.has_social_media_links %}
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Social media</span>
+    <span class="quick-stat-value social-media-links">{% include "logger/_social_media_links.html" %}</span>
+  </div>
+{% endif %}

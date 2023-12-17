@@ -12,7 +12,7 @@ from django.contrib.auth.models import (
 )
 from django.contrib.gis.measure import D
 from django.core.exceptions import ValidationError
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 from django.db.models import Count, Max, QuerySet, Sum
 from django.urls import reverse
@@ -21,6 +21,11 @@ from django.utils.functional import cached_property
 from django_countries.fields import CountryField
 from logger.models import Trip
 from timezone_field import TimeZoneField
+
+NoSpacesValidator = RegexValidator(
+    r"^[^\s]*$",
+    "This field cannot contain whitespace.",
+)
 
 
 def avatar_upload_path(instance, filename):
@@ -157,23 +162,19 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     instagram = models.CharField(
         max_length=30,
         blank=True,
+        validators=[NoSpacesValidator],
         help_text="Your Instagram username.",
     )
     facebook = models.CharField(
         max_length=50,
-        validators=[MinLengthValidator(5)],
+        validators=[MinLengthValidator(5), NoSpacesValidator],
         blank=True,
         help_text="Your Facebook username.",
-    )
-    discord = models.CharField(
-        max_length=32,
-        validators=[MinLengthValidator(2)],
-        blank=True,
-        help_text="Your Discord username.",
     )
     x_username = models.CharField(
         max_length=15,
         blank=True,
+        validators=[NoSpacesValidator],
         help_text="Your X username.",
         verbose_name="X/Twitter",
     )
@@ -548,6 +549,26 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         qs["qs_aid_climbed"] = self.total_aid_climbed(stats_qs)
         qs["qs_horizontal"] = self.total_horizontal(stats_qs)
         return qs
+
+    @property
+    def has_social_media_links(self):
+        return self.instagram or self.facebook or self.x_username or self.website
+
+    @property
+    def get_instagram_url(self):
+        return f"https://www.instagram.com/{self.instagram}/"  # noqa: E231
+
+    @property
+    def get_facebook_url(self):
+        return f"https://www.facebook.com/{self.facebook}/"  # noqa: E231
+
+    @property
+    def get_x_url(self):
+        return f"https://x.com/{self.x_username}/"  # noqa: E231
+
+    @property
+    def get_website_url(self):
+        return self.website
 
 
 User = get_user_model()
