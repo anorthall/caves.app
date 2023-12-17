@@ -183,7 +183,7 @@
           </div>
 
           <div class="col account-info-data">
-            {% if user.is_private %}
+            {% if user.privacy == user.PRIVATE %}
               Public statistics are disabled as your profile is private.
             {% else %}
               Statistics are {% if not user.public_statistics %}not {% endif %}shown on your profile page.
