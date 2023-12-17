@@ -42,8 +42,8 @@
         {% endif %}
         {% if user_has_trips %}
           <small class="text-body-tertiary d-block mt-1 mt-md-0">
-            {% with dur=quick_stats.qs_duration %}
-              {{ quick_stats.qs_trips }} trips &middot; {{ quick_stats.qs_friends }} friend{{ quick_stats.qs_friends|pluralize }}{% if dur %} &middot; {{ dur|shortdelta }}{% endif %}
+            {% with dur=quick_stats.qs_duration qs_f=quick_stats.qs_friends %}
+              {{ quick_stats.qs_trips }} trips {% if qs_f %}&middot; {{ qs_f }} friend{{ qs_f|pluralize }} {% endif %}{% if dur %}&middot; {{ dur|shortdelta }}{% endif %}
             {% endwith %}
           </small>
         {% endif %}
