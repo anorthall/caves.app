@@ -100,7 +100,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <a href="{{ trip.get_absolute_url }}" class="btn btn-info">View trip</a>
+          <a href="{{ trip.get_absolute_url }}" class="btn btn-secondary">View trip</a>
           <form action="{% url 'log:trip_photos_delete_all' trip.uuid %}" method="POST">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Delete all photos</button>
