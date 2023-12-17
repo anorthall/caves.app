@@ -9,6 +9,10 @@
   {% include "logger/_lightbox.html" %}
 {% endblock %}
 
+{% block footer_scripts %}
+  {% include "_bs_tooltips.html" %}
+{% endblock %}
+
 {% block stylesheets %}
   <link rel="stylesheet" href="{% static 'css/justifiedGallery.min.css' %}">
 {% endblock %}
