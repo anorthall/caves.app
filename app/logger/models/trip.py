@@ -308,7 +308,9 @@ class Trip(models.Model):
         blank=True,
         help_text=(
             "Trip reports are full, article style reports of a trip and will be "
-            "visible to anyone who can view the trip."
+            "visible to anyone who can view the trip. "
+            "Some <a href='https://www.markdownguide.org/basic-syntax/'>Markdown</a> "
+            "is supported."
         ),
     )
 
