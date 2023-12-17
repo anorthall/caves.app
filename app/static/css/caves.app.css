@@ -757,30 +757,22 @@ main {
 
 /* Statistics */
 #stats-over-time-chart {
-  max-height: 450px;
+  max-height: 350px;
+  width: auto;
 }
 
 #hours-per-month-chart {
-  max-height: 450px;
+  max-height: 350px;
+  width: auto;
 }
 
 @media (min-width: 992px) {
   #stats-over-time-chart {
-    height: 450px;
+    max-height: 450px;
   }
 
   #hours-per-month-chart {
-    height: 450px;
-  }
-}
-
-@media (max-width: 992px) {
-  #stats-over-time-chart {
-    max-height: 350px;
-  }
-
-  #hours-per-month-chart {
-    max-height: 350px;
+    max-height: 450px;
   }
 
   #yearly-statistics-table {
