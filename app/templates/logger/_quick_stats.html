@@ -18,7 +18,7 @@
 
 <div class="nav-item quick-stat">
   <span class="quick-stat-name">Duration</span>
-  <span class="quick-stat-value">{{ quick_stats.qs_duration|shortdelta }}</span>
+  <span class="quick-stat-value">{{ quick_stats.qs_duration|shortdelta|default:"0" }}</span>
 </div>
 
 {% if not user.disable_distance_statistics %}
