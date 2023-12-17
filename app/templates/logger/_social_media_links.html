@@ -1,0 +1,23 @@
+{% if user.instagram %}
+  <a href="{{ user.get_instagram_url }}" target="_blank">
+    <i class="bi bi-instagram"></i>
+  </a>
+{% endif %}
+
+{% if user.facebook %}
+  <a href="{{ user.get_facebook_url }}" target="_blank">
+    <i class="bi bi-facebook"></i>
+  </a>
+{% endif %}
+
+{% if user.x_username %}
+  <a href="{{ user.get_x_url }}" target="_blank">
+    <i class="bi bi-twitter-x"></i>
+  </a>
+{% endif %}
+
+{% if user.website %}
+  <a href="{{ user.get_website_url }}" target="_blank">
+    <i class="bi bi-globe"></i>
+  </a>
+{% endif %}

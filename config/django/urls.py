@@ -13,7 +13,6 @@ urlpatterns = [
     path("import/", include("import.urls")),
     path(settings.STAFF_URL, include("staff.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
-    path("tinymce/", include("tinymce.urls")),
 ]
 
 if settings.DEBUG:

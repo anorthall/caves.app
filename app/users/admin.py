@@ -99,7 +99,6 @@ class CavingUserAdmin(BaseUserAdmin, ModelAdmin):
             "Social",
             {
                 "fields": (
-                    "page_title",
                     "bio",
                     "friends",
                 ),

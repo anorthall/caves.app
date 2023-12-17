@@ -2,57 +2,61 @@
 {% load crispy_forms_tags %}
 {% load markdownify %}
 
-{% if comment_obj.user.allow_comments or comment_obj_type == "news" %}
-  {% if comment_obj.comments.count > 0 %}
-    {% for comment in comment_obj.comments.all %}
-      {% if forloop.counter > 1 %}<hr class="my-4">{% endif %}
+{% with comment_count=comment_obj.comments.all.count %}
+  {% if comment_obj.user.allow_comments or comment_obj_type == "news" %}
+    {% if comment_count > 0 %}
+      {% for comment in comment_obj.comments.all %}
+        {% if forloop.counter > 1 %}<hr class="my-4">{% endif %}
 
-      <div class="m-0 comment-display">
-        {{ comment.content|markdownify:"comment" }}
-        <p class="text-muted mt-1">
-          <small class="ms-2">
-            &mdash; by {% user comment.author %}, {{ comment.added|timesince }} ago
-            {% if user.is_authenticated %}
-              {% if user == comment.author or user == trip.user or user.is_superuser %}
-                <a class="float-end link-danger" data-bs-toggle="modal" data-bs-target="#deleteComment{{ comment.uuid }}">
-                  delete
-                </a>
+        <div class="m-0 comment-display">
+          {{ comment.content|markdownify:"plain" }}
+          <p class="text-muted mt-1">
+            <small class="ms-2">
+              &mdash; by {% user comment.author %}, {{ comment.added|timesince }} ago
+              {% if user.is_authenticated %}
+                {% if user == comment.author or user == trip.user or user.is_superuser %}
+                  <a class="float-end link-danger" data-bs-toggle="modal" data-bs-target="#deleteComment{{ comment.uuid }}">
+                    delete
+                  </a>
+                {% endif %}
               {% endif %}
-            {% endif %}
-          </small>
-        </p>
-      </div>
-      {% if user.is_authenticated %}
-        {% if user == comment.author or user == comment_obj.user or user.is_superuser %}
-          <div class="modal fade" id="deleteComment{{ comment.uuid }}" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5">Delete comment</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                  Are you sure you wish to delete this comment?
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  {% if comment_obj_type == "news" %}<form action="{% url 'comments:news_delete' comment.uuid %}" method="post">{% else %}<form action="{% url 'comments:delete' comment.uuid %}" method="post">{% endif %}
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete comment</button>
-                  </form>
+            </small>
+          </p>
+        </div>
+        {% if user.is_authenticated %}
+          {% if user == comment.author or user == comment_obj.user or user.is_superuser %}
+            <div class="modal fade" id="deleteComment{{ comment.uuid }}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5">Delete comment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you wish to delete this comment?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    {% if comment_obj_type == "news" %}<form action="{% url 'comments:news_delete' comment.uuid %}" method="post">{% else %}<form action="{% url 'comments:delete' comment.uuid %}" method="post">{% endif %}
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Delete comment</button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          {% endif %}
         {% endif %}
-      {% endif %}
-    {% endfor %}
-  {% else %}
-    <p class="lead">There are no comments yet &mdash; why not be the first?</p>
-  {% endif %}
+      {% endfor %}
+    {% else %}
+      <p class="mt-2">There are no comments yet{% if user.is_authenticated %} &mdash; why not be the first?{% else %}.{% endif %}</p>
+    {% endif %}
 
-  {% if user.is_authenticated %}
-    <hr class="my-4">
-    {% crispy comment_form %}
+    {% if user.is_authenticated %}
+      {% if comment_count > 0 %}<hr class="my-4">{% endif %}
+      <div class="comment-form">
+        {% crispy comment_form %}
+      </div>
+    {% endif %}
   {% endif %}
-{% endif %}
+{% endwith %}

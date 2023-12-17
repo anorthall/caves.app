@@ -1,14 +1,17 @@
-{% extends "base_trips.html" %}
+{% extends "logger/_base.html" %}
 {% load humanize %}
 {% load static %}
 {% load markdownify %}
 
 {% block title %}Help with caves.app{% endblock %}
-{% block display_title_container %}{% endblock %}
 {% block description %}Frequently asked questions about caves.app, and how to get help with the site.{% endblock %}
 
 {% block main %}
-  <div class="mw-45">
+  <div class="mx-auto text-limit-length">
+    <h1 class="title-underline">
+      Help with caves.app
+    </h1>
+
     <p>
       If you need any help with anything, or if you've encountered a problem with the site, then please do not hesitate to
       <a href="mailto:admin@caves.app">send me an email</a> and I will get back to you as soon as possible. Equally, any
@@ -21,7 +24,7 @@
 
     {% if faqs %}
       <div class="my-5">
-        <h4 class="subtitle mb-2">
+        <h4 class="title-underline mb-2">
           Frequently asked questions
         </h4>
         <ol>
@@ -35,7 +38,7 @@
 
       {% for faq in faqs %}
         <div class="mb-5">
-          <h4 class="subtitle mb-2" id="faq{{ faq.id }}">
+          <h4 class="title-underline mb-2" id="faq{{ faq.id }}">
             {{ faq.question }}
           </h4>
           {{ faq.answer|markdownify }}

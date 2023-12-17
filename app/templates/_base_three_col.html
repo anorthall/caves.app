@@ -1,0 +1,19 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <div id="threeColumnContainer">
+    <div id="leftSidebarContainer">
+      <nav class="sidebar nav d-flex flex-column text-nowrap">{% block left_sidebar %}{% include "sidebars/_main_sidebar.html" %}{% endblock %}</nav>
+    </div>
+
+    <div id="centerColumnContainer">
+      <div id="centerColumn">
+        {% block main %}{% endblock %}
+      </div>
+    </div>
+
+    <div id="rightSidebarContainer" class="{% block right_sidebar_container_classes %}{% endblock %}">
+      <aside class="sidebar nav d-flex flex-column text-nowrap">{% block right_sidebar %}{% endblock %}</aside>
+    </div>
+  </div>
+{% endblock %}

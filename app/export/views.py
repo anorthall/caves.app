@@ -22,7 +22,7 @@ class Index(LoginRequiredMixin, TemplateView):
         context["form"] = TripExportForm
         return context
 
-    def post(self, request, *args, **kwargs):  # TODO: Email the output
+    def post(self, request, *args, **kwargs):
         form = TripExportForm(request.POST)
         if not form.is_valid():
             messages.error(
@@ -53,5 +53,7 @@ class Index(LoginRequiredMixin, TemplateView):
         return HttpResponse(
             data,
             content_type=format,
-            headers={"Content-Disposition": f"attachment; filename=trips.{file_type}"},
+            headers={
+                "Content-Disposition": f"attachment; filename=trips.{file_type}"  # noqa: E702 E501
+            },
         )

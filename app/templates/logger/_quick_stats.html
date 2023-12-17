@@ -1,0 +1,105 @@
+{% load logger_tags %}
+
+<span class="nav-item sidebar-header">Quick stats</span>
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Trips</span>
+  <span class="quick-stat-value">{{ quick_stats.qs_trips }}</span>
+</div>
+
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Cavers</span>
+  <span class="quick-stat-value">{{ quick_stats.qs_cavers }}</span>
+</div>
+
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Photos</span>
+  <span class="quick-stat-value">{{ quick_stats.qs_photos }}</span>
+</div>
+
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Duration</span>
+  <span class="quick-stat-value">{{ quick_stats.qs_duration|shortdelta|default:"0" }}</span>
+</div>
+
+{% if not user.disable_distance_statistics %}
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Climbed</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_climbed|distformat:request.units }}</span>
+  </div>
+
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Descended</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_descended|distformat:request.units }}</span>
+  </div>
+
+  {% if quick_stats.qs_horizontal %}
+    <div class="nav-item quick-stat">
+      <span class="quick-stat-name">Horizontal</span>
+      <span class="quick-stat-value">{{ quick_stats.qs_horizontal|distformat:request.units }}</span>
+    </div>
+  {% endif %}
+
+  {% if quick_stats.qs_aid_climbed %}
+    <div class="nav-item quick-stat">
+      <span class="quick-stat-name">Aid climbed</span>
+      <span class="quick-stat-value">{{ quick_stats.qs_aid_climbed|distformat:request.units }}</span>
+    </div>
+  {% endif %}
+{% endif %}
+
+{% if not user.disable_survey_statistics %}
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Surveyed</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_surveyed|distformat:request.units }}</span>
+  </div>
+
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Resurveyed</span>
+    <span class="quick-stat-value">{{ quick_stats.qs_resurveyed|distformat:request.units }}</span>
+  </div>
+{% endif %}
+
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Longest trip</span>
+  <span class="quick-stat-value">{{ quick_stats.qs_longest_trip|shortdelta }}</span>
+</div>
+
+{% if private_stats %}
+  <div class="nav-item quick-stat border-top pt-2 mt-2">
+    <span class="quick-stat-name">Last trip</span>
+    <span class="quick-stat-value">
+      <a href="{{ quick_stats.qs_last_trip.get_absolute_url }}"
+         class="link-body-emphasis text-decoration-none">
+        {{ quick_stats.qs_last_trip.start|date }}
+      </a>
+    </span>
+  </div>
+{% endif %}
+
+<span class="nav-item sidebar-header">Account info</span>
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Username</span>
+  <span class="quick-stat-value">{{ user.username }}</span>
+</div>
+
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Joined</span>
+  <span class="quick-stat-value">{{ user.date_joined|date }}</span>
+</div>
+
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Units</span>
+  <span class="quick-stat-value">{{ user.units }}</span>
+</div>
+
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Friends</span>
+  <span class="quick-stat-value">{{ quick_stats.qs_friends }}</span>
+</div>
+
+{% if user.has_social_media_links %}
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Social media</span>
+    <span class="quick-stat-value social-media-links">{% include "logger/_social_media_links.html" %}</span>
+  </div>
+{% endif %}

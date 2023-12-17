@@ -1,0 +1,17 @@
+{% load users_tags %}
+{% load core_tags %}
+{% load static %}
+
+<div class="d-flex flex-column" id="profileSidebar">
+  {% if can_add_friend and user.is_authenticated and user != profile_user %}
+    <span class="nav-item sidebar-header mt-4">{{ profile_user.name }}</span>
+    <a class="nav-link" href="{% url 'users:friends' %}?u={{ profile_user.username }}">
+      <i class="bi bi-plus-circle-fill"></i> Add friend
+    </a>
+  {% endif %}
+
+  {% if not private_profile %}
+    {% include "logger/_quick_stats.html" with quick_stats=quick_stats user=profile_user %}
+    {% include "logger/_quick_friends.html" with friends=mutual_friends %}
+  {% endif %}
+</div>

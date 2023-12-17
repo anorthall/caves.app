@@ -1,0 +1,67 @@
+{% load active_link_tags %}
+
+{% if user.is_authenticated %}
+  <span class="nav-item sidebar-header">Trips</span>
+
+  <a class="nav-link {% active_link 'log:caver_list' %}" href="{% url 'log:caver_list' %}">
+    <i class="bi bi-people-fill"></i> Cavers
+  </a>
+
+  {% comment %}
+  TODO: Re-enable and style search
+  <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
+    <i class="bi bi-search-heart-fill"></i> Search
+  </a>
+  {% endcomment %}
+{% endif %}
+
+<span class="nav-item sidebar-header">App</span>
+{% if not user.is_authenticated %}
+  <a class="nav-link" href="{% url 'users:login' %}">
+    <i class="bi bi-person-circle"></i> Sign in
+  </a>
+
+  <a class="nav-link" href="{% url 'users:register' %}">
+    <i class="bi bi-house-fill"></i> Register
+  </a>
+{% endif %}
+
+<a class="nav-link {% active_link 'core:news' %}" href="{% url 'core:news' %}">
+  <i class="bi bi-newspaper"></i> News
+</a>
+
+<a class="nav-link {% active_link 'core:help' %}" href="{% url 'core:help' %}">
+  <i class="bi bi-question-circle-fill"></i> Help
+</a>
+
+<a class="nav-link {% active_link 'core:changes' %}" href="{% url 'core:changes' %}">
+  <i class="bi bi-list-columns-reverse"></i> Changes
+</a>
+
+{% if user.is_authenticated %}
+  <a class="nav-link" href="{% url 'users:account_detail' %}">
+    <i class="bi bi-gear-fill"></i> Account
+  </a>
+{% endif %}
+
+<div class="fake-link nav-link" onclick="toggleTheme()">
+  <i class="bi bi-palette-fill"></i> Theme
+</div>
+
+{% if user.is_authenticated %}
+  {% if user.is_moderator or user.is_superuser %}
+    <span class="nav-item sidebar-header">Staff</span>
+  {% endif %}
+
+  {% if user.is_moderator %}
+    <a class="nav-link {% active_link 'staff:dashboard' %}" href="{% url 'staff:dashboard' %}">
+      <i class="bi bi-pie-chart-fill"></i> Stats
+    </a>
+  {% endif %}
+
+  {% if user.is_superuser %}
+    <a class="nav-link" href="{% url 'admin:index' %}">
+      <i class="bi bi-database-fill-gear"></i> Admin
+    </a>
+  {% endif %}
+{% endif %}

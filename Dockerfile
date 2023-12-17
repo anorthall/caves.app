@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12.0
+FROM python:3.12
 
 # Environment setup
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -36,6 +36,7 @@ COPY ./config/docker/run.sh /app
 RUN chmod +x /app/run.sh
 
 # Copy app
+COPY ./CHANGELOG.md /app
 COPY ./app/ /app/src
 COPY ./config /app/config
 

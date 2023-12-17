@@ -57,9 +57,11 @@ IMGPROXY_URL = env("IMGPROXY_URL", "http://127.0.0.1:9000/imgproxy")
 IMGPROXY_KEY = env("IMGPROXY_KEY")
 IMGPROXY_SALT = env("IMGPROXY_SALT")
 IMGPROXY_PRESETS = {
+    "photo": "width=1000,height=1000,resizing_type=fit",
     "tripphoto_thumb": "width=400,height=600,resizing_type=fill",
-    "avatar": "width=450,height=450,resizing_type=fill",
-    "avatar_navbar": "width=60,height=60,resizing_type=fill",
+    "avatar": "width=400,height=400,resizing_type=fill",
+    "avatar_navbar": "width=80,height=80,resizing_type=fill",
+    "featured_photo": "width=1800,height=800,resizing_type=fill-down",
 }
 
 # Security keys/options
@@ -112,7 +114,6 @@ INSTALLED_APPS = [
     "dal",
     "dal_select2",
     "django_countries",
-    "tinymce",
     "active_link",
     "mailer",
     "crispy_forms",
@@ -323,8 +324,9 @@ MARKDOWNIFY = {
             "PARSE_URLS": True,
         },
     },
-    "comment": {
+    "plain": {
         "WHITELIST_TAGS": [
+            "p",
             "a",
             "strong",
             "blockquote",
@@ -342,16 +344,6 @@ MARKDOWNIFY["news"] = copy.deepcopy(MARKDOWNIFY["default"])
 MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")
 MARKDOWNIFY["news"]["WHITELIST_ATTRS"] = ["src", "alt", "title", "class", "href"]
 
-# TinyMCE configuration
-TINYMCE_DEFAULT_CONFIG = {
-    "theme": "silver",
-    "resize": "true",
-    "menubar": "file edit view insert format tools table help",
-    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment code typography",
-    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table powerpaste advcode help wordcount spellchecker typography",
-    "removed_menuitems": "newdocument spellchecker help",
-    "height": "500",
-}
 
 # Crispy forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

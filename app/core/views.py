@@ -46,6 +46,16 @@ class Healthcheck(View):
         return HttpResponse("OK")
 
 
+class ChangeLog(TemplateView):
+    template_name = "core/changes.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        with open("/app/CHANGELOG.md") as f:
+            context["changes"] = f.read()
+        return context
+
+
 class HTTP400(TemplateView):
     template_name = "400.html"
 

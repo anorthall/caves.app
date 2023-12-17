@@ -1,30 +1,26 @@
-{% extends "base_trips.html" %}
+{% extends "logger/_base.html" %}
 {% load humanize %}
 {% load users_tags %}
 {% load markdownify %}
 
 {% block title %}News from caves.app{% endblock %}
-{% block display_title_container %}{% endblock %}
 {% block description %}Information about the latest updates to caves.app.{% endblock %}
 
 {% block main %}
-  <div class="mw-45">
+  <div class="mx-auto text-limit-length">
     {% for item in news %}
       <article class="mb-5">
         {% include "core/_news_item.html" with news=item %}
 
-        <a class="link-primary text-decoration-none" href="{{ item.get_absolute_url }}">
+        <a class="btn btn-sm btn-outline-secondary" href="{{ item.get_absolute_url }}">
           <i class="bi bi-box-arrow-up-right me-1"></i> View article
         </a>
 
-        <span class="mx-2">&middot;</span>
-
-        <a class="link-primary text-decoration-none" href="{{ item.get_absolute_url }}">
+        <a class="btn btn-sm btn-outline-secondary ms-2" href="{{ item.get_absolute_url }}">
           <i class="bi bi-chat me-1"></i> {{ item.comments.all|length }} comment{{ item.comments.all|length|pluralize }}
         </a>
       </article>
     {% endfor %}
-
-    {% include "_paginate_bootstrap.html" %}
   </div>
+  {% include "_paginate_bootstrap.html" %}
 {% endblock %}

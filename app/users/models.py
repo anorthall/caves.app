@@ -1,5 +1,8 @@
 import os
 import uuid
+from datetime import timedelta
+from functools import lru_cache
+from typing import Union
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
@@ -7,14 +10,22 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.contrib.gis.measure import D
 from django.core.exceptions import ValidationError
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
+from django.db.models import Count, Max, QuerySet, Sum
 from django.urls import reverse
 from django.utils import timezone as django_tz
+from django.utils.functional import cached_property
 from django_countries.fields import CountryField
 from logger.models import Trip
 from timezone_field import TimeZoneField
+
+NoSpacesValidator = RegexValidator(
+    r"^[^\s]*$",
+    "This field cannot contain whitespace.",
+)
 
 
 def avatar_upload_path(instance, filename):
@@ -148,13 +159,28 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         help_text="A list of caving clubs or organisations that you are a member of.",
     )
-    page_title = models.CharField(
-        max_length=50,
+    instagram = models.CharField(
+        max_length=30,
         blank=True,
-        help_text=(
-            "A title to display on your profile page (if enabled). "
-            "If left blank it will use your full name."
-        ),
+        validators=[NoSpacesValidator],
+        help_text="Your Instagram username.",
+    )
+    facebook = models.CharField(
+        max_length=50,
+        validators=[MinLengthValidator(5), NoSpacesValidator],
+        blank=True,
+        help_text="Your Facebook username.",
+    )
+    x_username = models.CharField(
+        max_length=15,
+        blank=True,
+        validators=[NoSpacesValidator],
+        help_text="Your X username.",
+        verbose_name="X/Twitter",
+    )
+    website = models.URLField(
+        blank=True,
+        help_text="A link to your personal website.",
     )
 
     # Avatar
@@ -395,11 +421,45 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             return self.friends.none()
 
         other_user_friends_pks = other_user.friends.values_list("pk", flat=True)
-        return self.friends.filter(pk__in=other_user_friends_pks)
+        return self.friends.filter(pk__in=other_user_friends_pks).annotate(
+            num_trips=Count("trip", distinct=True),
+        )
+
+    def get_photos(self, for_user: Union["User", "CavingUser", None] = None):
+        """Returns a QuerySet of photos uploaded by this user
+
+        If `for_user` is specified, only photos which are viewable by that user
+        will be returned.
+        """
+        from logger.models import TripPhoto
+
+        if for_user is None:
+            return TripPhoto.objects.valid().filter(user=self)
+
+        qs = (
+            TripPhoto.objects.valid()
+            .filter(user=self)
+            .select_related("trip", "trip__user", "user")
+            .order_by("-trip__added", "-taken")
+        )
+
+        # Remove photos from trips which are not viewable by the user
+        friends = self.friends.all()
+        for photo in qs:
+            if not photo.trip.is_viewable_by(for_user, friends):
+                qs = qs.exclude(pk=photo.pk)
+            if photo.trip.private_photos and photo.trip.user != for_user:
+                qs = qs.exclude(pk=photo.pk)
+
+        return qs
 
     @property
     def trips(self):
         return Trip.objects.filter(user=self)
+
+    @property
+    def trips_for_stats(self):
+        return self.trips.exclude(type=Trip.SURFACE)
 
     @property
     def has_trips(self):
@@ -426,6 +486,89 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         if self.is_superuser or self.has_mod_perms:
             return True
         return False
+
+    @property
+    def total_trip_duration(self):
+        return self.trips.exclude(type=Trip.SURFACE).aggregate(Sum("duration"))[
+            "duration__sum"
+        ]
+
+    @lru_cache
+    def _sum_distance_field(self, qs: QuerySet, field_name: str) -> D:
+        """Return the total distance for the given field"""
+        if qs is None:
+            qs = self.trips_for_stats
+
+        total = D(0)
+        for trip in qs:
+            total += getattr(trip, field_name)
+        return total
+
+    @lru_cache
+    def total_vert_dist_up(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "vert_dist_up")
+
+    @lru_cache
+    def total_vert_dist_down(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "vert_dist_down")
+
+    @lru_cache
+    def total_surveyed(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "surveyed_dist")
+
+    @lru_cache
+    def total_resurveyed(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "resurveyed_dist")
+
+    @lru_cache
+    def total_aid_climbed(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "aid_dist")
+
+    @lru_cache
+    def total_horizontal(self, qs: QuerySet = None):
+        return self._sum_distance_field(qs, "horizontal_dist")
+
+    @cached_property
+    def quick_stats(self):
+        qs = self.trips.exclude(type=Trip.SURFACE).aggregate(
+            qs_trips=Count("pk", distinct=True),
+            qs_cavers=Count("cavers", distinct=True),
+            qs_longest_trip=Max("duration", default=timedelta()),
+        )
+        qs["qs_duration"] = self.total_trip_duration
+        qs["qs_friends"] = self.friends.count()
+        qs["qs_photos"] = self.get_photos().count()
+        qs["qs_joined"] = self.date_joined
+        qs["qs_last_trip"] = self.trips.order_by("-start").first()
+
+        stats_qs = self.trips_for_stats
+        qs["qs_climbed"] = self.total_vert_dist_up(stats_qs)
+        qs["qs_descended"] = self.total_vert_dist_down(stats_qs)
+        qs["qs_surveyed"] = self.total_surveyed(stats_qs)
+        qs["qs_resurveyed"] = self.total_resurveyed(stats_qs)
+        qs["qs_aid_climbed"] = self.total_aid_climbed(stats_qs)
+        qs["qs_horizontal"] = self.total_horizontal(stats_qs)
+        return qs
+
+    @property
+    def has_social_media_links(self):
+        return self.instagram or self.facebook or self.x_username or self.website
+
+    @property
+    def get_instagram_url(self):
+        return f"https://www.instagram.com/{self.instagram}/"  # noqa: E231
+
+    @property
+    def get_facebook_url(self):
+        return f"https://www.facebook.com/{self.facebook}/"  # noqa: E231
+
+    @property
+    def get_x_url(self):
+        return f"https://x.com/{self.x_username}/"  # noqa: E231
+
+    @property
+    def get_website_url(self):
+        return self.website
 
 
 User = get_user_model()

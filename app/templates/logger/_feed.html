@@ -1,133 +1,125 @@
 {% load humanize %}
 {% load users_tags %}
 {% load core_tags %}
+{% load markdownify %}
 
 {% for trip in trips %}
-  <div class="card shadow mb-4 mb-lg-5">
-    <div class="card-header">
-      <div data-href="{{ trip.get_absolute_url }}"
-           class="d-none d-lg-flex flex-row align-items-center justify-content-between">
-        <div class="d-flex flex-column align-items-start justify-content-center">
-          <div class="d-flex flex-row align-items-center">
-            <div class="me-3 h-100">
-              {% include "users/_profile_picture_header.html" with photo_user=trip.user %}
-            </div>
-
-            <div>
-              <div>
-                <small class="text-primary">{% user trip.user %}</small>
-                <small class="text-muted">{{ trip.added|naturaltime }}</small>
-              </div>
-
-              <a class="text-body text-decoration-none" href="{{ trip.get_absolute_url }}">
-                <h1 class="cave-name fs-4 my-1">{{ trip.cave_name }}</h1>
-              </a>
-              {% if trip.cave_entrance or trip.cave_exit %}
-                <small class="text-primary">
-                  via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
-                </small>
+  <div class="trip-feed-item mb-5 shadow">
+    {% if not trip.featured_photo %}
+      <div class="d-flex flex-row justify-content-start align-items-center trip-feed-header">
+        <a class="trip-feed-avatar" href="{{ trip.user.get_absolute_url }}">{% include "users/_profile_picture.html" with photo_user=trip.user %}</a>
+        <div class="ms-3">
+          {% include "logger/_feed_trip_header.html" %}
+        </div>
+      </div>
+    {% else %}
+      <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+        <div class="featured-photo-container featured-photo-small border-0 border-bottom" data-bs-theme="dark">
+          <a href="{{ trip.get_absolute_url }}">
+            <img src="{{ trip.featured_photo.photo.url }}" class="trip-featured-photo"
+                 alt="{% if trip.featured_photo.caption %}{{ featured_photo.caption }}{% else %}Featured photo for this trip.{% endif %}">
+          </a>
+          <div class="featured-photo-overlay">
+            <a href="{{ trip.user.get_absolute_url }}" class="mt-auto mb-auto trip-feed-avatar">
+              {% if trip.user.avatar %}
+                <img class="align-self-center justify-self-center rounded-circle border shadow"
+                     src="{{ trip.user.avatar|imgproxy:"preset:avatar" }}"
+                     alt="{{ trip.user.name }}'s profile picture">
               {% endif %}
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex flex-column align-items-end justify-content-center">
-          <div class="d-flex flex-column align-items-center justify-content-center text-primary">
-            <span><small>{{ trip.cave_region }}</small></span>
-            <span><small>{{ trip.cave_country }}</small></span>
-          </div>
-        </div>
-      </div>
-
-      <div data-href="{{ trip.get_absolute_url }}" class="d-flex d-lg-none">
-        <div class="d-flex flex-row align-items-start justify-content-center">
-          <div class="d-flex align-items-center">
-            <div class="pe-3 me-3 border-end">
-              {% include "users/_profile_picture_header.html" with photo_user=trip.user %}
-            </div>
-
-            <div class="d-flex flex-column">
-              <span class="text-primary">
-                <i class="bi bi-person-fill me-1"></i> {% user trip.user %}
-              </span>
-              <span class="text-muted">
-                <i class="bi bi-clock-history me-1"></i> {{ trip.added|naturaltime|capfirst }}
-              </span>
+            </a>
+            <div class="ms-3">
+              {% include "logger/_feed_trip_header.html" %}
             </div>
           </div>
         </div>
       </div>
-     </div>
+    {% endif %}
 
-    <div class="card-body">
-      <div class="d-lg-none border-bottom pb-3 pt-1 mb-3">
-        <a href="{{ trip.get_absolute_url }}" class="text-decoration-none">
-          <h1 class="cave-name fs-3 text-primary">{{ trip.cave_name }}</h1>
-          {% if trip.cave_entrance or trip.cave_exit %}
-            <span class="text-dark">
-              via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}
-            </span>
-          {% endif %}
-        </a>
-        <div>
-          <small class="text-muted">
-            {{ trip.cave_region }}{% if trip.cave_region and trip.cave_country %} &middot; {% endif %}{{ trip.cave_country }}
-          </small>
-        </div>
-      </div>
-
+    <div class="trip-feed-content">
       {% include "logger/_trip_data_blocks.html" %}
 
-      {% if trip.has_photos and not trip.private_photos %}
-        <div class="d-flex flex-row align-items-center justify-content-center mt-4
-                    border-top pt-3">
-          {% for photo in trip.feed_photos %}
-            <a href="{{ photo.url }}" class="p-2" data-title="{{ photo.caption }}"
-               data-lightbox="{{ trip.uuid }}" id="{{ photo.uuid }}">
-              <img src="{{ photo|imgproxy:"preset:tripphoto_thumb" }}" class="img-fluid tripphoto-thumb shadow-sm rounded"
-                   alt="{{ photo.caption }}">
-            </a>
-          {% endfor %}
-        </div>
-        {% if trip.more_than_five_photos %}
-          <div class="trip-field text-center mt-2 mx-2">
-            <a class="btn btn-sm btn-outline-secondary w-100" href=
-                "{{ trip.get_absolute_url }}">view photos</a>
+      {% if trip.trip_report %}
+        <div class="row row-cols-1 mt-3">
+          <div class="col">
+            <small class="trip-field">Trip report</small>
+            <div class="no-paragraph-mb d-none d-sm-block">
+              {{ trip.trip_report|markdownify:"plain"|truncatechars_html:800 }}
+            </div>
+            <div class="no-paragraph-mb d-sm-none">
+              {{ trip.trip_report|markdownify:"plain"|truncatechars_html:300 }}
+            </div>
           </div>
-        {% endif %}
+        </div>
       {% endif %}
     </div>
 
-    <div class="card-footer">
-      <span class="float-start">
+    {% if trip.has_photos and not trip.private_photos %}
+      <div class="p-2">
+        <div id="gallery-{{ trip.uuid }}-big" class="trip-feed-gallery d-none d-sm-block">
+          {% for photo in trip.feed_photos %}
+            {% include "logger/_feed_gallery_item.html" with gallery_name="-big" %}
+          {% endfor %}
+        </div>
+
+        <div id="gallery-{{ trip.uuid }}-small" class="trip-feed-gallery d-sm-none">
+          {% for photo in trip.feed_photos %}
+            {% if forloop.counter <= 5 %}
+              {% include "logger/_feed_gallery_item.html" with gallery_name="-small" %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <script type="text/javascript">
+        $("#gallery-{{ trip.uuid }}-big").justifiedGallery({
+          rowHeight: 160,
+          maxRowsCount: 2,
+          captions: false,
+          margins: 5,
+          border: 0,
+          lastRow: 'hide',
+          waitThumbnailsLoad: true,
+        });
+
+        $("#gallery-{{ trip.uuid }}-small").justifiedGallery({
+          rowHeight: 140,
+          maxRowsCount: 2,
+          captions: false,
+          margins: 5,
+          border: 0,
+          lastRow: 'hide',
+          waitThumbnailsLoad: true,
+        });
+      </script>
+    {% endif %}
+
+    <div class="trip-feed-footer">
+      <div class="d-flex flex-row align-items-center justify-content-between">
         {% with trip.likes_count as likes_count %}
           {% include "logger/_htmx_trip_like.html" %}
         {% endwith %}
-      </span>
 
-      {% if trip.user.allow_comments %}
-        <span hx-get="{% url 'comments:htmx_comments' trip.uuid %}" hx-target="#comment{{ trip.uuid }}" class="float-end text-muted">
-          {% if trip.comments_count > 0 %}
-            <span><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}</span>
-          {% else %}
-            <span><i class="bi bi-chat"></i></span>
-          {% endif %}
-        </span>
-      {% endif %}
+        {% if trip.user.allow_comments %}
+          <span hx-get="{% url 'comments:htmx_comments' trip.uuid %}" hx-target="#comment{{ trip.uuid }}" class="float-end text-muted">
+            {% if trip.comments_count > 0 %}
+              <span><i class="bi bi-chat-fill"></i></span>&nbsp; {{ trip.comments_count }}</span>
+            {% else %}
+              <span><i class="bi bi-chat"></i></span>
+            {% endif %}
+          </span>
+        {% endif %}
+      </div>
     </div>
   </div>
 
-  <div class="shadow mb-4 mb-lg-5" id="comment{{ trip.uuid }}"></div>
+  <div id="comment{{ trip.uuid }}"></div>
 {% endfor %}
 
 {% if trips.has_next %}
-  <div id="loadMoreTrips" class="text-center">
-    <button class="btn btn-primary w-100"
-            hx-get="{% url 'log:feed_htmx_view' %}?page={{ trips.next_page_number }}"
-            hx-target="#loadMoreTrips"
-            hx-swap="outerHTML">
-      Load more trips
-    </button>
+  <div id="loadMoreTrips" class="text-center"
+       hx-get="{% url 'log:feed_htmx_view' %}?page={{ trips.next_page_number }}"
+       hx-target="#loadMoreTrips"
+       hx-swap="outerHTML"
+       hx-trigger="intersect once">
   </div>
 {% endif %}
-{% include "_clickable_elements.html" %}

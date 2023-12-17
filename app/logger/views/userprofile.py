@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -20,7 +22,7 @@ class UserProfile(TemplateView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.profile_user = None
+        self.profile_user: Union[User, None] = None
 
     def setup(self, *args, **kwargs):
         """Assign self.profile_user and perform permissions checks"""
@@ -30,9 +32,11 @@ class UserProfile(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["profile_user"] = self.profile_user
-        context["page_title"] = self.get_page_title()
         context["mutual_friends"] = self.profile_user.mutual_friends(self.request.user)
         context["user_has_trips"] = self.profile_user.trips.exists()
+        context["photos"] = self.profile_user.get_photos(for_user=self.request.user)
+        context["quick_stats"] = self.profile_user.quick_stats
+        context["show_stats_link"] = self.profile_user == self.request.user
 
         if self.request.user not in self.profile_user.friends.all():
             if self.profile_user.allow_friend_username:
@@ -48,12 +52,6 @@ class UserProfile(TemplateView):
 
         return context
 
-    def get_page_title(self):
-        if self.profile_user.page_title:
-            return self.profile_user.page_title
-        else:
-            return f"{self.profile_user.name}'s trips"
-
 
 class ProfileTripsTable(ListView):
     """List all of a user's trips and their profile information"""
@@ -62,7 +60,7 @@ class ProfileTripsTable(ListView):
     template_name = "logger/profile_trips_table.html"
     context_object_name = "trips"
     slug_field = "username"
-    paginate_by = 50
+    paginate_by = 100
     ordering = ("-start", "pk")
     allowed_ordering = [
         "start",
@@ -93,7 +91,7 @@ class ProfileTripsTable(ListView):
         trips = (
             Trip.objects.filter(user=self.profile_user)
             .select_related("user")
-            .prefetch_related("photos")
+            .prefetch_related("photos", "cavers")
         )
 
         if query:
@@ -153,9 +151,3 @@ class ProfileTripsTable(ListView):
         context["get_parameters"] = parameters
 
         return context
-
-    def get_page_title(self):
-        if self.profile_user.page_title:
-            return self.profile_user.page_title
-        else:
-            return f"{self.profile_user.name}'s trips"

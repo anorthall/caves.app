@@ -19,12 +19,13 @@ if [ "$1" = "test" ]
 then
     echo "Running tests..."
     cd /app/src/ || exit 1
-    python manage.py test --parallel auto
+    python manage.py test "${@:2}"
 fi
 
 if [ "$1" = "manage" ]
 then
-    python src/manage.py "${@:2}"
+    cd /app/src/ || exit 1
+    python manage.py "${@:2}"
 fi
 
 if [ "$1" = "devserver" ]

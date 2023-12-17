@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import DetailView, ListView
@@ -37,9 +37,13 @@ class CaverList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return (
             Caver.objects.filter(user=self.request.user)
+            .prefetch_related("trip_set")
             .order_by("name")
             .annotate(trip_count=Count("trip", distinct=True))
             .annotate(last_trip_date=Max("trip__start"))
+            .annotate(
+                annotated_total_trip_duration=Sum("trip__duration", distinct=True)
+            )
         )
 
 

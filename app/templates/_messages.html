@@ -1,40 +1,32 @@
 {% if messages or form %}
   <div id="messages">
     {% if form.errors %}
-      <div class="alert alert-danger alert-dismissible mb-0" role="alert">
-        <div class="container">
-          <span class="message-title">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-          </span>
-          {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}
-              {{ error }}
-            {% endfor %}
-          {% else %}
-            Please correct the error(s) below.
-          {% endif %}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {% if form.non_field_errors %}
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        {% else %}
+          Please correct the error(s) below.
+        {% endif %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     {% endif %}
 
     {% for message in messages %}
-      <div class="alert {{ message.tags }} alert-dismissible mb-0" role="alert">
-        <div class="container">
-          <span class="message-title">
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-              <i class="bi bi-hand-thumbs-up-fill"></i>
-            {% elif message.level == DEFAULT_MESSAE_LEVELS.WARNING %}
-              <i class="bi bi-exclamation-triangle-fill"></i>
-            {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-              <i class="bi bi-exclamation-triangle-fill"></i>
-            {% elif message.level == DEFAULT_MESSAE_LEVELS.INFO %}
-              <i class="bi bi-exclamation-circle-fill"></i>
-            {% endif %}
-          </span>
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+      <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+          <i class="bi bi-hand-thumbs-up-fill"></i>
+        {% elif message.level == DEFAULT_MESSAE_LEVELS.WARNING %}
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        {% elif message.level == DEFAULT_MESSAE_LEVELS.INFO %}
+          <i class="bi bi-exclamation-circle-fill"></i>
+        {% endif %}
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     {% endfor %}
   </div>

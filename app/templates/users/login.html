@@ -5,16 +5,14 @@
 {% block banner_subtitle %}Welcome back!{% endblock %}
 
 {% block content %}
-  <div class="mw-35">
-    <p class="lead">
-      Enter your account details below to sign in.
-    </p>
+  <p class="lead">
+    Enter your account details below to sign in.
+  </p>
 
-    <p class="text-muted mb-5">
-      You may wish to <a class="text-decoration-none" href="{% url 'users:register' %}">create an account</a>
-      or <a class="text-decoration-none" href="{% url 'users:password_reset' %}">reset your password</a> instead.
-    </p>
+  <p class="text-muted mb-5">
+    You may wish to <a class="text-decoration-none" href="{% url 'users:register' %}">create an account</a>
+    or <a class="text-decoration-none" href="{% url 'users:password_reset' %}">reset your password</a> instead.
+  </p>
 
-    {% crispy form %}
-  </div>
+  {% crispy form %}
 {% endblock %}

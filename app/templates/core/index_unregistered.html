@@ -5,18 +5,20 @@
   {% include "logger/_lightbox.html" %}
 {% endblock %}
 
+{% block content_class %}{% endblock %}
+
 {% block title %}caves.app{% endblock %}
 {% block description %}caves.app: An online tool to log caving trips and activity.{% endblock %}
 {% block banner_subtitle %}A simple online caving<br>trip tracker{% endblock %}
 {% block banner_buttons %}
   <div class="col-12 col-md-8 mx-auto mt-3">
     <a class="btn btn-lg btn-primary me-2 me-md-4" href="{% url 'users:register' %}">Sign up</a>
-    <a class="btn btn-lg btn-outline-success" href="{% url 'users:login' %}">Log in</a>
+    <a class="btn btn-lg btn-success" href="{% url 'users:login' %}">Log in</a>
   </div>
 {% endblock %}
 
 {% block content %}
-  <h3 class="display-5 mb-4 mb-md-5 text-primary">Features</h3>
+  <h3 class="display-4 fs-4 mb-3 mb-md-4">Features</h3>
   <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 g-md-5 mb-5">
     <div class="col feature-block">
       <h4>Trip logbook &nbsp;&#x1F5D2;</h4>
@@ -54,7 +56,7 @@
       <h4>Full trip reports &nbsp;&#x1F58B;</h4>
       <p>
         Have more to say about a trip? Add a
-        <a class="text-body-emphasis" href="https://caves.app/report/27c34e03-31c4-404f-90a4-386d2d364f27/">rich text trip report</a>
+        <a class="text-body-emphasis" href="/trip/27c34e03-31c4-404f-90a4-386d2d364f27/">trip report</a>
         in the style of a blog post.
       </p>
     </div>
@@ -88,20 +90,20 @@
     </div>
   </div>
 
-  <h3 class="display-5 mb-4 mb-md-5 text-primary">Screenshots</h3>
+  <h3 class="display-4 fs-4 mb-3 mb-md-4">Screenshots</h3>
 
   <div class="mx-3 mx-md-0">
     <a href="{% static 'images/homepage/social-feed.png' %}" data-lightbox="screenshots" data-title="The social feed on caves.app">
-      <img class="img-fluid rounded shadow-lg border mb-5" alt="The social feed on caves.app" src="{% static 'images/homepage/social-feed.png' %}">
+      <img class="img-fluid rounded border mb-5" alt="The social feed on caves.app" src="{% static 'images/homepage/social-feed.png' %}">
     </a>
-    <a href="{% static 'images/homepage/trip-list.png' %}" data-lightbox="screenshots" data-title="The trip list for a user on caves.app">
-      <img class="img-fluid rounded shadow-lg border mb-5" alt="The trip list for a user on caves.app" src="{% static 'images/homepage/trip-list.png' %}">
+    <a href="{% static 'images/homepage/user-profile.png' %}" data-lightbox="screenshots" data-title="The profile for a user on caves.app">
+      <img class="img-fluid rounded border mb-5" alt="The user profile page on caves.app" src="{% static 'images/homepage/user-profile.png' %}">
     </a>
-    <a href="{% static 'images/homepage/cave-map.png' %}" data-lightbox="screenshots" data-title="An automatically generated map of trips logged on caves.app">
-      <img class="img-fluid rounded shadow-lg border mb-5" alt="An automatically generated map of trips logged on caves.app" src="{% static 'images/homepage/cave-map.png' %}">
+    <a href="{% static 'images/homepage/trip-detail.png' %}" data-lightbox="screenshots" data-title="The trip page on caves.app">
+      <img class="img-fluid rounded border mb-5" alt="The trip page on caves.app" src="{% static 'images/homepage/trip-detail.png' %}">
     </a>
     <a href="{% static 'images/homepage/statistics-full.png' %}" data-lightbox="screenshots" data-title="The statistics page on caves.app">
-      <img class="img-fluid rounded shadow-lg border mb-3" alt="The statistics page on caves.app" src="{% static 'images/homepage/statistics-full.png' %}">
+      <img class="img-fluid rounded border mb-3" alt="The statistics page on caves.app" src="{% static 'images/homepage/statistics-full.png' %}">
     </a>
   </div>
 {% endblock %}

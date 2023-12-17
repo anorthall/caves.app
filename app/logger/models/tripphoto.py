@@ -13,7 +13,9 @@ class TripPhotoManager(models.Manager):
         return self.filter(is_valid=False, deleted_at=None)
 
     def valid(self):
-        return self.filter(is_valid=True, deleted_at=None)
+        return self.filter(
+            is_valid=True, deleted_at=None, photo_type=TripPhoto.PhotoTypes.DEFAULT
+        )
 
     def deleted(self):
         return self.filter(deleted_at__isnull=False)
@@ -26,6 +28,10 @@ def trip_photo_upload_path(instance, filename):
 
 
 class TripPhoto(models.Model):
+    class PhotoTypes(models.TextChoices):
+        FEATURED = "FT", "Featured"
+        DEFAULT = "DE", "Default"
+
     objects = TripPhotoManager()
 
     uuid = models.UUIDField("UUID", default=uuid.uuid4, unique=True)
@@ -34,6 +40,9 @@ class TripPhoto(models.Model):
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
+    )
+    photo_type = models.CharField(
+        max_length=2, choices=PhotoTypes.choices, default=PhotoTypes.DEFAULT
     )
     photo = models.ImageField(
         storage=storages["photos"],
@@ -52,6 +61,17 @@ class TripPhoto(models.Model):
 
     def __str__(self):
         return f"Photo for {self.trip} by {self.user}"
+
+    def save(self, *args, **kwargs):
+        """If the photo is deleted, remove it from the featured photo field of
+        any trips it is associated with."""
+        if self.deleted_at is not None or self.is_valid is False:
+            if self.pk:  # only run on update, not create
+                for trip in self.trips_featured.all():
+                    trip.featured_photo = None
+                    trip.save()
+
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return self.photo.url

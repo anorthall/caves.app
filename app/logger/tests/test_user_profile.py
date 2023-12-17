@@ -62,16 +62,6 @@ class UserProfileViewTests(TestCase):
                 notes="User2 trip notes",
             )
 
-    def test_user_profile_page_title(self):
-        """Test the user profile page title"""
-        self.client.force_login(self.user)
-        self.user.page_title = "Test Page Title 123"
-        self.user.save()
-
-        response = self.client.get(reverse("log:user", args=[self.user.username]))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Test Page Title 123")
-
     def test_user_profile_page_bio(self):
         """Test the user profile page bio"""
         self.client.force_login(self.user)
@@ -114,52 +104,57 @@ class UserProfileViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.username)
 
+        error_message = (
+            f"{self.user.name}'s privacy settings prevent "
+            "you from viewing their profile and trip list"
+        )
+
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
-        self.assertContains(response, "You do not have permission to view this profile")
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, error_message)
 
         self.user.privacy = User.FRIENDS
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
-        self.assertContains(response, "You do not have permission to view this profile")
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, error_message)
 
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.name)
 
         self.user.privacy = User.PUBLIC
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.name)
 
         self.client.logout()
         self.user.privacy = User.PRIVATE
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
-        self.assertContains(response, "You do not have permission to view this profile")
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, error_message)
 
         self.user.privacy = User.FRIENDS
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
-        self.assertContains(response, "You do not have permission to view this profile")
+        self.assertContains(response, self.user.name)
+        self.assertContains(response, error_message)
 
         self.user.privacy = User.PUBLIC
         self.user.save()
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.name)
 
     @tag("privacy")
     def test_public_statistics_privacy_setting(self):
@@ -226,7 +221,7 @@ class UserProfileViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.user2.get_absolute_url())
         self.assertNotContains(response, self.user3.get_absolute_url())
-        self.assertNotContains(response, "Friends")
+        self.assertNotContains(response, "friendsTab")
 
     @tag("privacy")
     def test_cave_location_privacy(self):

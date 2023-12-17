@@ -1,9 +1,8 @@
-{% extends "base_trips.html" %}
+{% extends "logger/_base.html" %}
 {% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}Photos for {{ trip.cave_name }}{% endblock %}
-{% block display_title %}Trip to {{ trip.cave_name }}{% endblock %}
 
 {% block header_scripts %}
   <script type="text/javascript">
@@ -35,30 +34,45 @@
 {% endblock %}
 
 {% block main %}
-  <h3 class="subtitle mb-3">
+  <h1 class="title-underline mb-3">
     Upload photos
-  </h3>
+  </h1>
 
-  <p class="text-muted">
+  <p class="text-muted mb-5">
     Once you have successfully uploaded your photos below, go back to the <a href="{{ trip.get_absolute_url }}">
     trip page</a> to view them.
   </p>
 
   <div id="uppy"></div>
 
-  <h3 class="subtitle mt-5 mb-3">
+  <h3 class="title-underline mt-5 mb-3">
     Photo privacy
   </h3>
 
-  <div class="mw-45">
-    {% crispy form %}
-  </div>
+  {% crispy form %}
 
-  <h3 class="subtitle mt-5 mb-3">
+  {% if trip.featured_photo is not None %}
+    <h3 class="title-underline mt-5 mb-3">
+      Remove featured photo
+    </h3>
+
+    <p class="mb-3">
+      If you'd like to remove the featured photo for this trip and display the default
+      header instead, click the button below.
+    </p>
+
+    <button hx-post="{% url 'log:trip_photos_unfeature' trip.uuid %}"
+            hx-swap="innerHTML show:top" hx-push-url="true" hx-target="body"
+            class="btn btn-secondary">
+      Remove featured photo
+    </button>
+  {% endif %}
+
+  <h3 class="title-underline mt-5 mb-3">
     Remove photos
   </h3>
 
-  <p class="mw-45 mb-3">
+  <p class="mb-3">
     If you'd like to delete all photos that you've uploaded for this trip, click the button below.
     This will remove <strong>all the photos</strong> for the trip to
     {{ trip.cave_name }} on {{ trip.start|date }} and is <strong>permanent and

@@ -5,18 +5,16 @@
 {% block banner_subtitle %}Create an account{% endblock %}
 
 {% block content %}
-  <div class="mw-35">
-    <p class="lead">
-      Register for a free caves.app account by entering your details below. Thanks for trying it out!
-    </p>
+  <p class="lead">
+    Register for a free caves.app account by entering your details below.
+  </p>
 
-    <p class="text-muted mb-4">
-      If you've
-      already got an account, you may wish to <a class="text-decoration-none" href="{% url 'users:login' %}">log in</a>
-      instead. Alternatively, if you've just made an account, you can
-      <a class="text-decoration-none" href="{% url 'users:verify_resend' %}">resend the verification email</a>.
-    </p>
+  <p class="text-muted mb-4">
+    If you've
+    already got an account, you may wish to <a class="text-decoration-none" href="{% url 'users:login' %}">log in</a>
+    instead. Alternatively, if you've just made an account, you can
+    <a class="text-decoration-none" href="{% url 'users:verify_resend' %}">resend the verification email</a>.
+  </p>
 
-    {% crispy form %}
-  </div>
+  {% crispy form %}
 {% endblock %}

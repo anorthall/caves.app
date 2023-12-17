@@ -1,0 +1,42 @@
+{% load active_link_tags %}
+<span class="nav-item sidebar-header">Account</span>
+
+<a class="nav-link {% active_link 'users:account_detail' %}" href="{% url 'users:account_detail' %}">
+  <i class="bi bi-info-circle-fill"></i> Overview
+</a>
+
+<a class="nav-link {% active_link 'users:profile_update' %}" href="{% url 'users:profile_update' %}">
+  <i class="bi bi-person-fill"></i> Profile
+</a>
+
+<a class="nav-link {% active_link 'users:profile_photo_update' %}" href="{% url 'users:profile_photo_update' %}">
+  <i class="bi bi-camera-fill"></i> Photo
+</a>
+
+<a class="nav-link {% active_link 'users:friends' %}" href="{% url 'users:friends' %}">
+  <i class="bi bi-people-fill"></i> Friends
+</a>
+
+<a class="nav-link {% active_link 'users:custom_fields_update' %}" href="{% url 'users:custom_fields_update' %}">
+  <i class="bi bi-ui-checks"></i> <span class="d-none d-md-inline">Trip fields</span><span class="d-md-none">Fields</span>
+</a>
+
+<a class="nav-link {% active_link 'users:notifications' %}" href="{% url 'users:notifications' %}">
+  <i class="bi bi-bell-fill"></i> Notifications
+</a>
+
+<a class="nav-link {% active_link 'import:index' %}" href="{% url 'import:index' %}">
+  <i class="bi bi-cloud-arrow-up-fill"></i> Import
+</a>
+
+<a class="nav-link {% active_link 'export:index' %}" href="{% url 'export:index' %}">
+  <i class="bi bi-file-earmark-arrow-down-fill"></i> Export
+</a>
+
+<a class="nav-link {% active_link 'users:account_settings' %}" href="{% url 'users:account_settings' %}">
+  <i class="bi bi-gear-fill"></i> Settings
+</a>
+
+<a class="nav-link" hx-post="{% url 'users:logout' %}" hx-target="body" hx-swap="innerHTML show:top" hx-push-url="true">
+  <i class="bi bi-x-octagon-fill"></i> Sign out
+</a>

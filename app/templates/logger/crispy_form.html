@@ -1,10 +1,13 @@
-{% extends "base_trips.html" %}
+{% extends "logger/_base.html" %}
 {% load crispy_forms_tags %}
 
 {% block title %}{{ title }}{% endblock %}
-{% block display_title %}{{ title }}{% endblock %}
 
 {% block main %}
+  {% if page_title %}
+    <h1 class="{{ page_title_class|default:"title-underline" }}">{{ page_title }}</h1>
+  {% endif %}
+
   {% block text %}{% endblock %}
   {% crispy form %}
 {% endblock %}

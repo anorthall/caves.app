@@ -1,46 +1,140 @@
 {% load logger_tags %}
-{% load stats_tags %}
+{% load static %}
 
 <div class="table-responsive">
-  <table class="table table-striped text-center {{ table_class }}">
+  <table class="table annual-stats-table {{ table_class }}">
     <thead>
       <tr>
         <th>Year</th>
-        {% if not disable_dist %}
-          <th class="{{ dist_class }}">Climbed</th>
-          <th class="{{ dist_class }}">Descended</th>
-          <th class="{{ dist_class }}">Horizontal</th>
-          <th class="{{ dist_class }}">Aid climbed</th>
-        {% endif %}
-        {% if not disable_survey %}
-          <th class="{{ dist_class }}">Surveyed</th>
-          <th class="{{ dist_class }}">Resurveyed</th>
-        {% endif %}
-        <th>Time</th>
-        <th>Trips</th>
-        <th>Days</th>
+        {% for year in stats %}
+          <th>{% if year.is_total %}Total{% else %}{{ year.year }}{% endif %}</th>
+        {% endfor %}
       </tr>
     </thead>
 
     <tbody>
-      {% for year in stats %}
+      {% if not disable_dist %}
         <tr>
-          <th>{% if year.is_total %}Total{% else %}{{ year.year }}{% endif %}</th>
-          {% if not disable_dist %}
+          <th class="{{ dist_class }}">Climbed</th>
+          {% for year in stats %}
             <td class="{{ dist_class }}">{{ year.climbed|distformat:request.units }}</td>
-            <td class="{{ dist_class }}">{{ year.descended|distformat:request.units }}</td>
-            <td class="{{ dist_class }}">{{ year.horizontal|distformat:request.units }}</td>
-            <td class="{{ dist_class }}">{{ year.aid_climbed|distformat:request.units }}</td>
-          {% endif %}
-          {% if not disable_survey %}
-            <td class="{{ dist_class }}">{{ year.surveyed|distformat:request.units }}</td>
-            <td class="{{ dist_class }}">{{ year.resurveyed|distformat:request.units }}</td>
-          {% endif %}
-          <td>{{ year.time|naturaldelta }}</td>
-          <td>{{ year.trips }}</td>
-          <td>{{ year.caving_days }}</td>
+          {% endfor %}
         </tr>
-      {% endfor %}
+
+        <tr>
+          <th class="{{ dist_class }}">Descended</th>
+          {% for year in stats %}
+            <td class="{{ dist_class }}">{{ year.descended|distformat:request.units }}</td>
+          {% endfor %}
+        </tr>
+
+        <tr>
+          <th class="{{ dist_class }}">Horizontal</th>
+          {% for year in stats %}
+            <td class="{{ dist_class }}">{{ year.horizontal|distformat:request.units }}</td>
+          {% endfor %}
+        </tr>
+
+        <tr>
+          <th class="{{ dist_class }}">Aid climbed</th>
+          {% for year in stats %}
+            <td class="{{ dist_class }}">{{ year.aid_climbed|distformat:request.units }}</td>
+          {% endfor %}
+        </tr>
+      {% endif %}
+
+      {% if not disable_survey %}
+        <tr>
+          <th class="{{ dist_class }}">Surveyed</th>
+          {% for year in stats %}
+            <td class="{{ dist_class }}">{{ year.surveyed|distformat:request.units }}</td>
+          {% endfor %}
+        </tr>
+
+        <tr>
+          <th class="{{ dist_class }}">Resurveyed</th>
+          {% for year in stats %}
+            <td class="{{ dist_class }}">{{ year.resurveyed|distformat:request.units }}</td>
+          {% endfor %}
+        </tr>
+      {% endif %}
+
+      <tr>
+        <th>Trips</th>
+        {% for year in stats %}
+          <td>{{ year.trips }}</td>
+        {% endfor %}
+      </tr>
+
+      <tr>
+        <th>Days</th>
+        {% for year in stats %}
+          <td>{{ year.caving_days }}</td>
+        {% endfor %}
+      </tr>
+
+      <tr>
+        <th>Time</th>
+        {% for year in stats %}
+          <td>{{ year.time|shortdelta }}</td>
+        {% endfor %}
+      </tr>
     </tbody>
   </table>
+</div>
+
+<div class="d-flex justify-content-center align-items-center text-muted small w-100">
+  <span class="fake-link" data-bs-toggle="modal" data-bs-target="#annualStatsLegendModal">
+    Legend
+  </span>
+
+  {% if show_stats_link %}
+    <span>
+      <span class="mx-2">&middot;</span><a href="{% url 'stats:index' %}" class="text-muted text-decoration-none">Full stats</a>
+    </span>
+  {% endif %}
+</div>
+
+<div class="modal modal-lg fade" id="annualStatsLegendModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Statistics legend</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <dl class="row">
+          <dt class="col-sm-3">Climbed</dt>
+          <dd class="col-sm-9">Total rope climbed.</dd>
+
+          <dt class="col-sm-3">Descended</dt>
+          <dd class="col-sm-9">Total rope descended.</dd>
+
+          <dt class="col-sm-3">Horizontal</dt>
+          <dd class="col-sm-9">Total horizontal distance covered.</dd>
+
+          <dt class="col-sm-3">Aid climbed</dt>
+          <dd class="col-sm-9">Total aid climbing distance.</dd>
+
+          <dt class="col-sm-3">Surveyed</dt>
+          <dd class="col-sm-9">Total length of cave passage surveyed.</dd>
+
+          <dt class="col-sm-3">Resurveyed</dt>
+          <dd class="col-sm-9">Total length of cave passage resurveyed.</dd>
+
+          <dt class="col-sm-3">Trips</dt>
+          <dd class="col-sm-9">Total number of caving trips.</dd>
+
+          <dt class="col-sm-3">Days</dt>
+          <dd class="col-sm-9">Total number of days with at least one caving trip.</dd>
+
+          <dt class="col-sm-3">Hours</dt>
+          <dd class="col-sm-9">Total number of hours spent underground.</dd>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>

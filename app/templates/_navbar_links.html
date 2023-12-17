@@ -1,38 +1,26 @@
 {% load active_link_tags %}
 {% if user.is_authenticated %}
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'log:user' username=user.username %}" href="{% url 'log:user' username=user.username %}">
-      <i class="bi bi-person-fill"></i> Trips
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
+    <i class="bi bi-house-fill"></i><span class="nav-link-text"> Feed</span>
+  </a>
 
-    <li class="nav-item">
-    <a class="nav-link {% active_link 'log:index' %}" href="{% url 'log:index' %}">
-      <i class="bi bi-card-list"></i> Feed
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'stats:index' %}" href="{% url 'stats:index' %}">
+    <i class="bi bi-bar-chart-fill"></i><span class="nav-link-text"> Statistics</span>
+  </a>
 
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'stats:index' %}" href="{% url 'stats:index' %}">
-      <i class="bi bi-bar-chart"></i> Statistics
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'maps:index' %}" href="{% url 'maps:index' %}">
+    <i class="bi bi-map-fill"></i><span class="nav-link-text"> Map</span>
+  </a>
 
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
-      <i class="bi bi-plus-circle"></i> Add
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'log:trip_create' %}" href="{% url 'log:trip_create' %}">
+    <i class="bi bi-plus-circle-fill"></i><span class="nav-link-text"> Add trip</span>
+  </a>
 {% else %}
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'users:login' %}" href="{% url 'users:login' %}">
-      <i class="bi bi-person-circle"></i> Login
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'users:login' %}" href="{% url 'users:login' %}">
+    <i class="bi bi-person-circle"></i><span class="nav-link-text"> Login</span>
+  </a>
 
-  <li class="nav-item">
-    <a class="nav-link {% active_link 'users:register' %}" href="{% url 'users:register' %}">
-      <i class="bi bi-house"></i> Register
-    </a>
-  </li>
+  <a class="nav-link {% active_link 'users:register' %}" href="{% url 'users:register' %}">
+    <i class="bi bi-house-fill"></i><span class="nav-link-text"> Register</span>
+  </a>
 {% endif %}

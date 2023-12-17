@@ -5,7 +5,6 @@ from users.models import CavingUser
 User = CavingUser
 
 
-# TODO: Move to Users app?
 @tag("users", "notifications", "fast")
 class NotificationTests(TestCase):
     def setUp(self):

@@ -33,8 +33,10 @@ class Index(TemplateView):
     def get_authenticated_context(self, **kwargs):
         """Return the trip feed for a logged in user"""
         context = super().get_context_data(**kwargs)
-        context["ordering"] = get_user(self.request).feed_ordering
+        user = get_user(self.request)
+        context["ordering"] = user.feed_ordering
         context["trips"] = services.get_trips_context(self.request, context["ordering"])
+        context["quick_stats"] = user.quick_stats
         context["liked_str"] = services.get_liked_str_context(
             self.request, context["trips"]
         )
@@ -102,6 +104,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
         context = {
             "trip": trip,
             "liked_str": liked_str,
+            "likes_count": trip.likes.count(),
         }
 
         return self.render_to_response(context)

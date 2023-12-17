@@ -21,6 +21,7 @@ uppy.use(Dashboard, {
   note: 'Only images are allowed. Maximum filesize is 10MB. Do not refresh the page' +
       ' until all photos have finished uploading.',
   proudlyDisplayPoweredByUppy: false,
+  theme: 'dark',
 })
 
 uppy.use(ImageEditor, { target: Dashboard })

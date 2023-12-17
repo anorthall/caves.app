@@ -136,27 +136,24 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
 
         # Form layout
         self.helper.layout = Layout(
-            Fieldset(
-                "Cave details",
+            Div(
+                Div("cave_name", css_class="col-12"),
+                Div("cave_entrance", css_class="col-12 col-lg-6"),
+                Div("cave_exit", css_class="col-12 col-lg-6"),
+                Div("cave_region", css_class="col-12 col-lg-6"),
+                Div("cave_country", css_class="col-12 col-lg-6"),
+                Div("cave_location", css_class="col-12 col-lg-6"),
                 Div(
-                    Div("cave_name", css_class="col-12"),
-                    Div("cave_entrance", css_class="col-12 col-lg-6"),
-                    Div("cave_exit", css_class="col-12 col-lg-6"),
-                    Div("cave_region", css_class="col-12 col-lg-6"),
-                    Div("cave_country", css_class="col-12 col-lg-6"),
-                    Div("cave_location", css_class="col-12 col-lg-6"),
-                    Div(
-                        HTML(
-                            "{% include 'maps/_htmx_geocoding_results.html' "
-                            "with lat=trip.latitude lng=trip.longitude %}"
-                        ),
-                        css_class=(
-                            "col-12 col-lg-6 d-flex flex-column justify-content-center"
-                        ),
-                        id="latlong",
+                    HTML(
+                        "{% include 'maps/_htmx_geocoding_results.html' "
+                        "with lat=trip.latitude lng=trip.longitude %}"
                     ),
-                    css_class="row",
+                    css_class=(
+                        "col-12 col-lg-6 d-flex flex-column justify-content-center"
+                    ),
+                    id="latlong",
                 ),
+                css_class="row",
             ),
             Fieldset(
                 "Trip details",

@@ -1,17 +1,7 @@
-{% extends "base_account.html" %}
+{% extends "users/_base.html" %}
 {% load markdownify %}
-
+{% block hamburger_menu_right %}{% include "sidebars/_account.html" %}{% endblock %}
 {% block main %}
-  <div class="row g-5 mb-5 d-lg-none">
-    <div class="d-flex justify-content-center mb-1">
-      {% if user.avatar %}
-        {% include "users/_profile_picture.html" with photo_user=user %}
-      {% else %}
-        {% include "users/_profile_picture.html" %}
-      {% endif %}
-    </div>
-  </div>
-
   <div class="row g-5">
     <div class="col-12 col-lg-6">
       <div class="h-100">
@@ -172,20 +162,6 @@
 
           <div class="col account-info-data">
             {{ user.privacy }}
-          </div>
-        </div>
-
-        <div class="row p-1 border-bottom">
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
-            Profile title
-          </div>
-
-          <div class="col account-info-data">
-            {% if user.page_title %}
-              {{ user.page_title }}
-            {% else %}
-              {{ user.name }}'s trips
-            {% endif %}
           </div>
         </div>
 

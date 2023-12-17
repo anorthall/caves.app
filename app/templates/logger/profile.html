@@ -1,41 +1,67 @@
-{% extends "base_sidebar.html" %}
+{% extends "_base_three_col.html" %}
+{% load static %}
 {% load markdownify %}
+{% load core_tags %}
+{% load logger_tags %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block stylesheets %}
+  {% if photos %}
+    <link rel="stylesheet" href="{% static 'css/justifiedGallery.min.css' %}">
+  {% endif %}
+{% endblock %}
+
+{% block header_scripts %}
+  {% if photos %}
+    <script src="{% static 'js/jquery.justifiedGallery.min.js' %}"></script>
+    {% include "logger/_lightbox.html" %}
+  {% endif %}
+{% endblock %}
+
+{% block footer_scripts %}
+  {% include "_bs_tooltips.html" %}
+{% endblock %}
+
+{% block title %}{{ profile_user }}'s profile on caves.app{% endblock %}
 {% block meta_tags %}<meta name="author" content="{{ profile_user.name }}">{% endblock %}
-
-{% block display_title %}{{ page_title }}{% endblock %}
-{% block display_title_right %}@{{ profile_user.username }}{% endblock %}
-{% if private_profile %}
-  {% block display_title_container %}{% endblock %}
-{% endif %}
 
 {% block description %}{{ profile_user.name }}'s trips on caves.app.{% endblock %}
 
-{% block sidebar %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
-{% block mobile_menu %}{% include "logger/_sidebar_profile.html" %}{% endblock %}
+{% block right_sidebar %}{% include "sidebars/_profile_page.html" %}{% endblock %}
+{% block hamburger_menu_right_container %}{% endblock %}
 
 {% block main %}
-  {% if not private_profile %}
-    {% if user_has_trips %}
-      <div class="form-floating mb-4">
-        <input type="text" class="form-control border-primary" id="searchInput" placeholder="Search"
-               hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
-               hx-trigger="keyup changed delay:100ms"
-               hx-target="#userTrips"
-               hx-replace="outerHTML"
-               autocomplete="off"
-               name="query">
-        <label for="floatingInput">Search</label>
-      </div>
-    {% endif %}
+  <div class="d-flex flex-column flex-md-row justify-content-start align-items-center mb-5">
+    {% include "users/_profile_picture.html" with photo_user=profile_user link=True %}
+    <div class="ms-md-5 text-center text-md-start mt-4 mt-md-0">
+      <h1 class="fs-3 mb-0">{{ profile_user.name }}</h1>
+      {% if not profile_user.private_profile %}
+        {% if profile_user.location or profile_user.country %}
+          <small class="text-muted d-block mt-1 mt-md-0">
+            {{ profile_user.location }}{% if profile_user.country %} &middot; {{ profile_user.country.name }}{% endif %}
+          </small>
+        {% endif %}
+        {% if user_has_trips %}
+          <small class="text-body-tertiary d-block mt-1 mt-md-0">
+            {% with dur=quick_stats.qs_duration qs_f=quick_stats.qs_friends %}
+              {{ quick_stats.qs_trips }} trips {% if qs_f %}&middot; {{ qs_f }} friend{{ qs_f|pluralize }} {% endif %}{% if dur %}&middot; {{ dur|shortdelta }}{% endif %}
+            {% endwith %}
+          </small>
+        {% endif %}
+      {% else %}
+        <small class="text-muted">
+          Private profile
+        </small>
+      {% endif %}
+    </div>
+  </div>
 
+  {% if not private_profile %}
     {% if profile_user.bio %}
-      <div class="mb-4">
+      <div class="mb-5 no-paragraph-mb px-2 text-limit-length">
         {{ profile_user.bio|markdownify }}
       </div>
-    {% elif not profile_user.bio and not trips %}
-      <p class="lead mb-4">
+    {% elif not profile_user.bio and not user_has_trips %}
+      <p class="lead">
         There is nothing here &mdash; yet.
         {% if user == profile_user %}
           Why not <a href="{% url 'log:trip_create' %}">add a trip</a> or
@@ -44,26 +70,241 @@
       </p>
     {% endif %}
 
-    {% if stats %}
-      <div class="profile-stats {% if profile_user.bio %}mt-4{% endif %} mb-3 border-top">
-        {% include "stats/_yearly_stats.html" with stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-sm" dist_class="d-none d-md-table-cell" %}
-      </div>
-    {% endif %}
-
     {% if user_has_trips %}
-      <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
-    {% endif %}
+      <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link text-body-emphasis active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent"
+                  type="button" role="tab" aria-controls="tripsTabContent" aria-selected="true">
+              <span class="d-none d-sm-inline">Trips</span>
+              <span class="d-sm-none"><i class="bi bi-list-columns"></i></span>
+          </button>
+        </li>
+        {% if photos %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link text-body-emphasis" id="photosTab" data-bs-toggle="tab" data-bs-target="#photosTabContent"
+                    type="button" role="tab" aria-controls="photosTabContent" aria-selected="false">
+              <span class="d-none d-sm-inline">Photos</span>
+              <span class="d-sm-none"><i class="bi bi-image-fill"></i></span>
+            </button>
+          </li>
+        {% endif %}
+        {% if mutual_friends %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link text-body-emphasis" id="friendsTab" data-bs-toggle="tab" data-bs-target="#friendsTabContent"
+                    type="button" role="tab" aria-controls="friendsTabContent" aria-selected="false">
+              <span class="d-none d-sm-inline">Friends</span>
+              <span class="d-sm-none"><i class="bi bi-people-fill"></i></span>
+            </button>
+          </li>
+        {% endif %}
+        {% if stats %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link text-body-emphasis" id="statsTab" data-bs-toggle="tab" data-bs-target="#statsTabContent"
+                    type="button" role="tab" aria-controls="statsTabContent" aria-selected="false">
+              <span class="d-none d-sm-inline">Statistics</span>
+              <span class="d-sm-none"><i class="bi bi-bar-chart-fill"></i></span>
+            </button>
+          </li>
+        {% endif %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link text-body-emphasis" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent"
+                  type="button" role="tab" aria-controls="userInfoTabContent" aria-selected="false">
+            <span class="d-none d-sm-inline">Info</span>
+            <span class="d-sm-none"><i class="bi bi-info-circle-fill"></i></span>
+          </button>
+        </li>
+      </ul>
 
-  {% else %}
-    <div class="card bg-info-subtle text-center">
-      <div class="card-body">
-        <h4 class="card-title">
-          <i class="bi bi-exclamation-triangle-fill me-1"></i>
-          You do not have permission to view this profile
-        </h4>
+      <div class="tab-content p-3 border border-top-0" id="profileTabsContent">
+        <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
+          <div class="input-group mb-3">
+            <span class="input-group-text">Search</span>
+            <input type="text" class="form-control" placeholder="Cave name, cavers, etc."
+                   hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
+                   hx-trigger="keyup changed delay:100ms"
+                   hx-target="#userTrips"
+                   hx-swap="outerHTML"
+                   hx-indicator="none"
+                   autocomplete="off"
+                   name="query">
+          </div>
+          <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
+        </div>
 
-        <p class="mt-3 mb-0">{{ profile_user.name }}'s privacy settings do not permit it. Sorry about that! &#128532;</p>
+        {% if photos %}
+          <div class="tab-pane fade" id="photosTabContent" role="tabpanel" aria-labelledby="photosTab" tabindex="0">
+            <div id="imageGallery"></div>
+            <div id="imageGalleryBottom"></div>
+          </div>
+
+          <script type="text/javascript">
+            /* Load the photo data into a JS array and initially load the first `photoStep` images
+             * into the gallery. Then, when the user scrolls to the bottom of the page, load the next
+             * `photoStep` images into the gallery. */
+
+            const photos = [
+              {% for photo in photos %}
+                [
+                  "{{ photo.photo.url }}",
+                  "{{ photo.trip.get_absolute_url }}",
+                  "{{ photo|imgproxy:"preset:photo" }}",
+                  "{{ photo.trip.cave_name }}",
+                  "{% if photo.taken %}{{ photo.taken|date }}, {{ photo.taken|time }}{% else %}{{ photo.trip.start|date }}{% endif %}"
+                ]{% if not forloop.last %},{% endif %}
+              {% endfor %}
+            ]
+
+            const gallery = $("#imageGallery");
+            const photoStep = 40;
+            let photoIndex = photoStep;
+
+            /* Load initial 20 images into gallery */
+            for (let i = 0; i < photoStep; i++) {
+              gallery.append(
+                `<div class="photo-container">
+                   <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
+                     <img src="${photos[i][2]}" alt="${photos[i][3]}">
+                   </a>
+                   <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+                 </div>`
+              );
+            }
+
+            gallery.justifiedGallery({
+              rowHeight: 200,
+              margins: 5,
+              lastRow: 'justify',
+              captions: true,
+              waitThumbnailsLoad: true,
+            });
+
+            let container = document.querySelector("main");
+            let tabContent = document.querySelector("#photosTabContent");
+
+            let lastKnownScrollPosition = 0;
+            let ticking = false;
+
+            function addMorePhotos() {
+              /* Only load more photos if the photos tab is active */
+              if (!tabContent.classList.contains("active")) {
+                return;
+              }
+              if (tabContent.getBoundingClientRect().bottom <= window.innerHeight) {
+                for (let i = photoIndex; i < photoIndex + photoStep; i++) {
+                  if (i < photos.length) {
+                    gallery.append(
+                      `<div class="photo-container">
+                         <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
+                           <img src="${photos[i][2]}" alt="${photos[i][3]}">
+                         </a>
+                         <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+                       </div>`
+                    );
+                  }
+                }
+                photoIndex += photoStep;
+                gallery.justifiedGallery("norewind");
+
+                /* Prevent duplicate calls within 500ms */
+                setTimeout(() => {
+                  ticking = false;
+                }, 500);
+              }
+            }
+
+            container.addEventListener("scroll", () => {
+              lastKnownScrollPosition = container.scrollY;
+
+              if (!ticking) {
+                window.requestAnimationFrame(() => {
+                  addMorePhotos();
+                  ticking = false;
+                });
+
+                ticking = true;
+              }
+            });
+          </script>
+        {% endif %}
+
+        {% if mutual_friends %}
+          <div class="tab-pane fade" id="friendsTabContent" role="tabpanel" aria-labelledby="friendsTab" tabindex="0">
+            <div class="row row-cols-1 row-cols-md-2 g-3 mb-3">
+              {% for friend in mutual_friends %}
+                <div class="col">
+                  <div class="friend-card d-flex align-items-center" style="transform: rotate(0);">
+                    <a href="{{ friend.get_absolute_url }}" class="stretched-link"></a>
+                    {% include "users/_profile_picture.html" with photo_user=friend %}
+                    <div class="d-flex flex-column w-100 align-items-start ms-3">
+                      <a href="{{ friend.get_absolute_url }}" class="text-body-emphasis text-decoration-none">
+                        {{ friend.name }}
+                      </a>
+                      <span class="text-muted">{{ friend.num_trips }} trip{{ friend.num_trips|pluralize }}</span>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% if user != profile_user %}
+              <div class="text-center text-muted mb-3 mt-4">
+                <small>Only mutual friends are shown</small>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if stats %}
+          <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
+            <h3 class="ms-1 my-3">Yearly Statistics</h3>
+            <div class="profile-stats">
+              {% include "stats/_yearly_stats.html" with show_stats_link=show_stats_link stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-hover" dist_class="d-none d-xl-table-cell" %}
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="tab-pane fade" id="userInfoTabContent" role="tabpanel" aria-labelledby="userInfoTab" tabindex="0">
+          <h3 class="my-3">{{ profile_user.name }}</h3>
+          <dl class="row mb-3">
+            <dt class="col-sm-4">Username</dt>
+            <dd class="col-sm-8">{{ profile_user.username }}</dd>
+
+            {% if profile_user.clubs %}
+              <dt class="col-sm-4">Clubs</dt>
+              <dd class="col-sm-8">{{ profile_user.clubs }}</dd>
+            {% endif %}
+
+            <dt class="col-sm-4">Units</dt>
+            <dd class="col-sm-8">{{ profile_user.units }}</dd>
+
+            <dt class="col-sm-4">Timezone</dt>
+            <dd class="col-sm-8">{{ profile_user.timezone }}</dd>
+
+            <dt class="col-sm-4">Date joined</dt>
+            <dd class="col-sm-8">{{ profile_user.date_joined|date:"j F Y" }}</dd>
+
+            <dt class="col-sm-4">Account age</dt>
+            <dd class="col-sm-8">{{ profile_user.date_joined|timesince }}</dd>
+
+            {% if user.has_social_media_links %}
+              <dt class="col-sm-4">Social media</dt>
+              <dd class="col-sm-8 social-media-links">
+                {% include "logger/_social_media_links.html" with user=profile_user %}
+              </dd>
+            {% endif %}
+          </dl>
+        </div>
       </div>
-    </div>
+    {% endif %}
+  {% else %}
+    <h4 class="title-underline fs-4">
+      Oopsie...
+    </h4>
+    <p>
+      {{ profile_user.name }}'s privacy settings prevent you from viewing their profile and trip list.
+    </p>
+
+    <p>
+      Oh well. You didn't want to see them anyway! &#128579;
+    </p>
   {% endif %}
 {% endblock %}

@@ -1,11 +1,12 @@
-{% extends "base_full_width.html" %}
+{% extends "_base_two_col.html" %}
 {% load crispy_forms_tags %}
 
 {% block title %}Process import{% endblock %}
-{% block display_title %}Process import{% endblock %}
 
-{% block content %}
-  <div class="mw-45 mb-5">
+{% block main %}
+  <div class="mb-5">
+    <h1 class="title-underline">Import data</h1>
+
     <p class="lead">
       Your import file has been processed and {{ formset|length }} trips have been found.
     </p>

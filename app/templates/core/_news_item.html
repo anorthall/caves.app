@@ -3,17 +3,16 @@
 {% load humanize %}
 
 <div class="mb-3">
-  <h4 class="subtitle fs-3 mb-1 pb-1" id="news{{ news.id }}">
-    <a class="text-decoration-none text-black" href="{{ news.get_absolute_url }}">
-      {{ news.title }}
-    </a>
-  </h4>
-
-  <div class="mb-3">
-    <span class="text-muted">
+  <div class="title-underline mb-3">
+    <h1 id="news{{ news.id }}" class="mb-0">
+      <a class="text-decoration-none text-body-emphasis" href="{{ news.get_absolute_url }}">
+        {{ news.title }}
+      </a>
+    </h1>
+    <small class="text-muted">
       <i class="bi bi-person-fill"></i>
-    </span>
-    {% user news.author %}, {{ news.posted_at|naturaltime }}
+      {% user news.author link_class="text-body" %}, {{ news.posted_at|naturaltime }}
+    </small>
   </div>
 
   {{ news.content|markdownify:"news" }}

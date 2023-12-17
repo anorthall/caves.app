@@ -1,8 +1,7 @@
-{% extends "base_full_width.html" %}
+{% extends "_base_two_col.html" %}
 
 {% block title %}{{ user.name }}'s cave map{% endblock %}
 {% block description %}A map of all the caves you've logged trips to on caves.app.{% endblock %}
-{% block display_title %}{{ user.name }}'s cave map{% endblock %}
 
 {% block header_scripts %}
   <script>
@@ -13,87 +12,79 @@
   </script>
 {% endblock %}
 
-{% block content %}
+{% block main %}
   {% if not map_markers %}
-    <div class="alert alert-info text-center">
-      You have not added locations to any of your trips so there are no caves to display on this map!<br>
-      Would you like to <a href="{% url 'maps:add_location' %}">add locations to your trips</a>?
-    </div>
-  {% endif %}
+    <h1 class="title-underline">
+      Cave map
+    </h1>
 
-  {% if not map_markers or can_add_more_locations %}
-    {% comment %}Leave room for the alert and link to add locations to trips{% endcomment %}
-    <div id="googleMap" style="height: 92%;"></div>
+    <p class="lead">You haven't yet logged any cave locations.</p>
+    <p>Why not <a href="{% url 'maps:add_location' %}">add some?</a></p>
   {% else %}
-    <div id="googleMap" style="height: 100%;"></div>
-  {% endif %}
+    {% if can_add_more_locations %}
+      <div id="googleMap" style="height: 90%;"></div>
+      <div class="w-100 mt-4 text-center">
+        <a class="btn btn-sm btn-secondary" href="{% url 'maps:add_location' %}">Add locations</a>
+      </div>
+    {% else %}
+      <div id="googleMap" style="height: 100%"></div>
+    {% endif %}
+    <script>
+      let map;
 
-  {% if can_add_more_locations %}
-    <div class="text-muted text-center my-4">
-      <small>
-        Would you like to
-        <a class="link-body-emphasis" href="{% url 'maps:add_location' %}">
-          add locations to your trips?
-        </a>
-      </small>
-    </div>
-  {% endif %}
+      async function initMap() {
+        const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-  <script>
-    let map;
+        const caves = [
+          {% for marker in map_markers %}
+            {
+              title: "{{ marker.title }}",
+              position: { lat: {{ marker.lat }}, lng: {{ marker.lng }}},
+              description: `
+  <h5 class='mt-2 text-dark'>{{ marker.title }}</h5>
+  <p class='text-dark'>
+    You visited this location {{ marker.visits }} time{{ marker.visits|pluralize }}.<br>
+    The last time you visited was <a class='link-dark' href="{{ marker.last_trip_url }}">{{ marker.last_visit|date }}</a>.
+  </p>
+  `,
+            },
+          {% endfor %}
+        ];
 
-    async function initMap() {
-      const { Map, InfoWindow } = await google.maps.importLibrary("maps");
-      const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-
-      const caves = [
-        {% for marker in map_markers %}
-          {
-            title: "{{ marker.title }}",
-            position: { lat: {{ marker.lat }}, lng: {{ marker.lng }}},
-            description: `
-<h5 class='mt-2'>{{ marker.title }}</h5>
-<p>
-  You visited this location {{ marker.visits }} time{{ marker.visits|pluralize }}.<br>
-  The last time you visited was <a href="{{ marker.last_trip_url }}">{{ marker.last_visit|date }}.</a>
-</p>
-`,
-          },
-        {% endfor %}
-      ];
-
-      map = new Map(document.getElementById("googleMap"), {
-        center: {lat: 0, lng: 0},
-        zoom: 2,
-        mapId: "{{ google_maps_user_map_id }}",
-      });
-
-      const infoWindow = new InfoWindow();
-      const bounds = new google.maps.LatLngBounds();
-
-      caves.forEach(({ position, title, description }) => {
-        const marker = new AdvancedMarkerElement({
-          position,
-          map,
-          title: title,
+        map = new Map(document.getElementById("googleMap"), {
+          center: {lat: 0, lng: 0},
+          zoom: 2,
+          mapId: "{{ google_maps_user_map_id }}",
         });
-        bounds.extend(new google.maps.LatLng(position.lat, position.lng));
 
-        // Add a click listener for each marker, and set up the info window.
-        marker.addListener("click", ({ domEvent, latLng }) => {
-          const { target } = domEvent;
-          infoWindow.close();
-          infoWindow.setContent(description);
-          infoWindow.open(marker.map, marker);
+        const infoWindow = new InfoWindow();
+        const bounds = new google.maps.LatLngBounds();
+
+        caves.forEach(({ position, title, description }) => {
+          const marker = new AdvancedMarkerElement({
+            position,
+            map,
+            title: title,
+          });
+          bounds.extend(new google.maps.LatLng(position.lat, position.lng));
+
+          // Add a click listener for each marker, and set up the info window.
+          marker.addListener("click", ({ domEvent, latLng }) => {
+            const { target } = domEvent;
+            infoWindow.close();
+            infoWindow.setContent(description);
+            infoWindow.open(marker.map, marker);
+          });
         });
-      });
 
-      {% if map_markers %}
-        map.fitBounds(bounds);
-      {% endif %}
-    }
+        {% if map_markers %}
+          map.fitBounds(bounds);
+        {% endif %}
+      }
 
-    initMap();
+      initMap();
 
-  </script>
+    </script>
+  {% endif %}
 {% endblock %}

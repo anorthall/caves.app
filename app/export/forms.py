@@ -9,7 +9,7 @@ class TripExportForm(forms.Form):
         ("json", "JSON (JavaScript Object Notation)"),
     )
     format = forms.ChoiceField(choices=FORMAT_CHOICES)
-    # email = forms.BooleanField(  # TODO: Implement this
+    # email = forms.BooleanField(  # TODO: Implement emailing of exports
     #     label="Email me the data",
     #     required=False,
     #     help_text="Send the export to your email address as well as downloading it",

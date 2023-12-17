@@ -2,22 +2,26 @@
 {% load logger_tags %}
 <span id="like-button{{ trip.uuid }}">
   <a class="text-decoration-none"
+     {% if user.is_authenticated %}
      hx-post="{% url 'log:trip_like_htmx_view' trip.uuid %}"
      hx-target="#like-button{{ trip.uuid }}"
      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
      hx-swap="outerHTML"
-     href="#">
+     {% endif %}>
     {% if trip.user_liked %}
-      <span class="text-primary">
+      <span class="liked-trip">
         <i class="bi bi-hand-thumbs-up-fill"></i>
       </span>
     {% else %}
-      <span class="text-dark">
+      <span class="unliked-trip">
         <i class="bi bi-hand-thumbs-up"></i>
       </span>
     {% endif %}
-    <span class="text-dark">
-      &nbsp;{{ liked_str|get:trip.pk }}
+    <span class="ms-1 liked-count d-none d-md-inline-block{% if trip.user_liked %} liked-trip{% endif %}">
+      {{ liked_str|get:trip.pk }}
+    </span>
+    <span class="ms-1 liked-count d-md-none{% if trip.user_liked %} liked-trip{% endif %}">
+      {% if likes_count is not None %}{{ likes_count }}{% else %}{{ trip.likes_count }}{% endif %} likes
     </span>
   </a>
 </span>

@@ -1,4 +1,4 @@
-{% extends "base_account.html" %}
+{% extends "users/_base.html" %}
 {% load static %}
 {% load crispy_forms_tags %}
 
@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  <style type="text/css">
+  <style>
     /* Circular crop */
     .cropper-view-box,
     .cropper-face {
@@ -62,7 +62,7 @@
     const crop_btn = document.getElementById('crop_button')
     const crop_image = document.getElementById('crop_image')
     const image_input = document.getElementById('id_avatar')
-    const form = document.getElementById('avatar-form')
+    const form = document.getElementById('avatarForm')
     const modal_id = "#cropModal"
 
     // When user uploads the image this event will get triggered

@@ -1,0 +1,26 @@
+{% load users_tags %}
+
+<h1 class="fs-3 mb-0 text-nowrap">
+  <a href="{{ trip.get_absolute_url }}" class="text-body-emphasis text-decoration-none">
+    {{ trip.cave_name }}
+    {% comment %}
+    {% if trip.cave_entrance or trip.cave_exit %}
+      {% if trip.cave_entrance == trip.cave_exit %}
+        <span class="fs-6 d-none d-sm-block">via {{ trip.cave_entrance }}</span>
+      {% else %}
+        <span class="fs-6 d-none d-sm-block">via {{ trip.cave_entrance }}{% if trip.cave_entrance and trip.cave_exit %} and {% endif %}{{ trip.cave_exit }}</span>
+      {% endif %}
+    {% endif %}
+    {% endcomment %}
+  </a>
+</h1>
+<small class="text-muted mt-md-0 d-block">
+  {% user trip.user link_class="text-body-emphasis" %}<span class="d-none d-sm-inline"> &middot; {{ trip.start|date }}, {{ trip.start|time:"f a" }}</span>
+</small>
+{% with cavers=trip.cavers.all.count %}
+  {% if trip.duration_str or cavers %}
+    <small class="text-muted d-block">
+      <span class="d-none d-sm-inline">{% if cavers > 0 %}{{ cavers|add:"1" }} people{% else %}Solo trip{% endif %}{% if trip.duration_str %} &middot; </span>{{ trip.duration_str }}{% endif %}
+    </small>
+  {% endif %}
+{% endwith %}

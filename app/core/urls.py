@@ -7,6 +7,7 @@ app_name = "core"
 urlpatterns = [
     path("help/", views.Help.as_view(), name="help"),
     path("news/", views.NewsList.as_view(), name="news"),
+    path("changes/", views.ChangeLog.as_view(), name="changes"),
     path("news/<slug:slug>/", views.NewsDetail.as_view(), name="news_detail"),
     path("healthcheck/", views.Healthcheck.as_view(), name="healthcheck"),
     path("400/", views.HTTP400.as_view(), name="400"),

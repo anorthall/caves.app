@@ -29,6 +29,16 @@ urlpatterns = [
     path("trip/<uuid:uuid>/", views.TripDetail.as_view(), name="trip_detail"),
     path("trip/<uuid:uuid>/photos/", views.TripPhotos.as_view(), name="trip_photos"),
     path(
+        "trip/<uuid:uuid>/photos/feature/",
+        views.TripPhotoFeature.as_view(),
+        name="trip_photos_feature",
+    ),
+    path(
+        "trip/<uuid:uuid>/photos/unfeature/",
+        views.TripPhotoUnsetFeature.as_view(),
+        name="trip_photos_unfeature",
+    ),
+    path(
         "trip/<uuid:uuid>/photos/delete/all/",
         views.TripPhotosDeleteAll.as_view(),
         name="trip_photos_delete_all",

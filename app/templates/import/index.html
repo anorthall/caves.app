@@ -1,11 +1,11 @@
-{% extends "base_account.html" %}
+{% extends "users/_base.html" %}
 {% load crispy_forms_tags %}
 
 {% block title %}Import data{% endblock %}
 
 {% block main %}
-  <h3 class="subtitle">Import data</h3>
-  <div class="mw-45">
+  <h1 class="title-underline">Import data</h1>
+  <div>
     <p>
       Data can be imported to the database from a CSV file. This can be useful to add
       a large number of entries at once. To begin, <a href="{% url "import:sample" %}">

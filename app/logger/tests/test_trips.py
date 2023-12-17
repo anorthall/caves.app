@@ -668,9 +668,8 @@ class TripDetailViewTests(TestCase):
         trip = Trip.objects.filter(user=self.user).first()
         response = self.client.get(trip.get_absolute_url())
         self.assertContains(response, trip.cave_name)
-        self.assertContains(response, "User profile")
-        self.assertContains(response, "View trip")
-        self.assertContains(response, "Add as friend")
+        self.assertContains(response, "Profile")
+        self.assertContains(response, "Add friend")
 
         self.assertNotContains(response, reverse("log:trip_update", args=[trip.uuid]))
         self.assertNotContains(response, reverse("log:trip_delete", args=[trip.uuid]))

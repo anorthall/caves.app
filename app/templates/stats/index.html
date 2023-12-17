@@ -1,20 +1,20 @@
-{% extends "base_stats.html" %}
+{% extends "stats/_base.html" %}
 {% load logger_tags %}
-{% load stats_tags %}
+{% load static %}
 {% load markdownify %}
 
 {% block header_scripts %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
-{% block content %}
+{% block main %}
   {% if stats_yearly %}
-    <h3 class="subtitle">
-      Annual statistics
-    </h3>
+    <h1 class="title-underline mt-2">
+      {{ user.name }}'s statistics
+    </h1>
 
     <div id="yearly-statistics-table">
-      {% include "stats/_yearly_stats.html" with stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}
+      {% include "stats/_yearly_stats.html" with table_class="table-striped" stats=stats_yearly disable_dist=user.disable_distance_statistics disable_survey=user.disable_survey_statistics %}
     </div>
 
     {% if not user.disable_stats_over_time %}
@@ -27,22 +27,20 @@
       </div>
     {% endif %}
   {% else %}
-    <div class="mw-45">
-      <p class="lead">
-        You haven't added any trips, so no statistics are available.
-        Why not <a href="{% url 'log:trip_create' %}">add a trip</a> now?
-      </p>
+    <p class="lead">
+      You haven't added any trips, so no statistics are available.
+      Why not <a href="{% url 'log:trip_create' %}">add a trip</a> now?
+    </p>
 
-      <p>
-        As you add trips, more statistics will be added to this page. The statistics
-        shown will vary based on what data is available. To ensure the most interesting
-        statistics, fill out as many fields as possible when adding trips.
-      </p>
-    </div>
+    <p>
+      As you add trips, more statistics will be added to this page. The statistics
+      shown will vary based on what data is available. To ensure the most interesting
+      statistics, fill out as many fields as possible when adding trips.
+    </p>
   {% endif %}
 
   {% if stats_averages or stats_metrics %}
-    <h3 class="subtitle mt-5">
+    <h3 class="title-underline mt-5">
       Metrics
     </h3>
 
@@ -70,7 +68,7 @@
                 {% if stat.is_dist %}
                   {{ stat.value|distformat:request.units }}
                 {% elif stat.is_time %}
-                  {{ stat.value|naturaldelta:"minutes" }}
+                  {{ stat.value|shortdelta }}
                 {% else %}
                   {{ stat.value|floatformat:2 }}
                 {% endif %}
@@ -91,7 +89,7 @@
   {% endif %}
 
   {% if stats_most_common or stats_biggest_trips %}
-    <h3 class="subtitle mt-5">
+    <h3 class="title-underline mt-5">
       Rankings
     </h3>
 
@@ -120,7 +118,7 @@
                         {{ row.metric }}
                       {% endif %}
                     </td>
-                    <td>{{ row.value }}</td>
+                    <td>{% if stat.is_time %}{{ row.value|shortdelta }}{% else %}{{ row.value }}{% endif %}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -155,7 +153,7 @@
                     <td>{{ row.trip.start|date }}</td>
                     <td>
                       {% if row.is_time %}
-                        {{ row.value|naturaldelta }}
+                        {{ row.value|shortdelta }}
                       {% else %}
                         {{ row.value|distformat:request.units }}
                       {% endif %}
@@ -176,7 +174,7 @@
       {{ excluded_trip_count }} surface trip{{ excluded_trip_count|pluralize }} have been excluded from the statistics on this page.
     </div>
   {% endif %}
-{% endblock content %}
+{% endblock %}
 
 {% block footer_scripts %}
   <script>

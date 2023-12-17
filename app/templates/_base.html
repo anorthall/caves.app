@@ -1,0 +1,98 @@
+{% extends "_minimal.html" %}
+{% load core_tags %}
+{% load humanize %}
+{% load static %}
+
+{% block body %}
+  <header>
+    <div id="navbarContainer" class="bg-dark">
+      <nav class="navbar navbar-expand navbar-dark" id="navbarContent">
+        <div class="site-title">
+          <a href="/">{{ site_title }}</a>
+        </div>
+
+        {% if user.is_authenticated %}
+          <div class="navbar-nav justify-content-center align-items-center flex-grow-1" id="navbarLinks">
+            {% include "_navbar_links.html" %}
+          </div>
+
+          <div class="d-flex flex-row justify-content-center align-items-center ms-auto me-2">
+            <div id="notificationsContainer" x-data="{ open: false }" x-effect="document.getElementById('blurContainer').classList.toggle('blur-bg', open)">
+              <div id="notificationsBellContainer">
+                <div @click="open = !open">
+                  <i class="bi bi-bell-fill"></i>
+
+                  {% if notifications.unread > 0 %}
+                    <div id="notificationsBadgeContainer">
+                      <span>{% if notifications.unread <= 9 %}{{ notifications.unread }}{% else %}9{% endif %}</span>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="notifications-dropdown" x-show="open" x-cloak x-transition.scale.20.origin.top.right
+                   @click.outside="open = false" x-trap.noscroll="open" @keydown.escape="open = false">
+                <h4 class="fs-6 notification-item">
+                  <a class="text-body-emphasis text-decoration-none" href="{% url "users:notifications" %}" tabindex="-1">Notifications</a>
+                </h4>
+
+                {% for item in notifications.list %}
+                  <div class="notification-item notification{% if item.read %} read{% endif %}">
+                    <a class="stretched-link" href="{{ item.get_absolute_url }}"></a>
+                    {{ item.get_message }}
+                    <time datetime="{{ item.updated }}">{{ item.updated|naturaltime }}</time>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="ms-2">
+              <a href="{% url 'log:user' user.username %}" class="nav-link">
+                {% if user.avatar %}
+                  <img src="{{ user.avatar|imgproxy:"preset:avatar_navbar" }}" width="34" height="34" alt="Your avatar" id="navbarAvatar">
+                {% else %}
+                  <img src="{% static 'images/blank_profile_picture.svg' %}" width="30" height="30" alt="Your avatar" id="navbarAvatar">
+                {% endif %}
+              </a>
+            </div>
+
+            <div x-data="{ open: false }">
+              <a id="hamburgerMenuIcon" class="text-white" href="#" role="button" @click="open = !open"
+                @resize.window="width = (window.innerWidth > 0) ? window.innerWidth : screen.width; if (width > 1200) { open = false }"
+                x-effect="document.getElementById('blurContainer').classList.toggle('blur-bg', open)">
+                <i class="bi bi-list"></i>
+              </a>
+
+              <div class="hamburger-menu-container" x-show="open" @click.outside="open = false"
+                   x-cloak x-transition.scale.20.origin.top.right x-trap.noscroll="open" @keydown.escape="open = false">
+                <nav class="hamburger-menu left">
+                  <span class="nav-item sidebar-header">Navigation</span>
+
+                  {% include "_navbar_links.html" %}
+                  {% include "sidebars/_main_sidebar.html" %}
+                  <div class="fake-padding"></div>
+                </nav>
+
+                {% block hamburger_menu_right_container %}
+                  <nav class="hamburger-menu right">
+                    {% block hamburger_menu_right %}{% endblock %}
+                  </nav>
+                {% endblock %}
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="ms-auto">
+            <a class="nav-link text-white" href="{% url 'users:login' %}"><i class="bi bi-person-circle" style="font-size: 21px;"></i></a>
+          </div>
+        {% endif %}
+      </nav>
+    </div>
+
+    {% include "_messages.html" %}
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+{% endblock body %}

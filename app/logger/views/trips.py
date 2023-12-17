@@ -34,7 +34,7 @@ class TripUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = TripForm
     slug_field = "uuid"
     slug_url_kwarg = "uuid"
-    extra_context = {"title": "Edit trip"}
+    extra_context = {"page_title": "Edit trip"}
     template_name = "logger/crispy_form.html"
     success_message = "The trip has been updated."
 
@@ -78,6 +78,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             .select_related("user")
             .prefetch_related(
                 "photos",
+                "cavers",
                 "likes",
                 "comments",
                 "comments__author",
@@ -117,11 +118,10 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
             self.object.pk: self.object.get_liked_str(self.request.user, friends)
         }
 
-        valid_photos = self.object.valid_photos
-        if valid_photos:
+        photos = self.object.valid_photos
+        if photos.exists():
             if not self.object.private_photos or self.object.user == self.request.user:
-                context["show_photos"] = True
-                context["valid_photos"] = valid_photos
+                context["photos"] = photos
 
         if self.object.user.allow_comments:
             context["comment_form"] = CommentForm(self.request, self.object)
@@ -136,7 +136,7 @@ class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Trip
     form_class = TripForm
     template_name = "logger/crispy_form.html"
-    extra_context = {"title": "Add a trip"}
+    extra_context = {"page_title": "Add a trip"}
     success_message = "The trip has been created."
     initial = {
         "start": timezone.localdate(),

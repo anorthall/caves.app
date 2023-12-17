@@ -7,7 +7,6 @@ from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.urls import reverse
-from tinymce.models import HTMLField
 
 from ..validators import (
     above_zero_dist_validator,
@@ -305,11 +304,13 @@ class Trip(models.Model):
         ),
     )
 
-    trip_report = HTMLField(
+    trip_report = models.TextField(
         blank=True,
         help_text=(
             "Trip reports are full, article style reports of a trip and will be "
-            "visible to anyone who can view the trip."
+            "visible to anyone who can view the trip. "
+            "Some <a href='https://www.markdownguide.org/basic-syntax/'>Markdown</a> "
+            "is supported."
         ),
     )
 
@@ -319,6 +320,13 @@ class Trip(models.Model):
     )
     followers = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="followed_trips"
+    )
+    featured_photo = models.ForeignKey(
+        "logger.TripPhoto",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="trips_featured",
     )
     privacy = models.CharField(
         "Who can view this trip?",
@@ -557,10 +565,12 @@ class Trip(models.Model):
 
     @property
     def valid_photos(self):
-        return self.photos.filter(is_valid=True, deleted_at=None).order_by(
-            "taken", "added"
-        )
+        return self.photos.filter(
+            is_valid=True,
+            deleted_at=None,
+            photo_type="DE",
+        ).order_by("taken", "added")
 
     @property
     def feed_photos(self):
-        return self.valid_photos[:5]
+        return self.valid_photos.order_by("?")[:10]

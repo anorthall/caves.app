@@ -1,12 +1,12 @@
 {% load static %}
 {% load django_htmx %}
+
 <!doctype html>
-<html lang="en" class="h-100">
+<html lang="en" class="h-100" data-bs-theme="{% block data-bs-theme %}dark{% endblock %}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% block description %}An online caving trip logger. Log your trips, track caving statistics, share your activities with friends, upload your caving photos and more.{% endblock %}">
-    <meta name="theme-color" content="{% block theme_color %}#2c3e50{% endblock %}">
     {% block meta_tags %}{% endblock %}
 
     <title>{% block title %}caves.app{% endblock %}</title>
@@ -18,7 +18,7 @@
     <link rel="manifest" href="{% static "favicon/site.webmanifest" %}">
 
     <!-- Local styles -->
-    <link href="{% static 'css/core.css' %}" rel="stylesheet">
+    <link href="{% static 'css/caves.app.css' %}" rel="stylesheet">
 
     <!-- Bootstrap v5.3.2 CSS from https://bootswatch.com/ -->
     <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
@@ -28,6 +28,9 @@
 
     {% block stylesheets %}{% endblock %}
 
+    <!-- jQuery v3.7.1 -->
+    <script src="{% static "js/jquery.min.js" %}"></script>
+
     <!-- HTMX v1.9.7 JS -->
     <script src="{% static "js/htmx.min.js" %}"></script>
     <script src="{% static "js/htmx-alpine-morph.js" %}"></script>
@@ -35,15 +38,12 @@
 
     <!-- Bootstrap v5.3.2 JS -->
     <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
+    {% block data-bs-theme-js %}<script src="{% static "js/colour-modes.js" %}"></script>{% endblock %}
 
     <!-- Alpine 3.13.2 JS -->
+    <script defer src="{% static "js/alpine-focus-plugin.min.js" %}"></script>
     <script defer src="{% static "js/alpine-morph-plugin.min.js" %}"></script>
     <script defer src="{% static "js/alpine.min.js" %}"></script>
-
-    <!-- jQuery v3.7.1 JS -->
-    <script src="{% static "js/jquery.min.js" %}"></script>
-
-    {% include "_clickable_elements.html" %}
 
     {% if google_analytics_id %}
       <!-- Google tag (gtag.js) -->
@@ -60,10 +60,13 @@
     {% block header_scripts %}{% endblock %}
   </head>
 
-  <body class="d-flex flex-column h-100">
+  <body class="d-flex flex-column h-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div id="blurContainer"></div>
+
     {% block body %}{% endblock body %}
 
     {% block modals %}{% endblock %}
+
     {% block footer_scripts %}{% endblock %}
   </body>
 </html>

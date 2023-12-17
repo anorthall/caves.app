@@ -12,18 +12,18 @@ class NotificationTests(TestCase):
         self.user = UserFactory(is_active=True)
 
         for i in range(20):
-            self.user.notify(f"Test {i}", "/")
+            self.user.notify(f"Test {i}a", "/")
 
     def test_notifications_are_displayed(self):
         """Test notifications are displayed on the user's profile"""
         self.client.force_login(self.user)
 
         response = self.client.get(reverse("users:account_detail"))
-        for i in range(1, 14):
-            self.assertNotContains(response, f"Test {i}<")
+        for i in range(1, 11):
+            self.assertNotContains(response, f"Test {i}a")
 
-        for i in range(15, 20):
-            self.assertContains(response, f"Test {i}<")
+        for i in range(11, 20):
+            self.assertContains(response, f"Test {i}a")
 
     def test_notification_redirect_view(self):
         """Test the notification redirect view"""
