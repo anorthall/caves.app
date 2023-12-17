@@ -7,19 +7,20 @@
 {% block description %}Information about the latest updates to caves.app.{% endblock %}
 
 {% block main %}
-  {% for item in news %}
-    <article class="mb-5">
-      {% include "core/_news_item.html" with news=item %}
+  <div class="mx-auto text-limit-length">
+    {% for item in news %}
+      <article class="mb-5">
+        {% include "core/_news_item.html" with news=item %}
 
-      <a class="btn btn-sm btn-outline-secondary" href="{{ item.get_absolute_url }}">
-        <i class="bi bi-box-arrow-up-right me-1"></i> View article
-      </a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ item.get_absolute_url }}">
+          <i class="bi bi-box-arrow-up-right me-1"></i> View article
+        </a>
 
-      <a class="btn btn-sm btn-outline-secondary ms-2" href="{{ item.get_absolute_url }}">
-        <i class="bi bi-chat me-1"></i> {{ item.comments.all|length }} comment{{ item.comments.all|length|pluralize }}
-      </a>
-    </article>
-  {% endfor %}
-
+        <a class="btn btn-sm btn-outline-secondary ms-2" href="{{ item.get_absolute_url }}">
+          <i class="bi bi-chat me-1"></i> {{ item.comments.all|length }} comment{{ item.comments.all|length|pluralize }}
+        </a>
+      </article>
+    {% endfor %}
+  </div>
   {% include "_paginate_bootstrap.html" %}
 {% endblock %}

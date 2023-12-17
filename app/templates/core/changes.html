@@ -5,7 +5,7 @@
 {% block description %}A list of changes that have been made to caves.app.{% endblock %}
 
 {% block main %}
-  <div id="changelog">
+  <div id="changelog" class="text-limit-length mx-auto">
     {{ changes|markdownify }}
   </div>
 {% endblock %}
