@@ -31,7 +31,7 @@
               </div>
 
               <div class="notifications-dropdown" x-show="open" x-cloak x-transition.scale.20.origin.top.right
-                   @click.outside="open = false" x-trap.noscroll="open">
+                   @click.outside="open = false" x-trap.noscroll="open" @keydown.escape="open = false">
                 <h4 class="fs-6 notification-item">
                   <a class="text-body-emphasis text-decoration-none" href="{% url "users:notifications" %}" tabindex="-1">Notifications</a>
                 </h4>
@@ -64,7 +64,7 @@
               </a>
 
               <div class="hamburger-menu-container" x-show="open" @click.outside="open = false"
-                   x-cloak x-transition.scale.20.origin.top.right x-trap.noscroll="open">
+                   x-cloak x-transition.scale.20.origin.top.right x-trap.noscroll="open" @keydown.escape="open = false">
                 <nav class="hamburger-menu left">
                   <span class="nav-item sidebar-header">Navigation</span>
 
