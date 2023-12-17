@@ -1,19 +1,13 @@
 {% load active_link_tags %}
 
+{% comment %}
 {% if user.is_authenticated %}
-  <span class="nav-item sidebar-header">Trips</span>
-
-  <a class="nav-link {% active_link 'log:caver_list' %}" href="{% url 'log:caver_list' %}">
-    <i class="bi bi-people-fill"></i> Cavers
-  </a>
-
-  {% comment %}
   TODO: Re-enable and style search
   <a class="nav-link {% active_link 'log:search' %} {% active_link 'log:search_results' %}" href="{% url 'log:search' %}">
     <i class="bi bi-search-heart-fill"></i> Search
   </a>
-  {% endcomment %}
 {% endif %}
+{% endcomment %}
 
 <span class="nav-item sidebar-header">App</span>
 {% if not user.is_authenticated %}
