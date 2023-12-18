@@ -3,6 +3,7 @@
 {% load markdownify %}
 {% load core_tags %}
 {% load logger_tags %}
+{% load humanize %}
 
 {% block stylesheets %}
   {% if photos %}
@@ -302,7 +303,12 @@
             <dt class="col-sm-4">Account age</dt>
             <dd class="col-sm-8">{{ profile_user.date_joined|timesince }}</dd>
 
-            {% if user.has_social_media_links %}
+            {% if private_stats is True %}
+              <dt class="col-sm-4">Profile views</dt>
+              <dd class="col-sm-8">{{ profile_user.profile_view_count|intcomma }}</dd>
+            {% endif %}
+
+            {% if profile_user.has_social_media_links %}
               <dt class="col-sm-4">Social media</dt>
               <dd class="col-sm-8 social-media-links">
                 {% include "logger/_social_media_links.html" with user=profile_user %}

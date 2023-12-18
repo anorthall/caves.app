@@ -1,5 +1,6 @@
 {% load users_tags %}
 {% load logger_tags %}
+{% load humanize %}
 
 {% if trip.cavers.all %}
   <div class="row mb-3">
@@ -85,5 +86,12 @@
         {% endif %}
       </div>
     {% endfor %}
+  {% endif %}
+
+  {% if user == trip.user %}
+    <div class="col">
+      <span class="trip-field">View count</span>
+      {{ trip.view_count|intcomma }}
+    </div>
   {% endif %}
 </div>

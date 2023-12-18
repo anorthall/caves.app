@@ -64,7 +64,7 @@
   <span class="quick-stat-value">{{ quick_stats.qs_longest_trip|shortdelta }}</span>
 </div>
 
-{% if private_stats %}
+{% if private_stats is True %}
   <div class="nav-item quick-stat border-top pt-2 mt-2">
     <span class="quick-stat-name">Last trip</span>
     <span class="quick-stat-value">
@@ -96,6 +96,13 @@
   <span class="quick-stat-name">Friends</span>
   <span class="quick-stat-value">{{ quick_stats.qs_friends }}</span>
 </div>
+
+{% if private_stats is True %}
+  <div class="nav-item quick-stat">
+    <span class="quick-stat-name">Profile views</span>
+    <span class="quick-stat-value">{{ user.profile_view_count }}</span>
+  </div>
+{% endif %}
 
 {% if user.has_social_media_links %}
   <div class="nav-item quick-stat">

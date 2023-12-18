@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 from django.db.models import Count, Max, QuerySet, Sum
+from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone as django_tz
 from django.utils.functional import cached_property
@@ -190,6 +191,9 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         help_text="A profile picture to display on your public profile.",
     )
+
+    # Profile views
+    profile_view_count = models.IntegerField(default=0)
 
     #
     #  Settings
@@ -444,6 +448,13 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
                 qs = qs.exclude(pk=photo.pk)
 
         return qs
+
+    def add_profile_view(self, request: HttpRequest):
+        if request.user == self or request.user.is_anonymous:
+            return
+
+        self.profile_view_count += 1
+        self.save(update_fields=["profile_view_count"])
 
     @property
     def trips(self):

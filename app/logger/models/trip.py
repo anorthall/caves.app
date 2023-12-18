@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
+from django.http.request import HttpRequest
 from django.urls import reverse
 
 from ..validators import (
@@ -321,6 +322,7 @@ class Trip(models.Model):
     followers = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="followed_trips"
     )
+    view_count = models.IntegerField(default=0)
     featured_photo = models.ForeignKey(
         "logger.TripPhoto",
         null=True,
@@ -484,6 +486,14 @@ class Trip(models.Model):
             liked_user_names.append("you")
 
         return self._build_liked_str(liked_user_names, self_liked)
+
+    def add_view(self, request: HttpRequest, commit=True):
+        if request.user.is_anonymous or self.user == request.user:
+            return
+
+        self.view_count += 1
+        if commit:
+            self.save(update_fields=["view_count"])
 
     @property
     def latitude(self):

@@ -44,6 +44,7 @@ class Index(TemplateView):
         # If there are no trips, show the new user page
         if context["trips"]:
             self.template_name = "logger/social_feed.html"
+            services.bulk_update_view_count(self.request, context["trips"])
         else:
             self.template_name = "core/new_user.html"
 
@@ -158,4 +159,7 @@ class HTMXTripFeed(LoginRequiredMixin, TemplateView):
         context["liked_str"] = services.get_liked_str_context(
             self.request, context["trips"]
         )
+
+        services.bulk_update_view_count(self.request, context["trips"])
+
         return context
