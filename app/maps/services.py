@@ -15,7 +15,7 @@ LAT_LONG_REGEX_PATTERN = re.compile(
 
 def geocode(query: str) -> tuple[float, float]:
     client = googlemaps.Client(key=settings.GOOGLE_MAPS_PRIVATE_API_KEY)
-    geocode_result = client.geocode(query)
+    geocode_result = client.geocode(query.encode("utf-8"))
     if geocode_result:
         lat, lng = geocode_result[0]["geometry"]["location"].values()
         return lat, lng
@@ -63,7 +63,7 @@ def get_markers_for_user(user: CavingUser) -> list[Marker]:
     # ]
     visits = {}
     for trip in trips:
-        coords = f"{trip.latitude},{trip.longitude}"
+        coords = f"{trip.latitude},{trip.longitude}"  # noqa: E231
         if coords in visits:
             visits[coords][3] += 1
             if trip.start.date() > visits[coords][4]:
