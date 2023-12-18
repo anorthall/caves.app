@@ -208,18 +208,23 @@ class TripPhotoFeature(LoginRequiredMixin, View):
         trip = get_object_or_404(Trip, uuid=uuid)
         if trip.user != request.user:
             raise PermissionDenied
-
         photo = get_object_or_404(TripPhoto, uuid=request.POST.get("photoUUID"))
 
-        crop = {
-            "x": float(request.POST.get("cropX", None)),
-            "y": float(request.POST.get("cropY", None)),
-            "width": float(request.POST.get("cropWidth", None)),
-            "height": float(request.POST.get("cropHeight", None)),
-            "rotate": float(request.POST.get("cropRotate", None)),
-            "scaleX": float(request.POST.get("cropScaleX", None)),
-            "scaleY": float(request.POST.get("cropScaleY", None)),
-        }
+        error_msg = "There was an error cropping your photo. Please try again."
+
+        try:
+            crop = {
+                "x": float(request.POST.get("cropX", None)),
+                "y": float(request.POST.get("cropY", None)),
+                "width": float(request.POST.get("cropWidth", None)),
+                "height": float(request.POST.get("cropHeight", None)),
+                "rotate": float(request.POST.get("cropRotate", None)),
+                "scaleX": float(request.POST.get("cropScaleX", None)),
+                "scaleY": float(request.POST.get("cropScaleY", None)),
+            }
+        except ValueError:
+            messages.error(request, error_msg)
+            return redirect(trip.get_absolute_url())
 
         if None in crop.values():
             raise BadRequest("Missing crop data")
@@ -239,7 +244,13 @@ class TripPhotoFeature(LoginRequiredMixin, View):
             img = img.resize((1800, 800))
 
         blob = BytesIO()
-        img.save(blob, "JPEG", quality=70)
+
+        try:
+            img.save(blob, "JPEG", quality=70)
+        except ValueError:
+            messages.error(request, error_msg)
+            return redirect(trip.get_absolute_url())
+
         featured_photo = TripPhoto.objects.create(
             trip=trip,
             user=request.user,
