@@ -1,7 +1,9 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import Union
 
 from django import template
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 register = template.Library()
 User = get_user_model()
@@ -42,10 +44,14 @@ def get(dict, value):
 
 
 @register.filter
-def shortdelta(value: timedelta, simplify=True):
+def shortdelta(value: Union[timedelta, datetime], simplify=True):
     """Formats a datetime as a short time string, e.g. 3d, 2w, 1y"""
     if value is None:
         return ""
+
+    if isinstance(value, datetime):
+        value = timezone.now() - value
+
     hours, remainder = divmod(value.total_seconds(), 3600)
     minutes, seconds = divmod(remainder, 60)
     return f"{int(hours)}h {int(minutes)}m"
