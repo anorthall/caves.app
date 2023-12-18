@@ -1,4 +1,6 @@
 {% extends "staff/_base.html" %}
+{% load logger_tags %}
+{% load users_tags %}
 
 {% block main %}
   <h1 class="title-underline">
@@ -42,6 +44,80 @@
               <td>{{ stats.total }}</td>
             </tr>
           {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="title-underline mt-4">Active users</h3>
+  <div class="table-responsive">
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th class="text-center">Trips</th>
+          <th class="text-center">Profile views</th>
+          <th class="text-center">Trip views</th>
+          <th class="text-center">Last seen</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for user in active_users %}
+          <tr>
+            <td>
+              {% if user.name == "Private user" %}
+                <span class="text-muted">User {{ user.pk }}</span>
+              {% else %}
+                {% user user %}
+              {% endif %}
+            </td>
+            <td class="text-center">{{ user.trip_count }}</td>
+            <td class="text-center">{{ user.profile_view_count }}</td>
+            <td class="text-center">{{ user.trip_views }}</td>
+            <td class="text-center">{{ user.last_seen|shortdelta }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="title-underline mt-4">Recent trips</h3>
+  <div class="table-responsive">
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Cave</th>
+          <th class="text-center">Views</th>
+          <th class="text-center">Likes</th>
+          <th class="text-center">Comments</th>
+          <th class="text-center">Created</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for trip in recent_trips %}
+          <tr>
+            <td>
+              {% if trip.user.name == "Private user" %}
+                <span class="text-muted">User {{ trip.user.pk }}</span>
+              {% else %}
+                {% user trip.user %}
+              {% endif %}
+            </td>
+            <td>
+              {% if trip.cave_name == "Private trip" %}
+                <span class="text-muted">Private trip</span>
+              {% else %}
+                <a href="{{ trip.get_absolute_url }}" class="link-body-emphasis">{{ trip.cave_name }}</a>
+              {% endif %}
+            </td>
+            <td class="text-center">{{ trip.view_count }}</td>
+            <td class="text-center">{{ trip.like_count }}</td>
+            <td class="text-center">{{ trip.comment_count }}</td>
+            <td class="text-center">{{ trip.added|shortdelta }}</td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
