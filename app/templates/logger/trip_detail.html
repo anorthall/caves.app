@@ -202,18 +202,19 @@
         </div>
 
         <div class="modal" id="cropModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
-          <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-dialog modal-fullscreen" role="document">
             <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="cropModalLabel">Crop featured image</h5>
-              </div>
               <div class="modal-body w-100">
-                <div id="imageBox d-flex justify-content-center align-items-center">
-                  <img alt="Crop this image to feature it" id="cropImage" style="width: 100%; height: 100%;">
+                <div id="imageBoxContainer">
+                  <div id="imageBox" class="d-none">
+                    <img alt="Crop this image to feature it" id="cropImage">
+                  </div>
+                  <div class="spinner" id="cropSpinner"></div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"
+                        onclick="hideCropImage()">Cancel</button>
                 <form method="post" action="{% url 'log:trip_photos_feature' trip.uuid %}">
                   {% csrf_token %}
                   <input type="hidden" name="photoUUID" id="photoFeatureUUID" value="">
@@ -236,6 +237,7 @@
           const image_box = document.getElementById('imageBox')
           const crop_btn = document.getElementById('cropButton')
           const crop_image = document.getElementById('cropImage')
+          const crop_spinner = document.getElementById('cropSpinner')
           const modal_id = document.getElementById('cropModal')
           const form = document.getElementById('cropForm')
 
@@ -247,6 +249,20 @@
           const cropScaleX = document.getElementById("cropScaleX");
           const cropScaleY = document.getElementById("cropScaleY");
           const photoFeatureUUID = document.getElementById("photoFeatureUUID");
+          let featuredCropper;
+
+          function showCropImage() {
+            image_box.classList.remove('d-none')
+            crop_spinner.classList.add('d-none')
+            featuredCropper.resize()
+            featuredCropper.reset()
+          }
+
+          function hideCropImage() {
+            image_box.classList.add('d-none')
+            crop_spinner.classList.remove('d-none')
+            featuredCropper.destroy()
+          }
 
           // When user uploads the image this event will get triggered
           document.querySelectorAll("span.featured-image-link").forEach(item => {
@@ -256,12 +272,13 @@
 
               $(modal_id).modal('show')
 
-              new Cropper(crop_image, {
+              featuredCropper = new Cropper(crop_image, {
                 aspectRatio: 9 / 4,
                 initialAspectRatio: 9 / 4,
-                viewMode: 3,
-                dragMode: 'none',
+                viewMode: 1,
+                dragMode: 'crop',
                 center: true,
+                responsive: true,
                 crop(event) {
                   cropX.value = event.detail.x;
                   cropY.value = event.detail.y;
@@ -272,6 +289,8 @@
                   cropScaleY.value = event.detail.scaleY;
                 },
               })
+
+              crop_image.addEventListener('ready', showCropImage)
             });
           });
         </script>

@@ -1012,6 +1012,26 @@ form fieldset legend {
 
 
 /* Photos */
+#imageBoxContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+#imageBox {
+  height: 100%;
+  width: 100%;
+}
+
+#imageBox img {
+  display: block;
+  max-width: 100%;
+}
+
 .photo-container {
   position: relative;
   overflow: hidden;
