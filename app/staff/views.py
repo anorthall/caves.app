@@ -25,11 +25,6 @@ class Dashboard(ModeratorRequiredMixin, TemplateView):
         photos_deleted = TripPhoto.objects.deleted()
 
         statistics = [
-            get_time_statistics(trips),
-            get_time_statistics(trips, metric="Updated", lookup="updated__gte"),
-            get_time_statistics(cavers),
-            get_time_statistics(cavers, metric="Updated", lookup="updated__gte"),
-            get_time_statistics(comments),
             get_time_statistics(photos_valid, metric="Valid", lookup="added__gte"),
             get_time_statistics(
                 photos_deleted, metric="Deleted", lookup="deleted_at__gte"
@@ -38,6 +33,9 @@ class Dashboard(ModeratorRequiredMixin, TemplateView):
             get_integer_field_statistics(
                 photos_deleted, "Deleted storage", "filesize", "deleted_at__gte"
             ),
+            get_time_statistics(cavers),
+            get_time_statistics(comments),
+            get_time_statistics(trips),
             get_time_statistics(users, metric="New", lookup="date_joined__gte"),
             get_time_statistics(users, metric="Active", lookup="last_seen__gte"),
         ]
