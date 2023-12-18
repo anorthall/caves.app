@@ -6,6 +6,7 @@ crispy-bootstrap5
 Django==4.2
 django-active-link
 django-autocomplete-light
+django-browser-reload
 django-countries
 django-crispy-forms
 django-debug-toolbar
