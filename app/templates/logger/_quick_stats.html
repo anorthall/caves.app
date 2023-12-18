@@ -97,6 +97,11 @@
   <span class="quick-stat-value">{{ quick_stats.qs_friends }}</span>
 </div>
 
+<div class="nav-item quick-stat">
+  <span class="quick-stat-name">Profile views</span>
+  <span class="quick-stat-value">{{ user.profile_view_count }}</span>
+</div>
+
 {% if user.has_social_media_links %}
   <div class="nav-item quick-stat">
     <span class="quick-stat-name">Social media</span>
