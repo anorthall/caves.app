@@ -38,6 +38,7 @@ class UserProfile(TemplateView):
         context["photos"] = self.profile_user.get_photos(for_user=self.request.user)
         context["quick_stats"] = self.profile_user.quick_stats
         context["show_stats_link"] = self.profile_user == self.request.user
+        context["private_stats"] = self.profile_user == self.request.user
 
         if self.request.user not in self.profile_user.friends.all():
             if self.profile_user.allow_friend_username:
