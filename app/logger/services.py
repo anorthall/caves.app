@@ -113,6 +113,9 @@ def get_liked_str_context(request, trips):
 
 
 def bulk_update_view_count(request: HttpRequest, trips: typing.Iterable[Trip]):
+    if not trips:
+        return
+
     for trip in trips:
         trip.add_view(request, commit=False)
     Trip.objects.bulk_update(trips, ["view_count"])

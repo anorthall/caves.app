@@ -28,7 +28,10 @@ class UserProfile(TemplateView):
         """Assign self.profile_user and perform permissions checks"""
         super().setup(*args, **kwargs)
         self.profile_user = get_object_or_404(User, username=self.kwargs["username"])
+
+    def get(self, request, *args, **kwargs):
         self.profile_user.add_profile_view(self.request)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
