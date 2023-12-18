@@ -72,6 +72,11 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
     slug_field = "uuid"
     slug_url_kwarg = "uuid"
 
+    def get_object(self, *args, **kwargs):
+        obj = super().get_object(*args, **kwargs)
+        obj.add_view(self.request)
+        return obj
+
     def get_queryset(self):
         qs = (
             Trip.objects.all()

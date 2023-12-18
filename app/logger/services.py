@@ -1,7 +1,10 @@
+import typing
+
 import boto3
 from django.conf import settings
 from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Case, Count, Exists, OuterRef, Q, Value, When
+from django.http import HttpRequest
 from users.models import CavingUser
 
 from .models import Trip, TripPhoto
@@ -90,13 +93,11 @@ def get_trips_context(request, ordering, page=1):
     sanitised_trips = [x for x in trips if x.is_viewable_by(request.user)]
 
     try:
-        paginated_trips = Paginator(
+        return Paginator(
             object_list=sanitised_trips, per_page=10, allow_empty_first_page=False
         ).page(page)
     except EmptyPage:
         return []
-
-    return paginated_trips
 
 
 def get_liked_str_context(request, trips):
@@ -109,3 +110,9 @@ def get_liked_str_context(request, trips):
         liked_str_index[trip.pk] = trip.get_liked_str(request.user, friends)
 
     return liked_str_index
+
+
+def bulk_update_view_count(request: HttpRequest, trips: typing.Iterable[Trip]):
+    for trip in trips:
+        trip.add_view(request, commit=False)
+    Trip.objects.bulk_update(trips, ["view_count"])
