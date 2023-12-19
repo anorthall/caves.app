@@ -28,6 +28,7 @@ hiredis
 humanize
 imgproxy
 itsdangerous
+nh3
 Pillow
 psycopg2
 python-dateutil

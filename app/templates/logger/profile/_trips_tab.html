@@ -1,4 +1,5 @@
 {% load logger_tags %}
+{% load core_tags %}
 
 <div x-data="{ open: false }">
   <div class="input-group px-3 py-4">
@@ -95,16 +96,17 @@
 {% endfor %}
 
 <script type="text/javascript">
+  {# Sanitise HTML using `clean` filter to prevent a single quote being converted into HTML shortcodes. #}
   const trips = [
     {% for trip in trips %}
       {
         id: {{ forloop.revcounter }},
         url: "{{ trip.get_absolute_url }}",
         date: "{{ trip.start|date:"M j, Y" }}",
-        cave: "{{ trip.cave_name }}",
-        caveCombined: "{{ trip.cave_entrance }} | {{ trip.cave_exit }} | {{ trip.cave_name }}",
-        region: "{{ trip.cave_region }}",
-        country: "{{ trip.cave_country }}",
+        cave: "{{ trip.cave_name|clean }}",
+        caveCombined: "{{ trip.cave_entrance|clean }} | {{ trip.cave_exit|clean }} | {{ trip.cave_name|clean }}",
+        region: "{{ trip.cave_region|clean }}",
+        country: "{{ trip.cave_country|clean }}",
         duration: "{{ trip.duration|shortdelta }}",
         {% if not profile_user.disable_distance_statistics %}
           climbed: "{{ trip.vert_dist_up|distformat:request.units }}",
@@ -119,11 +121,11 @@
           {% endif %}
         {% endif %}
         type: "{{ trip.get_type_display }}",
-        cavers: "{% for caver in trip.cavers.all %}{{ caver.name }}{% if not forloop.last %}, {% endif %}{% endfor %}",
-        clubs: "{{ trip.clubs }}",
-        expedition: "{{ trip.expedition }}",
+        cavers: "{% for caver in trip.cavers.all %}{{ caver.name|clean }}{% if not forloop.last %}, {% endif %}{% endfor %}",
+        clubs: "{{ trip.clubs|clean }}",
+        expedition: "{{ trip.expedition|clean }}",
         uuid: "{{ trip.uuid }}",
-        notes: `{{ trip.public_notes }}{% if user == trip.user %} | {{ trip.notes }}{% endif %}`
+        notes: `{{ trip.public_notes|clean }}{% if user == trip.user %} | {{ trip.notes|clean }}{% endif %}`
       }{% if not forloop.last %},{% endif %}
     {% endfor %}
   ];

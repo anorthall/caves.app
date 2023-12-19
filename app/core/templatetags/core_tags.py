@@ -1,7 +1,9 @@
 import os
 
+import nh3
 from django import template
 from django.conf import settings
+from django.utils.safestring import SafeString
 
 from ..images import generate_imgproxy_url
 
@@ -70,3 +72,9 @@ def _rewrite_url_for_local_dev(url):
         return url
 
     return "http://web:8000" + url
+
+
+@register.filter
+def clean(text: str) -> SafeString:
+    """Strip HTML tags using the nh3 library"""
+    return SafeString(nh3.clean(text))

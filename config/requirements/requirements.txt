@@ -134,6 +134,8 @@ markupsafe==2.1.3
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
+nh3==0.2.15
+    # via -r config/requirements/requirements.in
 packaging==23.2
     # via gunicorn
 pillow==10.1.0
