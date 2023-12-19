@@ -11,7 +11,7 @@
   {% endif %}
 
   {% if not private_profile %}
-    {% include "logger/_quick_stats.html" with quick_stats=quick_stats user=profile_user %}
-    {% include "logger/_quick_friends.html" with friends=mutual_friends private_stats=private_stats %}
+    {% include "logger/_quick_stats.html" with quick_stats=quick_stats user=profile_user private_stats=enable_private_stats %}
+    {% include "logger/_quick_friends.html" with friends=mutual_friends %}
   {% endif %}
 </div>

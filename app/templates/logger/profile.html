@@ -6,12 +6,21 @@
 {% load humanize %}
 
 {% block stylesheets %}
+  {% if trips %}
+    <link rel="stylesheet" href="{% static 'css/tabulator_bootstrap5.min.css' %}">
+  {% endif %}
+
   {% if photos %}
     <link rel="stylesheet" href="{% static 'css/justifiedGallery.min.css' %}">
   {% endif %}
 {% endblock %}
 
 {% block header_scripts %}
+  {% if trips %}
+    <script src="{% static 'js/tabulator.min.js' %}"></script>
+    <script src="{% static 'js/luxon.min.js' %}"></script>
+  {% endif %}
+
   {% if photos %}
     <script src="{% static 'js/jquery.justifiedGallery.min.js' %}"></script>
     {% include "logger/_lightbox.html" %}
@@ -48,7 +57,7 @@
             {{ profile_user.location }}{% if profile_user.country and profile_user.location %} &middot; {% endif %}{{ profile_user.country.name }}
           </small>
         {% endif %}
-        {% if user_has_trips %}
+        {% if trips %}
           <small class="text-body-tertiary d-block mt-1 mt-md-0">
             {% with dur=quick_stats.qs_duration qs_f=quick_stats.qs_friends %}
               {{ quick_stats.qs_trips }} trips {% if qs_f %}&middot; {{ qs_f }} friend{{ qs_f|pluralize }} {% endif %}{% if dur %}&middot; {{ dur|shortdelta }}{% endif %}
@@ -73,7 +82,7 @@
       <div class="mb-5 no-paragraph-mb px-2 text-limit-length">
         {{ profile_user.bio|markdownify }}
       </div>
-    {% elif not profile_user.bio and not user_has_trips %}
+    {% elif not profile_user.bio and not trips %}
       <p class="lead">
         There is nothing here &mdash; yet.
         {% if user == profile_user %}
@@ -83,7 +92,7 @@
       </p>
     {% endif %}
 
-    {% if user_has_trips %}
+    {% if trips %}
       <ul class="nav nav-tabs" id="profileTabs" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link text-body-emphasis active" id="tripsTab" data-bs-toggle="tab" data-bs-target="#tripsTabContent"
@@ -128,121 +137,152 @@
         </li>
       </ul>
 
-      <div class="tab-content p-3 border border-top-0" id="profileTabsContent">
+      <div class="tab-content border border-top-0" id="profileTabsContent">
         <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
-          <div class="input-group mb-3">
-            <span class="input-group-text">Search</span>
-            <input type="text" class="form-control" placeholder="Cave name, cavers, etc."
-                   hx-get="{% url 'log:profile_trips_table' profile_user.username %}"
-                   hx-trigger="keyup changed delay:100ms"
-                   hx-target="#userTrips"
-                   hx-swap="outerHTML"
-                   hx-indicator="none"
-                   autocomplete="off"
-                   name="query">
-          </div>
-          <div id="userTrips" hx-get="{% url 'log:profile_trips_table' profile_user.username %}" hx-trigger="load" hx-swap="outerHTML"></div>
+          <div id="userTripsTable"></div>
+
+          <script type="text/javascript">
+            const trips = [
+              {% for trip in trips %}
+                {
+                  id: {{ forloop.revcounter }},
+                  url: "{{ trip.get_absolute_url }}",
+                  date: "{{ trip.start|date:'y-m-d' }}",
+                  cave: "{{ trip.cave_name }}",
+                  duration: "{{ trip.duration|shortdelta }}",
+                  climbed: "{{ trip.vert_dist_up|distformat:request.units }}",
+                  descended: "{{ trip.vert_dist_down|distformat:request.units }}",
+                  surveyed: "{{ trip.total_surveyed_dist|distformat:request.units }}",
+                  type: "{{ trip.get_type_display }}",
+                  cavers: "{% for caver in trip.cavers.all %}{{ caver.name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                }{% if not forloop.last %},{% endif %}
+              {% endfor %}
+            ];
+
+            const tripTable = new Tabulator("#userTripsTable", {
+              data: trips,
+              layout: "fitColumns",
+              height: 1000,
+              responsiveLayout: "hide",
+              columns: [
+                {title: "Date", field: "date", widthGrow: 1, minWidth: 100, sorter: "date", sorterParams: {format: "yy-MM-dd"}},
+                {title: "Cave", field: "cave", widthGrow: 2, minWidth: 200},
+                {title: "Duration", field: "duration", widthGrow: 2, minWidth: 125, sorter:function(a, b, {}, {}, {}, {}, {}){
+                  const get_total_minutes = function(time) {
+                    let hours = time.split("h")[0];
+                    let minutes = time.split("h")[1].split("m")[0];
+                    return parseInt(hours) * 60 + parseInt(minutes);
+                  };
+
+                  return get_total_minutes(a) - get_total_minutes(b);
+                }},
+                {title: "Up", field: "climbed", widthGrow: 1, minWidth: 80},
+                {title: "Down", field: "descended", widthGrow: 1, minWidth: 100},
+                {title: "Survey", field: "surveyed", widthGrow: 1, minWidth: 100},
+                {title: "Cavers", field: "cavers", visible: false, searchable: true},
+              ],
+            })
+          </script>
         </div>
 
         {% if photos %}
           <div class="tab-pane fade" id="photosTabContent" role="tabpanel" aria-labelledby="photosTab" tabindex="0">
             <div id="imageGallery"></div>
             <div id="imageGalleryBottom"></div>
-          </div>
+            <script type="text/javascript">
+              /* Load the photo data into a JS array and initially load the first `photoStep` images
+               * into the gallery. Then, when the user scrolls to the bottom of the page, load the next
+               * `photoStep` images into the gallery. */
 
-          <script type="text/javascript">
-            /* Load the photo data into a JS array and initially load the first `photoStep` images
-             * into the gallery. Then, when the user scrolls to the bottom of the page, load the next
-             * `photoStep` images into the gallery. */
+              const photos = [
+                {% for photo in photos %}
+                  [
+                    "{{ photo.photo.url }}",
+                    "{{ photo.trip.get_absolute_url }}",
+                    "{{ photo|imgproxy:"preset:photo" }}",
+                    "{{ photo.trip.cave_name }}",
+                    "{% if photo.taken %}{{ photo.taken|date }}, {{ photo.taken|time }}{% else %}{{ photo.trip.start|date }}{% endif %}"
+                  ]{% if not forloop.last %},{% endif %}
+                {% endfor %}
+              ]
 
-            const photos = [
-              {% for photo in photos %}
-                [
-                  "{{ photo.photo.url }}",
-                  "{{ photo.trip.get_absolute_url }}",
-                  "{{ photo|imgproxy:"preset:photo" }}",
-                  "{{ photo.trip.cave_name }}",
-                  "{% if photo.taken %}{{ photo.taken|date }}, {{ photo.taken|time }}{% else %}{{ photo.trip.start|date }}{% endif %}"
-                ]{% if not forloop.last %},{% endif %}
-              {% endfor %}
-            ]
+              const gallery = $("#imageGallery");
+              let photoStep = 40;
 
-            const gallery = $("#imageGallery");
-            let photoStep = 40;
-
-            if (photos.length < photoStep) {
-              photoStep = photos.length;
-            }
-
-            /* Load initial 20 images into gallery */
-            for (let i = 0; i < photoStep; i++) {
-              gallery.append(
-                `<div class="photo-container">
-                   <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
-                     <img src="${photos[i][2]}" alt="${photos[i][3]}">
-                   </a>
-                   <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
-                 </div>`
-              );
-            }
-
-            let photoIndex = photoStep;
-
-            gallery.justifiedGallery({
-              rowHeight: 200,
-              margins: 5,
-              lastRow: 'justify',
-              captions: true,
-              waitThumbnailsLoad: true,
-            });
-
-            let container = document.querySelector("main");
-            let tabContent = document.querySelector("#photosTabContent");
-
-            let lastKnownScrollPosition = 0;
-            let ticking = false;
-
-            function addMorePhotos() {
-              /* Only load more photos if the photos tab is active */
-              if (!tabContent.classList.contains("active")) {
-                return;
+              if (photos.length < photoStep) {
+                photoStep = photos.length;
               }
-              if (tabContent.getBoundingClientRect().bottom <= window.innerHeight) {
-                for (let i = photoIndex; i < photoIndex + photoStep; i++) {
-                  if (i < photos.length) {
-                    gallery.append(
-                      `<div class="photo-container">
-                         <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
-                           <img src="${photos[i][2]}" alt="${photos[i][3]}">
-                         </a>
-                         <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
-                       </div>`
-                    );
-                  }
+
+              /* Load initial 20 images into gallery */
+              for (let i = 0; i < photoStep; i++) {
+                gallery.append(
+                  `<div class="photo-container">
+                     <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
+                       <img src="${photos[i][2]}" alt="${photos[i][3]}">
+                     </a>
+                     <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+                   </div>`
+                );
+              }
+
+              let photoIndex = photoStep;
+
+              gallery.justifiedGallery({
+                rowHeight: 200,
+                margins: 5,
+                lastRow: 'justify',
+                captions: true,
+                waitThumbnailsLoad: true,
+              });
+
+              let container = document.querySelector("main");
+              let tabContent = document.querySelector("#photosTabContent");
+
+              let lastKnownScrollPosition = 0;
+              let ticking = false;
+
+              function addMorePhotos() {
+                /* Only load more photos if the photos tab is active */
+                if (!tabContent.classList.contains("active")) {
+                  return;
                 }
-                photoIndex += photoStep;
-                gallery.justifiedGallery("norewind");
+                if (tabContent.getBoundingClientRect().bottom <= window.innerHeight) {
+                  for (let i = photoIndex; i < photoIndex + photoStep; i++) {
+                    if (i < photos.length) {
+                      gallery.append(
+                        `<div class="photo-container">
+                           <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
+                             <img src="${photos[i][2]}" alt="${photos[i][3]}">
+                           </a>
+                           <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+                         </div>`
+                      );
+                    }
+                  }
+                  photoIndex += photoStep;
+                  gallery.justifiedGallery("norewind");
 
-                /* Prevent duplicate calls within 500ms */
-                setTimeout(() => {
-                  ticking = false;
-                }, 500);
+                  /* Prevent duplicate calls within 500ms */
+                  setTimeout(() => {
+                    ticking = false;
+                  }, 500);
+                }
               }
-            }
 
-            container.addEventListener("scroll", () => {
-              lastKnownScrollPosition = container.scrollY;
+              container.addEventListener("scroll", () => {
+                lastKnownScrollPosition = container.scrollY;
 
-              if (!ticking) {
-                window.requestAnimationFrame(() => {
-                  addMorePhotos();
-                  ticking = false;
-                });
+                if (!ticking) {
+                  window.requestAnimationFrame(() => {
+                    addMorePhotos();
+                    ticking = false;
+                  });
 
-                ticking = true;
-              }
-            });
-          </script>
+                  ticking = true;
+                }
+              });
+            </script>
+          </div>
         {% endif %}
 
         {% if mutual_friends %}
@@ -275,7 +315,7 @@
           <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
             <h3 class="ms-1 my-3">Yearly Statistics</h3>
             <div class="profile-stats">
-              {% include "stats/_yearly_stats.html" with show_stats_link=show_stats_link stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-hover" dist_class="d-none d-xl-table-cell" %}
+              {% include "stats/_yearly_stats.html" with show_stats_link=enable_private_stats stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-hover" dist_class="d-none d-xl-table-cell" %}
             </div>
           </div>
         {% endif %}
@@ -303,7 +343,7 @@
             <dt class="col-sm-4">Account age</dt>
             <dd class="col-sm-8">{{ profile_user.date_joined|timesince }}</dd>
 
-            {% if private_stats is True %}
+            {% if enable_private_stats is True %}
               <dt class="col-sm-4">Profile views</dt>
               <dd class="col-sm-8">{{ profile_user.profile_view_count|intcomma }}</dd>
             {% endif %}

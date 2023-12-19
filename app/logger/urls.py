@@ -7,11 +7,6 @@ app_name = "log"
 urlpatterns = [
     path("", views.Index.as_view(), name="index"),
     path("u/<slug:username>/", views.UserProfile.as_view(), name="user"),
-    path(
-        "u/<slug:username>/trip-table/",
-        views.ProfileTripsTable.as_view(),
-        name="profile_trips_table",
-    ),
     path("trips/", views.TripsRedirect.as_view(), name="trip_list"),
     path("trip/edit/<uuid:uuid>/", views.TripUpdate.as_view(), name="trip_update"),
     path("trip/delete/<uuid:uuid>/", views.TripDelete.as_view(), name="trip_delete"),
