@@ -50,7 +50,6 @@ class UserProfile(TemplateView):
             return [x for x in trips if x.is_viewable_by(for_user, friends)]
 
     # noinspection PyTypeChecker
-    # TODO: Implement get_user for anonymous users
     def get_context_data(self, **kwargs):
         user: User = self.request.user
         context = super().get_context_data()
