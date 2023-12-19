@@ -136,8 +136,8 @@
     height: '60vh',
     responsiveLayout: "hide",
     columns: [
-      {title: "Date", field: "date", widthGrow: 1, minWidth: 100, sorter: "date", sorterParams: {format: "DD"}},
-      {title: "Cave", field: "cave", widthGrow: 2, minWidth: 200},
+      {title: "Date", field: "date", widthGrow: 1, minWidth: 100, sorter: "date", sorterParams: {format: "DD"}, responsive: 0},
+      {title: "Cave", field: "cave", widthGrow: 2, minWidth: 200, responsive: 0},
       {% if profile_user.disable_distance_statistics %}
         {title: "Region", field: "region", widthGrow: 1, minWidth: 100},
       {% endif %}
