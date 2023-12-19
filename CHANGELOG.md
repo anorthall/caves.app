@@ -1,7 +1,51 @@
 # Changes to caves.app
 A summary of changes made to caves.app, organised by version, can be found below.
 
-## Version 2.0
+## Version 2.0.1
+Version 2.0.1 of caves.app was released on Tuesday, 19th December 2023.
+
+### Changes
+#### User profiles
+- The trip list has been redesigned to allow easier viewing and management of trips.
+- Column sorting has been improved and a bug with distance field sorting fixed.
+- Users who disable distance or survey statistics will now see location related fields
+in their trip list instead.
+- Clicking a trip now opens a modal with details of the trip, removing the need to visit
+the trip page to review details.
+- An advanced search feature, accessed by clicking the caret on the right of the quick search
+bar, has been added. Trips can be filtered and searched by specific fields.
+- The ability to hide statistics from your profile has been removed. This feature originally existed
+for aesthetic reasons, and since statistics are now in their own tab, the ability to hide them is no
+longer required. Statistics will only be shown to people who can view your profile, in accordance with
+your privacy settings.
+- A profile view counter has been added, accessible via the quick stats in the right hand sidebar, or
+via the info tab. Users can only view their own profile view count.
+- A bug where no 'Add friend' link was shown on smaller screens has been fixed.
+- A bug preventing the photos tab being shown when the user had less than 40 photos has been fixed.
+
+#### Trip detail page
+- A trip view counter has been added. Users can only view the view count for their own trips. The
+view count will increment if trips are viewed in the trip feed, or by accessing the trip page. Trips
+viewed via a modal from the user profile page do not increment the view count.
+- The featured photo cropping tool will now show a loading spinner until such time the image to crop
+has loaded.
+
+#### Trip photos page
+- The uploader will now redirect you to the trip detail page when all uploads have finished successfully.
+
+#### Trip feed page
+- A bug preventing photos showing on some trips has been fixed.
+
+#### Cave map page
+- A bug where some locations were not accepted for geocoding has been fixed.
+
+#### Staff dashboard
+- Additional statistics on recent user activity, anonymised for privacy purposes, have been added.
+
+#### Account page
+- A bug where the account page stated the profile was private, when it was not, has been fixed.
+
+## Version 2.0.0
 Version 2.0 of caves.app is the result of around a month of my free time and
 consists of a complete stylistic and functional redesign of the application as
 well as many new features and improvements to the user experience.
