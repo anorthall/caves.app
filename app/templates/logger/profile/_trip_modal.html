@@ -1,0 +1,28 @@
+{# TODO: Increment view count via ajax request #}
+<div class="modal modal-lg fade" id="tripModal{{ trip.uuid }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="{{ trip.get_absolute_url }}" class="text-decoration-none link-body-emphasis">
+          <h1 class="modal-title fs-5">{{ trip.cave_name }}</h1>
+        </a>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        {% include "logger/_trip_data_blocks.html" with show_entrances=True %}
+        {% include "logger/_trip_notes.html" %}
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary" href="{% url 'log:trip_detail' trip.uuid %}">
+          View <span class="d-none d-sm-inline">trip</span>
+        </a>
+        {% if user == trip.user %}
+          <a href="{% url 'log:trip_update' trip.uuid %}" class="btn btn-secondary">
+            Edit <span class="d-none d-sm-inline">trip</span>
+          </a>
+        {% endif %}
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

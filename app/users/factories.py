@@ -20,7 +20,6 @@ class UserFactory(DjangoModelFactory):
     location = factory.Faker("city")
     clubs = factory.LazyFunction(generate_club)
     timezone = factory.Faker("timezone")
-    public_statistics = factory.Faker("pybool")
     allow_friend_email = factory.Faker("pybool")
     allow_friend_username = factory.Faker("pybool")
     allow_comments = factory.Faker("pybool")

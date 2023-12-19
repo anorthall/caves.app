@@ -18,6 +18,22 @@
 {% endif %}
 
 <div class="row row-cols-2 row-cols-md-3 g-3">
+  {% if show_entrances is True %}
+    {% if trip.cave_entrance %}
+      <div class="col">
+        <span class="trip-field">Entered at</span>
+        {{ trip.cave_entrance }}
+      </div>
+    {% endif %}
+
+    {% if trip.cave_exit %}
+      <div class="col">
+        <span class="trip-field">Exited at</span>
+        {{ trip.cave_exit }}
+      </div>
+    {% endif %}
+  {% endif %}
+
   <div class="col">
     <span class="trip-field"><span class="d-none d-md-inline">Date/time </span>entered</span>
       <span class="d-none d-md-inline">{{ trip.start|date:"D j M y" }} &mdash; {{ trip.start|time:"H:i" }}</span>
@@ -37,10 +53,17 @@
     {{ trip.type }}
   </div>
 
-  {% if trip.cave_region or trip.cave_country %}
+  {% if trip.cave_region %}
     <div class="col">
-      <span class="trip-field">Location</span>
+      <span class="trip-field">Region</span>
       {{ trip.cave_region }}
+    </div>
+  {% endif %}
+
+  {% if trip.cave_country %}
+    <div class="col">
+      <span class="trip-field">Country</span>
+      {{ trip.cave_country }}
     </div>
   {% endif %}
 

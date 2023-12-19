@@ -177,20 +177,6 @@
           </div>
         </div>
 
-        <div class="row p-1 border-bottom">
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
-            Statistics
-          </div>
-
-          <div class="col account-info-data">
-            {% if user.privacy == user.PRIVATE %}
-              Public statistics are disabled as your profile is private.
-            {% else %}
-              Statistics are {% if not user.public_statistics %}not {% endif %}shown on your profile page.
-            {% endif %}
-          </div>
-        </div>
-
         <div class="row p-1">
           <div class="col-5 col-md-4 col-lg-3 col-xl-2 account-info-label">
             Biography

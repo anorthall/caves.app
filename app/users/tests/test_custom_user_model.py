@@ -464,7 +464,6 @@ class UserIntegrationTestCase(TestCase):
                 "privacy": "Friends",
                 "timezone": "US/Central",
                 "units": "Imperial",
-                "public_statistics": True,
                 "settings_submit": "Save",
             },
             follow=True,
@@ -480,7 +479,6 @@ class UserIntegrationTestCase(TestCase):
         self.assertEqual(self.user.privacy, self.user.FRIENDS)
         self.assertEqual(self.user.timezone, ZoneInfo("US/Central"))
         self.assertEqual(self.user.units, self.user.IMPERIAL)
-        self.assertTrue(self.user.public_statistics)
 
     def test_submit_invalid_updates_to_profile(self):
         """Test submitting invalid updates to a user's profile"""

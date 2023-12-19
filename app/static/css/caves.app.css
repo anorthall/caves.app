@@ -716,26 +716,8 @@ main {
   margin-bottom: 0.75rem;
 }
 
-#tripsTable {
-  font-size: 0.9rem;
-}
-
-#tripsTable tbody:hover td {
-  background-color: var(--bs-table-hover-bg);
-  color: var(--bs-table-hover-color);
-}
-
-#tripsTable tbody tr:first-child td {
-  border-bottom: none;
-}
-
-#tripsTable tbody tr:last-child td, #tripsTable tbody tr:first-of-type td:first-of-type {
-  border-bottom: 1px solid var(--bs-border-color);
-}
-
-#searchInput.htmx-request {
-  opacity: 100% !important;
-  transition: unset !important;
+#userTripsTable {
+  max-width: 100%;
 }
 
 .friend-card {
@@ -970,17 +952,18 @@ main.home {
 /* Headers */
 h1 {
   font-size: 1.5rem !important;
-  margin-bottom: 1rem !important;
+}
+
+.modal-title {
+  margin-bottom: 0;
 }
 
 h2 {
   font-size: 1.3rem !important;
-  margin-bottom: 0.75rem !important;
 }
 
 h3 {
   font-size: 1.2rem !important;
-  margin-bottom: 0.75rem !important;
 }
 
 #changelog h1, #changelog h2, #changelog h3, .title-underline {

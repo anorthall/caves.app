@@ -259,14 +259,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "comments, but will hide them until it is re-enabled."
         ),
     )
-    public_statistics = models.BooleanField(
-        "Show statistics on profile",
-        default=True,
-        help_text=(
-            "Enabling this option will show an annual statistics table on your "
-            "profile page which will be visible to anyone who can view your profile."
-        ),
-    )
     disable_distance_statistics = models.BooleanField(
         "Disable distance statistics",
         default=False,
