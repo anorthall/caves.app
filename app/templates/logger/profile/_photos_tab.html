@@ -1,0 +1,98 @@
+{% load core_tags %}
+
+<div id="imageGallery"></div>
+<div id="imageGalleryBottom"></div>
+
+<script type="text/javascript">
+  /* Load the photo data into a JS array and initially load the first `photoStep` images
+   * into the gallery. Then, when the user scrolls to the bottom of the page, load the next
+   * `photoStep` images into the gallery. */
+
+  const photos = [
+    {% for photo in photos %}
+      [
+        "{{ photo.photo.url }}",
+        "{{ photo.trip.get_absolute_url }}",
+        "{{ photo|imgproxy:"preset:photo" }}",
+        "{{ photo.trip.cave_name }}",
+        "{% if photo.taken %}{{ photo.taken|date }}, {{ photo.taken|time }}{% else %}{{ photo.trip.start|date }}{% endif %}"
+      ]{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+
+  const gallery = $("#imageGallery");
+  let photoStep = 40;
+
+  if (photos.length < photoStep) {
+    photoStep = photos.length;
+  }
+
+  /* Load initial 20 images into gallery */
+  for (let i = 0; i < photoStep; i++) {
+    gallery.append(
+      `<div class="photo-container">
+         <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
+           <img src="${photos[i][2]}" alt="${photos[i][3]}">
+         </a>
+         <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+       </div>`
+    );
+  }
+
+  let photoIndex = photoStep;
+
+  gallery.justifiedGallery({
+    rowHeight: 200,
+    margins: 5,
+    lastRow: 'justify',
+    captions: true,
+    waitThumbnailsLoad: true,
+  });
+
+  let container = document.querySelector("main");
+  let tabContent = document.querySelector("#photosTabContent");
+
+  let lastKnownScrollPosition = 0;
+  let ticking = false;
+
+  function addMorePhotos() {
+    /* Only load more photos if the photos tab is active */
+    if (!tabContent.classList.contains("active")) {
+      return;
+    }
+    if (tabContent.getBoundingClientRect().bottom <= window.innerHeight) {
+      for (let i = photoIndex; i < photoIndex + photoStep; i++) {
+        if (i < photos.length) {
+          gallery.append(
+            `<div class="photo-container">
+               <a href="${photos[i][0]}" data-lightbox="gallery" data-title="${photos[i][3]} &mdash; ${photos[i][4]}">
+                 <img src="${photos[i][2]}" alt="${photos[i][3]}">
+               </a>
+               <a class="photo-overlay" href="${photos[i][1]}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+             </div>`
+          );
+        }
+      }
+      photoIndex += photoStep;
+      gallery.justifiedGallery("norewind");
+
+      /* Prevent duplicate calls within 500ms */
+      setTimeout(() => {
+        ticking = false;
+      }, 500);
+    }
+  }
+
+  container.addEventListener("scroll", () => {
+    lastKnownScrollPosition = container.scrollY;
+
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        addMorePhotos();
+        ticking = false;
+      });
+
+      ticking = true;
+    }
+  });
+</script>
