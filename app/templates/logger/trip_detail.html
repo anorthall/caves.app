@@ -83,33 +83,7 @@
 
     <div class="trip-feed-content">
       {% include "logger/_trip_data_blocks.html" %}
-
-      {% if trip.notes and user == object_owner %}
-        <div class="row mt-3">
-          <div class="col no-paragraph-mb">
-            <small class="text-muted trip-field">
-              Private notes <i class="bi bi-lock-fill ms-1" data-bs-toggle="tooltip" title="Visible only to you"></i>
-            </small>
-            <div class="mt-2 text-limit-length">{{ trip.notes|markdownify }}</div>
-          </div>
-        </div>
-      {% endif %}
-
-      {% if trip.public_notes %}
-        <div class="row mt-3 pt-3 border-top">
-          <div class="col">
-            <small class="d-block text-muted trip-field">
-              {% if user == object_owner %}
-                Public notes
-                <i class="bi bi-globe ms-1" title="Visible to anyone who can view the trip." data-bs-toggle="tooltip"></i>
-              {% else %}
-                Notes
-              {% endif %}
-            </small>
-            <div class="mt-2 no-paragraph-mb text-limit-length" style="overflow-wrap: break-word; overflow: hidden;">{{ trip.public_notes|markdownify }}</div>
-          </div>
-        </div>
-      {% endif %}
+      {% include "logger/_trip_notes.html" %}
     </div>
 
     {% if photos %}

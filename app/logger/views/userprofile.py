@@ -65,6 +65,7 @@ class UserProfile(TemplateView):
                 messages.warning(self.request, "Viewing profile in administrator mode.")
 
             context["trips"] = self.get_trips(user)
+            context["trip_types"] = [x[1] for x in Trip.TRIP_TYPES]
             context["photos"] = self.profile_user.get_photos(for_user=user)
             context["quick_stats"] = self.profile_user.quick_stats
             context["stats"] = statistics.yearly(

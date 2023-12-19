@@ -716,26 +716,8 @@ main {
   margin-bottom: 0.75rem;
 }
 
-#tripsTable {
-  font-size: 0.9rem;
-}
-
-#tripsTable tbody:hover td {
-  background-color: var(--bs-table-hover-bg);
-  color: var(--bs-table-hover-color);
-}
-
-#tripsTable tbody tr:first-child td {
-  border-bottom: none;
-}
-
-#tripsTable tbody tr:last-child td, #tripsTable tbody tr:first-of-type td:first-of-type {
-  border-bottom: 1px solid var(--bs-border-color);
-}
-
-#searchInput.htmx-request {
-  opacity: 100% !important;
-  transition: unset !important;
+#userTripsTable {
+  max-width: 100%;
 }
 
 .friend-card {

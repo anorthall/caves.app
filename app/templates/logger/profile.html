@@ -132,19 +132,104 @@
           <button class="nav-link text-body-emphasis" id="userInfoTab" data-bs-toggle="tab" data-bs-target="#userInfoTabContent"
                   type="button" role="tab" aria-controls="userInfoTabContent" aria-selected="false">
             <span class="d-none d-sm-inline">Info</span>
-            <span class="d-sm-none"><i class="bi bi-info-circle-fill"></i></span>
+            <span class="d-sm-none">
+              <i class="bi bi-info-circle-fill"></i>
+            </span>
           </button>
         </li>
       </ul>
 
+      {% comment %}
+      TODO: Check sorting of durations with empty values
+      TODO: Check all sorting with empty values
+      TODO: Check privacy is respected by trip modal
+      TODO: Check privacy is respected by trip table
+      TODO: Consider showing photo count on trip modal
+      TODO: Check responsiveness
+      TODO: Check if any other data can be shown
+      {% endcomment %}
       <div class="tab-content border border-top-0" id="profileTabsContent">
-        <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
-          <div class="input-group px-3 py-4">
-            <span class="input-group-text">Search</span>
-            <input type="text" class="form-control" placeholder="Cave name, cavers, etc." id="tripsSearch">
+        <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel"
+             aria-labelledby="tripsTab" tabindex="0">
+          <div x-data="{ open: false }">
+            <div class="input-group px-3 py-4">
+              <input type="text" class="form-control" placeholder="Cave name, cavers, etc."
+                     id="tripsSearch" x-bind:disabled="open">
+                <span class="input-group-text fake-link" data-bs-toggle="tooltip"
+                    data-bs-title="Advanced search" id="advancedSearchToggle"
+                    @click="open = ! open; tripTable.clearFilter();">
+                <i class="bi bi-caret-down-fill"></i>
+              </span>
+            </div>
+
+            <div class="px-3 mb-2 py-4 border-top" x-show="open" x-transition x-cloak>
+              <h4>
+                Advanced search
+                <span class="ms-1 badge bg-secondary fw-normal fake-link" @click="resetAdvancedSearch()">
+                  Reset
+                </span>
+              </h4>
+
+              <p class="form-text">
+                Enter a search term to filter by a specific field. You may search more than one field at a time.
+              </p>
+
+              <div class="row row-cols-1 row-cols-xl-2 g-3">
+                <div class="col">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+                    <input type="text" class="form-control" placeholder="Cave or entrance name" id="caveNameSearch">
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-people-fill"></i></span>
+                    <input type="text" class="form-control" placeholder="Cavers" id="caverNameSearch">
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-geo-fill"></i></span>
+                    <input type="text" class="form-control" placeholder="Region" id="regionSearch">
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                    <input type="text" class="form-control" placeholder="Country" id="countrySearch">
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-newspaper"></i></span>
+                    <input type="text" class="form-control" placeholder="Notes" id="notesSearch">
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-list-ul"></i></span>
+                    <select class="form-select" id="tripTypeSearch">
+                      <option value="">All trip types</option>
+                      {% for trip_type in trip_types %}
+                        <option value="{{ trip_type }}">{{ trip_type }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div id="userTripsTable"></div>
+
+          {% for trip in trips %}
+            {% include "logger/_trip_modal.html" with trip=trip %}
+          {% endfor %}
 
           <script type="text/javascript">
             const trips = [
@@ -156,21 +241,25 @@
                   cave: "{{ trip.cave_name }}",
                   entrance: "{{ trip.cave_entrance }}",
                   exit: "{{ trip.cave_exit }}",
+                  region: "{{ trip.cave_region }}",
+                  country: "{{ trip.cave_country }}",
                   duration: "{{ trip.duration|shortdelta }}",
                   climbed: "{{ trip.vert_dist_up|distformat:request.units }}",
                   descended: "{{ trip.vert_dist_down|distformat:request.units }}",
                   surveyed: "{{ trip.total_surveyed_dist|distformat:request.units }}",
                   type: "{{ trip.get_type_display }}",
                   cavers: "{% for caver in trip.cavers.all %}{{ caver.name }}{% if not forloop.last %}, {% endif %}{% endfor %}",
-                  uuid: "{{ trip.uuid }}"
+                  uuid: "{{ trip.uuid }}",
+                  {% if user == trip.user %}notes: `{{ trip.notes }}`,{% endif %}
+                  public_notes: `{{ trip.public_notes }}`
                 }{% if not forloop.last %},{% endif %}
               {% endfor %}
             ];
 
             const tripTable = new Tabulator("#userTripsTable", {
               data: trips,
-              layout: "fitColumns",
-              height: '70vh',
+              layout: "fitDataFill",
+              height: '60vh',
               responsiveLayout: "hide",
               columns: [
                 {title: "Date", field: "date", widthGrow: 1, minWidth: 100, sorter: "date", sorterParams: {format: "yy-MM-dd"}},
@@ -182,18 +271,37 @@
                     return parseInt(hours) * 60 + parseInt(minutes);
                   };
 
+                  if (a === "" || b === "") {
+                    return false;
+                  }
+
                   return get_total_minutes(a) - get_total_minutes(b);
                 }},
                 {title: "Up", field: "climbed", widthGrow: 1, minWidth: 80},
                 {title: "Down", field: "descended", widthGrow: 1, minWidth: 100},
                 {title: "Survey", field: "surveyed", widthGrow: 1, minWidth: 100},
+                {title: "Type", field: "type", visible: false},
+                {title: "Region", field: "region", visible: false},
+                {title: "Country", field: "country", visible: false},
                 {title: "Cavers", field: "cavers", visible: false},
                 {title: "Entrance", field: "entrance", visible: false},
                 {title: "Exit", field: "exit", visible: false},
+                {% if user == profile_user %}{title: "Notes", field: "notes", visible: false},{% endif %}
+                {title: "Public notes", field: "public_notes", visible: false},
                 {title: "UUID", field: "uuid", visible: false},
               ],
             })
 
+            document.addEventListener("DOMContentLoaded", function() {
+              tripTable.redraw();
+            });
+
+            tripTable.on("rowClick", function (e, row) {
+              let modalId = "#tripModal" + row.getData().uuid;
+              $(modalId).modal("show");
+            });
+
+            /* Quick search */
             const tripsSearch = document.getElementById("tripsSearch");
             const searchFields = ["cave", "entrance", "exit", "cavers"];
             tripsSearch.addEventListener("keyup", (event) => {
@@ -205,6 +313,43 @@
               );
             });
 
+            /* Advanced search */
+            const caveNameSearch = document.getElementById("caveNameSearch");
+            const caverNameSearch = document.getElementById("caverNameSearch");
+            const regionSearch = document.getElementById("regionSearch");
+            const countrySearch = document.getElementById("countrySearch");
+            const notesSearch = document.getElementById("notesSearch");
+            const tripTypeSearch = document.getElementById("tripTypeSearch");
+
+            const advancedSearchFields = [
+                caveNameSearch,
+                caverNameSearch,
+                regionSearch,
+                countrySearch,
+                notesSearch,
+                tripTypeSearch
+            ];
+
+            advancedSearchFields.forEach(field => {
+              field.addEventListener("input", () => { runAdvancedSearch() })
+            })
+
+            function runAdvancedSearch() {
+              tripsSearch.value = "";
+              tripTable.setFilter([
+                {field: "cave", type: "like", value: caveNameSearch.value},
+                {field: "cavers", type: "like", value: caverNameSearch.value},
+                {field: "region", type: "like", value: regionSearch.value},
+                {field: "country", type: "like", value: countrySearch.value},
+                {field: "public_notes", type: "like", value: notesSearch.value},
+                {field: "type", type: "like", value: tripTypeSearch.value},
+              ])
+            }
+
+            function resetAdvancedSearch() {
+              advancedSearchFields.forEach(field => { field.value = ""; })
+              tripTable.clearFilter();
+            }
           </script>
         </div>
 
