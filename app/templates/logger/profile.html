@@ -7,7 +7,7 @@
 
 {% block stylesheets %}
   {% if trips %}
-    <link rel="stylesheet" href="{% static 'css/tabulator_bootstrap5.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tabulator-caves-app.css' %}">
   {% endif %}
 
   {% if photos %}
@@ -139,6 +139,11 @@
 
       <div class="tab-content border border-top-0" id="profileTabsContent">
         <div class="tab-pane fade show active" id="tripsTabContent" role="tabpanel" aria-labelledby="tripsTab" tabindex="0">
+          <div class="input-group px-3 py-4">
+            <span class="input-group-text">Search</span>
+            <input type="text" class="form-control" placeholder="Cave name, cavers, etc." id="tripsSearch">
+          </div>
+
           <div id="userTripsTable"></div>
 
           <script type="text/javascript">
@@ -149,12 +154,15 @@
                   url: "{{ trip.get_absolute_url }}",
                   date: "{{ trip.start|date:'y-m-d' }}",
                   cave: "{{ trip.cave_name }}",
+                  entrance: "{{ trip.cave_entrance }}",
+                  exit: "{{ trip.cave_exit }}",
                   duration: "{{ trip.duration|shortdelta }}",
                   climbed: "{{ trip.vert_dist_up|distformat:request.units }}",
                   descended: "{{ trip.vert_dist_down|distformat:request.units }}",
                   surveyed: "{{ trip.total_surveyed_dist|distformat:request.units }}",
                   type: "{{ trip.get_type_display }}",
-                  cavers: "{% for caver in trip.cavers.all %}{{ caver.name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                  cavers: "{% for caver in trip.cavers.all %}{{ caver.name }}{% if not forloop.last %}, {% endif %}{% endfor %}",
+                  uuid: "{{ trip.uuid }}"
                 }{% if not forloop.last %},{% endif %}
               {% endfor %}
             ];
@@ -179,9 +187,24 @@
                 {title: "Up", field: "climbed", widthGrow: 1, minWidth: 80},
                 {title: "Down", field: "descended", widthGrow: 1, minWidth: 100},
                 {title: "Survey", field: "surveyed", widthGrow: 1, minWidth: 100},
-                {title: "Cavers", field: "cavers", visible: false, searchable: true},
+                {title: "Cavers", field: "cavers", visible: false},
+                {title: "Entrance", field: "entrance", visible: false},
+                {title: "Exit", field: "exit", visible: false},
+                {title: "UUID", field: "uuid", visible: false},
               ],
             })
+
+            const tripsSearch = document.getElementById("tripsSearch");
+            const searchFields = ["cave", "entrance", "exit", "cavers"];
+            tripsSearch.addEventListener("keyup", (event) => {
+              let query = event.target.value.trim();
+              tripTable.setFilter([
+                searchFields.map((field) => {
+                  return {field: field, type: "like", value: query};
+                })]
+              );
+            });
+
           </script>
         </div>
 
