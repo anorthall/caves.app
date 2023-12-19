@@ -970,17 +970,18 @@ main.home {
 /* Headers */
 h1 {
   font-size: 1.5rem !important;
-  margin-bottom: 1rem !important;
+}
+
+.modal-title {
+  margin-bottom: 0;
 }
 
 h2 {
   font-size: 1.3rem !important;
-  margin-bottom: 0.75rem !important;
 }
 
 h3 {
   font-size: 1.2rem !important;
-  margin-bottom: 0.75rem !important;
 }
 
 #changelog h1, #changelog h2, #changelog h3, .title-underline {
