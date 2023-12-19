@@ -286,14 +286,6 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             "time chart on the statistics page."
         ),
     )
-    show_cavers_on_trip_list = models.BooleanField(
-        "Show cavers on trip list",
-        default=False,
-        help_text=(
-            "Enabling this option will display a list of cavers "
-            "beneath each trip on your profile trip list."
-        ),
-    )
 
     # Custom fields
     custom_field_1_label = models.CharField(

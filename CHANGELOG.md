@@ -22,6 +22,7 @@ your privacy settings.
 via the info tab. Users can only view their own profile view count.
 - A bug where no 'Add friend' link was shown on smaller screens has been fixed.
 - A bug preventing the photos tab being shown when the user had less than 40 photos has been fixed.
+- The ability to show a list of cavers under each trip on the trip list has been removed.
 
 #### Trip detail page
 - A trip view counter has been added. Users can only view the view count for their own trips. The
