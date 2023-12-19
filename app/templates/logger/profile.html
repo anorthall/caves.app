@@ -309,7 +309,7 @@
         {% endif %}
 
         {% if mutual_friends %}
-          <div class="tab-pane fade" id="friendsTabContent" role="tabpanel" aria-labelledby="friendsTab" tabindex="0">
+          <div class="tab-pane fade p-3" id="friendsTabContent" role="tabpanel" aria-labelledby="friendsTab" tabindex="0">
             <div class="row row-cols-1 row-cols-md-2 g-3 mb-3">
               {% for friend in mutual_friends %}
                 <div class="col">
@@ -335,17 +335,17 @@
         {% endif %}
 
         {% if stats %}
-          <div class="tab-pane fade" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
-            <h3 class="ms-1 my-3">Yearly Statistics</h3>
+          <div class="tab-pane fade p-3" id="statsTabContent" role="tabpanel" aria-labelledby="statsTab" tabindex="0">
+            <h3 class="mb-3 mt-1 ms-1">Yearly Statistics</h3>
             <div class="profile-stats">
               {% include "stats/_yearly_stats.html" with show_stats_link=enable_private_stats stats=stats disable_survey=profile_user.disable_survey_statistics disable_dist=profile_user.disable_distance_statistics table_class="table-hover" dist_class="d-none d-xl-table-cell" %}
             </div>
           </div>
         {% endif %}
 
-        <div class="tab-pane fade" id="userInfoTabContent" role="tabpanel" aria-labelledby="userInfoTab" tabindex="0">
-          <h3 class="my-3">{{ profile_user.name }}</h3>
-          <dl class="row mb-3">
+        <div class="tab-pane fade p-3" id="userInfoTabContent" role="tabpanel" aria-labelledby="userInfoTab" tabindex="0">
+          <h3 class="mb-3 mt-1">{{ profile_user.name }}</h3>
+          <dl class="row mb-0">
             <dt class="col-sm-4">Username</dt>
             <dd class="col-sm-8">{{ profile_user.username }}</dd>
 
