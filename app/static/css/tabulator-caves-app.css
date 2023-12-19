@@ -422,11 +422,24 @@
   min-height: 24px;
   background-color: var(--bs-body-bg);
 }
+
 .tabulator-row.tabulator-row-even {
-  background-color: var(--bs-body-bg);
+  background-color: var(--bs-secondary-bg);
 }
+
+[data-bs-theme="dark"] {
+  .tabulator-row.tabulator-row-even {
+    background-color: var(--bs-dark-bg-subtle);
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .tabulator-row.tabulator-selectable:hover {
+    background-color: var(--bs-dark-bg-subtle);
+    cursor: pointer;
+  }
+
+  [data-bs-theme="dark"] .tabulator-row.tabulator-selectable:hover {
     background-color: var(--bs-secondary-bg);
     cursor: pointer;
   }
