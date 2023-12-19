@@ -68,15 +68,13 @@ class UserProfile(TemplateView):
             context["trips"] = self.get_trips(user)
             context["photos"] = self.profile_user.get_photos(for_user=user)
             context["quick_stats"] = self.profile_user.quick_stats
+            context["stats"] = statistics.yearly(
+                self.profile_user.trips.exclude(type=Trip.SURFACE)
+            )
             context["enable_private_stats"] = (
                 self.profile_user == user
             ) or user.is_superuser
         else:
             context["private_profile"] = True
-
-        if self.profile_user.public_statistics:
-            context["stats"] = statistics.yearly(
-                self.profile_user.trips.exclude(type=Trip.SURFACE)
-            )
 
         return context

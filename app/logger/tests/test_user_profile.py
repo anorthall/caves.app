@@ -156,25 +156,6 @@ class UserProfileViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.name)
 
-    @tag("privacy")
-    def test_public_statistics_privacy_setting(self):
-        """Test that the public statistics privacy setting works"""
-        for i in range(0, 50):
-            TripFactory(user=self.user)
-        self.user.public_statistics = False
-        self.user.save()
-
-        response = self.client.get(self.user.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, '<div class="profile-stats')
-
-        self.user.public_statistics = True
-        self.user.save()
-
-        response = self.client.get(self.user.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<div class="profile-stats')
-
     def test_friends_appear_on_the_user_profile_page(self):
         """Test that friends appear on the user profile page when viewed by the user"""
         self.client.force_login(self.user)

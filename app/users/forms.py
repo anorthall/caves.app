@@ -289,7 +289,6 @@ class SettingsChangeForm(forms.ModelForm):
             "allow_friend_email",
             "allow_comments",
             "show_cavers_on_trip_list",
-            "public_statistics",
             "disable_distance_statistics",
             "disable_survey_statistics",
             "disable_stats_over_time",
@@ -318,7 +317,6 @@ class SettingsChangeForm(forms.ModelForm):
             ),
             HTML('<h5 class="mt-3">Statistics</h5>'),
             Div(
-                Div("public_statistics", css_class="col"),
                 Div("disable_distance_statistics", css_class="col"),
                 Div("disable_survey_statistics", css_class="col"),
                 Div("disable_stats_over_time", css_class="col"),
