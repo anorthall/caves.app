@@ -122,7 +122,7 @@ class FindTripToAddLocation(LoginRequiredMixin, View):
 
         if not user.trips.exists():
             messages.info(self.request, "You don't have any trips yet.")
-            return redirect("logger:add_trip")
+            return redirect("log:trip_create")
 
         selected_trip = (
             user.trips.filter(Q(cave_coordinates__isnull=True) | Q(cave_location=""))
