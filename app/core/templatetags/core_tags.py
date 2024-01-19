@@ -77,4 +77,8 @@ def _rewrite_url_for_local_dev(url):
 @register.filter
 def clean(text: str) -> SafeString:
     """Strip HTML tags using the nh3 library"""
+    # Strip quotes from text
+    text = text.replace('"', "")
+    text = text.replace("'", "")
+    text = text.replace("`", "")
     return SafeString(nh3.clean(text))
