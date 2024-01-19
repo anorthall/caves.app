@@ -81,4 +81,5 @@ def clean(text: str) -> SafeString:
     text = text.replace('"', "")
     text = text.replace("'", "")
     text = text.replace("`", "")
+    text = text.replace("\\", "")
     return SafeString(nh3.clean(text))
