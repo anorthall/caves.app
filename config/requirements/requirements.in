@@ -3,7 +3,7 @@ boto3
 chardet
 coverage
 crispy-bootstrap5
-Django==4.2
+Django==5.0.4
 django-active-link
 django-autocomplete-light
 django-browser-reload
