@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime as dt
+from datetime import timedelta as td
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.measure import D
@@ -6,8 +8,6 @@ from django.core.exceptions import ValidationError
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone as tz
-from django.utils.timezone import datetime as dt
-from django.utils.timezone import timedelta as td
 
 from ..models import Trip
 
@@ -17,7 +17,7 @@ User = get_user_model()
 @tag("logger", "trip", "fast")
 class TripModelTests(TestCase):
     def setUp(self):
-        """Reduce log level to avoid 404 error"""
+        """Reduce log level to avoid 404 error."""
         logger = logging.getLogger("django.request")
         self.previous_level = logger.getEffectiveLevel()
         logger.setLevel(logging.ERROR)
@@ -96,15 +96,12 @@ class TripModelTests(TestCase):
         )
 
     def tearDown(self):
-        """Reset the log level back to normal"""
+        """Reset the log level back to normal."""
         logger = logging.getLogger("django.request")
         logger.setLevel(self.previous_level)
 
     def test_trip_duration(self):
-        """
-        Test that trip duration returns a timedelta with the correct value
-        Test that trip duration returns None if no end time
-        """
+        """Test that trip duration returns a timedelta with the correct value."""
         trip_with_end = Trip.objects.get(cave_name="Duration Trip")
         trip_without_end = Trip.objects.get(cave_name="No Duration Trip")
 
@@ -115,7 +112,7 @@ class TripModelTests(TestCase):
         self.assertEqual(trip_without_end.duration, None)
 
     def test_trip_duration_str(self):
-        """Test that the trip duration string returns the correct value"""
+        """Test that the trip duration string returns the correct value."""
         trip = Trip.objects.get(cave_name="Duration Trip")
         self.assertEqual(trip.duration_str, "2 hours")
 
@@ -130,7 +127,7 @@ class TripModelTests(TestCase):
         self.assertEqual(trip.duration_str, "50 hours and 2 minutes")
 
     def test_has_distances_property(self):
-        """Test the Trip.has_distances property"""
+        """Test the Trip.has_distances property."""
         trip = Trip.objects.get(cave_name="Distances Trip")
         self.assertTrue(trip.has_distances)
 
@@ -139,7 +136,7 @@ class TripModelTests(TestCase):
 
     @tag("privacy")
     def test_trip_is_private_and_is_public(self):
-        """Test the Trip.is_private and Trip.is_public functions"""
+        """Test the Trip.is_private and Trip.is_public functions."""
         trip_private = Trip.objects.get(cave_name="Private Trip")
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
@@ -154,7 +151,7 @@ class TripModelTests(TestCase):
         self.assertFalse(trip_default.is_public)
 
     def test_trip_distance_validation(self):
-        """Test the trip distance validation"""
+        """Test the trip distance validation."""
         self.client.force_login(self.user)
 
         # Test above_zero_dist_validator()
@@ -187,7 +184,7 @@ class TripModelTests(TestCase):
 
     @tag("privacy")
     def test_trip_is_viewable_by_with_own_user(self):
-        """Test the trip is_viewable_by function"""
+        """Test the trip is_viewable_by function."""
         trip_private = Trip.objects.get(cave_name="Private Trip")
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
@@ -198,7 +195,7 @@ class TripModelTests(TestCase):
 
     @tag("privacy")
     def test_trip_is_viewable_by_with_public_user(self):
-        """Test the trip is_viewable_by function with a public user"""
+        """Test the trip is_viewable_by function with a public user."""
         trip_private = Trip.objects.get(cave_name="Private Trip")
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
@@ -211,7 +208,7 @@ class TripModelTests(TestCase):
 
     @tag("privacy")
     def test_trip_is_viewable_by_with_private_user(self):
-        """Test the trip is_viewable_by function with a private user"""
+        """Test the trip is_viewable_by function with a private user."""
         trip_private = Trip.objects.get(cave_name="Private Trip")
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
@@ -224,7 +221,7 @@ class TripModelTests(TestCase):
 
     @tag("privacy")
     def test_trip_is_viewable_by_with_user_that_is_not_a_friend(self):
-        """Test the trip is_viewable_by function with a non-friend user"""
+        """Test the trip is_viewable_by function with a non-friend user."""
         trip_private = Trip.objects.get(cave_name="Private Trip")
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
@@ -237,7 +234,7 @@ class TripModelTests(TestCase):
 
     @tag("privacy")
     def test_trip_is_viewable_by_with_user_that_is_a_friend(self):
-        """Test the trip is_viewable_by function with a friend user"""
+        """Test the trip is_viewable_by function with a friend user."""
         trip_private = Trip.objects.get(cave_name="Private Trip")
         trip_public = Trip.objects.get(cave_name="Public Trip")
         trip_default = Trip.objects.get(cave_name="Default Trip")
@@ -257,18 +254,18 @@ class TripModelTests(TestCase):
         self.assertTrue(trip_friends.is_viewable_by(self.user2))
 
     def test_trip_str(self):
-        """Test the Trip model __str__ function"""
+        """Test the Trip model __str__ function."""
         self.assertEqual(str(self.trip), self.trip.cave_name)
 
     def test_trip_validates_start_time_before_end_time(self):
-        """Test the Trip model validates start time before end time"""
+        """Test the Trip model validates start time before end time."""
         self.trip.start = tz.now() + td(days=1)
         self.trip.end = tz.now()
         with self.assertRaises(ValidationError):
             self.trip.full_clean()
 
     def test_build_liked_str_function(self):
-        """Test the build_liked_str function"""
+        """Test the build_liked_str function."""
         result = self.trip._build_liked_str(["you"], True)
         self.assertEqual(result, "You liked this")
 
@@ -287,21 +284,17 @@ class TripModelTests(TestCase):
         result = self.trip._build_liked_str(["Andrew", "Bob", "Charlie", "Dave"], False)
         self.assertEqual(result, "Liked by Andrew, Bob and 2 others")
 
-        result = self.trip._build_liked_str(
-            ["Andrew", "Bob", "Charlie", "Dave", "you"], True
-        )
+        result = self.trip._build_liked_str(["Andrew", "Bob", "Charlie", "Dave", "you"], True)
         self.assertEqual(result, "Liked by Andrew, Bob and 3 others")
 
-        result = self.trip._build_liked_str(
-            ["Andrew", "Bob", "Charlie", "Dave", "you"], True, 1
-        )
+        result = self.trip._build_liked_str(["Andrew", "Bob", "Charlie", "Dave", "you"], True, 1)
         self.assertEqual(result, "Liked by Andrew and 4 others")
 
         with self.assertRaises(ValueError):
             self.trip._build_liked_str([], True, 0)
 
     def test_trip_has_distances_function(self):
-        """Test the Trip model has_distances function"""
+        """Test the Trip model has_distances function."""
         t = self.trip
         self.assertFalse(t.has_distances)
 
@@ -329,7 +322,7 @@ class TripModelTests(TestCase):
         self.assertTrue(self.trip.has_distances)
 
     def test_friends_appear_first_in_liked_str(self):
-        """Test that friends appear first in the liked string"""
+        """Test that friends appear first in the liked string."""
         # Create 10 users
         users = []
         for i in range(10):
@@ -354,7 +347,7 @@ class TripModelTests(TestCase):
         self.assertEqual(result, "Liked by Test User 4, Test User 5 and 8 others")
 
     def test_trip_number_function(self):
-        """Test the Trip model number function"""
+        """Test the Trip model number function."""
         self.assertEqual(self.trip.number, 1)
         self.trip.start = tz.now()
         self.trip.save()
@@ -362,7 +355,7 @@ class TripModelTests(TestCase):
 
     @tag("views")
     def test_trip_creation_form(self):
-        """Test the trip creation form"""
+        """Test the trip creation form."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:trip_create"))
         self.assertEqual(response.status_code, 200)
@@ -399,7 +392,7 @@ class TripModelTests(TestCase):
 
     @tag("views")
     def test_trip_creation_form_with_invalid_data(self):
-        """Test the trip creation form with invalid data"""
+        """Test the trip creation form with invalid data."""
         self.client.force_login(self.user)
         response = self.client.post(reverse("log:trip_create"), {})
         self.assertContains(response, "This field is required.")
@@ -412,9 +405,7 @@ class TripModelTests(TestCase):
                 "end": tz.now() - td(days=1),
             },
         )
-        self.assertContains(
-            response, "The trip start time must be before " "the trip end time."
-        )
+        self.assertContains(response, "The trip start time must be before " "the trip end time.")
 
         response = self.client.post(
             reverse("log:trip_create"),
@@ -455,9 +446,7 @@ class TripModelTests(TestCase):
                 "end": tz.now(),
             },
         )
-        self.assertContains(
-            response, "Trips must not start more than one week in the future"
-        )
+        self.assertContains(response, "Trips must not start more than one week in the future")
 
         response = self.client.post(
             reverse("log:trip_create"),
@@ -472,13 +461,11 @@ class TripModelTests(TestCase):
                 "end": tz.now() + td(days=32),
             },
         )
-        self.assertContains(
-            response, "Trips must not end more than 31 days in the future"
-        )
+        self.assertContains(response, "Trips must not end more than 31 days in the future")
 
     @tag("views")
     def test_trip_create_form_addanother_function(self):
-        """Test the trip creation form add another function"""
+        """Test the trip creation form add another function."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse("log:trip_create"),
@@ -496,7 +483,7 @@ class TripModelTests(TestCase):
     # TODO: Test trip update form with invalid user
     @tag("views")
     def test_trip_update_form(self):
-        """Test the trip update form"""
+        """Test the trip update form."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:trip_update", args=[self.trip.uuid]))
         self.assertEqual(response.status_code, 200)
@@ -535,22 +522,20 @@ class TripModelTests(TestCase):
 
     @tag("views")
     def test_trip_delete_view(self):
-        """Test the trip delete view"""
+        """Test the trip delete view."""
         self.client.force_login(self.user)
 
         trip_pk = self.trip.pk
         success_str = f"The trip to {self.trip.cave_name} has been deleted"
 
-        response = self.client.post(
-            reverse("log:trip_delete", args=[self.trip.uuid]), follow=True
-        )
+        response = self.client.post(reverse("log:trip_delete", args=[self.trip.uuid]), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, success_str)
         self.assertFalse(Trip.objects.filter(pk=trip_pk).exists())
 
     @tag("privacy", "views")
     def test_trip_delete_view_as_incorrect_user(self):
-        """Test the trip delete view as an incorrect user"""
+        """Test the trip delete view as an incorrect user."""
         self.client.force_login(self.user2)
         response = self.client.post(
             reverse("log:trip_delete", args=[self.trip.uuid]),
@@ -601,7 +586,7 @@ class TripDetailViewTests(TestCase):
 
     @tag("privacy")
     def test_trip_detail_page_with_various_privacy_settings(self):
-        """Test the trip detail page with various privacy settings"""
+        """Test the trip detail page with various privacy settings."""
         trip = self.user.trips.first()
         trip.privacy = Trip.PUBLIC
         trip.save()
@@ -665,7 +650,7 @@ class TripDetailViewTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_sidebar_displays_properly_when_viewing_another_users_trip(self):
-        """Test that the sidebar displays properly when viewing another user's trip"""
+        """Test that the sidebar displays properly when viewing another user's trip."""
         self.client.force_login(self.user2)
         trip = Trip.objects.filter(user=self.user).first()
         response = self.client.get(trip.get_absolute_url())
@@ -678,7 +663,7 @@ class TripDetailViewTests(TestCase):
 
     @tag("privacy")
     def test_add_as_friend_link_does_not_appear_when_disabled(self):
-        """Test that the add as friend link does not appear when disabled"""
+        """Test that the add as friend link does not appear when disabled."""
         self.user.allow_friend_username = False
         self.user.save()
 
@@ -689,7 +674,7 @@ class TripDetailViewTests(TestCase):
         self.assertNotContains(response, reverse("users:friend_add"))
 
     def test_add_as_friend_link_does_not_appear_when_already_friends(self):
-        """Test that the add as friend link does not appear when already friends"""
+        """Test that the add as friend link does not appear when already friends."""
         self.user.friends.add(self.user2)
         self.user2.friends.add(self.user)
 

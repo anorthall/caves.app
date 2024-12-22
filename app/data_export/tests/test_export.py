@@ -30,37 +30,31 @@ class ExportPageloadTests(TestCase):
             TripFactory(cave_name=f"Cave {i}", user=user)
 
     def test_export_index_page_loads(self):
-        """Test that the export index page loads"""
+        """Test that the export index page loads."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("export:index"))
         self.assertEqual(response.status_code, 200)
 
     def test_export_to_csv(self):
-        """Test exporting a CSV file"""
+        """Test exporting a CSV file."""
         self.client.force_login(self.user)
         response = self.client.post(reverse("export:index"), {"format": "csv"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/csv")
-        self.assertEqual(
-            response["Content-Disposition"], "attachment; filename=trips.csv"
-        )
+        self.assertEqual(response["Content-Disposition"], "attachment; filename=trips.csv")
 
     def test_export_to_json(self):
-        """Test exporting a JSON file"""
+        """Test exporting a JSON file."""
         self.client.force_login(self.user)
         response = self.client.post(reverse("export:index"), {"format": "json"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/json")
-        self.assertEqual(
-            response["Content-Disposition"], "attachment; filename=trips.json"
-        )
+        self.assertEqual(response["Content-Disposition"], "attachment; filename=trips.json")
 
     def test_export_with_invalid_format(self):
-        """Test exporting with an invalid format"""
+        """Test exporting with an invalid format."""
         self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("export:index"), {"format": "invalid"}, follow=True
-        )
+        response = self.client.post(reverse("export:index"), {"format": "invalid"}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
@@ -71,7 +65,7 @@ class ExportPageloadTests(TestCase):
 @tag("fast", "export")
 class ExportDataTests(TestCase):
     def test_export_with_custom_fields(self):
-        """Test exporting a CSV file with custom fields added to trips/user"""
+        """Test exporting a CSV file with custom fields added to trips/user."""
         # Add custom fields to user and trip
         user = User.objects.create_user(
             username="testuser2",
@@ -84,7 +78,7 @@ class ExportDataTests(TestCase):
         user.custom_field_2_label = "Test Field 2"
         user.save()
 
-        for i in range(0, 20):
+        for _i in range(0, 20):
             TripFactory.create(user=user)
 
         uuids = []
@@ -108,7 +102,7 @@ class ExportDataTests(TestCase):
             self.assertContains(response, u2)
 
     def test_all_data_exported(self):
-        """Test that all data is exported"""
+        """Test that all data is exported."""
         user = User.objects.create_user(
             username="testuser2",
             email="test2@users.app",
@@ -120,7 +114,7 @@ class ExportDataTests(TestCase):
         user.custom_field_2_label = "Test Field 2"
         user.save()
 
-        for i in range(0, 20):
+        for _i in range(0, 20):
             TripFactory.create(user=user)
 
         self.client.force_login(user)
@@ -149,12 +143,12 @@ class ExportDataTests(TestCase):
 @tag("exporter", "export", "fast")
 class ExporterTests(TestCase):
     def test_exporter_get_distance_units_method(self):
-        """Test that the get_distance_units method returns the units property"""
+        """Test that the get_distance_units method returns the units property."""
         exporter = Exporter(Trip.objects.none())
         self.assertEqual(exporter._get_distance_units(), exporter.distance_units)
 
     def test_exporter_format_distancefield_method(self):
-        """Test that the format_df method returns the distance in the correct units"""
+        """Test that the format_df method returns the distance in the correct units."""
         exporter = Exporter(Trip.objects.none())
 
         exporter.distance_units = "m"
@@ -167,7 +161,7 @@ class ExporterTests(TestCase):
         self.assertEqual(exporter._format_distancefield(Distance(m=100)), "100.0")
 
     def test_exporter_distancefield_header(self):
-        """Test that the distancefield_header method returns the correct header"""
+        """Test that the distancefield_header method returns the correct header."""
         exporter = Exporter(Trip.objects.none())
         exporter.model = Trip
 
@@ -190,7 +184,7 @@ class ExporterTests(TestCase):
         )
 
     def test_exporter_get_field_header_method(self):
-        """Test that the get_field_header method returns the correct header"""
+        """Test that the get_field_header method returns the correct header."""
         exporter = Exporter(Trip.objects.none())
         exporter.model = Trip
 
@@ -203,9 +197,7 @@ class ExporterTests(TestCase):
         self.assertEqual(exporter._get_field_header("cave_name"), "Test Header")
 
         with self.assertRaises(FieldDoesNotExist):
-            self.assertEqual(
-                exporter._get_field_header("invalid_field"), "Invalid field"
-            )
+            self.assertEqual(exporter._get_field_header("invalid_field"), "Invalid field")
 
 
 @tag("exporter", "tripexporter", "export", "fast")
@@ -223,7 +215,7 @@ class TripExporterTests(TestCase):
         self.trip = TripFactory.create(user=self.user)
 
     def test_trip_exporter_get_distance_units_method(self):
-        """Test that the get_distance_units method returns the units property"""
+        """Test that the get_distance_units method returns the units property."""
         exporter = TripExporter(self.user, Trip.objects.all())
         self.assertEqual(self.user.units, User.METRIC)
         self.assertEqual(exporter._get_distance_units(), "m")

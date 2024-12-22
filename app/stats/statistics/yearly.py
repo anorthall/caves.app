@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, timedelta
 
 from attrs import Factory, define
 from django.contrib.gis.measure import D, Distance
@@ -14,9 +14,9 @@ class YearlyStatistics:
     resurveyed: Distance = Factory(D)
     horizontal: Distance = Factory(D)
     aid_climbed: Distance = Factory(D)
-    time: timezone.timedelta = Factory(timezone.timedelta)
+    time: timedelta = Factory(timedelta)
     trips: int = 0
-    dates: list[datetime.date] = Factory(list)
+    dates: list[date] = Factory(list)
     is_total: bool = False
 
     def add_trip(self, trip):
@@ -26,7 +26,7 @@ class YearlyStatistics:
         self.resurveyed += trip.resurveyed_dist
         self.horizontal += trip.horizontal_dist
         self.aid_climbed += trip.aid_dist
-        self.time += trip.duration if trip.duration else timezone.timedelta()
+        self.time += trip.duration if trip.duration else timedelta()
         self.trips += 1
 
         # Collect a list of dates that this trip spans. The start date is always added,
@@ -37,7 +37,7 @@ class YearlyStatistics:
         self.dates.append(trip.start.date())
         if trip.duration:
             for i in range(1, trip.duration.days + 1):
-                self.dates.append((trip.start + timezone.timedelta(days=i)).date())
+                self.dates.append((trip.start + timedelta(days=i)).date())
 
     @property
     def caving_days(self):
@@ -64,8 +64,8 @@ def yearly(queryset, /, max_years=10) -> tuple:
         stats[year].add_trip(trip)
 
     if stats:
-        stats = list(stats.values())
-        sorted_stats = sorted(stats, key=lambda s: s.year, reverse=True)
+        stats_list = list(stats.values())
+        sorted_stats = sorted(stats_list, key=lambda s: s.year, reverse=True)
         return tuple(sorted_stats + [total])
-    else:
-        return ()
+
+    return ()

@@ -6,18 +6,18 @@ from users.models import CavingUser as User
 
 
 class Exporter:
-    """Export a Django Model to a tabular format for use with tablib"""
+    """Export a Django Model to a tabular format for use with tablib."""
 
-    fields = []
-    field_headers = {}
+    fields: list[str] = []
+    field_headers: dict[str, str] = {}
     distance_units = "m"
-    model: Model = None
+    model: type[Model] | None = None
 
     def __init__(self, queryset):
         self.queryset = queryset
 
     def generate(self) -> Dataset:
-        """Generate rows based on the QuerySet and fields passed to the constructor"""
+        """Generate rows based on the QuerySet and fields passed to the constructor."""
         data = Dataset(headers=self._build_header())
 
         for obj in self.queryset:
@@ -26,7 +26,7 @@ class Exporter:
         return data
 
     def _build_row(self, obj) -> list[str]:
-        """Iterate through each field in self.fields and format the value"""
+        """Iterate through each field in self.fields and format the value."""
         row = []
         for field_name in self.fields:
             value = getattr(obj, field_name)
@@ -34,10 +34,8 @@ class Exporter:
         return row
 
     def _format_field(self, field_name, value) -> str:
-        """
-        Determine if we have a handler for the field type and call it
-        Otherwise, return the value as a string
-        """
+        """Determine if we have a handler for the field type and call it."""
+        assert self.model is not None
         field_type = self.model._meta.get_field(field_name).__class__.__name__
         handler = getattr(self, f"_format_{field_type.lower()}", None)
 
@@ -50,27 +48,34 @@ class Exporter:
         return handler(value)
 
     def _build_header(self) -> list[str]:
-        """Return a list of headers for the dataset"""
+        """Return a list of headers for the dataset."""
         return [self._get_field_header(field_name) for field_name in self.fields]
 
     def _get_field_header(self, field_name) -> str:
-        """
-        Return the header for a given field by calling the get_<field_name>_header
+        """Return the header for a given field.
+
+        First attempt is by calling the get_<field_name>_header
         method if it exists, then checking the field_headers dict, then calling
         get_<field_type>_header if it exists, then falling back to the verbose_name.
         """
+        assert self.model is not None
         field_type = self.model._meta.get_field(field_name).__class__.__name__.lower()
         if hasattr(self, f"_get_{field_name}_header"):
             return getattr(self, f"_get_{field_name}_header")()
-        elif field_name in self.field_headers:
+        if field_name in self.field_headers:
             return self.field_headers[field_name]
-        elif hasattr(self, f"_get_{field_type}_header"):
+        if self.model and hasattr(self, f"_get_{field_type}_header"):
             return getattr(self, f"_get_{field_type}_header")(field_name)
-        else:
-            return self.model._meta.get_field(field_name).verbose_name.capitalize()
+        return self._get_field_verbose_name(field_name).capitalize()
 
     def _get_field_verbose_name(self, field_name) -> str:
-        return self.model._meta.get_field(field_name).verbose_name
+        assert self.model is not None
+        result = self.model._meta.get_field(field_name)
+        if hasattr(result, "verbose_name"):
+            assert isinstance(result.verbose_name, str)
+            return result.verbose_name
+
+        raise ValueError(f"Field {field_name} does not have a verbose_name attribute.")
 
     def _get_datetimefield_header(self, field_name) -> str:
         tz = timezone.get_current_timezone()
@@ -143,13 +148,12 @@ class TripExporter(Exporter):
 
         # Handle custom field labels and remove any fields that don't have a label
         for field in self.fields.copy():
-            if field.startswith("custom_field"):
-                if hasattr(self.user, f"{field}_label"):
-                    label = getattr(self.user, f"{field}_label")
-                    if label:
-                        self.field_headers[field] = label
-                    else:
-                        self.fields.remove(field)
+            if field.startswith("custom_field") and hasattr(self.user, f"{field}_label"):
+                label = getattr(self.user, f"{field}_label")
+                if label:
+                    self.field_headers[field] = label
+                else:
+                    self.fields.remove(field)
 
         super().__init__(queryset)
 

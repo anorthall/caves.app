@@ -11,9 +11,7 @@ from .forms import TripExportForm
 from .services import TripExporter
 
 
-@method_decorator(
-    ratelimit(key="user", rate="100/d", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="user", rate="100/d", method=ratelimit.UNSAFE), name="dispatch")
 class Index(LoginRequiredMixin, TemplateView):
     template_name = "export/index.html"
 
@@ -27,10 +25,7 @@ class Index(LoginRequiredMixin, TemplateView):
         if not form.is_valid():
             messages.error(
                 request,
-                (
-                    "There was an error generating your download. "
-                    "Did you select a valid format?"
-                ),
+                ("There was an error generating your download. " "Did you select a valid format?"),
             )
             return redirect("export:index")
 
@@ -47,9 +42,7 @@ class Index(LoginRequiredMixin, TemplateView):
         data = exporter.generate().export(file_type)
 
         num_trips = request.user.trips.count()
-        log_user_action(
-            request.user, f"exported {num_trips} trips to a {file_type.upper()} file"
-        )
+        log_user_action(request.user, f"exported {num_trips} trips to a {file_type.upper()} file")
         return HttpResponse(
             data,
             content_type=format,

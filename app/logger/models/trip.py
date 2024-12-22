@@ -17,7 +17,7 @@ from ..validators import (
 
 
 class Caver(models.Model):
-    """A caver that was on a trip"""
+    """A caver that was on a trip."""
 
     name = models.CharField(max_length=40)
     added = models.DateTimeField("caver added on", auto_now_add=True)
@@ -46,11 +46,8 @@ class Caver(models.Model):
     def total_trip_duration_str(self):
         td = self.total_trip_duration()
         if td:
-            return humanize.precisedelta(
-                td, minimum_unit="minutes", suppress=["months", "years"]
-            )
-        else:
-            return None
+            return humanize.precisedelta(td, minimum_unit="minutes", suppress=["months", "years"])
+        return None
 
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
@@ -184,16 +181,12 @@ class Trip(models.Model):
     clubs = models.CharField(
         max_length=100,
         blank=True,
-        help_text=(
-            "A comma-separated list of any caving " "clubs associated with this trip."
-        ),
+        help_text=("A comma-separated list of any caving " "clubs associated with this trip."),
     )
     expedition = models.CharField(
         max_length=100,
         blank=True,
-        help_text=(
-            "A comma-separated list of any expeditions " "associated with this trip."
-        ),
+        help_text=("A comma-separated list of any expeditions " "associated with this trip."),
     )
     horizontal_dist = DistanceField(
         max_digits=14,
@@ -316,9 +309,7 @@ class Trip(models.Model):
     )
 
     # Metadata
-    likes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name="liked_trips"
-    )
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="liked_trips")
     followers = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="followed_trips"
     )
@@ -359,7 +350,7 @@ class Trip(models.Model):
         return self.cave_name
 
     def _set_duration(self):
-        """Store the duration in the database as a timedelta"""
+        """Store the duration in the database as a timedelta."""
         if self.end:
             self.duration = self.end - self.start
         else:
@@ -367,7 +358,7 @@ class Trip(models.Model):
         return self.duration
 
     def _set_duration_str(self):
-        """Store the duration in the database as a string"""
+        """Store the duration in the database as a string."""
         td = None
         if self.end:
             td = self.end - self.start
@@ -389,9 +380,8 @@ class Trip(models.Model):
         # sorting does not work properly unless they are None.
         # I suspect this is a bug in django-distance-field?
         for field in self._meta.fields:
-            if isinstance(field, DistanceField):
-                if getattr(self, field.name) == 0:
-                    setattr(self, field.name, None)
+            if isinstance(field, DistanceField) and getattr(self, field.name) == 0:
+                setattr(self, field.name, None)
 
         # If `trip.cave_location` is not set, unset `trip.cave_coordinates`
         if not self.cave_location:
@@ -403,17 +393,14 @@ class Trip(models.Model):
         # Check self.start exists - may have been removed by form validation
         # If it does not exist 'for real', the form/low level model validation
         # will catch it.
-        if self.start and self.end:
-            if self.start > self.end:
-                raise ValidationError(
-                    "The trip start time must be before the trip end time."
-                )
+        if self.start and self.end and self.start > self.end:
+            raise ValidationError("The trip start time must be before the trip end time.")
 
     def get_absolute_url(self):
         return reverse("log:trip_detail", args=[self.uuid])
 
     def is_viewable_by(self, user_viewing, /, friends=None):
-        """Returns whether or not user_viewing can view this trip"""
+        """Returns whether or not user_viewing can view this trip."""
         if friends is None:
             friends = self.user.friends.all()
 
@@ -423,9 +410,8 @@ class Trip(models.Model):
         if self.privacy == self.PUBLIC:
             return True
 
-        if self.privacy == self.FRIENDS:
-            if user_viewing in friends:
-                return True
+        if self.privacy == self.FRIENDS and user_viewing in friends:
+            return True
 
         if self.privacy == self.DEFAULT:
             return self.user.is_viewable_by(user_viewing, friends)
@@ -433,7 +419,7 @@ class Trip(models.Model):
         return False
 
     def _build_liked_str(self, liked_user_names, self_liked=False, name_limit=2):
-        """Builds a string from a list of user names"""
+        """Builds a string from a list of user names."""
         if name_limit <= 0:
             raise ValueError("name_limit must be greater than 0")
 
@@ -455,15 +441,13 @@ class Trip(models.Model):
         if len(liked_user_names) == 1:
             if self_liked:
                 return "You liked this"
-            else:
-                return f"{liked_user_names[0]} liked this"
-        else:
-            english_list = ", ".join(liked_user_names[:-1])
-            english_list = english_list + " and " + liked_user_names[-1]
-            return f"Liked by {english_list}"
+            return f"{liked_user_names[0]} liked this"
+        english_list = ", ".join(liked_user_names[:-1])
+        english_list = english_list + " and " + liked_user_names[-1]
+        return f"Liked by {english_list}"
 
     def get_liked_str(self, for_user=None, for_user_friends=None):
-        """Returns a string of the names of the users that liked the trip"""
+        """Returns a string of the names of the users that liked the trip."""
         friends_liked = []
         others_liked = []
         self_liked = False
@@ -505,50 +489,49 @@ class Trip(models.Model):
 
     @property
     def has_distances(self):
-        if self.horizontal_dist or self.vert_dist_down or self.vert_dist_up:
+        if (
+            self.horizontal_dist
+            or self.vert_dist_down
+            or self.vert_dist_up
+            or self.aid_dist
+            or self.surveyed_dist
+            or self.resurveyed_dist
+        ):
             return True
-        elif self.aid_dist or self.surveyed_dist or self.resurveyed_dist:
-            return True
+        return None
 
     @property
     def distances(self):
-        """Returns a list of distance fields that hold a value"""
+        """Returns a list of distance fields that hold a value."""
         distances = {}
         for field in self._meta.fields:
-            if isinstance(field, DistanceField):
-                if getattr(self, field.name) > D(m=0):
-                    distances[field.verbose_name.replace(" distance", "")] = getattr(
-                        self, field.name
-                    )
+            if isinstance(field, DistanceField) and getattr(self, field.name) > D(m=0):
+                distances[field.verbose_name.replace(" distance", "")] = getattr(self, field.name)
         return distances
 
     @property
     def is_private(self):
         if self.privacy == self.DEFAULT:
             return self.user.is_private
-        elif self.privacy == self.PUBLIC:
-            return False
-        return True
+        return self.privacy != self.PUBLIC
 
     @property
     def is_public(self):
         if self.privacy == self.DEFAULT:
             return self.user.is_public
-        elif self.privacy == self.PUBLIC:
-            return True
-        return False
+        return self.privacy == self.PUBLIC
 
     @property
     def number(self):
-        """Returns the 'index' of the trip by date"""
+        """Returns the 'index' of the trip by date."""
         qs = Trip.objects.filter(user=self.user).order_by("start", "-pk")
         index = list(qs.values_list("pk", flat=True)).index(self.pk)
         return index + 1
 
     @property
-    def custom_fields(self) -> tuple[(str, str)]:
-        """Returns a tuple of (field_label, value) for valid custom fields"""
-        valid_fields: list[(str, str)] = []
+    def custom_fields(self) -> tuple[tuple[str, str], ...]:
+        """Returns a tuple of (field_label, value) for valid custom fields."""
+        valid_fields: list[tuple[str, str]] = []
         for field in self._meta.fields:
             if not field.name.startswith("custom_field_"):
                 continue

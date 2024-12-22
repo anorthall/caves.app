@@ -42,18 +42,14 @@ from .verify import generate_token
 User = get_user_model()
 
 
-@method_decorator(
-    ratelimit(key="ip", rate="5/h", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="ip", rate="5/h", method=ratelimit.UNSAFE), name="dispatch")
 class PasswordResetView(SuccessMessageMixin, auth_views.PasswordResetView):
     template_name = "users/password_reset.html"
     email_template_name = "emails/password_reset.txt"
     html_email_template_name = "emails/password_reset.html"
     subject_template_name = "emails/password_reset_subject.txt"
     success_url = reverse_lazy("users:login")
-    success_message = (
-        "If such an email is on record, then a password reset link has been sent."
-    )
+    success_message = "If such an email is on record, then a password reset link has been sent."
     form_class = PasswordResetForm
     extra_email_context = {
         "site_root": settings.SITE_ROOT,
@@ -63,9 +59,7 @@ class PasswordResetView(SuccessMessageMixin, auth_views.PasswordResetView):
     }
 
 
-class PasswordResetConfirmView(
-    SuccessMessageMixin, auth_views.PasswordResetConfirmView
-):
+class PasswordResetConfirmView(SuccessMessageMixin, auth_views.PasswordResetConfirmView):
     template_name = "users/password_reset_confirm.html"
     success_url = reverse_lazy("users:account_detail")
     form_class = SetPasswordForm
@@ -100,9 +94,7 @@ class ProfileUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
 
 
 # noinspection PyTypeChecker
-@method_decorator(
-    ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch")
 class AvatarUpdate(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "users/profile_photo.html"
     form_class = AvatarChangeForm
@@ -131,9 +123,7 @@ class FriendListView(LoginRequiredMixin, TemplateView):
             form = AddFriendForm(request)
 
         friend_requests = (
-            FriendRequest.objects.filter(
-                Q(user_from=request.user) | Q(user_to=request.user)
-            )
+            FriendRequest.objects.filter(Q(user_from=request.user) | Q(user_to=request.user))
             .order_by("user_from")
             .select_related(
                 "user_from",
@@ -156,9 +146,7 @@ class FriendListView(LoginRequiredMixin, TemplateView):
 
 
 # noinspection PyTypeChecker
-@method_decorator(
-    ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="user", rate="30/d", method=ratelimit.UNSAFE), name="dispatch")
 class FriendAddView(LoginRequiredMixin, View):
     def post(self, request):
         form = AddFriendForm(request, request.POST)
@@ -196,9 +184,7 @@ class FriendAddView(LoginRequiredMixin, View):
                 for error in form.errors["user"]:
                     messages.error(request, error)
             else:  # pragma: no cover
-                messages.error(
-                    request, "Unable to add friend. Are the details correct?"
-                )
+                messages.error(request, "Unable to add friend. Are the details correct?")
 
         return redirect("users:friends")
 
@@ -210,16 +196,13 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
             f_req.delete()
             messages.success(
                 request,
-                f"Friend request between {f_req.user_to} and {f_req.user_from} "
-                "deleted.",
+                f"Friend request between {f_req.user_to} and {f_req.user_from} " "deleted.",
             )
 
             other_user = f_req.user_to
             if other_user == request.user:
                 other_user = f_req.user_from
-            log_user_interaction(
-                request.user, "deleted a friend request to/from", other_user
-            ),
+            (log_user_interaction(request.user, "deleted a friend request to/from", other_user),)
         else:
             raise PermissionDenied
         return redirect("users:friends")
@@ -252,9 +235,7 @@ class FriendRequestAcceptView(LoginRequiredMixin, View):
 
         messages.success(request, f"You are now friends with {f_req.user_from}.")
 
-        log_user_interaction(
-            request.user, "accepted a friend request from", f_req.user_from
-        ),
+        (log_user_interaction(request.user, "accepted a friend request from", f_req.user_from),)
         return redirect("users:friends")
 
 
@@ -272,9 +253,7 @@ class FriendRemoveView(LoginRequiredMixin, View):
         return redirect("users:friends")
 
 
-@method_decorator(
-    ratelimit(key="ip", rate="10/h", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="ip", rate="10/h", method=ratelimit.UNSAFE), name="dispatch")
 class Login(SuccessMessageMixin, auth_views.LoginView):
     template_name = "users/login.html"
     success_message = "You are now logged in."
@@ -293,7 +272,7 @@ class Login(SuccessMessageMixin, auth_views.LoginView):
 
 
 # noinspection PyTypeChecker
-class Logout(LoginRequiredMixin, auth_views.LogoutView):
+class Logout(LoginRequiredMixin, auth_views.LogoutView):  # type: ignore[misc]
     def post(self, *args, **kwargs):
         log_user_action(self.request.user, "logged out")
         return super().post(*args, **kwargs)
@@ -323,14 +302,13 @@ def register(request):
             log_user_action(user, "created a new account")
             # Redirect to Verify Email page.
             return redirect("users:verify_new_account")
-        else:
-            if form.triggered_honeypot:
-                messages.error(
-                    request,
-                    "You have triggered an anti-spam measure. If you are human "
-                    "and need help, please contact the site administrator.",
-                )
-                return redirect("log:index")
+        if form.triggered_honeypot:
+            messages.error(
+                request,
+                "You have triggered an anti-spam measure. If you are human "
+                "and need help, please contact the site administrator.",
+            )
+            return redirect("log:index")
     else:
         form = UserCreationForm()
 
@@ -339,7 +317,7 @@ def register(request):
 
 @ratelimit(key="ip", rate="10/h", method=ratelimit.UNSAFE)
 def verify_new_account(request):
-    """Verify the email address of a new account"""
+    """Verify the email address of a new account."""
     if request.user.is_authenticated:
         return redirect("log:index")
 
@@ -367,7 +345,7 @@ def verify_new_account(request):
 
 @ratelimit(key="ip", rate="5/h", method=ratelimit.UNSAFE)
 def resend_verify_email(request):
-    """Resend a verification email for a new account"""
+    """Resend a verification email for a new account."""
     if request.user.is_authenticated:
         return redirect("log:index")
 
@@ -399,9 +377,7 @@ def resend_verify_email(request):
 
 
 # noinspection PyTypeChecker
-@method_decorator(
-    ratelimit(key="user", rate="5/h", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="user", rate="5/h", method=ratelimit.UNSAFE), name="dispatch")
 class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
     form_class = VerifyEmailForm
     template_name = "users/verify_email_change.html"
@@ -412,16 +388,13 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
         form = VerifyEmailForm(request.GET)
         if form.is_valid():
             return self.form_valid(form)
-        else:
-            if form.has_code:
-                messages.error(request, "Invalid verification code.")
-            return super().get(request, *args, **kwargs)
+        if form.has_code:
+            messages.error(request, "Invalid verification code.")
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        """Set the user's new email address and log them in"""
-        log_user_action(
-            self.request.user, f"verified their new email address {form.email}"
-        )
+        """Set the user's new email address and log them in."""
+        log_user_action(self.request.user, f"verified their new email address {form.email}")
         verified_user = form.user
         verified_user.email = form.email
         verified_user.save()
@@ -429,7 +402,7 @@ class VerifyEmailChange(SuccessMessageMixin, LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_initial(self, *args, **kwargs):
-        """Add the verify_code from the URL params to the form's initial data"""
+        """Add the verify_code from the URL params to the form's initial data."""
         initial = super().get_initial().copy()
         initial["verify_code"] = self.request.GET.get("verify_code")
         return initial
@@ -477,7 +450,7 @@ class AccountSettings(LoginRequiredMixin, View):
         return render(request, "users/account_settings.html", context)
 
     def password_form_valid(self, request, form):
-        """Save the user's new password"""
+        """Save the user's new password."""
         form.save()
         update_session_auth_hash(request, request.user)
         messages.success(request, "Your password has been updated.")
@@ -485,7 +458,7 @@ class AccountSettings(LoginRequiredMixin, View):
         return redirect("users:account_settings")
 
     def email_form_valid(self, request, form):
-        """Generate verification token and send the email"""
+        """Generate verification token and send the email."""
         user = request.user
         new_email = form.cleaned_data["email"]
 
@@ -521,7 +494,7 @@ class AccountSettings(LoginRequiredMixin, View):
         return redirect("users:verify_email_change")
 
     def settings_form_valid(self, request, form):
-        """Save the user's settings"""
+        """Save the user's settings."""
         form.save()
         messages.success(request, "Your settings have been updated.")
         log_user_action(request.user, "updated their account settings")
@@ -536,9 +509,7 @@ class NotificationRedirect(LoginRequiredMixin, View):
 
         notification.read = True
         notification.save(updated=False)
-        log_user_action(
-            request.user, f"read notification: {notification.get_message()}"
-        )
+        log_user_action(request.user, f"read notification: {notification.get_message()}")
         return redirect(notification.get_url())
 
 

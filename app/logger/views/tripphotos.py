@@ -60,9 +60,7 @@ class TripPhotos(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return context
 
 
-@method_decorator(
-    ratelimit(key="user", rate="500/d", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="user", rate="500/d", method=ratelimit.UNSAFE), name="dispatch")
 class TripPhotosUpload(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         json_request = json.loads(request.body)
@@ -97,10 +95,8 @@ class TripPhotosUpload(LoginRequiredMixin, View):
         uppy_upload_path = settings.PHOTOS_STORAGE_LOCATION + "/" + upload_path
 
         try:
-            aws_response = services.generate_s3_presigned_post(
-                uppy_upload_path, content_type
-            )
-        except IOError as e:
+            aws_response = services.generate_s3_presigned_post(uppy_upload_path, content_type)
+        except OSError as e:
             raise BadRequest(e)
 
         return JsonResponse(aws_response)
@@ -133,9 +129,7 @@ class TripPhotosUploadSuccess(LoginRequiredMixin, View):
             tags = exifread.process_file(f, stop_tag="EXIF DateTimeOriginal")
             if "EXIF DateTimeOriginal" in tags:
                 photo.taken = make_aware(
-                    datetime.strptime(
-                        str(tags["EXIF DateTimeOriginal"]), "%Y:%m:%d %H:%M:%S"
-                    )
+                    datetime.strptime(str(tags["EXIF DateTimeOriginal"]), "%Y:%m:%d %H:%M:%S")
                 )
 
         photo.filesize = photo.photo.size
@@ -155,16 +149,13 @@ class TripPhotosUpdate(LoginRequiredMixin, View):
         if form.is_valid():
             photo = form.save()
             messages.success(request, "The photo has been updated.")
-            log_tripphoto_action(
-                request.user, photo, "updated the caption for", photo.caption
-            )
+            log_tripphoto_action(request.user, photo, "updated the caption for", photo.caption)
             return redirect(photo.trip.get_absolute_url())
-        else:
-            messages.error(
-                request,
-                "The photo could not be updated. Was the caption over 200 characters?",
-            )
-            return redirect(photo.trip.get_absolute_url())
+        messages.error(
+            request,
+            "The photo could not be updated. Was the caption over 200 characters?",
+        )
+        return redirect(photo.trip.get_absolute_url())
 
 
 class TripPhotosDelete(LoginRequiredMixin, View):

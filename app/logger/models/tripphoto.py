@@ -13,16 +13,14 @@ class TripPhotoManager(models.Manager):
         return self.filter(is_valid=False, deleted_at=None)
 
     def valid(self):
-        return self.filter(
-            is_valid=True, deleted_at=None, photo_type=TripPhoto.PhotoTypes.DEFAULT
-        )
+        return self.filter(is_valid=True, deleted_at=None, photo_type=TripPhoto.PhotoTypes.DEFAULT)
 
     def deleted(self):
         return self.filter(deleted_at__isnull=False)
 
 
 def trip_photo_upload_path(instance, filename):
-    """Returns the path to upload trip photos to"""
+    """Returns the path to upload trip photos to."""
     original_filename, ext = os.path.splitext(filename)
     return f"{instance.user.uuid}/{instance.trip.uuid}/{instance.uuid}{ext}"
 
@@ -32,15 +30,9 @@ class TripPhoto(models.Model):
         FEATURED = "FT", "Featured"
         DEFAULT = "DE", "Default"
 
-    objects = TripPhotoManager()
-
     uuid = models.UUIDField("UUID", default=uuid.uuid4, unique=True)
-    trip = models.ForeignKey(
-        Trip, related_name="photos", on_delete=models.SET_NULL, null=True
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
-    )
+    trip = models.ForeignKey(Trip, related_name="photos", on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     photo_type = models.CharField(
         max_length=2, choices=PhotoTypes.choices, default=PhotoTypes.DEFAULT
     )
@@ -59,17 +51,17 @@ class TripPhoto(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
     filesize = models.IntegerField(default=0)
 
+    objects = TripPhotoManager()
+
     def __str__(self):
         return f"Photo for {self.trip} by {self.user}"
 
     def save(self, *args, **kwargs):
-        """If the photo is deleted, remove it from the featured photo field of
-        any trips it is associated with."""
-        if self.deleted_at is not None or self.is_valid is False:
-            if self.pk:  # only run on update, not create
-                for trip in self.trips_featured.all():
-                    trip.featured_photo = None
-                    trip.save()
+        """If the photo is deleted, remove it from the featured photo field of any trips."""
+        if (self.deleted_at is not None or self.is_valid is False) and self.pk:
+            for trip in self.trips_featured.all():
+                trip.featured_photo = None
+                trip.save()
 
         super().save(*args, **kwargs)
 

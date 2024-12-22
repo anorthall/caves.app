@@ -40,9 +40,7 @@ class ImportUploadForm(forms.Form):
 
         raw_data = file.read()
         encoding = chardet.detect(raw_data)["encoding"]
-        csv_data = csv.DictReader(
-            raw_data.decode(encoding).splitlines(), fieldnames=get_headers()
-        )
+        csv_data = csv.DictReader(raw_data.decode(encoding).splitlines(), fieldnames=get_headers())
 
         # Remove the header row and any blank rows
         cleaned_rows = []
@@ -171,6 +169,4 @@ class TripImportFormsetHelper(FormHelper):
         self.add_input(Submit("submit", "Import", css_class="mt-4"))
 
 
-TripImportFormset = forms.formset_factory(
-    TripImportForm, max_num=50, absolute_max=60, extra=0
-)
+TripImportFormset = forms.formset_factory(TripImportForm, max_num=50, absolute_max=60, extra=0)

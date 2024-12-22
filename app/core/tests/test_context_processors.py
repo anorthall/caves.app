@@ -10,7 +10,7 @@ class TestContextProcessors(TestCase):
         GOOGLE_MAPS_PUBLIC_API_KEY="test-google-maps-api-key",
     )
     def test_api_keys_context_processor(self):
-        """Test that the Google Analytics context processor returns the correct value"""
+        """Test that the Google Analytics context processor returns the correct value."""
         result = api_keys(None)
         self.assertEqual(
             result,
@@ -22,7 +22,7 @@ class TestContextProcessors(TestCase):
 
     @override_settings(GOOGLE_ANALYTICS_ID=None, GOOGLE_MAPS_PUBLIC_API_KEY=None)
     def test_google_analytics_context_processor_returns_empty(self):
-        """Test that the Google Analytics context processor when setting unset"""
+        """Test that the Google Analytics context processor when setting unset."""
         result = api_keys(None)
         self.assertEqual(
             result,

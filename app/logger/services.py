@@ -13,7 +13,7 @@ User = CavingUser
 
 
 def generate_s3_presigned_post(upload_path, content_type, max_bytes=10485760):
-    """Generate a presigned post URL for uploading to AWS S3"""
+    """Generate a presigned post URL for uploading to AWS S3."""
     session = boto3.session.Session()
     client = session.client(
         service_name="s3",
@@ -41,16 +41,13 @@ def generate_s3_presigned_post(upload_path, content_type, max_bytes=10485760):
     )
 
     if not aws_response:
-        raise IOError("Failed to generate presigned post")
+        raise OSError("Failed to generate presigned post")
 
     return aws_response
 
 
 def get_trips_context(request, ordering, page=1):
-    """
-    Return a paginated list of trips that the user has permission to view
-    Intended for use in the trip feed
-    """
+    """Return a paginated list of trips that the user has permission to view."""
     friends = request.user.friends.all()
 
     trips = (
@@ -72,13 +69,9 @@ def get_trips_context(request, ordering, page=1):
         likes_count=Count("likes", distinct=True),
         comments_count=Count("comments", distinct=True),
         user_liked=Exists(
-            User.objects.filter(pk=request.user.pk, liked_trips=OuterRef("pk")).only(
-                "pk"
-            )
+            User.objects.filter(pk=request.user.pk, liked_trips=OuterRef("pk")).only("pk")
         ),
-        has_photos=Exists(
-            TripPhoto.objects.valid().filter(trip=OuterRef("pk")).only("pk")
-        ),
+        has_photos=Exists(TripPhoto.objects.valid().filter(trip=OuterRef("pk")).only("pk")),
         photo_count=Count(
             "photos",
             filter=Q(photos__is_valid=True, photos__deleted_at=None),
@@ -101,9 +94,7 @@ def get_trips_context(request, ordering, page=1):
 
 
 def get_liked_str_context(request, trips):
-    """Return a dictionary of liked strings for each trip
-    This dictionary will be used in the includes/htmx_trip_like.html template
-    """
+    """Return a dictionary of liked strings for each trip."""
     friends = request.user.friends.all()
     liked_str_index = {}
     for trip in trips:

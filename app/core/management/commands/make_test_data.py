@@ -85,12 +85,10 @@ class Command(BaseCommand):
         trips = self._generate_trips(user_pks)
 
         if options["verbosity"] >= 1:
-            self.stdout.write(
-                f"Done! Generated {len(user_pks)} users and {len(trips)} trips."
-            )
+            self.stdout.write(f"Done! Generated {len(user_pks)} users and {len(trips)} trips.")
 
     def __get_active_users(self, user_pks=None):
-        """Return a list of active users, optionally from a list of user PKs"""
+        """Return a list of active users, optionally from a list of user PKs."""
         if user_pks is None:
             users = list(User.objects.all())
         else:
@@ -98,7 +96,7 @@ class Command(BaseCommand):
         return users
 
     def _generate_users(self):
-        """Generate num_users amount of users"""
+        """Generate num_users amount of users."""
         num_users = self.options["users"]
         if self.options["verbosity"] >= 1:
             self.stdout.write(f"Generating {num_users} users...")
@@ -127,7 +125,7 @@ class Command(BaseCommand):
         return user_pks
 
     def _generate_trips(self, user_pks=None):
-        """Generate num_trips amount of trips amongst the users specified"""
+        """Generate num_trips amount of trips amongst the users specified."""
         num_trips = self.options["trips"]
         if self.options["verbosity"] >= 1:
             self.stdout.write(f"Generating {num_trips} trips...")
@@ -165,7 +163,7 @@ class Command(BaseCommand):
         return num_comments
 
     def _generate_friendships(self, user_pks=None):
-        """Generate friendships between users"""
+        """Generate friendships between users."""
         num_friends = self.options["friends"]
         if self.options["verbosity"] >= 1:
             self.stdout.write(f"Generating {num_friends} friends per user...")
@@ -190,7 +188,7 @@ class Command(BaseCommand):
             self._add_friends_to_user(user, eligible_friends_for_user)
 
     def _add_friends_to_user(self, user, eligible_friends):
-        """Add num_friends amount of friends to the user, from eligible_friends"""
+        """Add num_friends amount of friends to the user, from eligible_friends."""
         num_friends = self.options["friends"]
         friends_added = 0
 
@@ -226,7 +224,7 @@ class Command(BaseCommand):
             )
 
     def _add_likes_to_trip(self, trip, users):
-        """Add likes to a trip"""
+        """Add likes to a trip."""
         num_likes = random.randint(0, 7)
         users_that_will_like_the_trip = random.sample(users, num_likes)
 

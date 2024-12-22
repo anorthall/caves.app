@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import os
 import uuid
 from datetime import timedelta
 from functools import lru_cache
-from typing import Union
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
@@ -30,7 +31,7 @@ NoSpacesValidator = RegexValidator(
 
 
 def avatar_upload_path(instance, filename):
-    """Returns the path to upload avatars to"""
+    """Returns the path to upload avatars to."""
     original_filename, ext = os.path.splitext(filename)
     avatar_uuid = uuid.uuid4().hex
     return f"avatars/{instance.uuid}/{avatar_uuid}{ext}"
@@ -38,7 +39,7 @@ def avatar_upload_path(instance, filename):
 
 class CavingUserManager(BaseUserManager):
     def create_user(self, email, username, name, password=None, **kwargs):
-        """Creates a CavingUser"""
+        """Creates a CavingUser."""
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -64,7 +65,7 @@ class CavingUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, username, name, password=None):
-        """Creates a CavingUser which is a superuser"""
+        """Creates a CavingUser which is a superuser."""
         user = self.create_user(
             email,
             username,
@@ -80,7 +81,7 @@ class CavingUserManager(BaseUserManager):
 
 
 class CavingUser(AbstractBaseUser, PermissionsMixin):
-    """Custom user model containing social profile information and site settings"""
+    """Custom user model containing social profile information and site settings."""
 
     #
     #  Authentication information
@@ -107,10 +108,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     username = models.SlugField(
         max_length=30,
         unique=True,
-        help_text=(
-            "A unique identifier that will be part of the web "
-            "address for your logbook."
-        ),
+        help_text=("A unique identifier that will be part of the web " "address for your logbook."),
     )
     name = models.CharField(
         max_length=35,
@@ -345,9 +343,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     email_comments = models.BooleanField(
         "Email me new comments",
         default=True,
-        help_text=(
-            "Send an email when another user comments on a trip you are following."
-        ),
+        help_text=("Send an email when another user comments on a trip you are following."),
     )
 
     class Meta:
@@ -376,11 +372,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         return super().save(*args, **kwargs)
 
     def notify(self, message, url):
-        """Send a notification to this user"""
+        """Send a notification to this user."""
         return Notification.objects.create(user=self, message=message, url=url)
 
     def is_viewable_by(self, user_viewing, /, friends=None):
-        """Returns whether or not user_viewing can view this profile"""
+        """Returns whether or not user_viewing can view this profile."""
         if self == user_viewing:
             return True
 
@@ -405,8 +401,8 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
             num_trips=Count("trip", distinct=True),
         )
 
-    def get_photos(self, for_user: Union["User", "CavingUser", None] = None):
-        """Returns a QuerySet of photos uploaded by this user
+    def get_photos(self, for_user: CavingUser | None = None):
+        """Returns a QuerySet of photos uploaded by this user.
 
         If `for_user` is specified, only photos which are viewable by that user
         will be returned.
@@ -454,15 +450,11 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_private(self):
-        if self.privacy == self.PUBLIC:
-            return False
-        return True
+        return self.privacy != self.PUBLIC
 
     @property
     def is_public(self):
-        if self.privacy == self.PUBLIC:
-            return True
-        return False
+        return self.privacy == self.PUBLIC
 
     @property
     def is_staff(self):
@@ -470,49 +462,45 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_moderator(self):
-        if self.is_superuser or self.has_mod_perms:
-            return True
-        return False
+        return bool(self.is_superuser or self.has_mod_perms)
 
     @property
     def total_trip_duration(self):
-        return self.trips.exclude(type=Trip.SURFACE).aggregate(Sum("duration"))[
-            "duration__sum"
-        ]
+        return self.trips.exclude(type=Trip.SURFACE).aggregate(Sum("duration"))["duration__sum"]
 
     @lru_cache
     def _sum_distance_field(self, qs: QuerySet, field_name: str) -> D:
-        """Return the total distance for the given field"""
+        """Return the total distance for the given field."""
         if qs is None:
             qs = self.trips_for_stats
 
-        total = D(0)
+        total = D(m=0)
         for trip in qs:
             total += getattr(trip, field_name)
         return total
 
     @lru_cache
-    def total_vert_dist_up(self, qs: QuerySet = None):
+    def total_vert_dist_up(self, qs: QuerySet | None = None):
         return self._sum_distance_field(qs, "vert_dist_up")
 
     @lru_cache
-    def total_vert_dist_down(self, qs: QuerySet = None):
+    def total_vert_dist_down(self, qs: QuerySet | None = None):
         return self._sum_distance_field(qs, "vert_dist_down")
 
     @lru_cache
-    def total_surveyed(self, qs: QuerySet = None):
+    def total_surveyed(self, qs: QuerySet | None = None):
         return self._sum_distance_field(qs, "surveyed_dist")
 
     @lru_cache
-    def total_resurveyed(self, qs: QuerySet = None):
+    def total_resurveyed(self, qs: QuerySet | None = None):
         return self._sum_distance_field(qs, "resurveyed_dist")
 
     @lru_cache
-    def total_aid_climbed(self, qs: QuerySet = None):
+    def total_aid_climbed(self, qs: QuerySet | None = None):
         return self._sum_distance_field(qs, "aid_dist")
 
     @lru_cache
-    def total_horizontal(self, qs: QuerySet = None):
+    def total_horizontal(self, qs: QuerySet | None = None):
         return self._sum_distance_field(qs, "horizontal_dist")
 
     @cached_property
@@ -572,9 +560,7 @@ class Notification(models.Model):
     ]
 
     type = models.CharField(max_length=2, default="A", choices=TYPE_CHOICES)
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="notifications"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     read = models.BooleanField(
         default=False, help_text="Has the notification been read by the user?"
     )
@@ -592,20 +578,18 @@ class Notification(models.Model):
         return self.get_message()
 
     def save(self, updated=True, *args, **kwargs):
-        """Allow `updated=False` option to prevent updating the `updated`
-        field when marking a notification as read"""
-
         if updated:
             self.updated = django_tz.now()
         return super().save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("users:notification", args=[self.pk])
+
     def clean(self):
-        """Ensure that different types of notifications have the correct fields"""
+        """Ensure that different types of notifications have the correct fields."""
         if self.type == self.FREE_TEXT:
             if not self.message or not self.url:
-                raise ValidationError(
-                    "Free text notifications must have both a message and a URL."
-                )
+                raise ValidationError("Free text notifications must have both a message and a URL.")
         elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
             if not self.trip:
                 raise ValidationError(
@@ -615,8 +599,7 @@ class Notification(models.Model):
 
             if self.message or self.url:
                 raise ValidationError(
-                    "Trip like or trip comment notifications "
-                    "must not have a message or URL."
+                    "Trip like or trip comment notifications " "must not have a message or URL."
                 )
 
             if self.type == self.TRIP_COMMENT:
@@ -625,25 +608,26 @@ class Notification(models.Model):
             raise ValidationError("Invalid notification type")
 
     def get_url(self) -> str:
+        assert self.trip is not None
+
         if self.type == self.FREE_TEXT:
             return self.url
-        elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
+        if self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
             return self.trip.get_absolute_url()
         raise RuntimeError("Invalid notification type")
 
     def get_message(self) -> str:
         if self.type == self.FREE_TEXT:
             return self.message
-        elif self.type == self.TRIP_LIKE:
+        if self.type == self.TRIP_LIKE:
             return self._get_trip_like_message()
-        elif self.type == self.TRIP_COMMENT:
+        if self.type == self.TRIP_COMMENT:
             return self._get_trip_comment_message()
         raise RuntimeError("Invalid notification type")
 
-    def get_absolute_url(self):
-        return reverse("users:notification", args=[self.pk])
-
     def _get_trip_like_message(self) -> str:
+        assert self.trip is not None
+
         assert self.type == self.TRIP_LIKE
         users = list(self.trip.likes.exclude(pk=self.user.pk))
         return self._get_trip_action_message(
@@ -653,7 +637,7 @@ class Notification(models.Model):
         )
 
     def _get_trip_comment_message(self) -> str:
-        assert self.type == self.TRIP_COMMENT
+        assert self.type == self.TRIP_COMMENT and self.trip is not None
 
         users = []
         for comment in self.trip.comments.all():
@@ -673,6 +657,8 @@ class Notification(models.Model):
     def _get_trip_action_message(
         self, /, users: list[CavingUser], action: str, action_str: str
     ) -> str:
+        assert self.trip is not None
+
         user_count = len(users)
 
         prefix = f"{self.trip.user.name}'s trip to"
@@ -689,10 +675,7 @@ class Notification(models.Model):
         if user_count == 2:
             user1 = users[0].name
             user2 = users[1].name
-            return (
-                f"{prefix} {self.trip.cave_name} was {action_str} "
-                f"{user1} and {user2}."
-            )
+            return f"{prefix} {self.trip.cave_name} was {action_str} " f"{user1} and {user2}."
 
         if user_count > 2:
             user1 = users[0].name
@@ -706,12 +689,9 @@ class Notification(models.Model):
 
             if num_others == 1:
                 return result + "other person."
-            else:
-                return result + "others."
+            return result + "others."
 
-        raise RuntimeError(
-            "Impossible state reached in TripLikeNotification.get_message()"
-        )
+        raise RuntimeError("Impossible state reached in TripLikeNotification.get_message()")
 
 
 class FriendRequest(models.Model):
@@ -725,9 +705,7 @@ class FriendRequest(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["user_from", "user_to"], name="unique_friend_request"
-            )
+            models.UniqueConstraint(fields=["user_from", "user_to"], name="unique_friend_request")
         ]
 
     def __str__(self):

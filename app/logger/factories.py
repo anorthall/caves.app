@@ -1,7 +1,7 @@
-import zoneinfo
 from datetime import datetime, timedelta
 
 import factory
+import zoneinfo
 from django.contrib.auth import get_user_model
 from factory import random
 from factory.django import DjangoModelFactory
@@ -215,7 +215,7 @@ class TripFactory(DjangoModelFactory):
 
     @factory.lazy_attribute
     def end(self):
-        """Produce the end datetime
+        """Produce the end datetime.
 
         There is an 80% chance of a Trip having an 'end' datetime.
         If it does have one, there is a 1% chance that it will be
@@ -235,7 +235,7 @@ class TripFactory(DjangoModelFactory):
 
     @factory.lazy_attribute
     def vert_dist_down(self):
-        """Produce the vertical distance down
+        """Produce the vertical distance down.
 
         This will only be generated if the Trip has a vertical distance up
         """

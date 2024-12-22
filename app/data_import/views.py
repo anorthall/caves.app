@@ -85,9 +85,7 @@ class Save(LoginRequiredMixin, View):
             for caver in cavers:
                 caver = caver.strip()
                 if caver:
-                    caver_obj, _ = Caver.objects.get_or_create(
-                        name=caver, user=request.user
-                    )
+                    caver_obj, _ = Caver.objects.get_or_create(name=caver, user=request.user)
                     trip.cavers.add(caver_obj)
 
         # noinspection PyUnboundLocalVariable

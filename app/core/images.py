@@ -1,6 +1,4 @@
-"""
-Module to handle generation of imgproxy URLs using the imgproxy
-python library
+"""Module to handle generation of imgproxy URLs using the imgproxy Python library.
 
 https://pypi.org/project/imgproxy/
 """

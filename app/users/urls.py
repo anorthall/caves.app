@@ -23,9 +23,7 @@ urlpatterns = [
     ),
     path("register/", views.register, name="register"),
     path("verify/", views.verify_new_account, name="verify_new_account"),
-    path(
-        "verify/email/", views.VerifyEmailChange.as_view(), name="verify_email_change"
-    ),
+    path("verify/email/", views.VerifyEmailChange.as_view(), name="verify_email_change"),
     path("verify/resend/", views.resend_verify_email, name="verify_resend"),
     path("friends/", views.FriendListView.as_view(), name="friends"),
     path(
@@ -49,9 +47,7 @@ urlpatterns = [
         views.NotificationRedirect.as_view(),
         name="notification",
     ),
-    path(
-        "notifications/list/", views.NotificationsList.as_view(), name="notifications"
-    ),
+    path("notifications/list/", views.NotificationsList.as_view(), name="notifications"),
     path(
         "notifications/clear/",
         views.NotificationMarkAllRead.as_view(),

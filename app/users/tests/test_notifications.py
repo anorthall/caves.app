@@ -15,7 +15,7 @@ class NotificationTests(TestCase):
             self.user.notify(f"Test {i}a", "/")
 
     def test_notifications_are_displayed(self):
-        """Test notifications are displayed on the user's profile"""
+        """Test notifications are displayed on the user's profile."""
         self.client.force_login(self.user)
 
         response = self.client.get(reverse("users:account_detail"))
@@ -26,7 +26,7 @@ class NotificationTests(TestCase):
             self.assertContains(response, f"Test {i}a")
 
     def test_notification_redirect_view(self):
-        """Test the notification redirect view"""
+        """Test the notification redirect view."""
         self.client.force_login(self.user)
         pk = self.user.notify("Test", "/test/").pk
         response = self.client.get(reverse("users:notification", args=[pk]))
@@ -34,7 +34,7 @@ class NotificationTests(TestCase):
         self.assertEqual(response.url, "/test/")
 
     def test_notification_list_view(self):
-        """Test the notification list view"""
+        """Test the notification list view."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("users:notifications"))
         self.assertEqual(response.status_code, 200)
@@ -42,7 +42,7 @@ class NotificationTests(TestCase):
             self.assertContains(response, f"Test {i}")
 
     def test_mark_all_notifications_as_read_view(self):
-        """Test the mark all notifications as read view"""
+        """Test the mark all notifications as read view."""
         for n in Notification.objects.filter(user=self.user):
             self.assertEqual(n.read, False)
 

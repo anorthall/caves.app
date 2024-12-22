@@ -4,8 +4,7 @@ from django.http import HttpResponse
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
-from .models import FAQ
-from .models import News
+from .models import FAQ, News
 from .models import News as NewsModel
 
 User = get_user_model()

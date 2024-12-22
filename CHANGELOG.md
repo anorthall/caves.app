@@ -1,6 +1,11 @@
 # Changes to caves.app
 A summary of changes made to caves.app, organised by version, can be found below.
 
+## Version 2.0.2
+Version 2.0.2 of caves.app was released on Sunday, 22nd December 2024.
+
+### Changes
+- Updated Django to
 ## Version 2.0.1
 Version 2.0.1 of caves.app was released on Tuesday, 19th December 2023.
 

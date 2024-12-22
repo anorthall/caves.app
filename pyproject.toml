@@ -1,0 +1,164 @@
+[project]
+name = "caves-app"
+authors = [
+    { name = "Andrew Northall", email = "andrew@northall.me.uk"}
+]
+version = "2.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "attrs",
+    "boto3",
+    "chardet",
+    "coverage",
+    "crispy-bootstrap5",
+    "Django==4.2",
+    "django-active-link",
+    "django-autocomplete-light",
+    "django-browser-reload",
+    "django-countries",
+    "django-crispy-forms",
+    "django-debug-toolbar",
+    "django-htmx",
+    "django-mailer",
+    "django-markdownify",
+    "django-ratelimit",
+    "django-rich",
+    "django-storages[s3]",
+    "django-timezone-field",
+    "django-tinymce",
+    "django-unfold",
+    "dj-database-url",
+    "ExifRead",
+    "factory-boy",
+    "googlemaps",
+    "gunicorn",
+    "hiredis",
+    "humanize",
+    "imgproxy",
+    "itsdangerous",
+    "nh3",
+    "Pillow",
+    "psycopg2",
+    "python-dateutil",
+    "python-magic",
+    "pytz",
+    "redis",
+    "sentry-sdk",
+    "tablib",
+    "tblib",
+    "tzdata",
+    "whitenoise",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "ruff",
+    "mypy",
+    "django-stubs[mypy]",
+    "types-pytz>=2024.2.0.20241221",
+    "types-python-dateutil>=2.9.0.20241206",
+    "boto3-stubs>=1.35.86",
+]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[[tool.mypy.overrides]]
+module = "storages.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "factory"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "django_ratelimit"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "factory.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "crispy_forms"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "crispy_forms.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "django_ratelimit"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "django_ratelimit.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "timezone_field"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "timezone_field.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "imgproxy"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tablib"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "googlemaps"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "dal"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "exifread"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tinymce"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tinymce.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "crispy_bootstrap5.bootstrap5"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "unfold"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "unfold.*"
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.django.settings.base"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["C4", "D", "DJ", "E", "EXE", "F", "I", "ICN", "N", "RET", "SIM", "UP", "W"]
+extend-select = ["E501"]
+ignore = ["D417", "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"**/migrations/*.py" = ["E501", "FBT003"]
+"config/django/settings/*.py" = ["F405", "F403"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

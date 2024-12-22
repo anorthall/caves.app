@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import Union
+from typing import Any
 
 import googlemaps
 from attrs import frozen
@@ -8,8 +8,7 @@ from django.conf import settings
 from users.models import CavingUser
 
 LAT_LONG_REGEX_PATTERN = re.compile(
-    r"^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)"
-    r",\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$"
+    r"^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)" r",\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$"
 )
 
 
@@ -22,7 +21,7 @@ def geocode(query: str) -> tuple[float, float]:
     raise ValueError("Could not geolocate query")
 
 
-def split_lat_long(lat_lng: str) -> Union[tuple[float, float]]:
+def split_lat_long(lat_lng: str) -> tuple[float, float]:
     if LAT_LONG_REGEX_PATTERN.match(lat_lng):
         lat = lat_lng.split(",")[0].strip()
         lng = lat_lng.split(",")[1].strip()
@@ -61,7 +60,7 @@ def get_markers_for_user(user: CavingUser) -> list[Marker]:
     #     last_visit: datetime.date,
     #     last_trip_url: str
     # ]
-    visits = {}
+    visits: dict[str, Any] = {}
     for trip in trips:
         coords = f"{trip.latitude},{trip.longitude}"  # noqa: E231
         if coords in visits:
@@ -81,9 +80,10 @@ def get_markers_for_user(user: CavingUser) -> list[Marker]:
             trip.get_absolute_url(),
         ]
 
-    markers = []
-    for key, data in visits.items():
+    markers: list[Marker] = []
+    for _key, data in visits.items():
         name, lat, lng, visits, last_visit, last_trip_url = data
+        assert isinstance(visits, int)
         markers.append(
             Marker(
                 lat=lat,

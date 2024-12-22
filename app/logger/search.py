@@ -7,7 +7,7 @@ User = CavingUser
 
 
 def trip_search(*, terms, for_user, search_user=None, type=None, fields=None) -> list:
-    """Search through trips and return a list of results"""
+    """Search through trips and return a list of results."""
     if not terms:  # pragma: no cover
         return []
 
@@ -38,9 +38,7 @@ def trip_search(*, terms, for_user, search_user=None, type=None, fields=None) ->
     results = results.select_related("user").prefetch_related("user__friends")
 
     # Remove trips that the user doesn't have permission to view
-    sanitised_results = [x for x in results if x.is_viewable_by(for_user)]
-
-    return sanitised_results
+    return [x for x in results if x.is_viewable_by(for_user)]
 
 
 def _build_search_field_queries(terms, fields, for_user) -> Q:

@@ -1,8 +1,9 @@
 import factory
-from comments.models import Comment
 from django.contrib.auth import get_user_model
 from factory.django import DjangoModelFactory
 from logger.models import Trip
+
+from comments.models import Comment
 
 User = get_user_model()
 

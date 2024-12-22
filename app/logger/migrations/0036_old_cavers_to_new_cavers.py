@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def migrate_old_cavers_to_new_cavers(apps, schema_editor):
-    """Migrate old, comma separated text field to new ManyToMany field"""
+    """Migrate old, comma separated text field to new ManyToMany field."""
     Trip = apps.get_model("logger", "Trip")
     Caver = apps.get_model("logger", "Caver")
 

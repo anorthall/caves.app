@@ -16,10 +16,10 @@ def env(name, default=None, force_type: Any = str):
 
     try:
         return force_type(setting)
-    except ValueError:
+    except ValueError as err:
         raise ImproperlyConfigured(
             f"{name} environment variable is not a valid {force_type.__name__}"
-        )
+        ) from err
 
 
 # BASE_DIR should point to where manage.py is
@@ -80,9 +80,7 @@ ALLOWED_HOSTS.append(socket.getaddrinfo(socket.gethostname(), "http")[0][4][0])
 # Email settings
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "")
 EMAIL_BACKEND = env("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
-MAILER_EMAIL_BACKEND = env(
-    "MAILER_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-)
+MAILER_EMAIL_BACKEND = env("MAILER_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 MAILER_EMPTY_QUEUE_SLEEP = env("MAILER_EMPTY_QUEUE_SLEEP", 30, int)
 EMAIL_HOST = env("EMAIL_HOST", "")
 EMAIL_PORT = env("EMAIL_PORT", 0, int)
@@ -107,8 +105,8 @@ INSTALLED_APPS = [
     "logger.apps.LoggerConfig",
     "staff.apps.StaffConfig",
     "stats.apps.StatsConfig",
-    "import.apps.ImportConfig",
-    "export.apps.ExportConfig",
+    "data_import.apps.ImportConfig",
+    "data_export.apps.ExportConfig",
     "comments.apps.CommentsConfig",
     "maps.apps.MapsConfig",
     "dal",
@@ -340,7 +338,7 @@ MARKDOWNIFY = {
 }
 
 MARKDOWNIFY["news"] = copy.deepcopy(MARKDOWNIFY["default"])
-MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")
+MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")  # type: ignore[attr-defined]
 MARKDOWNIFY["news"]["WHITELIST_ATTRS"] = ["src", "alt", "title", "class", "href"]
 
 
@@ -411,3 +409,10 @@ LOGGING = {
 GOOGLE_MAPS_PRIVATE_API_KEY = env("GOOGLE_MAPS_PRIVATE_API_KEY", "")
 GOOGLE_MAPS_PUBLIC_API_KEY = env("GOOGLE_MAPS_PUBLIC_API_KEY", "")
 GOOGLE_MAPS_USER_MAP_ID = env("GOOGLE_MAPS_USER_MAP_ID", "")
+
+# Allow setting GDAL_LIBRARY_PATH for GeoDjango from an environment variable for dev
+if os.getenv("GDAL_LIBRARY_PATH"):
+    GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH")
+
+if os.getenv("GEOS_LIBRARY_PATH"):
+    GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH")

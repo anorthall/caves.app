@@ -1,11 +1,8 @@
-from django.conf import settings
 from django.db import migrations
 
 
-def copy_profile_and_settings_data_to_user_model(
-    apps, schema_editor
-):  # pragma: no cover
-    """Copy data from UserProfile and UserSettings to CavingUser"""
+def copy_profile_and_settings_data_to_user_model(apps, schema_editor):  # pragma: no cover
+    """Copy data from UserProfile and UserSettings to CavingUser."""
     CavingUser = apps.get_model("users", "CavingUser")
     for user in CavingUser.objects.all():
         settings = user.settings

@@ -115,17 +115,11 @@ class DistanceFieldTests(TestCase):
         self.assertEqual(tm.mtr_field, D(mm=5.08e-4))
 
     def test_queryset_filtering(self):
-        lst = list(
-            TestModel.objects.filter(mm_field__lte="20in").values_list(
-                "name", flat=True
-            )
-        )
+        lst = list(TestModel.objects.filter(mm_field__lte="20in").values_list("name", flat=True))
         lst.sort()
         self.assertEqual(lst, ["all_inches", "mixed"])
 
-        lst = list(
-            TestModel.objects.filter(mm_field="20in").values_list("name", flat=True)
-        )
+        lst = list(TestModel.objects.filter(mm_field="20in").values_list("name", flat=True))
         lst.sort()
         self.assertEqual(lst, ["all_inches"])
 
@@ -134,7 +128,7 @@ class DistanceFieldTests(TestCase):
         self.assertEqual(lst, ["mixed"])
 
     def test_form(self):
-        class TestMod(Model):
+        class TestMod(Model):  # noqa: DJ008
             dist = DistanceField()
 
         class TestForm(forms.ModelForm):
@@ -152,11 +146,11 @@ class DistanceFieldTests(TestCase):
             self.assertEqual(df.is_valid(), False)
 
     def test_validation_with_a_zero(self):
-        """This test is considered to pass if it does not raise an ValidationError"""
+        """This test is considered to pass if it does not raise an ValidationError."""
         valid_unit_type("0")
 
     def test_distance_field_test_model_str(self):
-        """Test the distance field test model __str__ method"""
+        """Test the distance field test model __str__ method."""
         tm = TestModel.objects.first()
         self.assertEqual(str(tm), f"{tm.mm_field}, {tm.inch_field}, {tm.mtr_field}")
 
@@ -165,7 +159,7 @@ class DistanceFieldTests(TestCase):
         self.assertEqual(DistanceField.parse_string("345defghijk"), (None, False))
 
     def test_distance_to_parts_method(self):
-        """Test the distance_to_parts method"""
+        """Test the distance_to_parts method."""
         self.assertEqual(DistanceField.distance_to_parts(None), (None, None, None))
 
         self.assertEqual(DistanceField.distance_to_parts(D(mm=10)), (10.0, "mm", 0.01))

@@ -1,5 +1,3 @@
-from typing import Union
-
 from attrs import frozen
 from django.contrib.gis.measure import D
 from django.db import models
@@ -9,7 +7,7 @@ from django.utils import timezone
 @frozen
 class Row:
     metric: str
-    value: Union[str, D]
+    value: str | D
     is_dist: bool = False
     is_time: bool = False
 
@@ -71,12 +69,11 @@ def trip_duration(queryset):
     if qs.count() == 0:
         return 0
 
-    avg_duration = qs.aggregate(avg_duration=models.Avg("duration"))["avg_duration"]
-    return avg_duration
+    return qs.aggregate(avg_duration=models.Avg("duration"))["avg_duration"]
 
 
 def dist(queryset, field):
-    """Get the average distance for a field, excluding trips with a zero value"""
+    """Get the average distance for a field, excluding trips with a zero value."""
     qs = queryset.filter(**{f"{field}__gt": 0})
     if qs.count() == 0:
         return D(m=0)

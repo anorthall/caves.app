@@ -11,8 +11,8 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.sequence(lambda n: "user%d" % n)
-    email = factory.sequence(lambda n: "user%d@caves.app" % n)
+    username = factory.sequence(lambda n: f"user{n}")
+    email = factory.sequence(lambda n: f"user{n}@caves.app")
     name = factory.Faker("name")
     password = None
     is_active = factory.Faker("pybool", truth_probability=90)
@@ -23,9 +23,7 @@ class UserFactory(DjangoModelFactory):
     allow_friend_email = factory.Faker("pybool")
     allow_friend_username = factory.Faker("pybool")
     allow_comments = factory.Faker("pybool")
-    privacy = factory.Faker(
-        "random_element", elements=[User.PUBLIC, User.FRIENDS, User.PRIVATE]
-    )
+    privacy = factory.Faker("random_element", elements=[User.PUBLIC, User.FRIENDS, User.PRIVATE])
     units = factory.Faker("random_element", elements=[User.METRIC, User.IMPERIAL])
 
     @classmethod

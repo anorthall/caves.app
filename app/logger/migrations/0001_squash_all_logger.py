@@ -2,17 +2,16 @@
 
 import distancefield.fields
 import django.db.models.deletion
-import logger.validators
 import tinymce.models
 from django.conf import settings
 from django.db import migrations, models
 
+import logger.validators
+
 
 def change_tripreport_privacy(apps, schema_editor):
     TripReport = apps.get_model("logger", "TripReport")
-    TripReport.objects.filter(privacy="Anyone, if they can view the trip").update(
-        privacy="Default"
-    )
+    TripReport.objects.filter(privacy="Anyone, if they can view the trip").update(privacy="Default")
     TripReport.objects.filter(privacy="Anyone, even if the trip is private").update(
         privacy="Public"
     )
@@ -21,7 +20,7 @@ def change_tripreport_privacy(apps, schema_editor):
 
 
 def set_all_duration_fields(apps, schema_editor):  # pragma: no cover
-    """Set the duration and duration_str on each trip by calling Trip.save()"""
+    """Set the duration and duration_str on each trip by calling Trip.save()."""
     Trip = apps.get_model("logger", "Trip")
     for trip in Trip.objects.all():
         if not trip.duration:
@@ -101,9 +100,7 @@ class Migration(migrations.Migration):
                 ("start", models.DateTimeField(verbose_name="start time")),
                 (
                     "end",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="end time"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="end time"),
                 ),
                 (
                     "type",
@@ -151,15 +148,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "added",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="trip added on"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="trip added on"),
                 ),
                 (
                     "updated",
-                    models.DateTimeField(
-                        auto_now=True, verbose_name="trip last updated"
-                    ),
+                    models.DateTimeField(auto_now=True, verbose_name="trip last updated"),
                 ),
                 (
                     "horizontal_dist",
@@ -317,15 +310,11 @@ class Migration(migrations.Migration):
                 ("content", tinymce.models.HTMLField()),
                 (
                     "added",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="report added on"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="report added on"),
                 ),
                 (
                     "updated",
-                    models.DateTimeField(
-                        auto_now=True, verbose_name="report last updated"
-                    ),
+                    models.DateTimeField(auto_now=True, verbose_name="report last updated"),
                 ),
                 (
                     "privacy",

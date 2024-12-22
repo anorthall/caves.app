@@ -57,8 +57,7 @@ class Index(LoginRequiredMixin, TemplateView):
 @login_required
 @ratelimit(key="user", rate="60/h")
 def chart_stats_over_time(request, username):
-    """
-    JSON data for a chart showing stats over time
+    """JSON data for a chart showing stats over time.
 
     We will iterate through every week between the user's first and last trip, add
     up the stats for that week, and then add them to separate lists. These lists will
@@ -140,7 +139,7 @@ def chart_stats_over_time(request, username):
 @login_required
 @ratelimit(key="user", rate="60/h")
 def chart_hours_per_month(request, username):
-    """JSON data for a chart showing hours per month"""
+    """JSON data for a chart showing hours per month."""
     user = match_and_check_username(request, username)
     qs = Trip.objects.filter(user=user).exclude(type=Trip.SURFACE).order_by("start")
 
@@ -159,9 +158,8 @@ def chart_hours_per_month(request, username):
 
         month_hours = 0
         for trip in qs:
-            if cur_date <= trip.start < start_of_next_month:
-                if trip.duration:
-                    month_hours += trip.duration.total_seconds() / 3600
+            if cur_date <= trip.start < start_of_next_month and trip.duration:
+                month_hours += trip.duration.total_seconds() / 3600
 
         labels.append(cur_date.strftime("%b %y"))
         data.append(month_hours)
@@ -174,12 +172,8 @@ def chart_hours_per_month(request, username):
 @login_required
 @ratelimit(key="user", rate="60/h")
 def chart_trip_types(request):  # TODO: Refactor and add to template
-    """JSON data for a chart showing trip types"""
-    qs = (
-        Trip.objects.filter(user=request.user)
-        .exclude(type=Trip.SURFACE)
-        .order_by("start")
-    )
+    """JSON data for a chart showing trip types."""
+    qs = Trip.objects.filter(user=request.user).exclude(type=Trip.SURFACE).order_by("start")
     result = {}
     for trip in qs:
         if trip.type not in result:
@@ -198,12 +192,8 @@ def chart_trip_types(request):  # TODO: Refactor and add to template
 @login_required
 @ratelimit(key="user", rate="60/h")
 def chart_trip_types_time(request):  # TODO: Refactor and add to template
-    """JSON data for a chart showing trip types by time"""
-    qs = (
-        Trip.objects.filter(user=request.user)
-        .exclude(type=Trip.SURFACE)
-        .order_by("start")
-    )
+    """JSON data for a chart showing trip types by time."""
+    qs = Trip.objects.filter(user=request.user).exclude(type=Trip.SURFACE).order_by("start")
     result = {}
     for trip in qs:
         if trip.end:

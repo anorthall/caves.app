@@ -72,7 +72,7 @@ class PasswordChangeForm(auth.forms.PasswordChangeForm):
 
 class PasswordResetForm(auth.forms.PasswordResetForm):
     def __init__(self, *args, **kwargs):
-        super(PasswordResetForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
@@ -83,7 +83,7 @@ class PasswordResetForm(auth.forms.PasswordResetForm):
 
 class SetPasswordForm(auth.forms.SetPasswordForm):
     def __init__(self, *args, **kwargs):
-        super(SetPasswordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["new_password1"].help_text = ""
         self.fields["new_password2"].help_text = (
             "Your password can't be too similar to your other personal "
@@ -100,9 +100,7 @@ class SetPasswordForm(auth.forms.SetPasswordForm):
 
 
 class VerifyEmailForm(forms.Form):
-    verify_code = forms.CharField(
-        label="Verification code", max_length=100, required=True
-    )
+    verify_code = forms.CharField(label="Verification code", max_length=100, required=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -123,9 +121,7 @@ class VerifyEmailForm(forms.Form):
         try:
             user = User.objects.get(pk=user_pk)
         except User.DoesNotExist:
-            raise ValidationError(
-                "Email verification code is not valid or has expired."
-            )
+            raise ValidationError("Email verification code is not valid or has expired.")
 
         self.user = user
         self.email = email
@@ -147,9 +143,7 @@ class ResendVerifyEmailForm(forms.Form):
         self.helper.form_method = "post"
         self.helper.layout = Layout(
             FloatingField("email"),
-            Submit(
-                "submit", "Resend verification email", css_class="btn-lg w-100 mt-3"
-            ),
+            Submit("submit", "Resend verification email", css_class="btn-lg w-100 mt-3"),
         )
 
     def clean_email(self):
@@ -212,9 +206,7 @@ class UserCreationForm(forms.ModelForm):
         self.fields["name"].initial = None
         self.helper = FormHelper()
         self.helper.form_method = "post"
-        self.helper.add_input(
-            Submit("submit", "Create account", css_class="w-100 btn-lg mt-3")
-        )
+        self.helper.add_input(Submit("submit", "Create account", css_class="w-100 btn-lg mt-3"))
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -417,7 +409,7 @@ class CustomFieldsForm(forms.ModelForm):
 
         # Store the original data to determine if it changed
         self.original = {}
-        for field_name, field in self.fields.items():
+        for field_name, _field in self.fields.items():
             self.original[field_name] = getattr(self.instance, field_name)
 
         self.helper = FormHelper()
@@ -459,9 +451,7 @@ class CustomFieldsForm(forms.ModelForm):
                 )
 
             if value and len(value) < 3:
-                self.add_error(
-                    field_name, "The field name must be at least 3 characters long."
-                )
+                self.add_error(field_name, "The field name must be at least 3 characters long.")
 
         return cleaned_data
 
@@ -473,8 +463,7 @@ class EmailChangeForm(forms.Form):
         max_length=255,
         required=True,
         help_text=(
-            "This email address will be verified before any change is "
-            "stored on the system."
+            "This email address will be verified before any change is " "stored on the system."
         ),
     )
     password = forms.CharField(
@@ -499,14 +488,14 @@ class EmailChangeForm(forms.Form):
         )
 
     def clean_password(self):
-        """Check the user entered their password correctly"""
+        """Check the user entered their password correctly."""
         password = self.cleaned_data["password"]
         if not self.user.check_password(password):
             raise ValidationError("The password you have entered is not correct.")
         return password
 
     def clean_email(self):
-        """Check if the email is already in use"""
+        """Check if the email is already in use."""
         email = self.cleaned_data["email"]
         if User.objects.filter(email=email).exists():
             raise ValidationError("That email is already in use.")
@@ -560,7 +549,7 @@ class AddFriendForm(forms.Form):
         )
 
     def clean_user(self):
-        """Validate the user field and convert it to a User object"""
+        """Validate the user field and convert it to a User object."""
         user = self.cleaned_data["user"].strip().lower()
         user_input = user  # For error messages
 
@@ -574,9 +563,7 @@ class AddFriendForm(forms.Form):
                 if not user.allow_friend_email:
                     raise User.DoesNotExist
             except User.DoesNotExist:
-                raise ValidationError(
-                    f"Could not find a user with the identifier '{user_input}'."
-                )
+                raise ValidationError(f"Could not find a user with the identifier '{user_input}'.")
 
         if user == self.request.user:
             raise ValidationError("You cannot add yourself as a friend.")

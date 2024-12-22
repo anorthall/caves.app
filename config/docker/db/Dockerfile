@@ -1,4 +1,4 @@
-FROM postgres:16-bullseye
+FROM postgres:17-bullseye
 
 # postgis/postgis docker images do not provide an arm64 build which leads
 # to very poor performance on Apple Silicon. This is a workaround to
@@ -7,12 +7,15 @@ FROM postgres:16-bullseye
 # custom initdb script to load the blank database with an admin user only.
 
 ENV POSTGIS_MAJOR 3
-ENV POSTGIS_VERSION 3.4.1+dfsg-1.pgdg110+1
+ENV POSTGIS_VERSION 3.5.0+dfsg-1.pgdg110+1
 
 RUN apt-get update \
       && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
       && apt-get install -y --no-install-recommends \
+           # ca-certificates: for accessing remote raster files;
+           #   fix: https://github.com/postgis/docker-postgis/issues/307
            ca-certificates \
+           \
            postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION \
            postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
       && rm -rf /var/lib/apt/lists/*

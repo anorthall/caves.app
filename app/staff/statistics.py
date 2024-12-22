@@ -33,10 +33,7 @@ def get_time_statistics(queryset, metric="New", lookup="added__gte"):
 
 
 def _add_up_fields(queryset, field):
-    """
-    Get the filesize of a FileField or ImageField on each object
-    in a given QuerySet and return the total
-    """
+    """Get the filesize of a FileField or ImageField on each object and sum."""
     total_size = 0
     for obj in queryset:
         total_size += getattr(obj, field)

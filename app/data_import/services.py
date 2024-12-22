@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Union
 
 from dateutil import parser
 from logger.models import Trip
@@ -38,7 +37,7 @@ def get_headers():
 
 
 def get_formset_with_data(rows, data_only=False):
-    """Transform the rows into formset data to allow validation on data upload"""
+    """Transform the rows into formset data to allow validation on data upload."""
     from .forms import TripImportFormset  # Avoid circular import
 
     data = {
@@ -56,7 +55,7 @@ def get_formset_with_data(rows, data_only=False):
 
 
 def clean_row(row):
-    """Reformat the row data to be compatible with the formset"""
+    """Reformat the row data to be compatible with the formset."""
     cleaned_row = {}
     for key, value in row.items():
         if value:
@@ -81,7 +80,7 @@ def clean_type(trip_type: str) -> str:
     return trip_type.capitalize()
 
 
-def clean_datetime(time: str) -> Union[datetime, None]:
+def clean_datetime(time: str) -> datetime | None:
     try:
         return parser.parse(time, ignoretz=True)
     except parser.ParserError:
@@ -89,6 +88,6 @@ def clean_datetime(time: str) -> Union[datetime, None]:
 
 
 def get_trip_types() -> str:
-    """Return a human readable comma separated list of valid trip types"""
+    """Return a human readable comma separated list of valid trip types."""
     initial = ", ".join([x[1].lower() for x in Trip.TRIP_TYPES[:-1]])
     return f"{initial} and {Trip.TRIP_TYPES[-1][1].lower()}"

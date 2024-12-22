@@ -21,15 +21,15 @@ class TestStatsPagesLoad(TestCase):
         self.client = Client()
 
     def test_statistics_page_loads(self):
-        """Test that the statistics page loads"""
+        """Test that the statistics page loads."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("stats:index"))
         self.assertEqual(response.status_code, 200)
 
     def test_statistics_page_loads_with_trips(self):
-        """Test that the statistics page loads with trips"""
+        """Test that the statistics page loads with trips."""
         self.client.force_login(self.user)
-        for i in range(250):
+        for _i in range(250):
             TripFactory(user=self.user)
         response = self.client.get(reverse("stats:index"))
         self.assertEqual(response.status_code, 200)

@@ -30,26 +30,26 @@ class TestStaffPagesLoad(TestCase):
 
     @tag("privacy")
     def test_dashboard_returns_403_as_non_superuser(self):
-        """Test that the dashboard page returns 403 as a non superuser"""
+        """Test that the dashboard page returns 403 as a non superuser."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("staff:dashboard"))
         self.assertEqual(response.status_code, 403)
 
     @tag("privacy")
     def test_staff_index_page_returns_403_as_non_superuser(self):
-        """Test that the staff:index view returns 403 as a non superuser"""
+        """Test that the staff:index view returns 403 as a non superuser."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("staff:index"))
         self.assertEqual(response.status_code, 403)
 
     def test_dashboard_loads_as_superuser(self):
-        """Test that the dashboard page loads as a superuser"""
+        """Test that the dashboard page loads as a superuser."""
         self.client.force_login(self.superuser)
         response = self.client.get(reverse("staff:dashboard"))
         self.assertEqual(response.status_code, 200)
 
     def test_dashboard_loads_as_moderator(self):
-        """Test that the dashboard page loads as a moderator"""
+        """Test that the dashboard page loads as a moderator."""
         self.client.force_login(self.superuser)
         self.superuser.has_mod_perms = True
         self.superuser.is_superuser = False
@@ -59,7 +59,7 @@ class TestStaffPagesLoad(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_staff_index_page_redirect_view(self):
-        """Test that the staff:index view redirects to the dashboard"""
+        """Test that the staff:index view redirects to the dashboard."""
         self.client.force_login(self.superuser)
         response = self.client.get(reverse("staff:index"))
         self.assertRedirects(response, reverse("staff:dashboard"))

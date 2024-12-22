@@ -4,7 +4,7 @@ from django.db import migrations, models
 
 
 def set_verified_email_flag(apps, schema_editor):
-    """Set the has_verified_email flag to True for any user where is_active is True"""
+    """Set the has_verified_email flag to True for any user where is_active is True."""
     cavinguser = apps.get_model("users", "CavingUser")
     cavinguser.objects.filter(is_active=True).update(has_verified_email=True)
 
@@ -24,7 +24,5 @@ class Migration(migrations.Migration):
                 verbose_name="Email verified",
             ),
         ),
-        migrations.RunPython(
-            set_verified_email_flag, reverse_code=migrations.RunPython.noop
-        ),
+        migrations.RunPython(set_verified_email_flag, reverse_code=migrations.RunPython.noop),
     ]

@@ -18,7 +18,5 @@ class TripExportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(
-            Submit("submit", "Export data", css_class="btn btn-primary")
-        )
+        self.helper.add_input(Submit("submit", "Export data", css_class="btn btn-primary"))
         self.helper.form_method = "post"

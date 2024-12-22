@@ -1,5 +1,3 @@
-from comments.forms import CommentForm, NewsCommentForm
-from comments.models import Comment, NewsComment
 from core.logging import log_trip_action
 from core.models import News
 from django.contrib import messages
@@ -13,6 +11,9 @@ from django_ratelimit.decorators import ratelimit
 from logger.models import Trip
 from users.emails import NewCommentEmail
 from users.models import Notification
+
+from comments.forms import CommentForm, NewsCommentForm
+from comments.models import Comment, NewsComment
 
 
 class AddComment(LoginRequiredMixin, View):

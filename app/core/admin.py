@@ -15,7 +15,7 @@ if settings.DEBUG:  # pragma: no cover
 
 class AutoAssignAuthorModelAdmin(ModelAdmin):
     def save_model(self, request, obj, form, change):
-        """Set the author to the current user if it is a new item"""
+        """Set the author to the current user if it is a new item."""
         if obj.author is None:
             obj.author = request.user
         super().save_model(request, obj, form, change)

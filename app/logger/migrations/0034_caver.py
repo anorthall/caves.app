@@ -29,15 +29,11 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=40)),
                 (
                     "added",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="caver added on"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="caver added on"),
                 ),
                 (
                     "updated",
-                    models.DateTimeField(
-                        auto_now=True, verbose_name="caver last updated"
-                    ),
+                    models.DateTimeField(auto_now=True, verbose_name="caver last updated"),
                 ),
                 (
                     "uuid",

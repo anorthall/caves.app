@@ -1,17 +1,17 @@
-from typing import Union
-
 from attrs import define, field
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils.safestring import SafeString
+
 from users.models import CavingUser as User
 
 
 @define
 class Email:
-    to: Union[list[str], str, User]
+    to: list[str] | str | User
     context: dict
     template_name: str = field(init=False)
     required_context: list[str] = field(init=False)
@@ -28,7 +28,7 @@ class Email:
         plain_template = f"emails/{self.template_name}.txt"
         html_template = f"emails/{self.template_name}.html"
 
-        subject = render_to_string(subject_template, context=self.context)
+        subject: str | SafeString = render_to_string(subject_template, context=self.context)
         subject = "".join(subject.splitlines())  # subject must not contain newlines
 
         html_template = render_to_string(html_template, context=self.context)
