@@ -1,5 +1,3 @@
-from typing import Union
-
 from attrs import frozen
 from django.db.models import Count
 from django.db.models.functions import Lower, Trim
@@ -8,7 +6,7 @@ from django.db.models.functions import Lower, Trim
 @frozen
 class Row:
     metric: str
-    value: Union[str, int]
+    value: str | int
 
 
 def metrics(queryset):

@@ -10,9 +10,7 @@ from .. import search
 from ..forms import TripSearchForm
 
 
-@method_decorator(
-    ratelimit(key="user", rate="60/h", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="user", rate="60/h", method=ratelimit.UNSAFE), name="dispatch")
 class Search(LoginRequiredMixin, FormView):
     form_class = TripSearchForm
     template_name = "logger/search.html"
@@ -47,9 +45,7 @@ class Search(LoginRequiredMixin, FormView):
         }
 
         if len(trips) == 0:
-            messages.error(
-                self.request, "No trips were found with the provided search terms."
-            )
+            messages.error(self.request, "No trips were found with the provided search terms.")
 
         # Store the POST parameters in the session so that the user can paginate
         # through the results without losing the search.

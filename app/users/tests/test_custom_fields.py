@@ -13,7 +13,7 @@ class CustomFieldTests(TestCase):
         self.trip = TripFactory(user=self.user)
 
     def test_submitting_custom_field_value(self):
-        """Test that a custom field value can be submitted via a POST request"""
+        """Test that a custom field value can be submitted via a POST request."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse("users:custom_fields_update"),
@@ -29,7 +29,7 @@ class CustomFieldTests(TestCase):
         self.assertContains(response, "Your custom fields have been updated.")
 
     def test_submitting_custom_field_value_when_a_trip_holds_that_value(self):
-        """Test validation of custom field form when a trip holds that value"""
+        """Test validation of custom field form when a trip holds that value."""
         self.user.custom_field_1_label = "Test Label"
         self.trip.custom_field_1 = "Test Value"
         self.user.save()
@@ -53,7 +53,7 @@ class CustomFieldTests(TestCase):
         )
 
     def test_submitting_a_custom_field_value_under_three_characters(self):
-        """Test validation of custom field form when a value is too short"""
+        """Test validation of custom field form when a value is too short."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse("users:custom_fields_update"),
@@ -66,12 +66,10 @@ class CustomFieldTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.user.custom_field_1_label, "")
-        self.assertContains(
-            response, "The field name must be at least 3 characters long"
-        )
+        self.assertContains(response, "The field name must be at least 3 characters long")
 
     def test_that_custom_fields_appear_on_the_trip_add_form(self):
-        """Test that custom fields appear on the trip add form"""
+        """Test that custom fields appear on the trip add form."""
         self.user.custom_field_1_label = "CustomFieldABCDEFG"
         self.user.save()
 
@@ -81,7 +79,7 @@ class CustomFieldTests(TestCase):
         self.assertContains(response, "CustomFieldABCDEFG")
 
     def test_that_custom_fields_appear_on_the_trip_detail_page(self):
-        """Test that custom fields appear on the trip detail page"""
+        """Test that custom fields appear on the trip detail page."""
         self.user.custom_field_1_label = "CustomFieldABCDEFG"
         self.user.save()
 
@@ -95,7 +93,7 @@ class CustomFieldTests(TestCase):
         self.assertContains(response, "CustomFieldValue")
 
     def test_that_custom_fields_appear_on_the_social_feed(self):
-        """Test that custom fields appear on the trip detail page"""
+        """Test that custom fields appear on the trip detail page."""
         self.user.custom_field_1_label = "CustomFieldABCDEFG"
         self.user.save()
 
@@ -109,7 +107,7 @@ class CustomFieldTests(TestCase):
         self.assertContains(response, "CustomFieldValue")
 
     def test_loading_a_trip_with_custom_field_data_without_a_label(self):
-        """Test that custom fields appear on the trip detail page"""
+        """Test that custom fields appear on the trip detail page."""
         self.trip.custom_field_1 = "CustomFieldValue"
         self.trip.save()
 

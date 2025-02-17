@@ -30,11 +30,9 @@ class CommentForm(forms.Form):
         self.helper.add_input(Submit("submit", "Add comment"))
 
     def clean_content(self) -> str:
-        content = self.cleaned_data.get("content")
+        content = self.cleaned_data.get("content", "")
         if len(content) > 2000:
-            raise ValidationError(
-                "Your comment must be less than 2000 characters long."
-            )
+            raise ValidationError("Your comment must be less than 2000 characters long.")
         return content
 
     def clean(self):
@@ -47,10 +45,8 @@ class CommentForm(forms.Form):
         return self.cleaned_data
 
     def save(self, commit=True) -> Comment:
-        content = self.cleaned_data.get("content")
-        new = Comment.objects.create(
-            content=content, trip=self.trip, author=self.request.user
-        )
+        content = self.cleaned_data.get("content", "")
+        new = Comment.objects.create(content=content, trip=self.trip, author=self.request.user)
         if commit:
             new.save()
         return new
@@ -69,24 +65,18 @@ class NewsCommentForm(forms.Form):
         self.helper.form_class = ""
         self.helper.form_show_errors = False
         self.helper.form_show_labels = False
-        self.helper.form_action = reverse(
-            "comments:news_add", kwargs={"slug": news.slug}
-        )
+        self.helper.form_action = reverse("comments:news_add", kwargs={"slug": news.slug})
         self.helper.add_input(Submit("submit", "Add comment"))
 
     def clean_content(self) -> str:
-        content = self.cleaned_data.get("content")
+        content = self.cleaned_data.get("content", "")
         if len(content) > 2000:
-            raise ValidationError(
-                "Your comment must be less than 2000 characters long."
-            )
+            raise ValidationError("Your comment must be less than 2000 characters long.")
         return content
 
-    def save(self, commit=True) -> Comment:
-        content = self.cleaned_data.get("content")
-        new = NewsComment.objects.create(
-            content=content, news=self.news, author=self.request.user
-        )
+    def save(self, commit=True) -> NewsComment:
+        content = self.cleaned_data.get("content", "")
+        new = NewsComment.objects.create(content=content, news=self.news, author=self.request.user)
         if commit:
             new.save()
         return new

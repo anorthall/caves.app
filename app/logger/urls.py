@@ -76,20 +76,14 @@ urlpatterns = [
         views.CaverUnlink.as_view(),
         name="caver_unlink",
     ),
-    path(
-        "log/cavers/<uuid:uuid>/merge/", views.CaverMerge.as_view(), name="caver_merge"
-    ),
+    path("log/cavers/<uuid:uuid>/merge/", views.CaverMerge.as_view(), name="caver_merge"),
     path(
         "log/cavers/autocomplete",
         views.CaverAutocomplete.as_view(create_field="name", validate_create=True),
         name="caver_autocomplete",
     ),
-    path(
-        "report/<uuid:uuid>/", views.TripReportRedirect.as_view(), name="report_detail"
-    ),
+    path("report/<uuid:uuid>/", views.TripReportRedirect.as_view(), name="report_detail"),
     path("search/", views.Search.as_view(), name="search"),
     path("feed/htmx/", views.HTMXTripFeed.as_view(), name="feed_htmx_view"),
-    path(
-        "feed/set_ordering/", views.SetFeedOrdering.as_view(), name="feed_set_ordering"
-    ),
+    path("feed/set_ordering/", views.SetFeedOrdering.as_view(), name="feed_set_ordering"),
 ]

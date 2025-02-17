@@ -1,3 +1,5 @@
+from typing import Any
+
 import factory
 import factory.random
 from django.contrib.auth import get_user_model
@@ -11,10 +13,10 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.sequence(lambda n: "user%d" % n)
-    email = factory.sequence(lambda n: "user%d@caves.app" % n)
+    username = factory.sequence(lambda n: f"user{n}")
+    email = factory.sequence(lambda n: f"user{n}@caves.app")
     name = factory.Faker("name")
-    password = None
+    password: Any = None
     is_active = factory.Faker("pybool", truth_probability=90)
     bio = factory.Faker("text", max_nb_chars=500)
     location = factory.Faker("city")
@@ -23,9 +25,7 @@ class UserFactory(DjangoModelFactory):
     allow_friend_email = factory.Faker("pybool")
     allow_friend_username = factory.Faker("pybool")
     allow_comments = factory.Faker("pybool")
-    privacy = factory.Faker(
-        "random_element", elements=[User.PUBLIC, User.FRIENDS, User.PRIVATE]
-    )
+    privacy = factory.Faker("random_element", elements=[User.PUBLIC, User.FRIENDS, User.PRIVATE])
     units = factory.Faker("random_element", elements=[User.METRIC, User.IMPERIAL])
 
     @classmethod

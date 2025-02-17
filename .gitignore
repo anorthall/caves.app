@@ -107,6 +107,7 @@ celerybeat.pid
 venv/
 env.bak/
 venv.bak/
+local-dev.env
 
 # Spyder project settings
 .spyderproject
@@ -133,7 +134,10 @@ dmypy.json
 
 # Settings and production scripts
 data/
-config/env/dev.env
+conf/env/dev.env
 
 # Node
 node_modules/
+
+# Postgres
+*.dump

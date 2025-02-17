@@ -3,9 +3,10 @@
 import uuid
 
 import django.db.models.deletion
-import logger.models
 from django.conf import settings
 from django.db import migrations, models
+
+import logger.models
 
 
 class Migration(migrations.Migration):

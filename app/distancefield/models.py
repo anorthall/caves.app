@@ -16,4 +16,4 @@ class DistanceFieldTestModel(models.Model):
     mtr_field_units = DistanceUnitField()
 
     def __str__(self):
-        return "{}, {}, {}".format(self.mm_field, self.inch_field, self.mtr_field)
+        return f"{self.mm_field}, {self.inch_field}, {self.mtr_field}"

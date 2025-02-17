@@ -1,0 +1,15 @@
+name: cavesapp-prod
+
+services:
+  django:
+    extends:
+      file: compose.base.yml
+      service: django
+    command: /app/conf/run.sh start
+    volumes:
+      - ./data/mediafiles/:/app/mediafiles/
+      - ./data/staticfiles/:/app/staticfiles/
+    env_file:
+      - ./conf/prod.env
+    ports:
+      - "8000:8000"

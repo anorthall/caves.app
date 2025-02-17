@@ -23,7 +23,7 @@ class MostCommonStatistics:
 
 
 def _sort_comma_separated_list(qs, value, limit=10):
-    """Sort a field that has a comma separated list of values from a QuerySet"""
+    """Sort a field that has a comma separated list of values from a QuerySet."""
     values = qs.values(value)
     common = {}
     for v in values:
@@ -51,9 +51,7 @@ def most_common_caves(queryset, limit):
     )
 
     results = (
-        queryset.values("cave_name")
-        .annotate(count=Count("cave_name"))
-        .order_by("-count")[0:limit]
+        queryset.values("cave_name").annotate(count=Count("cave_name")).order_by("-count")[0:limit]
     )
 
     for result in results:
@@ -69,11 +67,7 @@ def most_common_trip_types(queryset, limit):
         value_name="Trips",
     )
 
-    results = (
-        queryset.values("type")
-        .annotate(count=Count("type"))
-        .order_by("-count")[0:limit]
-    )
+    results = queryset.values("type").annotate(count=Count("type")).order_by("-count")[0:limit]
 
     for result in results:
         stats.add_row(result["type"], result["count"])

@@ -43,7 +43,7 @@ class TestCommentViews(TestCase):
         self.client.force_login(self.user)
 
     def test_comments_appear_on_trip_detail_page(self):
-        """Test that comments appear on the trip detail page"""
+        """Test that comments appear on the trip detail page."""
         Comment.objects.create(
             author=self.user,
             trip=self.trip,
@@ -53,7 +53,7 @@ class TestCommentViews(TestCase):
         self.assertContains(response, "Test comment 123456")
 
     def test_comments_do_not_appear_on_trip_detail_page_when_disabled(self):
-        """Test that comments do not appear on the trip detail page when disabled"""
+        """Test that comments do not appear on the trip detail page when disabled."""
         self.user.allow_comments = False
         self.user.save()
 
@@ -66,7 +66,7 @@ class TestCommentViews(TestCase):
         self.assertNotContains(response, "Test comment 123456")
 
     def test_add_comment_via_post_request(self):
-        """Test that a comment can be added via a POST request"""
+        """Test that a comment can be added via a POST request."""
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -81,7 +81,7 @@ class TestCommentViews(TestCase):
         self.assertContains(response, "Test comment 123456")
 
     def test_add_comment_via_post_request_to_object_the_user_cannot_view(self):
-        """Test that a comment cannot be added to an object the user cannot view"""
+        """Test that a comment cannot be added to an object the user cannot view."""
         self.client.force_login(self.user2)
         self.trip.privacy = Trip.PRIVATE
         self.trip.save()
@@ -96,7 +96,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(Comment.objects.count(), 0)
 
     def test_add_comment_via_post_request_when_not_logged_in(self):
-        """Test that the comment view does not load when not logged in"""
+        """Test that the comment view does not load when not logged in."""
         self.client.logout()
         response = self.client.post(
             reverse("comments:add", args=[self.trip.uuid]),
@@ -108,7 +108,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(Comment.objects.count(), 0)
 
     def test_delete_comment(self):
-        """Test that a comment can be deleted"""
+        """Test that a comment can be deleted."""
         comment = Comment.objects.create(
             author=self.user,
             trip=self.trip,
@@ -125,7 +125,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(Comment.objects.count(), 0)
 
     def test_delete_comment_that_does_not_belong_to_the_user(self):
-        """Test that a comment cannot be deleted if it does not belong to the user"""
+        """Test that a comment cannot be deleted if it does not belong to the user."""
         comment = Comment.objects.create(
             author=self.user,
             trip=self.trip,
@@ -140,7 +140,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(Comment.objects.count(), 1)
 
     def test_htmx_comment_view_on_an_object_the_user_cannot_view(self):
-        """Test that the HTMX comment view respects privacy"""
+        """Test that the HTMX comment view respects privacy."""
         self.client.force_login(self.user2)
 
         self.trip.privacy = Trip.PRIVATE
@@ -152,7 +152,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_comments_send_a_notification_when_posted(self):
-        """Test that a notification is sent when a comment is posted"""
+        """Test that a notification is sent when a comment is posted."""
         self.client.force_login(self.user2)
         self.trip.privacy = Trip.PUBLIC
         self.trip.followers.add(self.user)
@@ -170,14 +170,12 @@ class TestCommentViews(TestCase):
         self.client.force_login(self.user)
         self.assertEqual(Notification.objects.count(), 1)
         self.assertEqual(Notification.objects.first().user, self.user)
-        self.assertEqual(
-            Notification.objects.first().get_url(), self.trip.get_absolute_url()
-        )
+        self.assertEqual(Notification.objects.first().get_url(), self.trip.get_absolute_url())
 
         response = self.client.get(reverse("log:index"))
 
     def test_adding_comment_with_too_much_content(self):
-        """Test that a comment cannot be added with too much content"""
+        """Test that a comment cannot be added with too much content."""
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -194,7 +192,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(Comment.objects.count(), 0)
 
     def test_adding_comment_on_an_object_that_does_not_exist(self):
-        """Test that a comment cannot be added to an object that does not exist"""
+        """Test that a comment cannot be added to an object that does not exist."""
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -207,7 +205,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(Comment.objects.count(), 0)
 
     def test_adding_comment_on_an_object_where_the_user_disallows_comments(self):
-        """Test users cannot comment where the user disallows comments"""
+        """Test users cannot comment where the user disallows comments."""
         self.user.allow_comments = False
         self.user.save()
 
@@ -230,7 +228,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(Comment.objects.count(), 0)
 
     def test_comments_send_an_email_when_enabled(self):
-        """Test that a comment sends an email when enabled"""
+        """Test that a comment sends an email when enabled."""
         self.user.email_comments = True
         self.user.save()
 
@@ -254,7 +252,7 @@ class TestCommentViews(TestCase):
         )
 
     def test_comments_do_not_send_an_email_when_disabled(self):
-        """Test that a comment does not send an email when disabled"""
+        """Test that a comment does not send an email when disabled."""
         self.user.email_comments = False
         self.user.save()
 
@@ -273,7 +271,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
     def test_comments_do_not_send_an_email_to_same_user(self):
-        """Test that a comment does not send an email to the same user"""
+        """Test that a comment does not send an email to the same user."""
         self.user.email_comments = True
         self.user.save()
         self.client.post(
@@ -288,7 +286,7 @@ class TestCommentViews(TestCase):
         self.assertEqual(self.trip.comments.first().content, "Test comment")
 
     def test_comments_do_not_notify_the_same_user(self):
-        """Test that a comment does not notify the same user"""
+        """Test that a comment does not notify the same user."""
         self.client.post(
             reverse("comments:add", args=[self.trip.uuid]),
             {

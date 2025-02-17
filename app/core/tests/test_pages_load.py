@@ -39,16 +39,16 @@ class TestCorePagesLoad(TestCase):
         self.client = Client()
 
     def test_news_page_loads(self):
-        """Test that the news page loads"""
+        """Test that the news page loads."""
         response = self.client.get(reverse("core:news"))
         self.assertEqual(response.status_code, 200)
 
     def test_news_detail_page_loads(self):
-        """Test that the news detail page loads"""
+        """Test that the news detail page loads."""
         response = self.client.get(reverse("core:news_detail", args=[self.news1.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_help_page_loads(self):
-        """Test that the help page loads"""
+        """Test that the help page loads."""
         response = self.client.get(reverse("core:help"))
         self.assertEqual(response.status_code, 200)

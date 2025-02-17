@@ -12,8 +12,7 @@ register = template.Library()
 
 @register.filter
 def imgproxy(image, args=None):
-    """
-    Return an imgproxy URL with the given parameters
+    """Return an imgproxy URL with the given parameters.
 
     Arguments should be separated by a comma. The following arguments
     should be given as arg=value: resizing_type, width, height, gravity,
@@ -66,7 +65,7 @@ def imgproxy(image, args=None):
 
 
 def _rewrite_url_for_local_dev(url):
-    """Rewrite URLs sent to imgproxy for local development in a Docker container"""
+    """Rewrite URLs sent to imgproxy for local development in a Docker container."""
     # Do not rewrite S3 URLs
     if settings.AWS_S3_CUSTOM_DOMAIN in url:
         return url
@@ -76,7 +75,7 @@ def _rewrite_url_for_local_dev(url):
 
 @register.filter
 def clean(text: str) -> SafeString:
-    """Strip HTML tags using the nh3 library"""
+    """Strip HTML tags using the nh3 library."""
     # Strip quotes from text
     text = text.replace('"', "")
     text = text.replace("'", "")

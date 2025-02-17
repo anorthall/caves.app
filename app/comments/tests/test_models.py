@@ -27,8 +27,6 @@ class TestCommentModel(TestCase):
         )
 
     def test_comment_str(self):
-        """Test the Comment model __str__ function"""
-        c = Comment.objects.create(
-            author=self.user, trip=self.trip, content="This is a comment"
-        )
+        """Test the Comment model __str__ function."""
+        c = Comment.objects.create(author=self.user, trip=self.trip, content="This is a comment")
         self.assertEqual(str(c), f"Comment by {c.author} on {c.trip}")

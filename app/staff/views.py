@@ -26,9 +26,7 @@ class Dashboard(ModeratorRequiredMixin, TemplateView):
 
         statistics = [
             get_time_statistics(photos_valid, metric="Valid", lookup="added__gte"),
-            get_time_statistics(
-                photos_deleted, metric="Deleted", lookup="deleted_at__gte"
-            ),
+            get_time_statistics(photos_deleted, metric="Deleted", lookup="deleted_at__gte"),
             get_integer_field_statistics(photos, "Total storage", "filesize"),
             get_integer_field_statistics(
                 photos_deleted, "Deleted storage", "filesize", "deleted_at__gte"

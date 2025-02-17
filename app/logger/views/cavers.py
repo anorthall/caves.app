@@ -41,9 +41,7 @@ class CaverList(LoginRequiredMixin, ListView):
             .order_by("name")
             .annotate(trip_count=Count("trip", distinct=True))
             .annotate(last_trip_date=Max("trip__start"))
-            .annotate(
-                annotated_total_trip_duration=Sum("trip__duration", distinct=True)
-            )
+            .annotate(annotated_total_trip_duration=Sum("trip__duration", distinct=True))
         )
 
 
@@ -60,9 +58,7 @@ class CaverDetail(LoginRequiredMixin, DetailView):
         context["trip_count"] = context["trips"].count()
         context["link_caver_form"] = LinkCaverForm(user=self.request.user)
         context["rename_caver_form"] = RenameCaverForm()
-        context["merge_caver_form"] = MergeCaverForm(
-            user=self.request.user, caver=self.object
-        )
+        context["merge_caver_form"] = MergeCaverForm(user=self.request.user, caver=self.object)
         return context
 
     def get_queryset(self):
@@ -74,9 +70,7 @@ class CaverDelete(LoginRequiredMixin, View):
         caver = get_object_or_404(Caver, uuid=kwargs["uuid"], user=request.user)
         caver.delete()
 
-        messages.success(
-            request, f"The caver record for {caver.name} has been deleted."
-        )
+        messages.success(request, f"The caver record for {caver.name} has been deleted.")
         return redirect("log:caver_list")
 
 
@@ -89,9 +83,7 @@ class CaverRename(LoginRequiredMixin, View):
             new_name = form.cleaned_data["name"]
             caver.name = new_name
             caver.save()
-            messages.success(
-                request, f"The caver record for {caver.name} has been updated."
-            )
+            messages.success(request, f"The caver record for {caver.name} has been updated.")
         else:
             messages.error(
                 request,
@@ -163,10 +155,7 @@ class CaverMerge(LoginRequiredMixin, View):
 
             messages.success(
                 request,
-                (
-                    f"The caver record for {caver.name} has been merged with "
-                    f"{merge_caver.name}."
-                ),
+                f"The caver record for {caver.name} has been merged with {merge_caver.name}.",
             )
         else:
             messages.error(

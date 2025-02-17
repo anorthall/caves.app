@@ -35,9 +35,7 @@ class UserMap(LoginRequiredMixin, TemplateView):
 
 
 @method_decorator(cache_page(60 * 60 * 24), name="dispatch")
-@method_decorator(
-    ratelimit(key="user_or_ip", rate="20/m", block=False), name="dispatch"
-)
+@method_decorator(ratelimit(key="user_or_ip", rate="20/m", block=False), name="dispatch")
 class HTMXGeocoding(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         query = request.POST.get("cave_location")
@@ -71,8 +69,7 @@ class AddTripLocation(LoginRequiredMixin, FormView):
         if self.trip.cave_coordinates:
             messages.info(
                 self.request,
-                "This trip already has coordinates. "
-                "You can edit them on the trip page.",
+                "This trip already has coordinates. You can edit them on the trip page.",
             )
             return redirect(self.trip.get_absolute_url())
 
@@ -108,9 +105,7 @@ class AddTripLocation(LoginRequiredMixin, FormView):
             trip.save()
 
         if len(trips_to_update) > 1:
-            messages.success(
-                self.request, f"Location added to {len(trips_to_update)} trips."
-            )
+            messages.success(self.request, f"Location added to {len(trips_to_update)} trips.")
         else:
             messages.success(self.request, "Location added to trip.")
         return redirect(reverse("maps:add_location"))
@@ -131,9 +126,7 @@ class FindTripToAddLocation(LoginRequiredMixin, View):
         )
 
         if not selected_trip:
-            messages.success(
-                self.request, "All your trips have locations added. Great job!"
-            )
+            messages.success(self.request, "All your trips have locations added. Great job!")
             return redirect("maps:index")
 
         return redirect(reverse("maps:add_location_form", args=[selected_trip.uuid]))

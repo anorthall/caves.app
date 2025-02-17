@@ -1,9 +1,10 @@
 from distancefield import DistanceField
 from django.contrib import admin
 from django.forms import ModelForm
-from logger.forms import DistanceUnitFormMixin
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.widgets import UnfoldAdminTextInputWidget
+
+from logger.forms import DistanceUnitFormMixin
 
 from .models import Trip, TripPhoto
 
@@ -49,9 +50,7 @@ class TripAdmin(ModelAdmin):
         "user__name",
         "user__email",
     )
-    search_help_text = (
-        "Search by cave name, region and country, or author name, email or username."
-    )
+    search_help_text = "Search by cave name, region and country, or author name, email or username."
     readonly_fields = (
         "added",
         "updated",

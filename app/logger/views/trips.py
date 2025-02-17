@@ -23,7 +23,7 @@ from ..models import Trip, TripPhoto
 
 
 class TripsRedirect(LoginRequiredMixin, RedirectView):
-    """Redirect from /trips/ to /u/username"""
+    """Redirect from /trips/ to /u/username."""
 
     def get_redirect_url(self, *args, **kwargs):
         return reverse("log:user", kwargs={"username": self.request.user.username})
@@ -78,7 +78,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
         return obj
 
     def get_queryset(self):
-        qs = (
+        return (
             Trip.objects.all()
             .select_related("user")
             .prefetch_related(
@@ -94,16 +94,15 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
                 likes_count=Count("likes", distinct=True),
                 comments_count=Count("comments", distinct=True),
                 user_liked=Exists(
-                    User.objects.filter(
-                        pk=self.request.user.pk, liked_trips=OuterRef("pk")
-                    ).only("pk")
+                    User.objects.filter(pk=self.request.user.pk, liked_trips=OuterRef("pk")).only(
+                        "pk"
+                    )
                 ),
             )
         )
-        return qs
 
     def get_context_data(self, *args, **kwargs):
-        """Add the string of users that liked the trip to the context"""
+        """Add the string of users that liked the trip to the context."""
         context = super().get_context_data(*args, **kwargs)
 
         if self.request.user.is_authenticated:
@@ -116,9 +115,10 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
         }
 
         photos = self.object.valid_photos
-        if photos.exists():
-            if not self.object.private_photos or self.object.user == self.request.user:
-                context["photos"] = photos
+        if photos.exists() and (
+            not self.object.private_photos or self.object.user == self.request.user
+        ):
+            context["photos"] = photos
 
         if self.object.user.allow_comments:
             context["comment_form"] = CommentForm(self.request, self.object)
@@ -126,9 +126,7 @@ class TripDetail(TripContextMixin, ViewableObjectDetailView):
         return context
 
 
-@method_decorator(
-    ratelimit(key="user", rate="30/h", method=ratelimit.UNSAFE), name="dispatch"
-)
+@method_decorator(ratelimit(key="user", rate="30/h", method=ratelimit.UNSAFE), name="dispatch")
 class TripCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Trip
     form_class = TripForm
@@ -192,7 +190,7 @@ class TripDelete(LoginRequiredMixin, View):
 
 
 class TripReportRedirect(RedirectView):
-    """Redirect to support old TripReport Model URLs which are now Trip URLs"""
+    """Redirect to support old TripReport Model URLs which are now Trip URLs."""
 
     def get_redirect_url(self, *args, **kwargs):
         trip = get_object_or_404(Trip, uuid=kwargs.get("uuid"))
@@ -200,7 +198,7 @@ class TripReportRedirect(RedirectView):
 
 
 class HTMXTripFollow(LoginRequiredMixin, TemplateView):
-    """HTMX view for toggling following a trip"""
+    """HTMX view for toggling following a trip."""
 
     template_name = "logger/_htmx_trip_follow.html"
 
@@ -223,9 +221,9 @@ class HTMXTripFollow(LoginRequiredMixin, TemplateView):
             Trip.objects.filter(uuid=uuid)
             .annotate(
                 user_followed=Exists(
-                    User.objects.filter(
-                        pk=request.user.pk, followed_trips=OuterRef("pk")
-                    ).only("pk")
+                    User.objects.filter(pk=request.user.pk, followed_trips=OuterRef("pk")).only(
+                        "pk"
+                    )
                 )
             )
             .first()

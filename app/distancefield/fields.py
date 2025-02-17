@@ -1,21 +1,20 @@
-"""
-    A "compound" field that represents a distance measurement, from
-    django.contrib.gis.measure. Stores the field internally using two (or,
-    optionally, three) fields:
+"""A "compound" field that represents a distance measurement.
 
-        a) Measurement value - a float field representing the actual value of
-           the measurement. This is the data stored by the main field.
-           Internally we convert to whatever is stored in the default_units
-           kwarg.
-        b) Measurement unit - a String field representing the default unit name,
-           e.g. 'mi'. This is the units that were used to create the distance.
-           If the field name is not supplied through the "unit_field_"
-           kwarg, then it will be retrieved in the "default_unit" format.
+Stores the field internally using two (or, optionally, three) fields:
+
+    a) Measurement value - a float field representing the actual value of
+       the measurement. This is the data stored by the main field.
+       Internally we convert to whatever is stored in the default_units
+       kwarg.
+    b) Measurement unit - a String field representing the default unit name,
+       e.g. 'mi'. This is the units that were used to create the distance.
+       If the field name is not supplied through the "unit_field_"
+       kwarg, then it will be retrieved in the "default_unit" format.
 """
+
 import logging
 import re
 from decimal import Decimal
-from typing import Tuple, Union
 
 from django.contrib.gis.measure import D as _D
 from django.core.exceptions import ImproperlyConfigured
@@ -29,7 +28,7 @@ LOGGER = logging.getLogger(__name__)
 
 class D(_D):
     MAX_DECIMAL_PRECISION = 6
-    EXTRA_ALIASES = {}
+    EXTRA_ALIASES: dict[str, str] = {}
     EXTRA_UNITS = {"px": 0.001}
 
     ADDITIONAL_ALIASES = {
@@ -59,7 +58,7 @@ class D(_D):
                 self._default_unit = parsed[0]._default_unit or "m"
                 self.standard = parsed[0].standard
         else:
-            super(D, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -69,7 +68,7 @@ class D(_D):
 
         if isinstance(other, self.__class__):
             return round(other.standard, self.prec) == round(self.standard, self.prec)
-        elif isinstance(other, (int, float, Decimal)):
+        if isinstance(other, int | float | Decimal):
             return other == self.standard
 
         return False
@@ -82,7 +81,7 @@ class D(_D):
 
         if isinstance(other, self.__class__):
             return round(self.standard, self.prec) != round(other.standard, self.prec)
-        elif isinstance(other, (int, float, Decimal)):
+        if isinstance(other, int | float | Decimal):
             return other != self.standard
 
         return True
@@ -122,27 +121,26 @@ class D(_D):
         if d == d.to_integral():
             return d.quantize(Decimal(1))
 
-        return d.quantize(Decimal(".%s1" % quant)).normalize()
+        return d.quantize(Decimal(f".{quant}1")).normalize()
 
     def __str__(self):
         norm = self.remove_exponent(getattr(self, self._default_unit))
-        return "%s%s" % (norm.to_eng_string(), self._default_unit)
+        return f"{norm.to_eng_string()}{self._default_unit}"
 
 
 def register_units(**kwargs):
-    """
-    Register a unit type
-    Keyword arguments should be in the form alias=distance in metres,
-    e.g. ft=0.3048
-    """
+    """Register a unit type.
 
+    Keyword arguments should be in the form alias=distance in metres.
+
+    Example: ft=0.3048.
+    """
     for k, v in kwargs.items():
         try:
             v = float(v)
         except ValueError:
             raise ImproperlyConfigured(
-                f"Invalid distance unit {k}={v}m. Please ensure "
-                "the value can be cast to a float."
+                f"Invalid distance unit {k}={v}m. Please ensure the value can be cast to a float."
             )
 
         D.UNITS[k] = v
@@ -150,12 +148,12 @@ def register_units(**kwargs):
 
 
 def register_aliases(**kwargs):
-    """
-    Register an alias for a unit type.
-    Keyword arguments should be in the form alias=unit,
-    where unit is an existing unit alias. e.g. in=inch, '"'=inch
-    """
+    """Register an alias for a unit type.
 
+    Keyword arguments should be in the form alias=unit, where unit is an existing unit alias.
+
+    Example: in=inch, '"'=inch.
+    """
     for k, v in kwargs.items():
         if v not in D.UNITS:
             LOGGER.warning(
@@ -169,7 +167,7 @@ def register_aliases(**kwargs):
         LOGGER.debug(f"Registered '{k}' as an alias of unit type '{v}'")
 
 
-class DistanceFieldDescriptor(object):
+class DistanceFieldDescriptor:
     def __init__(self, field):
         self.field = field
 
@@ -183,7 +181,7 @@ class DistanceFieldDescriptor(object):
         if value is None or value == "":
             instance.__dict__[self.field.name] = None
 
-        if isinstance(value, (tuple, list)):
+        if isinstance(value, tuple | list):
             value = value[0]
 
         if isinstance(value, str):
@@ -224,10 +222,10 @@ class DistanceField(models.Field):
         self.max_digits = max_digits
         self.unit_field = unit_field
         self.default_unit = unit
-        super(DistanceField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def formfield(self, form_class=None, choices_form_class=None, **kwargs):
-        return super(DistanceField, self).formfield(
+        return super().formfield(
             form_class=forms.DistanceField,
             choices_form_class=choices_form_class,
             **kwargs,
@@ -237,14 +235,12 @@ class DistanceField(models.Field):
         return "DecimalField"
 
     def contribute_to_class(self, cls, name, **kwargs):
-        super(DistanceField, self).contribute_to_class(cls, name, **kwargs)
+        super().contribute_to_class(cls, name, **kwargs)
         setattr(cls, self.name, self.descriptor_class(self))
         signals.post_init.connect(self.update_after_init, sender=cls)
 
     @staticmethod
-    def parse_string(
-        value, default_units="m", max_digits=6
-    ) -> Tuple[Union[None, D], bool]:
+    def parse_string(value, default_units="m", max_digits=6) -> tuple[None | D, bool]:
         if not value:
             return None, False
 
@@ -266,6 +262,7 @@ class DistanceField(models.Field):
 
         # noinspection PyBroadException
         try:
+            assert isinstance(units, str)
             kw = {D.unit_attname(units): value, "max_decimal_precision": max_digits}
             return D(**kw), has_units
         except Exception:
@@ -317,40 +314,33 @@ class DistanceField(models.Field):
 
     def get_db_prep_value(self, value, connection, prepared=False):
         # Convert it to the "default_unit" format.
-        value = super(DistanceField, self).get_db_prep_value(
-            value, connection, prepared
-        )
-        return connection.ops.adapt_decimalfield_value(
-            value, self.max_digits, self.decimal_places
-        )
+        value = super().get_db_prep_value(value, connection, prepared)
+        return connection.ops.adapt_decimalfield_value(value, self.max_digits, self.decimal_places)
 
     def get_prep_value(self, value):
         if value is None or value == "":
             return None
-        elif isinstance(value, str):
-            dist, has_units = DistanceField.parse_string(
-                value, self.default_unit, self.max_digits
-            )
+        if isinstance(value, str):
+            dist, has_units = DistanceField.parse_string(value, self.default_unit, self.max_digits)
         elif isinstance(value, D):
             dist = value
         else:
             try:
                 return float(value)
             except ValueError:  # pragma: no cover
-                return super(DistanceField, self).get_prep_value(value)
+                return super().get_prep_value(value)
 
         return getattr(dist, self.default_unit)
 
     def get_prep_lookup(self, lookup_type, value):  # pragma: no cover
         if lookup_type in ("exact", "iexact", "gt", "gte", "lt", "lte"):
             return self.get_prep_value(value)
-        elif lookup_type == "in":
+        if lookup_type == "in":
             return [self.get_prep_value(v) for v in value]
-        else:
-            raise TypeError(f"Lookup type {lookup_type} not supported.")
+        raise TypeError(f"Lookup type {lookup_type} not supported.")
 
     def deconstruct(self):
-        name, path, args, kwargs = super(DistanceField, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         if self.max_digits is not None:
             kwargs["max_digits"] = self.max_digits
         if self.decimal_places is not None:
@@ -364,7 +354,7 @@ class DistanceField(models.Field):
 
 class DistanceUnitField(fields.CharField):
     def __init__(self, *args, **kwargs):
-        if kwargs.get("max_length", None) is None:
-            kwargs["max_length"] = max([len(unit_len) for unit_len in D.UNITS.keys()])
-        kwargs.update(dict(blank=True, null=True, editable=False))
-        super(DistanceUnitField, self).__init__(*args, **kwargs)
+        if kwargs.get("max_length") is None:
+            kwargs["max_length"] = max([len(unit_len) for unit_len in D.UNITS])
+        kwargs.update({"blank": True, "null": True, "editable": False})
+        super().__init__(*args, **kwargs)

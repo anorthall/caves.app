@@ -14,7 +14,7 @@ User = get_user_model()
 
 
 def aws_not_configured():
-    """Return True if AWS is not configured"""
+    """Return True if AWS is not configured."""
     return (
         not settings.AWS_S3_ACCESS_KEY_ID
         or not settings.AWS_S3_SECRET_ACCESS_KEY
@@ -51,17 +51,13 @@ class TripPhotoTests(TestCase):
             start=timezone.now(),
         )
 
-        self.photo = TripPhoto.objects.create(
-            trip=self.trip, user=self.user, photo=None
-        )
-        self.photo.photo = ImageFieldFile(
-            self.photo, self.photo.photo.field, "test-file.jpg"
-        )
+        self.photo = TripPhoto.objects.create(trip=self.trip, user=self.user, photo=None)
+        self.photo.photo = ImageFieldFile(self.photo, self.photo.photo.field, "test-file.jpg")
         self.photo.is_valid = True
         self.photo.save()
 
     def test_trip_photo_upload_path(self):
-        """Test that the upload path is correct"""
+        """Test that the upload path is correct."""
         instance = MagicMock()
         instance.user = self.user
         instance.trip = self.trip
@@ -73,7 +69,7 @@ class TripPhotoTests(TestCase):
         self.assertEqual(expected, actual)
 
     def test_trip_photo_page_loads(self):
-        """Test that the trip photo page loads"""
+        """Test that the trip photo page loads."""
         self.client.force_login(self.user)
         response = self.client.get(reverse("log:trip_photos", args=[self.trip.uuid]))
         self.assertEqual(response.status_code, 200)
@@ -81,21 +77,21 @@ class TripPhotoTests(TestCase):
     @skipIf(aws_not_configured(), "AWS is not configured")
     @tag("privacy")
     def test_trip_photo_page_does_not_load_for_other_users(self):
-        """Test that the trip photo page does not load for other users"""
+        """Test that the trip photo page does not load for other users."""
         self.client.force_login(self.user2)
         response = self.client.get(reverse("log:trip_photos", args=[self.trip.uuid]))
         self.assertEqual(response.status_code, 403)
 
     @tag("privacy")
     def test_trip_photo_page_does_not_load_for_anonymous_users(self):
-        """Test that the trip photo page does not load for anonymous users"""
+        """Test that the trip photo page does not load for anonymous users."""
         response = self.client.get(reverse("log:trip_photos", args=[self.trip.uuid]))
         self.assertEqual(response.status_code, 403)
 
     @tag("privacy")
     @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_privacy(self):
-        """Test that photos do not show for other users when private"""
+        """Test that photos do not show for other users when private."""
         self.trip.privacy = Trip.PUBLIC
         self.trip.private_photos = True
         self.trip.save()
@@ -130,7 +126,7 @@ class TripPhotoTests(TestCase):
 
     @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_update_privacy(self):
-        """Test updating the privacy of photos for a trip"""
+        """Test updating the privacy of photos for a trip."""
         self.trip.private_photos = False
         self.trip.save()
 
@@ -143,16 +139,14 @@ class TripPhotoTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response, "The photo privacy setting for this trip has been updated."
-        )
+        self.assertContains(response, "The photo privacy setting for this trip has been updated.")
 
         self.trip.refresh_from_db()
         self.assertTrue(self.trip.private_photos)
 
     @tag("privacy")
     def test_trip_photo_update_privacy_as_other_user(self):
-        """Test updating the privacy of photos for a trip as another user"""
+        """Test updating the privacy of photos for a trip as another user."""
         self.trip.private_photos = False
         self.trip.save()
 
@@ -170,7 +164,7 @@ class TripPhotoTests(TestCase):
         self.assertFalse(self.trip.private_photos)
 
     def test_trip_photo_delete(self):
-        """Test deleting a photo"""
+        """Test deleting a photo."""
         uuid = self.photo.uuid
 
         self.client.force_login(self.user)
@@ -189,7 +183,7 @@ class TripPhotoTests(TestCase):
 
     @tag("privacy")
     def test_trip_photo_delete_as_other_user(self):
-        """Test deleting a photo as another user"""
+        """Test deleting a photo as another user."""
         uuid = self.photo.uuid
 
         self.client.force_login(self.user2)
@@ -205,7 +199,7 @@ class TripPhotoTests(TestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_trip_photo_delete_invalid_uuid(self):
-        """Test deleting a photo with an invalid UUID"""
+        """Test deleting a photo with an invalid UUID."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse("log:trip_photos_delete"),
@@ -217,7 +211,7 @@ class TripPhotoTests(TestCase):
 
     @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_update_caption(self):
-        """Test updating the caption of a photo"""
+        """Test updating the caption of a photo."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse("log:trip_photos_update"),
@@ -235,7 +229,7 @@ class TripPhotoTests(TestCase):
 
     @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_update_caption_with_a_caption_that_is_too_long(self):
-        """Test updating the caption of a photo with a caption that is too long"""
+        """Test updating the caption of a photo with a caption that is too long."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse("log:trip_photos_update"),
@@ -253,7 +247,7 @@ class TripPhotoTests(TestCase):
 
     @tag("privacy")
     def test_trip_photo_update_caption_as_other_user(self):
-        """Test updating the caption of a photo as another user"""
+        """Test updating the caption of a photo as another user."""
         self.client.force_login(self.user2)
         response = self.client.post(
             reverse("log:trip_photos_update"),
@@ -268,14 +262,12 @@ class TripPhotoTests(TestCase):
         self.assertEqual(self.photo.caption, "")
 
     def test_trip_photo_delete_all(self):
-        """Test deleting all photos"""
+        """Test deleting all photos."""
         TripPhoto.objects.filter(trip=self.trip).delete()
 
         for i in range(10):
             photo = TripPhoto.objects.create(trip=self.trip, user=self.user, photo=None)
-            photo.photo = ImageFieldFile(
-                self.photo, self.photo.photo.field, f"test-file-{i}.jpg"
-            )
+            photo.photo = ImageFieldFile(self.photo, self.photo.photo.field, f"test-file-{i}.jpg")
             photo.is_valid = True
             photo.save()
         self.assertEqual(TripPhoto.objects.valid().filter(trip=self.trip).count(), 10)
@@ -292,7 +284,7 @@ class TripPhotoTests(TestCase):
 
     @tag("privacy")
     def test_trip_photo_delete_all_as_other_user(self):
-        """Test deleting all photos as another user"""
+        """Test deleting all photos as another user."""
         self.assertEqual(TripPhoto.objects.valid().filter(trip=self.trip).count(), 1)
         self.client.force_login(self.user2)
         response = self.client.post(
@@ -302,17 +294,17 @@ class TripPhotoTests(TestCase):
         self.assertEqual(TripPhoto.objects.valid().filter(trip=self.trip).count(), 1)
 
     def test_trip_photo_str_method(self):
-        """Test the string representation of a trip photo"""
+        """Test the string representation of a trip photo."""
         self.assertEqual(str(self.photo), f"Photo for {self.trip} by {self.trip.user}")
 
     @skipIf(aws_not_configured(), "AWS is not configured")
     def test_trip_photo_get_absolute_url(self):
-        """Test the get_absolute_url method"""
+        """Test the get_absolute_url method."""
         self.assertEqual(self.photo.get_absolute_url(), self.photo.url)
 
     @skipIf(aws_not_configured(), "AWS is not configured")
     def test_invalid_photos_do_not_show_on_trip_detail_page(self):
-        """Test that invalid photos do not show on the trip detail page"""
+        """Test that invalid photos do not show on the trip detail page."""
         self.assertEqual(self.photo.is_valid, True)
 
         self.client.force_login(self.user)
@@ -328,7 +320,7 @@ class TripPhotoTests(TestCase):
     @skipIf(aws_not_configured(), "AWS is not configured")
     @tag("privacy")
     def test_private_photos_do_not_show_on_trip_feed(self):
-        """Test that private photos do not show on the trip feed"""
+        """Test that private photos do not show on the trip feed."""
         self.assertEqual(self.photo.trip.private_photos, False)
 
         self.client.force_login(self.user)

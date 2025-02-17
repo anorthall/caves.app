@@ -25,7 +25,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            update_all_duration_str, reverse_code=migrations.RunPython.noop
-        )
+        migrations.RunPython(update_all_duration_str, reverse_code=migrations.RunPython.noop)
     ]

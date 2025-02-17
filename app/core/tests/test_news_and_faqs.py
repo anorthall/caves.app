@@ -37,22 +37,22 @@ class TestNewsAndFAQsModels(TestCase):
 
     @tag("news")
     def test_news_str(self):
-        """Test the news model string representation"""
+        """Test the news model string representation."""
         self.assertEqual(str(self.news), self.news.title)
 
     @tag("help", "faqs")
     def test_faq_str(self):
-        """Test the FAQ model string representation"""
+        """Test the FAQ model string representation."""
         self.assertEqual(str(self.faq), self.faq.question)
 
     @tag("news")
     def test_news_get_absolute_url(self):
-        """Test the news model get_absolute_url method"""
+        """Test the news model get_absolute_url method."""
         self.assertEqual(self.news.get_absolute_url(), "/news/test-news/")
 
     @tag("news", "admin", "views")
     def test_news_author_autoassign(self):
-        """Test that the news author is autoassigned in Django admin"""
+        """Test that the news author is autoassigned in Django admin."""
         self.client.force_login(self.user)
         self.client.post(
             reverse("admin:core_news_add"),
@@ -70,7 +70,7 @@ class TestNewsAndFAQsModels(TestCase):
 
     @tag("help", "faqs", "admin", "views")
     def test_faq_author_autoassign(self):
-        """Test that the FAQ author is autoassigned in Django admin"""
+        """Test that the FAQ author is autoassigned in Django admin."""
         self.client.force_login(self.user)
         self.client.post(
             reverse("admin:core_faq_add"),

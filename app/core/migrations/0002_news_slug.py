@@ -12,8 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="news",
             name="slug",
-            field=models.SlugField(
-                default="djangodbmodelsfieldscharfield", max_length=100
-            ),
+            field=models.SlugField(default="djangodbmodelsfieldscharfield", max_length=100),
         ),
     ]

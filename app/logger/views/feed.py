@@ -1,5 +1,3 @@
-from typing import Union
-
 from core.logging import log_trip_action
 from core.utils import get_user
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -22,24 +20,21 @@ from ..models import Trip
 class Index(TemplateView):
     @method_decorator(ratelimit(key="user_or_ip", rate="500/h", group="feed"))
     def get(self, request, *args, **kwargs):
-        """Determine if the user is logged in and render the appropriate template"""
+        """Determine if the user is logged in and render the appropriate template."""
         if request.user.is_authenticated:
             context = self.get_authenticated_context(**kwargs)
             return self.render_to_response(context)
-        else:
-            self.template_name = "core/index_unregistered.html"
-            return super().get(request, *args, **kwargs)
+        self.template_name = "core/index_unregistered.html"
+        return super().get(request, *args, **kwargs)
 
     def get_authenticated_context(self, **kwargs):
-        """Return the trip feed for a logged in user"""
+        """Return the trip feed for a logged in user."""
         context = super().get_context_data(**kwargs)
         user = get_user(self.request)
         context["ordering"] = user.feed_ordering
         context["trips"] = services.get_trips_context(self.request, context["ordering"])
         context["quick_stats"] = user.quick_stats
-        context["liked_str"] = services.get_liked_str_context(
-            self.request, context["trips"]
-        )
+        context["liked_str"] = services.get_liked_str_context(self.request, context["trips"])
 
         # If there are no trips, show the new user page
         if context["trips"]:
@@ -54,8 +49,7 @@ class Index(TemplateView):
 class SetFeedOrdering(LoginRequiredMixin, View):
     @method_decorator(ratelimit(key="user", rate="30/h"))
     def post(self, request, *args, **kwargs):
-        """Get the ordering from GET params and save it to the user model
-        if it is valid. Return the ordering to be used in the template."""
+        """Get the ordering from GET params and save it to the user model if it is valid."""
         allowed_ordering = [User.FEED_ADDED, User.FEED_DATE]
         if self.request.POST.get("sort") in allowed_ordering:
             self.request.user.feed_ordering = self.request.POST.get("sort")
@@ -64,7 +58,7 @@ class SetFeedOrdering(LoginRequiredMixin, View):
 
 
 class HTMXTripLike(LoginRequiredMixin, TemplateView):
-    """HTMX view for toggling a trip like"""
+    """HTMX view for toggling a trip like."""
 
     template_name = "logger/_htmx_trip_like.html"
 
@@ -115,9 +109,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
             Trip.objects.filter(uuid=uuid)
             .annotate(
                 user_liked=Exists(
-                    User.objects.filter(
-                        pk=request.user.pk, liked_trips=OuterRef("pk")
-                    ).only("pk")
+                    User.objects.filter(pk=request.user.pk, liked_trips=OuterRef("pk")).only("pk")
                 )
             )
             .first()
@@ -131,12 +123,10 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
         raise PermissionDenied
 
-    def _get_trip_like_notification(self, trip) -> Union[Notification, None]:
-        """Get the notification for the trip like, if it exists"""
+    def _get_trip_like_notification(self, trip) -> Notification | None:
+        """Get the notification for the trip like, if it exists."""
         try:
-            return Notification.objects.get(
-                trip=trip, user=trip.user, type=Notification.TRIP_LIKE
-            )
+            return Notification.objects.get(trip=trip, user=trip.user, type=Notification.TRIP_LIKE)
         except Notification.DoesNotExist:
             pass
         return None
@@ -144,7 +134,7 @@ class HTMXTripLike(LoginRequiredMixin, TemplateView):
 
 @method_decorator(ratelimit(key="user", rate="500/h", group="feed"), name="dispatch")
 class HTMXTripFeed(LoginRequiredMixin, TemplateView):
-    """Render more trips to be inserted into the trip feed via HTMX"""
+    """Render more trips to be inserted into the trip feed via HTMX."""
 
     template_name = "logger/_feed.html"
 
@@ -156,9 +146,7 @@ class HTMXTripFeed(LoginRequiredMixin, TemplateView):
             ordering=context["ordering"],
             page=self.request.GET.get("page", 1),
         )
-        context["liked_str"] = services.get_liked_str_context(
-            self.request, context["trips"]
-        )
+        context["liked_str"] = services.get_liked_str_context(self.request, context["trips"])
 
         services.bulk_update_view_count(self.request, context["trips"])
 

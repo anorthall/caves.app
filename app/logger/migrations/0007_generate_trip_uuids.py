@@ -18,7 +18,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            generate_trip_uuids, reverse_code=migrations.RunPython.noop
-        ),
+        migrations.RunPython(generate_trip_uuids, reverse_code=migrations.RunPython.noop),
     ]

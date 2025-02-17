@@ -33,8 +33,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="tripphoto",
             name="uuid",
-            field=models.UUIDField(
-                default=uuid.uuid4, unique=True, verbose_name="UUID"
-            ),
+            field=models.UUIDField(default=uuid.uuid4, unique=True, verbose_name="UUID"),
         ),
     ]

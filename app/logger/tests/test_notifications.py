@@ -30,7 +30,7 @@ class NotificationTests(TestCase):
 
     @tag("privacy")
     def test_notification_redirect_view_as_invalid_user(self):
-        """Test that the notification redirect view returns a 403 for an invalid user"""
+        """Test that the notification redirect view returns a 403 for an invalid user."""
         self.client.force_login(self.user2)
         notification = self.user.notify("Test notification", "/")
         response = self.client.get(

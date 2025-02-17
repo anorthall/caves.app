@@ -1,0 +1,30 @@
+name: cavesapp-dev
+
+include:
+  - compose.services.yml
+
+services:
+  django:
+    extends:
+      file: compose.base.yml
+      service: django
+    command: /app/conf/run.sh devserver
+    volumes:
+      - ./app/:/app/app/
+      - ./conf/:/app/conf/
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
+      - caves_mediafiles:/app/mediafiles/
+      - caves_staticfiles:/app/staticfiles/
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./conf/dev.env
+    depends_on:
+      - postgres
+      - redis
+      - imgproxy
+
+volumes:
+  caves_mediafiles:
+  caves_staticfiles:

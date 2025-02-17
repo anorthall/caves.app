@@ -1,9 +1,10 @@
+from datetime import timedelta as td
+
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
 from django.test import Client, TestCase, tag
 from django.urls import reverse
 from django.utils import timezone as tz
-from django.utils.timezone import timedelta as td
 
 from ..factories import TripFactory
 from ..models import Caver, Trip
@@ -63,7 +64,7 @@ class UserProfileViewTests(TestCase):
             )
 
     def test_user_profile_page_bio(self):
-        """Test the user profile page bio"""
+        """Test the user profile page bio."""
         self.client.force_login(self.user)
         self.user.bio = "Test bio 123"
         self.user.save()
@@ -74,7 +75,7 @@ class UserProfileViewTests(TestCase):
 
     @tag("privacy")
     def test_private_trips_do_not_appear_on_profile_page_trip_list(self):
-        """Test that private trips do not appear on the user profile page"""
+        """Test that private trips do not appear on the user profile page."""
         for trip in self.user.trips:
             trip.privacy = Trip.PRIVATE
             trip.save()
@@ -86,7 +87,7 @@ class UserProfileViewTests(TestCase):
 
     @tag("privacy")
     def test_friend_only_trips_do_not_appear_on_profile_page_trip_list(self):
-        """Test that friend only trips do not appear on the user profile page"""
+        """Test that friend only trips do not appear on the user profile page."""
         for trip in self.user.trips:
             trip.privacy = Trip.FRIENDS
             trip.save()
@@ -98,7 +99,7 @@ class UserProfileViewTests(TestCase):
 
     @tag("privacy")
     def test_user_profile_page_with_various_privacy_settings(self):
-        """Test the user profile page with various privacy settings"""
+        """Test the user profile page with various privacy settings."""
         self.client.force_login(self.user2)
         response = self.client.get(reverse("log:user", args=[self.user.username]))
         self.assertEqual(response.status_code, 200)
@@ -157,7 +158,7 @@ class UserProfileViewTests(TestCase):
         self.assertContains(response, self.user.name)
 
     def test_friends_appear_on_the_user_profile_page(self):
-        """Test that friends appear on the user profile page when viewed by the user"""
+        """Test that friends appear on the user profile page when viewed by the user."""
         self.client.force_login(self.user)
         response = self.client.get(self.user.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -174,7 +175,7 @@ class UserProfileViewTests(TestCase):
         self.assertContains(response, self.user3.get_absolute_url())
 
     def test_mutual_friends_appear_on_the_user_profile_page(self):
-        """Test that mutual friends appear on the user profile page"""
+        """Test that mutual friends appear on the user profile page."""
         self.client.force_login(self.user)
 
         self.user2.friends.add(self.user3)
@@ -193,7 +194,7 @@ class UserProfileViewTests(TestCase):
 
     @tag("privacy")
     def test_no_friends_appear_for_an_unauthenticated_user(self):
-        """Test that no friends appear on the user profile page when not logged in"""
+        """Test that no friends appear on the user profile page when not logged in."""
         for user in [self.user2, self.user3]:
             self.user.friends.add(user)
             user.friends.add(self.user)
@@ -206,7 +207,7 @@ class UserProfileViewTests(TestCase):
 
     @tag("privacy")
     def test_cave_location_privacy(self):
-        """Test that the cave location shows for a user"""
+        """Test that the cave location shows for a user."""
         self.client.force_login(self.user)
         trip = TripFactory(user=self.user2, privacy=Trip.PUBLIC)
         trip.cave_coordinates = Point(1, 1)
@@ -225,7 +226,7 @@ class UserProfileViewTests(TestCase):
         self.assertContains(response, "Cave location")
 
     def test_caver_links_shown_when_viewed_by_owner(self):
-        """Test that caver links are shown when viewed by the owner"""
+        """Test that caver links are shown when viewed by the owner."""
         self.client.force_login(self.user)
         trip = TripFactory(user=self.user, privacy=Trip.PUBLIC)
         caver = Caver.objects.create(name="Test Caver", user=self.user)
@@ -236,7 +237,7 @@ class UserProfileViewTests(TestCase):
         self.assertContains(response, caver.get_absolute_url())
 
     def test_caver_links_not_shown_when_viewed_by_other_users(self):
-        """Test that caver links are not shown when viewed by other users"""
+        """Test that caver links are not shown when viewed by other users."""
         self.client.force_login(self.user2)
         trip = TripFactory(user=self.user, privacy=Trip.PUBLIC)
         caver = Caver.objects.create(name="Test Caver", user=self.user)

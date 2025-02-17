@@ -23,10 +23,7 @@ class TestMiddleware(TestCase):
         self.client = Client()
 
     def test_timezone_middleware_with_all_timezones(self):
-        """
-        Test that the timezone middleware does not produce any errors
-        when tested with every timezone in pytz and zoneinfo
-        """
+        """Test that the timezone middleware does not produce any errors with all timezones."""
         self.client.force_login(self.user)
 
         response = self.client.get(reverse("log:index"))

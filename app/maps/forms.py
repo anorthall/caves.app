@@ -40,11 +40,12 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
         for other_trip in self.trip.user.trips.exclude(id=self.trip.id):
             if other_trip.cave_coordinates:
                 continue
-            if cave_name == other_trip.cave_name.strip().lower():
+            if (
+                cave_name == other_trip.cave_name.strip().lower()
+                or other_trip.cave_entrance
+                and entrance == other_trip.cave_entrance.strip().lower()
+            ):
                 similar_caves.append(other_trip)
-            elif other_trip.cave_entrance and entrance:
-                if entrance == other_trip.cave_entrance.strip().lower():
-                    similar_caves.append(other_trip)
 
         if similar_caves:
             choices = []
@@ -52,17 +53,15 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
                 # Escape the cave name and entrance and then mark the label as safe
                 # after inserting the link to the trip.
                 date = trip.start.strftime("%Y-%m-%d")
-                label = f"Trip to { escape(trip.cave_name) } on {date}"
+                label = f"Trip to {escape(trip.cave_name)} on {date}"
                 if trip.cave_entrance:
-                    label += f" via { escape(trip.cave_entrance) }"
-                label += f" &mdash; <a href='{ trip.get_absolute_url() }'>View</a>"
+                    label += f" via {escape(trip.cave_entrance)}"
+                label += f" &mdash; <a href='{trip.get_absolute_url()}'>View</a>"
 
                 choices.append((trip.uuid, SafeString(label)))
 
             self.fields["additional_caves"].choices = choices
-            self.fields["additional_caves"].initial = [
-                trip.uuid for trip in similar_caves
-            ]
+            self.fields["additional_caves"].initial = [trip.uuid for trip in similar_caves]
         else:
             del self.fields["additional_caves"]
 
@@ -74,9 +73,7 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
                         "{% include 'maps/_htmx_geocoding_results.html' "
                         "with lat=trip.latitude lng=trip.longitude %}"
                     ),
-                    css_class=(
-                        "col-12 col-lg-6 d-flex flex-column justify-content-center"
-                    ),
+                    css_class=("col-12 col-lg-6 d-flex flex-column justify-content-center"),
                     id="latlong",
                 ),
                 css_class="row",

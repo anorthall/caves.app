@@ -1,6 +1,7 @@
 from zoneinfo import ZoneInfoNotFoundError
 
 from django.utils import timezone
+
 from users.models import CavingUser, Notification
 
 
@@ -54,9 +55,7 @@ class NotificationsMiddleware:
         if not request.user.is_authenticated:
             return self.get_response(request)
 
-        unread_notifications = Notification.objects.filter(
-            user=request.user, read=False
-        )
+        unread_notifications = Notification.objects.filter(user=request.user, read=False)
         for notification in unread_notifications:
             if notification.get_url() == request.path:
                 notification.read = True

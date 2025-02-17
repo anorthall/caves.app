@@ -17,35 +17,28 @@ User = CavingUser
 
 # noinspection PyTypeChecker
 class BaseTripForm(forms.ModelForm):
-    """
-    A parent class for all forms which handle the Trip model
-    Contains validation methods only
-    """
+    """A parent class for all forms which handle the Trip model."""
 
     def clean_start(self):
-        """Validate the trip start date/time"""
+        """Validate the trip start date/time."""
         # Trips must not start more than a week in the future.
         one_week_from_now = timezone.now() + timedelta(days=7)
         if self.cleaned_data.get("start") > one_week_from_now:
-            raise ValidationError(
-                "Trips must not start more than one week in the future."
-            )
+            raise ValidationError("Trips must not start more than one week in the future.")
         return self.cleaned_data["start"]
 
     def clean_end(self):
-        """Validate the trip end date/time"""
+        """Validate the trip end date/time."""
         # Trips must not end more than 31 days in the future.
         end = self.cleaned_data.get("end")
         if end:
             one_month_from_now = timezone.now() + timedelta(days=31)
             if end > one_month_from_now:
-                raise ValidationError(
-                    "Trips must not end more than 31 days in the future."
-                )
+                raise ValidationError("Trips must not end more than 31 days in the future.")
         return end
 
     def clean(self):
-        """Validate relations between the start/end datetimes"""
+        """Validate relations between the start/end datetimes."""
         super().clean()
 
         start = self.cleaned_data.get("start")
@@ -60,9 +53,7 @@ class BaseTripForm(forms.ModelForm):
                     "do not know the end time, leave it blank.",
                 )
             elif start > end:
-                self.add_error(
-                    "start", "The trip start time must be before the trip end time."
-                )
+                self.add_error("start", "The trip start time must be before the trip end time.")
             elif length > timedelta(days=60):
                 self.add_error(
                     "end",
@@ -148,9 +139,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
                         "{% include 'maps/_htmx_geocoding_results.html' "
                         "with lat=trip.latitude lng=trip.longitude %}"
                     ),
-                    css_class=(
-                        "col-12 col-lg-6 d-flex flex-column justify-content-center"
-                    ),
+                    css_class=("col-12 col-lg-6 d-flex flex-column justify-content-center"),
                     id="latlong",
                 ),
                 css_class="row",
@@ -217,13 +206,9 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
         )
 
         if self.instance.pk:
-            self.helper.add_input(
-                Submit("submit", "Update trip", css_class="btn-lg w-100 mt-4")
-            )
+            self.helper.add_input(Submit("submit", "Update trip", css_class="btn-lg w-100 mt-4"))
         else:
-            self.helper.add_input(
-                Submit("submit", "Create trip", css_class="btn-lg w-100 mt-4")
-            )
+            self.helper.add_input(Submit("submit", "Create trip", css_class="btn-lg w-100 mt-4"))
             self.helper.add_input(
                 Submit(
                     "addanother",
@@ -265,8 +250,7 @@ class TripForm(DistanceUnitFormMixin, CleanCaveLocationMixin, BaseTripForm):
                     Div(Field(field_name), css_class="col"),
                 )
             return custom_fields
-        else:
-            return None
+        return None
 
 
 class TripPhotoForm(forms.ModelForm):
@@ -385,9 +369,7 @@ class LinkCaverForm(forms.Form):
 
         for friend in self.user.friends.all():
             if friend not in already_linked:
-                choices.append(
-                    [friend.username, f"{friend.name} -- @{friend.username}"]
-                )
+                choices.append([friend.username, f"{friend.name} -- @{friend.username}"])
 
         return choices
 
@@ -447,11 +429,7 @@ class MergeCaverForm(forms.Form):
     def _get_caver_choices(self):
         choices = []
 
-        cavers = (
-            Caver.objects.filter(user=self.user)
-            .exclude(pk=self.caver.pk)
-            .order_by("name")
-        )
+        cavers = Caver.objects.filter(user=self.user).exclude(pk=self.caver.pk).order_by("name")
 
         for caver in cavers:
             choices.append([caver.uuid, f"{caver.name}"])

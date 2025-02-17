@@ -11,17 +11,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not settings.AWS_PRESIGNED_EXPIRY:
             self.stdout.write(
-                self.style.WARNING(
-                    "AWS_PRESIGNED_EXPIRY not set, skipping photo cleanup."
-                )
+                self.style.WARNING("AWS_PRESIGNED_EXPIRY not set, skipping photo cleanup.")
             )
             exit(0)
 
         # Delete all photos older than the AWS presigned post timeout
         # plus a 60 second margin
-        td = timezone.now() - timezone.timedelta(
-            seconds=(int(settings.AWS_PRESIGNED_EXPIRY) + 60)
-        )
+        td = timezone.now() - timezone.timedelta(seconds=(int(settings.AWS_PRESIGNED_EXPIRY) + 60))
 
         invalid_photos = TripPhoto.objects.invalid().filter(added__lte=td)
 

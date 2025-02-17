@@ -12,36 +12,26 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="cavinguser",
             name="custom_field_1_label",
-            field=models.CharField(
-                blank=True, max_length=25, verbose_name="Custom field 1"
-            ),
+            field=models.CharField(blank=True, max_length=25, verbose_name="Custom field 1"),
         ),
         migrations.AlterField(
             model_name="cavinguser",
             name="custom_field_2_label",
-            field=models.CharField(
-                blank=True, max_length=25, verbose_name="Custom field 2"
-            ),
+            field=models.CharField(blank=True, max_length=25, verbose_name="Custom field 2"),
         ),
         migrations.AlterField(
             model_name="cavinguser",
             name="custom_field_3_label",
-            field=models.CharField(
-                blank=True, max_length=25, verbose_name="Custom field 3"
-            ),
+            field=models.CharField(blank=True, max_length=25, verbose_name="Custom field 3"),
         ),
         migrations.AlterField(
             model_name="cavinguser",
             name="custom_field_4_label",
-            field=models.CharField(
-                blank=True, max_length=25, verbose_name="Custom field 4"
-            ),
+            field=models.CharField(blank=True, max_length=25, verbose_name="Custom field 4"),
         ),
         migrations.AlterField(
             model_name="cavinguser",
             name="custom_field_5_label",
-            field=models.CharField(
-                blank=True, max_length=25, verbose_name="Custom field 5"
-            ),
+            field=models.CharField(blank=True, max_length=25, verbose_name="Custom field 5"),
         ),
     ]

@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import Union
 
 from attrs import Factory, define, frozen
 from distancefield import D
@@ -9,7 +8,7 @@ from logger.models import Trip
 @frozen
 class TripStatsRow:
     trip: Trip
-    value: Union[D, timedelta]
+    value: D | timedelta
     is_time: bool = False
 
 
@@ -36,9 +35,7 @@ def _build_trip_stats(queryset, title, field, limit, metric=None, is_time=False)
     return stats
 
 
-def biggest_trips(
-    queryset, limit=10, disable_dist_stats=False, disable_survey_stats=False
-):
+def biggest_trips(queryset, limit=10, disable_dist_stats=False, disable_survey_stats=False):
     stats = [
         _build_trip_stats(
             queryset=queryset,

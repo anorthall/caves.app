@@ -33,22 +33,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="cavinguser",
             name="instagram",
-            field=models.CharField(
-                blank=True, help_text="Your Instagram username.", max_length=30
-            ),
+            field=models.CharField(blank=True, help_text="Your Instagram username.", max_length=30),
         ),
         migrations.AddField(
             model_name="cavinguser",
             name="website",
-            field=models.URLField(
-                blank=True, help_text="A link to your personal website."
-            ),
+            field=models.URLField(blank=True, help_text="A link to your personal website."),
         ),
         migrations.AddField(
             model_name="cavinguser",
             name="x_username",
-            field=models.CharField(
-                blank=True, help_text="Your X username.", max_length=15
-            ),
+            field=models.CharField(blank=True, help_text="Your X username.", max_length=15),
         ),
     ]
