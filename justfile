@@ -6,7 +6,7 @@ ruff:
   uv run ruff check --fix
 
 mypy +ARGS="":
-  dmypy run -- {{ ARGS }}
+  uv run dmypy run -- {{ ARGS }}
 
 lint:
   just ruff
