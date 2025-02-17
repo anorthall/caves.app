@@ -1,7 +1,22 @@
 default:
   just --list
 
-lint:
+ruff:
   uv run ruff format
   uv run ruff check --fix
-  BASE_DIR="app/" IMGPROXY_KEY="-" IMGPROXY_SALT="-" SECRET_KEY="-" REDIS_URL="-" mypy .
+
+mypy +ARGS="":
+  dmypy run -- {{ ARGS }}
+
+lint:
+  just ruff
+  just mypy
+
+docker-run-sh +ARGS:
+  docker compose exec django /app/conf/run.sh {{ ARGS }}
+
+test +ARGS="--parallel":
+  just docker-run-sh test {{ ARGS }}
+
+manage +ARGS="":
+  just docker-run-sh manage {{ ARGS }}

@@ -140,8 +140,7 @@ def register_units(**kwargs):
             v = float(v)
         except ValueError:
             raise ImproperlyConfigured(
-                f"Invalid distance unit {k}={v}m. Please ensure "
-                "the value can be cast to a float."
+                f"Invalid distance unit {k}={v}m. Please ensure the value can be cast to a float."
             )
 
         D.UNITS[k] = v

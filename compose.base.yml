@@ -1,0 +1,14 @@
+name: cavesapp-django-base
+
+services:
+  django:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./conf/Dockerfile
+    networks:
+      - cavesapp
+
+networks:
+  cavesapp:
+    driver: bridge

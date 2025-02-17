@@ -1,6 +1,7 @@
 import csv
 import os
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from distancefield import D
 from django.core.files.base import ContentFile
@@ -8,7 +9,6 @@ from django.test import TestCase, tag
 from django.urls import reverse
 from logger.models import Trip
 from users.models import CavingUser as User
-from zoneinfo import ZoneInfo
 
 from ..services import FIELD_MAP, get_formset_with_data, get_headers
 

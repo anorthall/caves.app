@@ -1,3 +1,5 @@
+from typing import Any
+
 import factory
 import factory.random
 from django.contrib.auth import get_user_model
@@ -14,7 +16,7 @@ class UserFactory(DjangoModelFactory):
     username = factory.sequence(lambda n: f"user{n}")
     email = factory.sequence(lambda n: f"user{n}@caves.app")
     name = factory.Faker("name")
-    password = None
+    password: Any = None
     is_active = factory.Faker("pybool", truth_probability=90)
     bio = factory.Faker("text", max_nb_chars=500)
     location = factory.Faker("city")

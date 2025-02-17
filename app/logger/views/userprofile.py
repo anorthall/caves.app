@@ -1,6 +1,7 @@
 from typing import Any
 
 from django.contrib import messages
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
@@ -32,7 +33,7 @@ class UserProfile(TemplateView):
         self.profile_user.add_profile_view(self.request)
         return super().get(request, *args, **kwargs)
 
-    def get_trips(self, for_user: User) -> list[Trip]:
+    def get_trips(self, for_user: User | None) -> list[Trip]:
         assert self.profile_user is not None
 
         trips = (
@@ -46,7 +47,7 @@ class UserProfile(TemplateView):
             trip.total_surveyed_dist = trip.surveyed_dist + trip.resurveyed_dist  # type: ignore[attr-defined]
 
         # Remove trips that the user cannot view
-        if (self.profile_user == for_user) or for_user.is_superuser:
+        if (self.profile_user == for_user) or (for_user is not None and for_user.is_superuser):
             return list(trips)
 
         friends = self.profile_user.friends.all()
@@ -54,27 +55,38 @@ class UserProfile(TemplateView):
 
     # noinspection PyTypeChecker
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        user = self.request.user
-        assert user is not None and isinstance(user, CavingUser)
+        user: CavingUser | AnonymousUser | None = self.request.user
+        assert user is not None and isinstance(user, CavingUser | AnonymousUser)
         assert self.profile_user is not None and isinstance(self.profile_user, CavingUser)
 
         context = super().get_context_data()
         context["profile_user"] = self.profile_user
         context["mutual_friends"] = self.profile_user.mutual_friends(user)
 
-        if user not in self.profile_user.friends.all() and self.profile_user.allow_friend_username:
+        if (
+            user.is_authenticated
+            and user not in self.profile_user.friends.all()
+            and self.profile_user.allow_friend_username
+        ):
             context["can_add_friend"] = True
 
         if user.is_superuser or self.profile_user.is_viewable_by(user):
             if user.is_superuser and not self.profile_user.is_viewable_by(user):
                 messages.warning(self.request, "Viewing profile in administrator mode.")
 
+            # TODO: Clean up this entire function and the permissions checks
+            if isinstance(user, AnonymousUser):
+                user = None
+
             context["trips"] = self.get_trips(user)
             context["trip_types"] = [x[1] for x in Trip.TRIP_TYPES]
             context["photos"] = self.profile_user.get_photos(for_user=user)
             context["quick_stats"] = self.profile_user.quick_stats
             context["stats"] = statistics.yearly(self.profile_user.trips.exclude(type=Trip.SURFACE))
-            context["enable_private_stats"] = (self.profile_user == user) or user.is_superuser
+            context["enable_private_stats"] = (self.profile_user == user) or (
+                user is not None and user.is_superuser
+            )
+
         else:
             context["private_profile"] = True
 

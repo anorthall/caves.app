@@ -1,23 +1,21 @@
 [project]
 name = "caves-app"
-authors = [
-    { name = "Andrew Northall", email = "andrew@northall.me.uk"}
-]
+authors = [{ name = "Andrew Northall", email = "andrew@northall.me.uk"}]
 version = "2.1.0"
-requires-python = ">=3.13"
+requires-python = ">=3.13.2"
 dependencies = [
     "attrs",
     "boto3",
     "chardet",
-    "coverage",
     "crispy-bootstrap5",
-    "Django==4.2",
+    "django",
     "django-active-link",
     "django-autocomplete-light",
     "django-browser-reload",
     "django-countries",
     "django-crispy-forms",
     "django-debug-toolbar",
+    "django-environ",
     "django-htmx",
     "django-mailer",
     "django-markdownify",
@@ -27,7 +25,6 @@ dependencies = [
     "django-timezone-field",
     "django-tinymce",
     "django-unfold",
-    "dj-database-url",
     "ExifRead",
     "factory-boy",
     "googlemaps",
@@ -38,7 +35,7 @@ dependencies = [
     "itsdangerous",
     "nh3",
     "Pillow",
-    "psycopg2",
+    "psycopg[binary]",
     "python-dateutil",
     "python-magic",
     "pytz",
@@ -52,17 +49,45 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "boto3-stubs",
+    "coverage",
+    "django-stubs[compatible-mypy]",
+    "inotify",
+    "mypy",
     "pre-commit",
     "ruff",
-    "mypy",
-    "django-stubs[mypy]",
-    "types-pytz>=2024.2.0.20241221",
-    "types-python-dateutil>=2.9.0.20241206",
-    "boto3-stubs>=1.35.86",
+    "rust-just",
+    "types-pytz",
+    "types-python-dateutil",
 ]
 
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.django-stubs]
+django_settings_module = "conf.settings.base"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["C4", "D", "DJ", "E", "EXE", "F", "I", "ICN", "N", "RET", "SIM", "UP", "W"]
+extend-select = ["E501"]
+ignore = ["D417", "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"**/migrations/*.py" = ["E501", "FBT003"]
+"conf/django/settings/*.py" = ["F405", "F403"]
+"stubs/*.pyi" = ["N812"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
 [tool.mypy]
+files = ["$MYPY_CONFIG_FILE_DIR/app/", "$MYPY_CONFIG_FILE_DIR/conf/"]
 plugins = ["mypy_django_plugin.main"]
+mypy_path = ["$MYPY_CONFIG_FILE_DIR/stubs"]
 
 [[tool.mypy.overrides]]
 module = "storages.*"
@@ -143,22 +168,3 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "unfold.*"
 ignore_missing_imports = true
-
-[tool.django-stubs]
-django_settings_module = "config.django.settings.base"
-
-[tool.ruff]
-line-length = 100
-
-[tool.ruff.lint]
-select = ["C4", "D", "DJ", "E", "EXE", "F", "I", "ICN", "N", "RET", "SIM", "UP", "W"]
-extend-select = ["E501"]
-ignore = ["D417", "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107"]
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-"**/migrations/*.py" = ["E501", "FBT003"]
-"config/django/settings/*.py" = ["F405", "F403"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"

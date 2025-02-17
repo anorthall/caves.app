@@ -53,10 +53,10 @@ class BulkLocationForm(forms.ModelForm, CleanCaveLocationMixin):
                 # Escape the cave name and entrance and then mark the label as safe
                 # after inserting the link to the trip.
                 date = trip.start.strftime("%Y-%m-%d")
-                label = f"Trip to { escape(trip.cave_name) } on {date}"
+                label = f"Trip to {escape(trip.cave_name)} on {date}"
                 if trip.cave_entrance:
-                    label += f" via { escape(trip.cave_entrance) }"
-                label += f" &mdash; <a href='{ trip.get_absolute_url() }'>View</a>"
+                    label += f" via {escape(trip.cave_entrance)}"
+                label += f" &mdash; <a href='{trip.get_absolute_url()}'>View</a>"
 
                 choices.append((trip.uuid, SafeString(label)))
 

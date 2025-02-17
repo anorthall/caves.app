@@ -405,7 +405,7 @@ class TripModelTests(TestCase):
                 "end": tz.now() - td(days=1),
             },
         )
-        self.assertContains(response, "The trip start time must be before " "the trip end time.")
+        self.assertContains(response, "The trip start time must be before the trip end time.")
 
         response = self.client.post(
             reverse("log:trip_create"),

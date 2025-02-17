@@ -1,61 +1,28 @@
 import copy
 import os
-import socket
 from pathlib import Path
-from typing import Any
 
-import dj_database_url
+import environ
 from django.contrib.messages import constants as messages
-from django.core.exceptions import ImproperlyConfigured
 
-
-def env(name, default=None, force_type: Any = str):
-    setting = os.environ.get(name, default)
-    if setting is None:
-        raise ImproperlyConfigured(f"{name} environment variable is not set")
-
-    try:
-        return force_type(setting)
-    except ValueError as err:
-        raise ImproperlyConfigured(
-            f"{name} environment variable is not a valid {force_type.__name__}"
-        ) from err
-
+env = environ.Env()
 
 # BASE_DIR should point to where manage.py is
-base_dir = env("BASE_DIR", "")
-if base_dir:
-    BASE_DIR = Path(base_dir)
-else:
-    raise ImproperlyConfigured("BASE_DIR environment variable is not set")
+SETTINGS_DIR = Path(__file__).resolve().parent
+DJANGO_ROOT = SETTINGS_DIR.parent.parent / "app"
 
-
-# Date formats
 DATETIME_FORMAT = "H:i Y-m-d"
 DATE_FORMAT = "Y-m-d"
 TIME_FORMAT = "H:i"
 
+SITE_ROOT = env("SITE_ROOT", str, "http://127.0.0.1:8000")
+SITE_TITLE = env("SITE_TITLE", str, "devel.app")
+ADMIN_URL = env("ADMIN_URL", str, "admin/")
+STAFF_URL = env("STAFF_URL", str, "staff/")
 
-# Site root URL with protocol and without a trailing slash
-SITE_ROOT = env("SITE_ROOT", "http://127.0.0.1:8000")
-
-
-# Site title setting for templates
-SITE_TITLE = env("SITE_TITLE", "caves.app")
-
-
-# Django admin interface URL path
-ADMIN_URL = env("ADMIN_URL", "admin/")
-
-
-# Staff pages URL path
-STAFF_URL = env("STAFF_URL", "staff/")
-
-
-# Imgproxy configuration
-IMGPROXY_URL = env("IMGPROXY_URL", "http://127.0.0.1:9000/imgproxy")
-IMGPROXY_KEY = env("IMGPROXY_KEY")
-IMGPROXY_SALT = env("IMGPROXY_SALT")
+IMGPROXY_URL = env("IMGPROXY_URL", str, "http://127.0.0.1:9000/imgproxy")
+IMGPROXY_KEY = env("IMGPROXY_KEY", str, "")
+IMGPROXY_SALT = env("IMGPROXY_SALT", str, "")
 IMGPROXY_PRESETS = {
     "photo": "width=1000,height=1000,resizing_type=fit",
     "tripphoto_thumb": "width=400,height=600,resizing_type=fill",
@@ -64,40 +31,31 @@ IMGPROXY_PRESETS = {
     "featured_photo": "width=1800,height=800,resizing_type=fill-down",
 }
 
-# Security keys/options
-# WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", "http://127.0.0.1").split(" ")
-CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(" ")
+SECRET_KEY = env("SECRET_KEY", str, "insecure-secret-key")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", str, "http://127.0.0.1").split(" ")
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS", str, "http://127.0.0.1").split(" ")
 
 # Need this many for CSV import feature to work - 16 fields per trip
-DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000, int)
-
-# Add Docker host IP to ALLOWED_HOSTS for Dokku healthchecks
-ALLOWED_HOSTS.append(socket.getaddrinfo(socket.gethostname(), "http")[0][4][0])
-
+DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", int, 10_000)
 
 # Email settings
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "")
-EMAIL_BACKEND = env("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
-MAILER_EMAIL_BACKEND = env("MAILER_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
-MAILER_EMPTY_QUEUE_SLEEP = env("MAILER_EMPTY_QUEUE_SLEEP", 30, int)
-EMAIL_HOST = env("EMAIL_HOST", "")
-EMAIL_PORT = env("EMAIL_PORT", 0, int)
-EMAIL_USE_SSL = env("EMAIL_USE_SSL", False, int)
-EMAIL_USE_TLS = env("EMAIL_USE_TLS", False, int)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", str, "admin@yourapp.com")
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+MAILER_EMAIL_BACKEND = env("MAILER_EMAIL_BACKEND", cast=str, default=EMAIL_BACKEND)
+MAILER_EMPTY_QUEUE_SLEEP = 10
 
+EMAIL_HOST = env("EMAIL_HOST", str, "")
+EMAIL_PORT = env("EMAIL_PORT", int, 0)
+EMAIL_USE_SSL = env("EMAIL_USE_SSL", bool, False)
+EMAIL_USE_TLS = env("EMAIL_USE_TLS", bool, False)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", str, "")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", str, "")
 
-# Internationalization
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = False
 USE_TZ = True
 
-
-# Django apps
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "core.apps.CoreConfig",
@@ -119,6 +77,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "markdownify",
     "unfold",
+    "django_rich",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -130,15 +89,11 @@ INSTALLED_APPS = [
     "django.contrib.gis",
 ]
 
-
-# Authentication
 LOGIN_URL = "users:login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 AUTH_USER_MODEL = "users.CavingUser"
 
-
-# Bootstrap 5 message CSS classes
 MESSAGE_TAGS = {
     messages.DEBUG: "alert-secondary",
     messages.INFO: "alert-info",
@@ -147,8 +102,6 @@ MESSAGE_TAGS = {
     messages.ERROR: "alert-danger",
 }
 
-
-# Django middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -165,12 +118,10 @@ MIDDLEWARE = [
     "users.middleware.NotificationsMiddleware",
 ]
 
-
-# Django templates
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates/")],
+        "DIRS": [DJANGO_ROOT / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -188,63 +139,51 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = "conf.django.wsgi.application"
+ROOT_URLCONF = "conf.urls"
 
-# Django wsgi
-WSGI_APPLICATION = "config.django.wsgi.application"
+CACHES = {
+    "default": env.cache(
+        var="REDIS_URL",
+        default="redis://redis:6379/0",
+        backend="django.core.cache.backends.redis.RedisCache",
+    ),
+}
 
-
-# Django root urlconf
-ROOT_URLCONF = "config.django.urls"
-
-
-# Database
 DATABASES = {
-    "default": dj_database_url.config(
-        default="postgres://postgres:postgres@db:5432/postgres",
-        conn_max_age=env("CONN_MAX_AGE", 30, int),
-        conn_health_checks=True,
+    "default": env.db(
+        var="DATABASE_URL",
+        default="postgres://postgres:postgres@postgres:5432/postgres",
+        engine="django.contrib.gis.db.backends.postgis",
     )
 }
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
-DATABASES["default"]["ENGINE"] = "django.contrib.gis.db.backends.postgis"
 
-# Password validation
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
-
 
 # Static files, media files, and Amazon S3.
 # Photos are *always* stored in S3, even in development.
-AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN", "")
-AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", "")
-AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", "")
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", "")
-AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", "")
-AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", "s3v4")
-AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL", "private")
-AWS_PRESIGNED_EXPIRY = env("AWS_PRESIGNED_EXPIRY", 20, int)
+AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN", str, "")
+AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", str, "")
+AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", str, "")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", str, "")
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", str, "")
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.environ.get("STATIC_ROOT", "/app/staticfiles")
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = "/app/staticfiles"
+STATICFILES_DIRS = [DJANGO_ROOT / "static"]
 
-MEDIA_STORAGE_LOCATION = env("MEDIA_LOCATION", "m")
-PHOTOS_STORAGE_LOCATION = env("PHOTOS_LOCATION", "p")
+MEDIA_STORAGE_LOCATION = env("MEDIA_LOCATION", str, "m")
+PHOTOS_STORAGE_LOCATION = env("PHOTOS_LOCATION", str, "p")
 
 if AWS_STORAGE_BUCKET_NAME:  # pragma: no cover
-    MEDIA_URL = env("MEDIA_URL")
+    MEDIA_URL = env("MEDIA_URL", str, f"https://{AWS_S3_CUSTOM_DOMAIN}/")
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3.S3Storage",
@@ -261,7 +200,7 @@ if AWS_STORAGE_BUCKET_NAME:  # pragma: no cover
     }
 else:
     MEDIA_URL = "/media/"
-    MEDIA_ROOT = os.environ.get("MEDIA_ROOT", "/app/mediafiles")
+    MEDIA_ROOT = "/app/mediafiles"
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -277,15 +216,8 @@ else:
         },
     }
 
-STORAGES["staticfiles"] = {
-    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-}
+STORAGES["staticfiles"] = {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}
 
-# Default primary key field type
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# Markdownify
 MARKDOWNIFY = {
     "default": {
         "WHITELIST_TAGS": [
@@ -341,26 +273,11 @@ MARKDOWNIFY["news"] = copy.deepcopy(MARKDOWNIFY["default"])
 MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")  # type: ignore[attr-defined]
 MARKDOWNIFY["news"]["WHITELIST_ATTRS"] = ["src", "alt", "title", "class", "href"]
 
-
-# Crispy forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-
-# Django active link
 ACTIVE_LINK_STRICT = True
 
-
-# Redis
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": env("REDIS_URL"),
-    }
-}
-
-
-# Logging
 DEFAULT_LOG_LEVEL = "ERROR"
 
 LOGGING = {
@@ -373,46 +290,33 @@ LOGGING = {
         },
     },
     "handlers": {
-        "django_logs": {
-            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
-            "class": "logging.FileHandler",
-            "filename": env("DJANGO_LOG_LOCATION", "/app/logs/django.log"),
-            "formatter": "simple",
-        },
-        "user_actions": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": env("USER_ACTIONS_LOG_LOCATION", "/app/logs/user_actions.log"),
-            "formatter": "simple",
-        },
         "console": {
-            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "level": env("DJANGO_LOG_LEVEL", str, DEFAULT_LOG_LEVEL),
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["django_logs", "console"],
-            "level": env("DJANGO_LOG_LEVEL", DEFAULT_LOG_LEVEL),
+            "handlers": ["console"],
+            "level": env("DJANGO_LOG_LEVEL", str, DEFAULT_LOG_LEVEL),
             "propagate": True,
         },
         "user_actions": {
-            "handlers": ["user_actions"],
+            "handlers": ["console"],
             "level": "INFO",
         },
     },
 }
 
+GOOGLE_MAPS_PRIVATE_API_KEY = env("GOOGLE_MAPS_PRIVATE_API_KEY", str, "")
+GOOGLE_MAPS_PUBLIC_API_KEY = env("GOOGLE_MAPS_PUBLIC_API_KEY", str, "")
+GOOGLE_MAPS_USER_MAP_ID = env("GOOGLE_MAPS_USER_MAP_ID", str, "")
 
-# Google Maps API Key
-GOOGLE_MAPS_PRIVATE_API_KEY = env("GOOGLE_MAPS_PRIVATE_API_KEY", "")
-GOOGLE_MAPS_PUBLIC_API_KEY = env("GOOGLE_MAPS_PUBLIC_API_KEY", "")
-GOOGLE_MAPS_USER_MAP_ID = env("GOOGLE_MAPS_USER_MAP_ID", "")
+if os.getenv("GDAL_LIBRARY_PATH"):  # pragma: no cover
+    GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH", str, "")
 
-# Allow setting GDAL_LIBRARY_PATH for GeoDjango from an environment variable for dev
-if os.getenv("GDAL_LIBRARY_PATH"):
-    GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH")
+if os.getenv("GEOS_LIBRARY_PATH"):  # pragma: no cover
+    GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH", str, "")
 
-if os.getenv("GEOS_LIBRARY_PATH"):
-    GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH")
+TEST_RUNNER = "django_rich.test.RichRunner"

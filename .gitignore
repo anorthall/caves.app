@@ -138,3 +138,6 @@ conf/env/dev.env
 
 # Node
 node_modules/
+
+# Postgres
+*.dump

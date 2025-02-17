@@ -69,7 +69,7 @@ class AddTripLocation(LoginRequiredMixin, FormView):
         if self.trip.cave_coordinates:
             messages.info(
                 self.request,
-                "This trip already has coordinates. " "You can edit them on the trip page.",
+                "This trip already has coordinates. You can edit them on the trip page.",
             )
             return redirect(self.trip.get_absolute_url())
 

@@ -25,7 +25,7 @@ class Index(LoginRequiredMixin, TemplateView):
         if not form.is_valid():
             messages.error(
                 request,
-                ("There was an error generating your download. " "Did you select a valid format?"),
+                "There was an error generating your download. Did you select a valid format?",
             )
             return redirect("export:index")
 

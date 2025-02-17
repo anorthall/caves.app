@@ -1,7 +1,7 @@
+import zoneinfo
 from datetime import datetime, timedelta
 
 import factory
-import zoneinfo
 from django.contrib.auth import get_user_model
 from factory import random
 from factory.django import DjangoModelFactory

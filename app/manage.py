@@ -7,7 +7,7 @@ import sys
 
 def main():  # pragma: no cover
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.django.settings.base")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings.development")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

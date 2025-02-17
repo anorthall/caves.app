@@ -1,11 +1,37 @@
 # Changes to caves.app
 A summary of changes made to caves.app, organised by version, can be found below.
 
-## Version 2.0.2
-Version 2.0.2 of caves.app was released on Sunday, 22nd December 2024.
+## Version 2.1.0
+Version 2.1.0 of caves.app was released on Monday, 17th February 2024, and is a
+maintenance release with database and dependency updates.
 
 ### Changes
-- Updated Django to
+- Updated Django to v5.1.6.
+- Updated Python to v3.13.
+- Updated PostgreSQL to v17.3.
+- Updated PostGIS to v3.5.
+- Updated all Python dependencies.
+- Reconfigured Docker Compose setup for both development and production.
+- Moved to `django-environ` for environment variable management in settings files.
+- Simplified environment variable configuration into a single `dev.env` file.
+- Removed unnecessary HSTS security settings in Django which are managed by the reverse proxy.
+- Added `ruff` to replace black for code formatting.
+- Changed project line length to 100.
+- Ran `ruff` on all files.
+- Added `mypy` for static type checking and fixed errors.
+- Moved to `uv` for package management.
+- Moved to `pyproject.toml` based configuration.
+- Stopped loading PostgreSQL data from a fixture and instead create from migrations.
+- Moved `config/` to `conf/` and reorganised modules/files within to be simpler.
+- Updated GitHub Actions for all of the above changes.
+- Added `just` command runner for development tasks.
+- Removed `dokku` related configuration which is now OOU.
+- Added `django-rich` to utilise its test runner and exception handling.
+- Removed file based logging and instead now log everything to STDOUT.
+- Updated `README.md` with the above environment changes.
+- Removed `asgi.py` which was not used.
+- Stopped using `import *` in the `logger` module for views.
+
 ## Version 2.0.1
 Version 2.0.1 of caves.app was released on Tuesday, 19th December 2023.
 

@@ -463,7 +463,7 @@ class EmailChangeForm(forms.Form):
         max_length=255,
         required=True,
         help_text=(
-            "This email address will be verified before any change is " "stored on the system."
+            "This email address will be verified before any change is stored on the system."
         ),
     )
     password = forms.CharField(

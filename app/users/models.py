@@ -108,7 +108,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
     username = models.SlugField(
         max_length=30,
         unique=True,
-        help_text=("A unique identifier that will be part of the web " "address for your logbook."),
+        help_text="A unique identifier that will be part of the web address for your logbook.",
     )
     name = models.CharField(
         max_length=35,
@@ -280,8 +280,7 @@ class CavingUser(AbstractBaseUser, PermissionsMixin):
         "Disable statistics over time chart",
         default=False,
         help_text=(
-            "Enabling this option will hide the statistics over "
-            "time chart on the statistics page."
+            "Enabling this option will hide the statistics over time chart on the statistics page."
         ),
     )
 
@@ -593,13 +592,12 @@ class Notification(models.Model):
         elif self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
             if not self.trip:
                 raise ValidationError(
-                    "Trip like or trip comment notifications "
-                    "must have a trip associated with them."
+                    "Trip like or trip comment notifications must have a trip associated with them."
                 )
 
             if self.message or self.url:
                 raise ValidationError(
-                    "Trip like or trip comment notifications " "must not have a message or URL."
+                    "Trip like or trip comment notifications must not have a message or URL."
                 )
 
             if self.type == self.TRIP_COMMENT:
@@ -608,11 +606,10 @@ class Notification(models.Model):
             raise ValidationError("Invalid notification type")
 
     def get_url(self) -> str:
-        assert self.trip is not None
-
         if self.type == self.FREE_TEXT:
             return self.url
         if self.type == self.TRIP_LIKE or self.type == self.TRIP_COMMENT:
+            assert self.trip is not None, "Trip notification must have a trip"
             return self.trip.get_absolute_url()
         raise RuntimeError("Invalid notification type")
 
@@ -626,9 +623,10 @@ class Notification(models.Model):
         raise RuntimeError("Invalid notification type")
 
     def _get_trip_like_message(self) -> str:
-        assert self.trip is not None
+        assert self.type == self.TRIP_LIKE and self.trip is not None, (
+            "Trip like notification must have a trip"
+        )
 
-        assert self.type == self.TRIP_LIKE
         users = list(self.trip.likes.exclude(pk=self.user.pk))
         return self._get_trip_action_message(
             users=users,
@@ -637,7 +635,9 @@ class Notification(models.Model):
         )
 
     def _get_trip_comment_message(self) -> str:
-        assert self.type == self.TRIP_COMMENT and self.trip is not None
+        assert self.type == self.TRIP_COMMENT and self.trip is not None, (
+            "Trip comment notification must have a trip"
+        )
 
         users = []
         for comment in self.trip.comments.all():
@@ -657,7 +657,9 @@ class Notification(models.Model):
     def _get_trip_action_message(
         self, /, users: list[CavingUser], action: str, action_str: str
     ) -> str:
-        assert self.trip is not None
+        assert self.type in (self.TRIP_LIKE, self.TRIP_COMMENT) and self.trip is not None, (
+            "Trip notification must have a trip"
+        )
 
         user_count = len(users)
 
@@ -675,7 +677,7 @@ class Notification(models.Model):
         if user_count == 2:
             user1 = users[0].name
             user2 = users[1].name
-            return f"{prefix} {self.trip.cave_name} was {action_str} " f"{user1} and {user2}."
+            return f"{prefix} {self.trip.cave_name} was {action_str} {user1} and {user2}."
 
         if user_count > 2:
             user1 = users[0].name

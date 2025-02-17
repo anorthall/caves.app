@@ -1,4 +1,4 @@
-name: Lint
+name: Python Lint
 
 on:
   workflow_call:
@@ -10,31 +10,61 @@ on:
     branches:
       - main
 
+env:
+  MYPY_CACHE_DIR: "${{ github.workspace }}/.mypy_cache"
+  PYTHONPATH: "${{ github.workspace }}:${{ github.workspace }}/app"
+
 jobs:
-  black:
+  ruff:
+    name: Ruff
     runs-on: ubuntu-latest
-    name: Black
+
     steps:
-      - name: Check out source
-        uses: actions/checkout@v3
-      - name: Run black formatter
-        uses: psf/black@stable
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          options: "--check --verbose"
-          src: "app/ config/django/"
-  flake8:
+          enable-cache: true
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run ruff check
+        run: uv run ruff check .
+
+      - name: Run ruff format
+        run: uv run ruff format --check .
+
+  mypy:
+    name: Mypy
     runs-on: ubuntu-latest
-    name: Flake8
+
     steps:
-      - name: Check out source
-        uses: actions/checkout@v3
-      - name: Set up Python 3.11.4
-        uses: actions/setup-python@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install GeoDjango dependencies
+        run: sudo apt-get install gdal-bin libgdal-dev libgeos-dev libproj-dev -y
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: 3.11.4
-      - name: flake8 Lint
-        uses: py-actions/flake8@v2
+          enable-cache: true
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Cache mypy
+        uses: actions/cache@v4
         with:
-          path: "app/ config/django/"
-          args: "-v"
-          plugins: "flake8-black"
+          path: ${{ env.MYPY_CACHE_DIR }}
+          key: ${{ runner.os }}-mypy-${{ hashFiles('**/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mypy-
+
+      - name: Run mypy
+        run: uv run mypy

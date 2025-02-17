@@ -1,4 +1,4 @@
-name: Tests
+name: Python Tests
 
 on:
   workflow_call:
@@ -12,53 +12,45 @@ on:
 
 jobs:
   run-tests:
-    name: Django tests
+    name: Django Tests
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-      PYTHONPATH: ${{ github.workspace }}
-      BASE_DIR: ${{ github.workspace }}/app
-      DJANGO_SETTINGS_MODULE: config.django.settings.development
-      IMGPROXY_KEY: tests
-      IMGPROXY_SALT: tests
-      SECRET_KEY: tests
-      REDIS_URL: redis://localhost:6379
-      DJANGO_LOG_LOCATION: ${{ github.workspace }}/django.log
-      USER_ACTIONS_LOG_LOCATION: ${{ github.workspace }}/user_actions.log
+      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
+      PYTHONPATH: "${{ github.workspace }}:${{ github.workspace }}/app"
+      DJANGO_SETTINGS_MODULE: "conf.settings.development"
+      REDIS_URL: "redis://localhost:6379"
+
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-          cache: 'pip'
-          cache-dependency-path: config/requirements/requirements.txt
-      - name: Upgrade pip
-        run: |
-          pip install --upgrade pip wheel setuptools
-      - name: Install dependencies
-        run: |
-          pip install -r config/requirements/requirements.txt
+        uses: actions/checkout@v4
+
       - name: Install GeoDjango dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install gdal-bin libgdal-dev libgeos-dev libproj-dev
+        run: sudo apt-get install gdal-bin libgdal-dev libgeos-dev libproj-dev -y
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
       - name: Run Django tests
-        working-directory: ./app
+        working-directory: ${{ github.workspace }}/app
         run: |
-          touch ${{ github.workspace }}/config/__init__.py
-          coverage run --concurrency=multiprocessing ./manage.py test -v 2 --noinput --parallel auto
-          coverage combine
-          coverage xml
+          uv run coverage run manage.py test -v 2 --no-input
+          uv run coverage xml
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./app/coverage.xml
+          files: ${{ github.workspace }}/app/coverage.xml
+
     services:
       postgres:
-        image: postgis/postgis:16-3.4
+        image: postgis/postgis:17-3.5
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -70,8 +62,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
       redis:
-        image: redis
+        image: redis:7.4
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s

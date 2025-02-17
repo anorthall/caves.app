@@ -1,6 +1,7 @@
 import socket
 
-from .base import *
+from .base import *  # noqa: F403
+from .base import INSTALLED_APPS, MIDDLEWARE
 
 DEBUG = True
 TEST_RUNNER = "django_rich.test.RichRunner"

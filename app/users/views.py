@@ -196,7 +196,7 @@ class FriendRequestDeleteView(LoginRequiredMixin, View):
             f_req.delete()
             messages.success(
                 request,
-                f"Friend request between {f_req.user_to} and {f_req.user_from} " "deleted.",
+                f"Friend request between {f_req.user_to} and {f_req.user_from} deleted.",
             )
 
             other_user = f_req.user_to
@@ -368,8 +368,7 @@ def resend_verify_email(request):
             log_user_action(user, "resent their verification email")
         messages.success(
             request,
-            "If the provided email matched an account then the verification email "
-            "has been resent.",
+            "If the provided email matched an account then the verification email has been resent.",
         )
     else:
         form = ResendVerifyEmailForm()

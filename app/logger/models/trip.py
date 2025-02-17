@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import uuid
+from typing import TYPE_CHECKING
 
 import humanize
 from distancefield import D, DistanceField, DistanceUnitField
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
@@ -14,6 +18,9 @@ from ..validators import (
     horizontal_dist_validator,
     vertical_dist_validator,
 )
+
+if TYPE_CHECKING:
+    from users.models import CavingUser
 
 
 class Caver(models.Model):
@@ -181,12 +188,12 @@ class Trip(models.Model):
     clubs = models.CharField(
         max_length=100,
         blank=True,
-        help_text=("A comma-separated list of any caving " "clubs associated with this trip."),
+        help_text="A comma-separated list of any caving clubs associated with this trip.",
     )
     expedition = models.CharField(
         max_length=100,
         blank=True,
-        help_text=("A comma-separated list of any expeditions " "associated with this trip."),
+        help_text="A comma-separated list of any expeditions associated with this trip.",
     )
     horizontal_dist = DistanceField(
         max_digits=14,
@@ -399,15 +406,18 @@ class Trip(models.Model):
     def get_absolute_url(self):
         return reverse("log:trip_detail", args=[self.uuid])
 
-    def is_viewable_by(self, user_viewing, /, friends=None):
+    def is_viewable_by(self, user_viewing: CavingUser | AnonymousUser | None, /, friends=None):
         """Returns whether or not user_viewing can view this trip."""
+        if isinstance(user_viewing, AnonymousUser | None) and self.privacy == self.DEFAULT:
+            return self.user.is_public
+
+        if isinstance(user_viewing, AnonymousUser | None) or self.privacy == self.PUBLIC:
+            return self.privacy == self.PUBLIC
+
         if friends is None:
             friends = self.user.friends.all()
 
         if user_viewing == self.user:
-            return True
-
-        if self.privacy == self.PUBLIC:
             return True
 
         if self.privacy == self.FRIENDS and user_viewing in friends:

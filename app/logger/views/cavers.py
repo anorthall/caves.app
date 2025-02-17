@@ -155,7 +155,7 @@ class CaverMerge(LoginRequiredMixin, View):
 
             messages.success(
                 request,
-                (f"The caver record for {caver.name} has been merged with " f"{merge_caver.name}."),
+                f"The caver record for {caver.name} has been merged with {merge_caver.name}.",
             )
         else:
             messages.error(
