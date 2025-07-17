@@ -1,5 +1,6 @@
 *
 !app/
 !conf/
+!stubs/
 !uv.lock
 !pyproject.toml

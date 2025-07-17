@@ -33,13 +33,13 @@ fi
 if [ "$1" = "manage" ]
 then
     cd "$APP_ROOT" || exit 1
-    uv run manage.py "${@:2}"
+    python manage.py "${@:2}"
 fi
 
 if [ "$1" = "test" ]
 then
     cd "$APP_ROOT" || exit 1
-    uv run manage.py test "${@:2}"
+    python manage.py test "${@:2}"
     exit 0
 fi
 
@@ -50,17 +50,17 @@ if [ "$1" = "devserver" ]
 then
     echo "Collecting static files..."
     cd "$APP_ROOT" || exit 1
-    uv run manage.py collectstatic --noinput
+    python manage.py collectstatic --noinput
 
     if [ "$RUN_MIGRATIONS_ON_START" = "yes" ]
     then
         echo "Running migrations..."
-        uv run manage.py migrate --no-input
+        python manage.py migrate --no-input
     fi
 
     cd "$PROJECT_ROOT" || exit 1
 
-    uv run gunicorn \
+    gunicorn \
       --bind "0.0.0.0:${PORT:-8000}" \
       --workers 2 \
       --reload \
@@ -77,12 +77,12 @@ then
     echo "Detected $NUM_CORES, running with $NUM_WORKERS workers"
 
     cd "$APP_ROOT" || exit 1
-    uv run manage.py runmailer_pg &
+    python manage.py runmailer_pg &
 
     cd "$PROJECT_ROOT" || exit 1
     echo "Starting server..."
-    uv run gunicorn \
-      --bind "0.0.0.0:$PORT" \
+    gunicorn \
+      --bind "0.0.0.0:${PORT:-8000}" \
       --workers "$NUM_WORKERS" \
       --preload \
       --max-requests 1000 \

@@ -43,4 +43,4 @@ services:
 
 networks:
   cavesapp:
-    driver: bridge
+    external: true
