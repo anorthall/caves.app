@@ -5,9 +5,10 @@ include:
 
 services:
   django:
-    extends:
-      file: compose.base.yml
-      service: django
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./conf/Dockerfile
     command: /app/conf/run.sh devserver
     volumes:
       - ./app/:/app/app/
@@ -24,7 +25,13 @@ services:
       - postgres
       - redis
       - imgproxy
+    networks:
+      - cavesapp
 
 volumes:
   caves_mediafiles:
   caves_staticfiles:
+
+networks:
+  cavesapp:
+    driver: bridge

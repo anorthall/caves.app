@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM python:3.13-slim
-COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.7.21 /uv /uvx /bin/
 
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_FROZEN=1
@@ -12,7 +12,9 @@ ENV PATH="/app/.venv/bin:${PATH}"
 ENV DJANGO_SETTINGS_MODULE=conf.settings.production
 ENV BASE_DIR="/app/app/"
 
-RUN mkdir -p /app /app/staticfiles /app/mediafiles && \
+
+RUN groupadd app && useradd -g app -m -d /app app && \
+    mkdir -p /app /app/staticfiles /app/mediafiles && \
     apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
@@ -27,16 +29,16 @@ RUN mkdir -p /app /app/staticfiles /app/mediafiles && \
 WORKDIR /app
 
 COPY uv.lock pyproject.toml /app/
+
 RUN uv sync --frozen
 
 COPY .. /app/
-RUN uv run /app/app/manage.py collectstatic --noinput && \
-    groupadd app && useradd -g app -d /app app && \
-    chmod +x /app/conf/run.sh && \
-    chown app -R /app
+
+RUN chmod +x /app/conf/run.sh && \
+    chown -R app:app /app
+
+RUN python /app/app/manage.py collectstatic --noinput
 
 USER app
-
-# Entrypoint
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/app/conf/run.sh", "start"]

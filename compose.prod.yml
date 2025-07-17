@@ -1,15 +1,17 @@
-name: cavesapp-prod
-
 services:
   django:
-    extends:
-      file: compose.base.yml
-      service: django
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./conf/Dockerfile
     command: /app/conf/run.sh start
-    volumes:
-      - ./data/mediafiles/:/app/mediafiles/
-      - ./data/staticfiles/:/app/staticfiles/
     env_file:
-      - ./conf/prod.env
+      - ./caves.app.env
     ports:
-      - "8000:8000"
+      - "5600:8000"
+    networks:
+      - cavesapp
+
+networks:
+  cavesapp:
+    driver: bridge
