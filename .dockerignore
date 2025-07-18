@@ -4,3 +4,4 @@
 !stubs/
 !uv.lock
 !pyproject.toml
+!CHANGELOG.md

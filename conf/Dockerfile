@@ -32,13 +32,7 @@ COPY --chown=app:app uv.lock pyproject.toml /app/
 
 RUN uv sync --frozen
 
-COPY --chown=app:app \
-     --exclude=./.* \
-     --exclude=*.MD \
-     --exclude=**.env \
-     --exclude=./data \
-     --exclude=./frontend \
-     . .
+COPY --chown=app:app . .
 
 RUN python /app/app/manage.py collectstatic --noinput && \
     chmod +x /app/conf/run.sh
