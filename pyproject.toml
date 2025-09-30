@@ -21,6 +21,7 @@ dependencies = [
     "django-markdownify",
     "django-ratelimit",
     "django-rich",
+    "django-ses>=4.4.0",
     "django-storages[s3]",
     "django-timezone-field",
     "django-tinymce",
