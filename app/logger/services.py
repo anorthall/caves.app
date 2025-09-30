@@ -22,8 +22,8 @@ def generate_s3_presigned_post(upload_path, content_type, max_bytes=10485760):
         aws_secret_access_key=settings.AWS_S3_SECRET_ACCESS_KEY,
     )
 
-    acl = settings.AWS_DEFAULT_ACL
-    expires_in = settings.AWS_PRESIGNED_EXPIRY
+    acl = settings.AWS_S3_DEFAULT_ACL
+    expires_in = settings.AWS_S3_PRESIGNED_EXPIRY
 
     aws_response = client.generate_presigned_post(
         settings.AWS_STORAGE_BUCKET_NAME,

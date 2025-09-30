@@ -1,6 +1,7 @@
-import copy
 import os
+from copy import deepcopy
 from pathlib import Path
+from typing import TypedDict
 
 import environ
 from django.contrib.messages import constants as messages
@@ -36,7 +37,7 @@ ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", str, "http://127.0.0.1").split(" ")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS", str, "http://127.0.0.1").split(" ")
 
 # Need this many for CSV import feature to work - 16 fields per trip
-DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", int, 10_000)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10_000
 
 # Email settings
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", str, "admin@yourapp.com")
@@ -169,6 +170,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Static files, media files, and Amazon S3.
 # Photos are *always* stored in S3, even in development.
+AWS_S3_DEFAULT_ACL = env("AWS_S3_DEFAULT_ACL", str, "private")
+AWS_S3_PRESIGNED_EXPIRY = env("AWS_S3_PRESIGNED_EXPIRY", int, 600)
 AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN", str, "")
 AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", str, "")
 AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", str, "")
@@ -179,98 +182,85 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "/app/staticfiles"
 STATICFILES_DIRS = [DJANGO_ROOT / "static"]
 
-MEDIA_STORAGE_LOCATION = env("MEDIA_LOCATION", str, "m")
-PHOTOS_STORAGE_LOCATION = env("PHOTOS_LOCATION", str, "p")
+MEDIA_STORAGE_LOCATION = "m"
+PHOTOS_STORAGE_LOCATION = "p"
 
-if AWS_STORAGE_BUCKET_NAME:  # pragma: no cover
-    MEDIA_URL = env("MEDIA_URL", str, f"https://{AWS_S3_CUSTOM_DOMAIN}/")
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {
-                "location": MEDIA_STORAGE_LOCATION,
-            },
-        },
-        "photos": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {
-                "location": PHOTOS_STORAGE_LOCATION,
-            },
-        },
-    }
-else:
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = "/app/mediafiles"
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-            "OPTIONS": {
-                "location": MEDIA_STORAGE_LOCATION,
-            },
-        },
-        "photos": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {
-                "location": PHOTOS_STORAGE_LOCATION,
-            },
-        },
-    }
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/" if AWS_S3_CUSTOM_DOMAIN else "/media/"
+MEDIA_ROOT = "/app/mediafiles"
 
-STORAGES["staticfiles"] = {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}
+_MEDIA_DEFAULT_BACKEND = (
+    "storages.backends.s3.S3Storage"
+    if AWS_S3_CUSTOM_DOMAIN
+    else "django.core.files.storage.FileSystemStorage"
+)
 
-MARKDOWNIFY = {
+STORAGES = {
     "default": {
-        "WHITELIST_TAGS": [
-            "a",
-            "abbr",
-            "acronym",
-            "b",
-            "blockquote",
-            "em",
-            "i",
-            "li",
-            "ol",
-            "p",
-            "strong",
-            "ul",
-            "code",
-            "h1",
-            "h2",
-            "h3",
-            "h4",
-            "h5",
-            "h6",
-            "h7",
-        ],
-        "WHITELIST_STYLES": [
-            "color",
-            "font-weight",
-        ],
-        "MARKDOWN_EXTENSIONS": [
-            "fenced_code",
-        ],
-        "LINKIFY_TEXT": {
-            "PARSE_URLS": True,
-        },
+        "BACKEND": _MEDIA_DEFAULT_BACKEND,
+        "OPTIONS": {"location": "m"},
     },
-    "plain": {
-        "WHITELIST_TAGS": [
-            "p",
-            "a",
-            "strong",
-            "blockquote",
-            "em",
-            "i",
-            "b",
-        ],
-        "LINKIFY_TEXT": {
-            "PARSE_URLS": True,
-        },
+    "photos": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {"location": "p"},
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
-MARKDOWNIFY["news"] = copy.deepcopy(MARKDOWNIFY["default"])
-MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")  # type: ignore[attr-defined]
+
+class _MarkdownifyConfig(TypedDict):
+    WHITELIST_TAGS: list[str]
+    WHITELIST_STYLES: list[str]
+    MARKDOWN_EXTENSIONS: list[str]
+    LINKIFY_TEXT: dict[str, bool]
+
+
+_MARKDOWNIFY_DEFAULT: _MarkdownifyConfig = {
+    "WHITELIST_TAGS": [
+        "a",
+        "abbr",
+        "acronym",
+        "b",
+        "blockquote",
+        "em",
+        "i",
+        "li",
+        "ol",
+        "p",
+        "strong",
+        "ul",
+        "code",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "h7",
+    ],
+    "WHITELIST_STYLES": [
+        "color",
+        "font-weight",
+    ],
+    "MARKDOWN_EXTENSIONS": [
+        "fenced_code",
+    ],
+    "LINKIFY_TEXT": {
+        "PARSE_URLS": True,
+    },
+}
+
+MARKDOWNIFY = {
+    "default": deepcopy(_MARKDOWNIFY_DEFAULT),
+    "news": deepcopy(_MARKDOWNIFY_DEFAULT),
+    "plain": {
+        "WHITELIST_TAGS": ["p", "a", "strong", "blockquote", "em", "i", "b"],
+        "LINKIFY_TEXT": {"PARSE_URLS": True},
+    },
+}
+
+MARKDOWNIFY["news"]["WHITELIST_TAGS"].append("img")
 MARKDOWNIFY["news"]["WHITELIST_ATTRS"] = ["src", "alt", "title", "class", "href"]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -278,7 +268,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 ACTIVE_LINK_STRICT = True
 
-DEFAULT_LOG_LEVEL = "ERROR"
+DEFAULT_LOG_LEVEL = env("DJANGO_LOG_LEVEL", str, "ERROR")
 
 LOGGING = {
     "version": 1,
@@ -291,7 +281,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": env("DJANGO_LOG_LEVEL", str, DEFAULT_LOG_LEVEL),
+            "level": DEFAULT_LOG_LEVEL,
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
@@ -299,7 +289,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": env("DJANGO_LOG_LEVEL", str, DEFAULT_LOG_LEVEL),
+            "level": DEFAULT_LOG_LEVEL,
             "propagate": True,
         },
         "user_actions": {

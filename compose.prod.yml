@@ -8,9 +8,15 @@ services:
     env_file:
       - ./caves.app.env
     ports:
-      - "5600:8000"
+      - "3200:8000"
     networks:
       - cavesapp
+    labels:
+      cupdate.config.ignore: "true"
+    logging:
+      driver: loki
+      options:
+        loki-url: "https://loki.p.hac.sh/loki/api/v1/push"
 
 networks:
   cavesapp:

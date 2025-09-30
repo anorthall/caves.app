@@ -9,12 +9,18 @@ services:
     volumes:
       - ./data/postgres/:/var/lib/postgresql/data
     ports:
-      - "5601:5432"
+      - "3201:5432"
     env_file:
       - ./caves.app.env
     networks:
       - cavesapp
-
+    labels:
+      cupdate.config.ignore: "true"
+    logging:
+      driver: loki
+      options:
+        loki-url: "https://loki.p.hac.sh/loki/api/v1/push"
+  
   caves-redis:
     restart: unless-stopped
     image: redis:8.0
@@ -23,9 +29,13 @@ services:
     env_file:
       - ./caves.app.env
     ports:
-      - "5602:6379"
+      - "3202:6379"
     networks:
       - cavesapp
+    logging:
+      driver: loki
+      options:
+        loki-url: "https://loki.p.hac.sh/loki/api/v1/push"
 
   caves-imgproxy:
     restart: unless-stopped
@@ -37,9 +47,13 @@ services:
     env_file:
       - ./caves.app.env
     ports:
-      - "5603:8080"
+      - "3203:8080"
     networks:
       - cavesapp
+    logging:
+      driver: loki
+      options:
+        loki-url: "https://loki.p.hac.sh/loki/api/v1/push"
 
 networks:
   cavesapp:
