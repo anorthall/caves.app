@@ -1,6 +1,6 @@
 from attrs import define, field
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -17,7 +17,7 @@ class Email:
     required_context: list[str] = field(init=False)
     from_email: str = settings.DEFAULT_FROM_EMAIL
 
-    def send(self) -> int:
+    def send(self) -> None:
         self._check_required_context_exists()
 
         # Add SITE_ROOT to context
@@ -31,12 +31,7 @@ class Email:
         subject: str | SafeString = render_to_string(subject_template, context=self.context)
         subject = "".join(subject.splitlines())  # subject must not contain newlines
 
-        html_template = render_to_string(html_template, context=self.context)
-
-        try:
-            plain_template = render_to_string(plain_template, context=self.context)
-        except TemplateDoesNotExist:
-            plain_template = strip_tags(html_template)
+        html_email = render_to_string(html_template, context=self.context)
 
         if isinstance(self.to, User):
             recipient_list = [self.to.email]
@@ -45,13 +40,17 @@ class Email:
         else:
             recipient_list = self.to
 
-        return send_mail(
-            subject=subject,
-            message=plain_template,
-            html_message=html_template,
-            from_email=self.from_email,
-            recipient_list=recipient_list,
-        )
+        message = EmailMultiAlternatives(subject, html_email, self.from_email, recipient_list)
+
+        try:
+            text_email = render_to_string(plain_template, context=self.context)
+            message.attach_alternative(plain_template, "text/plain")
+
+        except TemplateDoesNotExist:
+            text_email = strip_tags(html_template)
+
+        message.attach_alternative(text_email, "text/plain")
+        message.send()
 
     def _check_required_context_exists(self):
         for key in self.required_context:
