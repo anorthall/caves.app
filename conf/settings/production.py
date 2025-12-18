@@ -42,8 +42,7 @@ STORAGES["staticfiles"] = {
     "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
 }
 
-# Emails - use django-mailer as the primary backend
-EMAIL_BACKEND = "mailer.backend.DbBackend"
+EMAIL_BACKEND = "django_ses.SESBackend"
 MAILER_EMAIL_BACKEND = env(
     "MAILER_EMAIL_BACKEND",
     cast=str,

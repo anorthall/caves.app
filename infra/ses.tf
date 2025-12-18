@@ -11,6 +11,17 @@ resource "aws_sesv2_email_identity" "caves_app" {
   }
 }
 
+resource "aws_sesv2_email_identity" "caves_app_email" {
+  for_each = toset(["admin@caves.app", "andrew@caves.app"])
+
+  email_identity         = each.key
+  configuration_set_name = aws_ses_configuration_set.caves_app.name
+
+  dkim_signing_attributes {
+    next_signing_key_length = "RSA_2048_BIT"
+  }
+}
+
 resource "aws_sesv2_email_identity_mail_from_attributes" "caves_app" {
   email_identity         = aws_sesv2_email_identity.caves_app.email_identity
   mail_from_domain       = local.ses_mail_from_domain

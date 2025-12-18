@@ -36,10 +36,9 @@ RUN uv sync --frozen
 COPY --chown=app:app . .
 
 RUN python /app/app/manage.py collectstatic --noinput && \
+    chown -R app:app /app/staticfiles /app/mediafiles && \
     chmod +x /app/conf/run.sh
 
 USER app
 ENTRYPOINT ["/usr/bin/tini", "--"]
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/healthcheck/ || exit 1
 CMD ["/app/conf/run.sh", "run_mailer"]

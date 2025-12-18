@@ -173,6 +173,13 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", str, "")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", str, "")
 AWS_REGION = env("AWS_REGION", str, "")
 
+# SES
+USE_SES_V2 = True
+AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME", str, "eu-west-2")
+AWS_SES_REGION_ENDPOINT = env(
+    "AWS_SES_REGION_ENDPOINT", str, f"email.{AWS_SES_REGION_NAME}.amazonaws.com"
+)
+
 # Static files, media files, and Amazon S3.
 # Photos are *always* stored in S3, even in development.
 AWS_S3_DEFAULT_ACL = env("AWS_S3_DEFAULT_ACL", str, "private")

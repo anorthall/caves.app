@@ -2,6 +2,7 @@ name: cavesapp
 
 services:
   web:
+    user: "${UID:-1000}:${GID:-1000}"
     restart: unless-stopped
     build:
       context: .
@@ -15,11 +16,11 @@ services:
       - caves_mediafiles:/app/mediafiles/
       - caves_staticfiles:/app/staticfiles/
     ports:
-      - "8000:8000"
+      - "3200:8000"
     env_file:
-      - ./conf/dev.env
+      - .env
     depends_on:
-      postgis:
+      postgres:
         condition: service_healthy
       valkey:
         condition: service_healthy
@@ -28,19 +29,36 @@ services:
     networks:
       - cavesapp
 
+#  mailer:
+#    restart: unless-stopped
+#    build:
+#      context: .
+#      dockerfile: ./conf/Dockerfile
+#    env_file:
+#      - .env
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      valkey:
+#        condition: service_healthy
+#      imgproxy:
+#        condition: service_healthy
+#    networks:
+#      - cavesapp
+
   postgres:
     restart: unless-stopped
     build:
       context: .
       dockerfile: ./conf/db/Dockerfile
     volumes:
-      - ./data/postgres/:/var/lib/postgresql/data
+      - ./data/postgres/:/var/lib/postgresql
     ports:
       - "3201:5432"
     env_file:
-      - ./local.dev.env
+      - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U cavesapp"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -53,7 +71,7 @@ services:
     volumes:
       - ./data/valkey/:/data
     env_file:
-      - ./local.dev.env
+      - .env
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
     ports:
@@ -69,19 +87,9 @@ services:
     healthcheck:
       test: ["CMD", "imgproxy", "health"]
     env_file:
-      - ./local.dev.env
+      - .env
     ports:
       - "3203:8080"
-    networks:
-      - cavesapp
-
-  mailer:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: ./conf/Dockerfile
-    env_file:
-      - ./local.dev.env
     networks:
       - cavesapp
 
