@@ -1,10 +1,7 @@
-name: cavesapp-dev
-
-include:
-  - compose.services.yml
+name: cavesapp
 
 services:
-  django:
+  web:
     restart: unless-stopped
     build:
       context: .
@@ -22,9 +19,69 @@ services:
     env_file:
       - ./conf/dev.env
     depends_on:
-      - postgres
-      - redis
-      - imgproxy
+      postgis:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      imgproxy:
+        condition: service_healthy
+    networks:
+      - cavesapp
+
+  postgres:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./conf/db/Dockerfile
+    volumes:
+      - ./data/postgres/:/var/lib/postgresql/data
+    ports:
+      - "3201:5432"
+    env_file:
+      - ./local.dev.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cavesapp
+
+  valkey:
+    restart: unless-stopped
+    image: valkey/valkey:9.0-trixie
+    volumes:
+      - ./data/valkey/:/data
+    env_file:
+      - ./local.dev.env
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    ports:
+      - "3202:6379"
+    networks:
+      - cavesapp
+
+  imgproxy:
+    restart: unless-stopped
+    image: ghcr.io/imgproxy/imgproxy:v3.30
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+    env_file:
+      - ./local.dev.env
+    ports:
+      - "3203:8080"
+    networks:
+      - cavesapp
+
+  mailer:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./conf/Dockerfile
+    env_file:
+      - ./local.dev.env
     networks:
       - cavesapp
 

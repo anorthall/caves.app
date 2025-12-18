@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7-labs
-FROM python:3.13-slim
-COPY --from=ghcr.io/astral-sh/uv:0.7.21 /uv /uvx /bin/
+FROM python:3.14-slim
+COPY --from=ghcr.io/astral-sh/uv:0.9.18 /uv /uvx /bin/
 
 ENV UV_COMPILE_BYTECODE="1"
 ENV UV_FROZEN="1"
@@ -16,6 +16,7 @@ RUN groupadd app && useradd -g app -m -d /app app && \
     mkdir -p /app /app/staticfiles /app/mediafiles && \
     apt-get update && apt-get install -y \
     build-essential \
+    curl \
     libpq-dev \
     postgresql-client \
     netcat-traditional \
@@ -39,4 +40,6 @@ RUN python /app/app/manage.py collectstatic --noinput && \
 
 USER app
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["/app/conf/run.sh", "start"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8000}/healthcheck/ || exit 1
+CMD ["/app/conf/run.sh", "run_mailer"]

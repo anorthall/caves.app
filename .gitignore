@@ -142,3 +142,4 @@ node_modules/
 
 # Postgres
 *.dump
+*.sql

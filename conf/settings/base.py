@@ -140,7 +140,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "conf.django.wsgi.application"
+WSGI_APPLICATION = "conf.wsgi.application"
 ROOT_URLCONF = "conf.urls"
 
 CACHES = {
@@ -168,25 +168,27 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# General AWS
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", str, "")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", str, "")
+AWS_REGION = env("AWS_REGION", str, "")
+
 # Static files, media files, and Amazon S3.
 # Photos are *always* stored in S3, even in development.
 AWS_S3_DEFAULT_ACL = env("AWS_S3_DEFAULT_ACL", str, "private")
 AWS_S3_PRESIGNED_EXPIRY = env("AWS_S3_PRESIGNED_EXPIRY", int, 600)
 AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN", str, "")
-AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", str, "")
-AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", str, "")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", str, "")
-AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", str, "")
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "/app/staticfiles"
+STATIC_ROOT = DJANGO_ROOT.parent / "staticfiles"
 STATICFILES_DIRS = [DJANGO_ROOT / "static"]
 
 MEDIA_STORAGE_LOCATION = "m"
 PHOTOS_STORAGE_LOCATION = "p"
 
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/" if AWS_S3_CUSTOM_DOMAIN else "/media/"
-MEDIA_ROOT = "/app/mediafiles"
+MEDIA_ROOT = DJANGO_ROOT.parent / "mediafiles"
 
 _MEDIA_DEFAULT_BACKEND = (
     "storages.backends.s3.S3Storage"

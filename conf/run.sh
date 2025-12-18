@@ -74,10 +74,12 @@ if [ "$1" = "start" ]
 then
     NUM_CORES=$(nproc)
     NUM_WORKERS=$((NUM_CORES * 2 + 1))
-    echo "Detected $NUM_CORES, running with $NUM_WORKERS workers"
 
-    cd "$APP_ROOT" || exit 1
-    python manage.py runmailer_pg &
+    if [ "$NUM_WORKERS" -gt 8 ]; then
+        NUM_WORKERS=8
+    fi
+
+    echo "Detected $NUM_CORES cores, running with $NUM_WORKERS workers"
 
     cd "$PROJECT_ROOT" || exit 1
     echo "Starting server..."
@@ -85,9 +87,14 @@ then
       --bind "0.0.0.0:${PORT:-8000}" \
       --workers "$NUM_WORKERS" \
       --preload \
-      --max-requests 1000 \
-      --max-requests-jitter 200 \
       --keep-alive 10 \
       --name caves-django \
       conf.wsgi:application
+fi
+
+if [ "$1" = "worker" ]
+then
+    echo "Starting mail queue worker..."
+    cd "$APP_ROOT" || exit 1
+    python manage.py runmailer_pg
 fi
