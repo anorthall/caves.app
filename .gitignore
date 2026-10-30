@@ -143,3 +143,6 @@ node_modules/
 # Postgres
 *.dump
 *.sql
+
+# direnv local secrets
+.envrc.local
