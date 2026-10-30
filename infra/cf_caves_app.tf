@@ -9,12 +9,24 @@ output "caves_app_cf_ns" {
 }
 
 locals {
+  caves_app_records = {
+    "caves.app" = { ipv4 = local.server_ipv4, ipv6 = local.server_ipv6 }
+  }
+
+  caves_app_cnames = {
+    "www.caves.app"      = "caves.app"
+    "imgproxy.caves.app" = "caves.app"
+    "images.caves.app"   = module.images_cdn.cloudfront_distribution_domain_name
+    "cdn.caves.app"      = module.cdn.cloudfront_distribution_domain_name
+    "status.caves.app"   = "page.updown.io"
+  }
+
   caves_app_cf_txts = {
     "caves.app"                  = "v=spf1 include:amazonses.com include:spf.messagingengine.com -all"
     "_dmarc.caves.app"           = "v=DMARC1; p=quarantine; rua=mailto:admin@caves.app; ruf=mailto:admin@caves.app; fo=1"
     "_updown.status.caves.app"   = "updown-page=p/qj0wh"
     (local.ses_mail_from_domain) = "v=spf1 include:amazonses.com ~all"
-    # Present in Route53 but not managed by Terraform there.
+    # Carried over from Route53, where it was not managed by Terraform.
     "id/nzlnoncdvynv6dwpjtm5rvjny14dplqxbf/qjlfe=.caves.app" = "id/NzLNoNCDvyNV6DWPjtM5RVjny14DPLqXBf/QjlfE="
   }
 

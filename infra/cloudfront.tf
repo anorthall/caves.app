@@ -94,9 +94,11 @@ module "caves_app_certificate" {
 
   domain_name               = "caves.app"
   subject_alternative_names = ["*.caves.app"]
-  zone_id                   = aws_route53_zone.caves_app.zone_id
 
-  validation_method = "DNS"
+  # Validation records live in Cloudflare (cf_caves_app.tf).
+  validation_method       = "DNS"
+  create_route53_records  = false
+  validation_record_fqdns = keys(local.caves_app_cf_acm_validation)
 
   providers = {
     aws = aws.use1
