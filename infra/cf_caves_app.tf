@@ -57,9 +57,9 @@ resource "cloudflare_dns_record" "caves_app_a" {
   zone_id = cloudflare_zone.caves_app.id
   name    = each.key
   type    = "A"
-  ttl     = local.default_ttl
+  ttl     = 1
   content = each.value.ipv4
-  proxied = false
+  proxied = true
 }
 
 resource "cloudflare_dns_record" "caves_app_aaaa" {
@@ -68,9 +68,9 @@ resource "cloudflare_dns_record" "caves_app_aaaa" {
   zone_id = cloudflare_zone.caves_app.id
   name    = each.key
   type    = "AAAA"
-  ttl     = local.default_ttl
+  ttl     = 1
   content = each.value.ipv6
-  proxied = false
+  proxied = true
 }
 
 resource "cloudflare_dns_record" "caves_app_cname" {
@@ -83,9 +83,11 @@ resource "cloudflare_dns_record" "caves_app_cname" {
   zone_id = cloudflare_zone.caves_app.id
   name    = each.key
   type    = "CNAME"
-  ttl     = local.default_ttl
   content = each.value
-  proxied = false
+
+  # Proxy web traffic only; DKIM and ACM validation records must resolve directly.
+  proxied = contains(keys(local.caves_app_cnames), each.key)
+  ttl     = contains(keys(local.caves_app_cnames), each.key) ? 1 : local.default_ttl
 }
 
 resource "cloudflare_dns_record" "caves_app_mx" {
