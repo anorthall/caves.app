@@ -60,8 +60,8 @@ data "aws_iam_policy_document" "caves_app_bucket_read_write_policy" {
 
 data "aws_iam_policy_document" "ses_policy" {
   statement {
-    effect = "Allow"
-    actions = ["ses:*"]
+    effect    = "Allow"
+    actions   = ["ses:*"]
     resources = ["*"]
   }
 }

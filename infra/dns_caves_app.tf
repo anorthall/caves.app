@@ -1,14 +1,14 @@
 locals {
   caves_app_records = {
-    "caves.app"          = { ipv4 = local.server_ipv4, ipv6 = local.server_ipv6 }
-    "www.caves.app"      = { ipv4 = local.server_ipv4, ipv6 = local.server_ipv6 }
-    "imgproxy.caves.app" = { ipv4 = local.server_ipv4, ipv6 = local.server_ipv6 }
+    "caves.app" = { ipv4 = local.server_ipv4, ipv6 = local.server_ipv6 }
   }
 
   caves_app_cnames = {
-    "images.caves.app" = module.images_cdn.cloudfront_distribution_domain_name
-    "cdn.caves.app"    = module.cdn.cloudfront_distribution_domain_name
-    "status.caves.app" = "page.updown.io"
+    "www.caves.app"      = "caves.app"
+    "imgproxy.caves.app" = "caves.app"
+    "images.caves.app"   = module.images_cdn.cloudfront_distribution_domain_name
+    "cdn.caves.app"      = module.cdn.cloudfront_distribution_domain_name
+    "status.caves.app"   = "page.updown.io"
   }
 }
 
@@ -43,6 +43,13 @@ resource "aws_route53_record" "caves_app_aaaa" {
   type    = "AAAA"
   ttl     = local.default_ttl
   records = [each.value.ipv6]
+}
+
+# www and imgproxy were changed to CNAMEs outside of Terraform.
+import {
+  for_each = toset(["www.caves.app", "imgproxy.caves.app"])
+  to       = aws_route53_record.caves_app_cname[each.value]
+  id       = "Z00147371A4PVFGOGJRFF_${each.value}_CNAME"
 }
 
 resource "aws_route53_record" "caves_app_cname" {
